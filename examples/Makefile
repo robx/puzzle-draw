@@ -1,4 +1,4 @@
-TARGETS = pyramid.svg kpyramid.svg kpyramid-sol.svg
+TARGETS = pyramid.svg kpyramid.svg kpyramid-sol.svg litsplus.svg
 
 all: $(TARGETS)
 
@@ -10,6 +10,9 @@ kpyramid.svg: kpyramid.txt
 
 kpyramid-sol.svg: kpyramid-sol.txt
 	drawkpyramid -w 200 -o $@ < $<
+
+litsplus.svg: litsplus.txt
+	drawgrid -w 400 -o $@ < $<
 
 clean:
 	rm -f $(TARGETS)
