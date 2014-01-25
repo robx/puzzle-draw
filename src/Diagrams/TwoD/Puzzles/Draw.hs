@@ -16,9 +16,15 @@ hline n = strokeLine . fromVertices . map p2 $ [(0, 0), (n, 0)]
 hcatsep = hcat' with {_sep = 1}
 vcatsep = cat' (r2 (0,1)) with {_sep = 1}
 
-grid x y = box (fromIntegral x) (fromIntegral y) # lw 0.1
-           `atop` (hcatsep (mempty : replicate (x - 1) (vline (fromIntegral y)))) # lw 0.01
-           `atop` (vcatsep (mempty : replicate (y - 1) (hline (fromIntegral x)))) # lw 0.01
+gridgen line x y = box x' y' # lw 0.1
+                   `atop` hcatsep (mempty : map (line V y') [1..x-1])
+                   `atop` vcatsep (mempty : map (line H x') [1..y-1])
+    where x' = fromIntegral x
+          y' = fromIntegral y
+
+grid = gridgen l
+    where l V y _ = vline y # lw 0.01
+          l H x _ = hline x # lw 0.01
 
 dot = circle 0.05 # fc black # withEnvelope (vrule 0 :: D R2)
 
