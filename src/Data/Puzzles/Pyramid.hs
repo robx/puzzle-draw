@@ -47,16 +47,16 @@ ex2 = [ "G2"
 
 data KropkiDot = None | Black | White
     deriving Show
-data KropkiRow = KRow { entriesk :: [Maybe Int]
-                      , shadedk :: Bool
-                      , dotsk :: [KropkiDot]
-                      }
+data KropkiRow = KR { entriesk :: [Maybe Int]
+                    , shadedk :: Bool
+                    , dotsk :: [KropkiDot]
+                    }
     deriving Show
 newtype RowKropkiPyramid = KP {unKP :: [KropkiRow]}
     deriving Show
 
 readKropkiRow :: String -> KropkiRow
-readKropkiRow (s:c:xs) = KRow cs (readShaded s) ks
+readKropkiRow (s:c:xs) = KR cs (readShaded s) ks
     where readShaded 'G' = True
           readShaded 'W' = False
           readKropki '*' = Black
@@ -64,7 +64,8 @@ readKropkiRow (s:c:xs) = KRow cs (readShaded s) ks
           readKropki ' ' = None
           readKC [] = []
           readKC (k:c:xs) = (readKropki k, readClue c) : readKC xs
-          (ks, cs) = unzip $ readKC xs
+          (ks, cs') = unzip $ readKC xs
+          cs = readClue c : cs'
 
 readKropkiPyramid :: [String] -> RowKropkiPyramid
 readKropkiPyramid = KP . map readKropkiRow

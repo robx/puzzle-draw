@@ -81,3 +81,11 @@ executable drawpyramid
                        puzzle-draw,
                        diagrams-lib >= 0.6 && < 1.1,
                        diagrams-svg >= 0.8.0.1 && < 1.1
+
+executable drawkpyramid
+  main-is:          drawkpyramid.hs
+  hs-source-dirs:   src/tools
+  build-depends:       base ==4.5.*,
+                       puzzle-draw,
+                       diagrams-lib >= 0.6 && < 1.1,
+                       diagrams-svg >= 0.8.0.1 && < 1.1

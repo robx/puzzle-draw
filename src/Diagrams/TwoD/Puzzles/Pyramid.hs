@@ -19,3 +19,16 @@ cellc s c = clue c `atop` cell s
 row (R cs s) = centerX . hcat . map (cellc s) $ cs
 
 pyramid = vcat . map row . unP
+
+kropki None = mempty
+kropki White = circle 0.1 # lw 0.03 # withEnvelope (vrule 0 :: D R2)
+kropki Black = kropki White # fc black
+
+interleave [] ys = ys
+interleave (x:xs) ys = x : interleave ys xs
+
+krow (KR cs s ks) = centerX . hcat $ interleave clues dots
+    where clues = map (cellc s) cs
+          dots = map kropki ks
+
+kpyramid = vcat . map krow . unKP
