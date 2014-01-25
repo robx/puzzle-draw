@@ -52,4 +52,5 @@ drawCharGridG g = drawGridBG' g cols
     where cols c | 'A' <= c && c <= 'Z'  = Just (blend 0.1 black white)
                  | otherwise             = Nothing
 
-padc = pad 1.05 . centerXY
+frame = extrudeLeft x . extrudeRight x . extrudeTop x . extrudeBottom x . centerXY
+    where x = 0.25

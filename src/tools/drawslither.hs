@@ -10,4 +10,4 @@ import Diagrams.Backend.SVG.CmdLine
 
 readGrid = liftM (NG . filter (not . null) . lines) getContents
 
-main = liftM (padc . drawSlitherGrid) readGrid >>= defaultMain
+main = liftM (frame . drawSlitherGrid) readGrid >>= defaultMain

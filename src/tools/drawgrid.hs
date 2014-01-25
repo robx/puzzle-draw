@@ -10,4 +10,4 @@ import Diagrams.Backend.SVG.CmdLine
 
 readGrid = liftM (CG . filter (not . null) . lines) getContents
 
-main = liftM (padc . drawCharGridG) readGrid >>= defaultMain
+main = liftM (frame . drawCharGridG) readGrid >>= defaultMain
