@@ -47,6 +47,7 @@ library
   exposed-modules:     Data.Puzzles.Grid
                        Data.Puzzles.Pyramid
                        Diagrams.TwoD.Puzzles.Draw
+                       Diagrams.TwoD.Puzzles.Pyramid
   
   -- Modules included in this library but not exported.
   -- other-modules:       
@@ -67,6 +68,14 @@ executable drawgrid
 
 executable drawslither
   main-is:          drawslither.hs
+  hs-source-dirs:   src/tools
+  build-depends:       base ==4.5.*,
+                       puzzle-draw,
+                       diagrams-lib >= 0.6 && < 1.1,
+                       diagrams-svg >= 0.8.0.1 && < 1.1
+
+executable drawpyramid
+  main-is:          drawpyramid.hs
   hs-source-dirs:   src/tools
   build-depends:       base ==4.5.*,
                        puzzle-draw,
