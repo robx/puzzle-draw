@@ -45,6 +45,7 @@ cabal-version:       >=1.8
 library
   -- Modules exported by the library.
   exposed-modules:     Data.Puzzles.Grid
+                       Data.Puzzles.Pyramid
                        Diagrams.TwoD.Puzzles.Draw
   
   -- Modules included in this library but not exported.
