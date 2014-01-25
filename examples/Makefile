@@ -1,4 +1,6 @@
-build: pyramid.svg kpyramid.svg kpyramid-sol.svg
+TARGETS = pyramid.svg kpyramid.svg kpyramid-sol.svg
+
+all: $(TARGETS)
 
 pyramid.svg: pyramid.txt
 	drawpyramid -w 200 -o pyramid.svg < pyramid.txt
@@ -8,3 +10,6 @@ kpyramid.svg: kpyramid.txt
 
 kpyramid-sol.svg: kpyramid-sol.txt
 	drawkpyramid -w 200 -o $@ < $<
+
+clean:
+	rm -f $(TARGETS)
