@@ -23,7 +23,7 @@ pyramid = vcat . map row . unP
 kropki None = mempty
 kropki c = circle 0.1 # lw 0.03 # fc (col c) # withEnvelope (vrule 0 :: D R2)
     where col White = white
-          col Black = black
+          col Black = blend 0.98 black white
 
 interleave [] ys = ys
 interleave (x:xs) ys = x : interleave ys xs
