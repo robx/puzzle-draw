@@ -27,8 +27,9 @@ kropki Black = kropki White # fc black
 interleave [] ys = ys
 interleave (x:xs) ys = x : interleave ys xs
 
-krow (KR cs s ks) = centerX . hcat $ interleave clues dots
-    where clues = map (cellc s) cs
-          dots = map kropki ks
+krow (KR cs s ks) = ccat dots `atop` ccat clues
+    where ccat = centerX . hcat
+          clues = map (cellc s) cs
+          dots = interleave (map phantom (clues :: [D R2])) (map kropki ks)
 
 kpyramid = vcat . map krow . unKP
