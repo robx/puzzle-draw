@@ -1,6 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies #-}
 
-module Grid where
+module Data.Puzzles.Grid where
 
 import Data.Maybe
 
@@ -9,18 +9,18 @@ newtype NumGrid = NG {unNG :: [[Char]]}
 
 class Grid a b | a -> b where
     size :: a -> (Int, Int)
-    at :: a -> (Int, Int) -> b
+    (!) :: a -> (Int, Int) -> b
 
 instance Grid CharGrid Char where
     size (CG g) = (length (head g), length g)
-    at (CG g) (x, y) = g !! (sy - y - 1) !! x
+    (CG g) ! (x, y) = g !! (sy - y - 1) !! x
         where (_, sy) = size (CG g)
 
 newtype IntClue = IC {unIC :: Maybe Int}
 
 instance Grid NumGrid IntClue where
     size (NG g) = (length (head g), length g)
-    at (NG g) (x, y) = v
+    (NG g) ! (x, y) = v
         where (_, sy) = size (CG g)
               c = g !! (sy - y - 1) !! x
               v | '0' <= c && c <= '9'  = IC . Just $ fromEnum c - fromEnum '0'
@@ -32,8 +32,8 @@ type Point = (Int, Int)
 points g = [ (x, y) | x <- [0..sx-1], y <- [0..sy-1] ]
     where (sx, sy) = size g
 
-clues g = [ (p, fromJust . unIC $ g `at` p) | p <- points g
-                                            , isJust . unIC $ g `at` p ]
+clues g = [ (p, fromJust . unIC $ g ! p) | p <- points g
+                                         , isJust . unIC $ g ! p ]
 
 data Dir = V | H
 --    deriving Show
@@ -52,5 +52,5 @@ borders g = [ E p V | p <- vborders ] ++ [ E p H | p <- hborders ]
         borders' f (sx, sy) = [ (x + 1, y) | x <- [0 .. sx - 2]
                                            , y <- [0 .. sy - 1]
                                            , f (x, y) /= f (x + 1, y) ]
-        vborders = borders' (at g) (size g)
-        hborders = map swap $ borders' (at g . swap) (swap . size $ g)
+        vborders = borders' (g !) (size g)
+        hborders = map swap $ borders' ((g !) . swap) (swap . size $ g)

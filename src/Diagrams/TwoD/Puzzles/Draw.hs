@@ -1,13 +1,12 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
 
-module Draw where
+module Diagrams.TwoD.Puzzles.Draw where
 
 import Diagrams.Prelude
-import Diagrams.Backend.SVG.CmdLine
 import Diagrams.Util
 import Diagrams.Combinators
 
-import Grid
+import Data.Puzzles.Grid
 
 box x y = strokeLoop . closeLine . fromVertices . map p2 $ [(0, 0), (x, 0), (x, y), (0, y)]
 
@@ -47,7 +46,7 @@ drawSlitherGrid g = drawClues g # translate (r2 (0.5, 0.5)) `atop` slithergrid s
 charGridBG g f = mconcat [maybe mempty (fillBG p) (f p) | p <- points g]
 
 drawGridBG g f = drawCharGrid g `atop` charGridBG g f
-drawGridBG' g f' = drawGridBG g (\p -> f' (g `Grid.at` p))
+drawGridBG' g f' = drawGridBG g (\p -> f' (g ! p))
 
 drawCharGridG g = drawGridBG' g cols
     where cols c | 'A' <= c && c <= 'Z'  = Just (blend 0.1 black white)

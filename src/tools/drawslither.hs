@@ -1,7 +1,7 @@
 {-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies #-}
 
-import Draw
-import Grid
+import Diagrams.TwoD.Puzzles.Draw
+import Data.Puzzles.Grid
 
 import Control.Monad
 

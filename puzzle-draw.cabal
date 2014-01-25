@@ -44,10 +44,30 @@ cabal-version:       >=1.8
 
 library
   -- Modules exported by the library.
-  -- exposed-modules:     
+  exposed-modules:     Data.Puzzles.Grid
+                       Diagrams.TwoD.Puzzles.Draw
   
   -- Modules included in this library but not exported.
   -- other-modules:       
   
   -- Other library packages from which modules are imported.
-  build-depends:       base ==4.5.*
+  build-depends:       base ==4.5.*,
+                       diagrams-lib >= 0.6 && < 1.1
+
+  hs-source-dirs:      src
+
+executable drawgrid
+  main-is:          drawgrid.hs
+  hs-source-dirs:   src/tools
+  build-depends:       base ==4.5.*,
+                       puzzle-draw,
+                       diagrams-lib >= 0.6 && < 1.1,
+                       diagrams-svg >= 0.8.0.1 && < 1.1
+
+executable drawslither
+  main-is:          drawslither.hs
+  hs-source-dirs:   src/tools
+  build-depends:       base ==4.5.*,
+                       puzzle-draw,
+                       diagrams-lib >= 0.6 && < 1.1,
+                       diagrams-svg >= 0.8.0.1 && < 1.1
