@@ -13,11 +13,12 @@ ex1 = [ "G."
       , "G1...3"
       ]
 
+readClue '.' = Nothing
+readClue ' ' = Nothing
+readClue c | c >= '1' && c <= '9' = Just (read [c])
+
 readClues :: String -> [Maybe Int]
 readClues = map readClue
-    where readClue '.' = Nothing
-          readClue ' ' = Nothing
-          readClue c | c >= '1' && c <= '9' = Just (read [c])
 
 showClues :: [Maybe Int] -> String
 showClues = map showClue
@@ -36,3 +37,34 @@ readPyramid = P . map read
 
 instance Show Pyramid where
     show = unlines . map show . unP
+
+ex2 = [ "G2"
+      , "G. ."
+      , "G.o. ."
+      , "W.*. 2o."
+      , "G.*.*. .*."
+      ]
+
+data KropkiDot = None | Black | White
+    deriving Show
+data KropkiRow = KRow { entriesk :: [Maybe Int]
+                      , shadedk :: Bool
+                      , dotsk :: [KropkiDot]
+                      }
+    deriving Show
+newtype RowKropkiPyramid = KP {unKP :: [KropkiRow]}
+    deriving Show
+
+readKropkiRow :: String -> KropkiRow
+readKropkiRow (s:c:xs) = KRow cs (readShaded s) ks
+    where readShaded 'G' = True
+          readShaded 'W' = False
+          readKropki '*' = Black
+          readKropki 'o' = White
+          readKropki ' ' = None
+          readKC [] = []
+          readKC (k:c:xs) = (readKropki k, readClue c) : readKC xs
+          (ks, cs) = unzip $ readKC xs
+
+readKropkiPyramid :: [String] -> RowKropkiPyramid
+readKropkiPyramid = KP . map readKropkiRow
