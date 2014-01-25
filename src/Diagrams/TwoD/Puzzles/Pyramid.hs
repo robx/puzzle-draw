@@ -21,8 +21,9 @@ row (R cs s) = centerX . hcat . map (cellc s) $ cs
 pyramid = vcat . map row . unP
 
 kropki None = mempty
-kropki White = circle 0.1 # lw 0.03 # withEnvelope (vrule 0 :: D R2)
-kropki Black = kropki White # fc black
+kropki c = circle 0.1 # lw 0.03 # fc (col c) # withEnvelope (vrule 0 :: D R2)
+    where col White = white
+          col Black = black
 
 interleave [] ys = ys
 interleave (x:xs) ys = x : interleave ys xs
