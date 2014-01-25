@@ -8,23 +8,24 @@ import Diagrams.Combinators
 
 import Data.Puzzles.Grid
 
-box x y = strokeLoop . closeLine . fromVertices . map p2 $ [(0, 0), (x, 0), (x, y), (0, y)]
-
 vline n = strokeLine . fromVertices . map p2 $ [(0, 0), (0, n)]
 hline n = strokeLine . fromVertices . map p2 $ [(0, 0), (n, 0)]
 
 hcatsep = hcat' with {_sep = 1}
 vcatsep = cat' (r2 (0,1)) with {_sep = 1}
 
-gridgen line x y = box x' y' # lw 0.1
-                   `atop` hcatsep (mempty : map (line V y') [1..x-1])
-                   `atop` vcatsep (mempty : map (line H x') [1..y-1])
+gridgen line x y = (hcatsep . map (line V y') $ zip [0..x] [x,x-1..0])
+                   `atop` (vcatsep . map (line H x') $ zip [0..y] [y,y-1..0])
     where x' = fromIntegral x
           y' = fromIntegral y
 
 grid = gridgen l
-    where l V y _ = vline y # lw 0.01
-          l H x _ = hline x # lw 0.01
+    where l dir len (i, j) = l' dir len # lw (w i j) # lineCap LineCapRound
+          l' V = vline
+          l' H = hline
+          w 0 _ = 0.1
+          w _ 0 = 0.1
+          w _ _ = 0.01
 
 dot = circle 0.05 # fc black # withEnvelope (vrule 0 :: D R2)
 
