@@ -7,6 +7,7 @@ import Diagrams.Util
 import Diagrams.Combinators
 
 import Data.Puzzles.Pyramid
+import Diagrams.TwoD.Puzzles.Draw (smash)
 
 pgray = blend 0.6 white black
 
@@ -21,7 +22,7 @@ row (R cs s) = centerX . hcat . map (cellc s) $ cs
 pyramid = vcat . map row . unP
 
 kropki None = mempty
-kropki c = circle 0.1 # lw 0.03 # fc (col c) # withEnvelope (vrule 0 :: D R2)
+kropki c = circle 0.1 # lw 0.03 # fc (col c) # smash
     where col White = white
           col Black = blend 0.98 black white
 

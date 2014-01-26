@@ -27,7 +27,9 @@ grid = gridgen l
           w _ 0 = 0.1
           w _ _ = 0.01
 
-dot = circle 0.05 # fc black # withEnvelope (vrule 0 :: D R2)
+smash = withEnvelope (vrule 0 :: D R2)
+
+dot = circle 0.05 # fc black # smash
 
 slithergrid x y = dots
     where dots = hcatsep . replicate (x + 1) . vcatsep . replicate (y + 1) $ dot
