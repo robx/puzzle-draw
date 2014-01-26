@@ -70,3 +70,10 @@ drawCharGridG g = drawGridBG' g cols
 
 frame = extrudeLeft x . extrudeRight x . extrudeTop x . extrudeBottom x . centerXY
     where x = 0.25
+
+thermo vs@(v:_) = (bulb `atop` line) # col # translate (r2 (0.5, 0.5))
+    where bulb = circle 0.4 # moveTo v
+          line = strokeLocLine (fromVertices vs) # lw 0.55 # lineCap LineCapSquare
+          col = lc gr . fc gr
+          gr = blend 0.6 white black
+

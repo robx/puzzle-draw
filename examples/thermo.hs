@@ -7,12 +7,6 @@ import Control.Monad
 import Diagrams.Prelude
 import Diagrams.Backend.SVG.CmdLine
 
-thermo vs@(v:_) = (bulb `atop` line) # col # translate (r2 (0.5, 0.5))
-    where bulb = circle 0.4 # moveTo v
-          line = strokeLocLine (fromVertices vs) # lw 0.55 # lineCap LineCapSquare
-          col = lc gr . fc gr
-          gr = blend 0.6 white black
-
 thermos = map (thermo . map p2)
           [ [(1, 0), (1, 1), (2, 1), (2, 2)]
           , [(3, 3), (4, 4), (5, 3)]
