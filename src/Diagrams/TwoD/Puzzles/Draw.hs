@@ -55,9 +55,10 @@ drawCharGrid g = edges g # lw 0.08 # lineCap LineCapRound `atop` grid sx sy
     where (sx, sy) = size g
           edges = mconcat . map drawEdge . borders
 
-drawSlitherGrid g = drawClues g # translate (r2 (0.5, 0.5)) `atop` slithergrid sx sy
+drawClues = translate (r2 (0.5, 0.5)) . mconcat . map (\ (p, c) -> drawStr p (show c))
+
+drawSlitherGrid g = drawClues (clues g) `atop` slithergrid sx sy
     where (sx, sy) = size g
-          drawClues = mconcat . map (\ (p, c) -> drawStr p (show c)) . clues
 
 charGridBG g f = mconcat [maybe mempty (fillBG p) (f p) | p <- points g]
 
