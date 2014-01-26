@@ -1,4 +1,4 @@
-TARGETS = pyramid.svg kpyramid.svg kpyramid-sol.svg litsplus.svg
+TARGETS = pyramid.svg kpyramid.svg kpyramid-sol.svg litsplus.svg thermo.svg
 
 DRAWGRID = ../dist/build/drawgrid/drawgrid
 DRAWPYRAMID = ../dist/build/drawpyramid/drawpyramid
@@ -17,6 +17,12 @@ kpyramid-sol.svg: kpyramid-sol.txt $(DRAWKPYRAMID)
 
 litsplus.svg: litsplus.txt $(DRAWGRID)
 	$(DRAWGRID) -w 400 -o $@ < $<
+
+thermo: thermo.hs
+	ghc --make thermo
+
+thermo.svg: thermo
+	./thermo -w 400 -o $@
 
 clean:
 	rm -f $(TARGETS)
