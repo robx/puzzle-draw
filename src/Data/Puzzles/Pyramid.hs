@@ -1,24 +1,39 @@
 module Data.Puzzles.Pyramid where
 
+import Data.Char (digitToInt)
+import Text.ParserCombinators.Parsec
+
+
 data Row = R { entries :: [Maybe Int]
              , shaded :: Bool
              }
 
 newtype Pyramid = P {unP :: [Row]}
 
-ex1 = [ "G."
-      , "W.."
-      , "W.73"
-      , "G.1.."
-      , "G1...3"
+ex1 = [ "G     ."
+      , "W    . ."
+      , "W   . 7 3"
+      , "G  . 1 . ."
+      , "G 1 . . . 3"
       ]
 
-readClue '.' = Nothing
-readClue ' ' = Nothing
-readClue c | c >= '1' && c <= '9' = Just (read [c])
+prow :: GenParser Char st Row
+prow = do s <- pshaded
+          spaces
+          es <- pclues
+          return (R es s)
+pshaded = (char 'G' >> return True) <|> (char 'W' >> return False)
+pclues = do c <- pclue
+            cs <- many (spaces >> pclue)
+            return (c:cs)
+pclue = fmap (Just . digitToInt) digit
+        <|> (char '.' >> return Nothing)
 
-readClues :: String -> [Maybe Int]
-readClues = map readClue
+readrow cs = r
+    where Right r = parse prow "(unknown)" cs
+
+readPyramid :: [String] -> Pyramid
+readPyramid = P . map readrow
 
 showClues :: [Maybe Int] -> String
 showClues = map showClue
@@ -27,13 +42,6 @@ showClues = map showClue
 instance Show Row where
     show (R c True) = 'G' : showClues c
     show (R c False) = 'W' : showClues c
-
-instance Read Row where
-    readsPrec d ('G':clues) = [(R (readClues clues) True, "")]
-    readsPrec d ('W':clues) = [(R (readClues clues) False, "")]
-
-readPyramid :: [String] -> Pyramid
-readPyramid = P . map read
 
 instance Show Pyramid where
     show = unlines . map show . unP
@@ -62,6 +70,8 @@ readKropkiRow (s:c:xs) = KR cs (readShaded s) ks
           readKropki '*' = Black
           readKropki 'o' = White
           readKropki ' ' = None
+          readClue '.' = Nothing
+          readClue c = Just (digitToInt c)
           readKC [] = []
           readKC (k:c:xs) = (readKropki k, readClue c) : readKC xs
           (ks, cs') = unzip $ readKC xs
