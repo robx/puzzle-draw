@@ -2,7 +2,7 @@ module Data.Puzzles.Pyramid where
 
 import Data.Char (digitToInt)
 import Text.ParserCombinators.Parsec
-
+import Control.Monad (liftM2)
 
 data Row = R { entries :: [Maybe Int]
              , shaded :: Bool
@@ -46,11 +46,11 @@ instance Show Row where
 instance Show Pyramid where
     show = unlines . map show . unP
 
-ex2 = [ "G2"
-      , "G. ."
-      , "G.o. ."
-      , "W.*. 2o."
-      , "G.*.*. .*."
+ex2 = [ "G     2"
+      , "G    . ."
+      , "G   .o. ."
+      , "W  .*. 2o."
+      , "G .*.*. .*."
       ]
 
 data KropkiDot = None | Black | White
@@ -63,19 +63,19 @@ data KropkiRow = KR { entriesk :: [Maybe Int]
 newtype RowKropkiPyramid = KP {unKP :: [KropkiRow]}
     deriving Show
 
-readKropkiRow :: String -> KropkiRow
-readKropkiRow (s:c:xs) = KR cs (readShaded s) ks
-    where readShaded 'G' = True
-          readShaded 'W' = False
-          readKropki '*' = Black
-          readKropki 'o' = White
-          readKropki ' ' = None
-          readClue '.' = Nothing
-          readClue c = Just (digitToInt c)
-          readKC [] = []
-          readKC (k:c:xs) = (readKropki k, readClue c) : readKC xs
-          (ks, cs') = unzip $ readKC xs
-          cs = readClue c : cs'
+pkropkirow = do s <- pshaded
+                spaces
+                (ks, cs) <- pkropkiclues
+                return (KR cs s ks)
+pkropkiclues = do c <- pclue
+                  kcs <- many (liftM2 (,) pkropki pclue)
+                  let (ks, cs) = unzip kcs in return (ks, c:cs)
+pkropki = (char '*' >> return Black)
+          <|> (char 'o' >> return White)
+          <|> (char ' ' >> return None)
+
+readkropkirow cs = r
+    where Right r = parse pkropkirow "(unknown)" cs
 
 readKropkiPyramid :: [String] -> RowKropkiPyramid
-readKropkiPyramid = KP . map readKropkiRow
+readKropkiPyramid = KP . map readkropkirow
