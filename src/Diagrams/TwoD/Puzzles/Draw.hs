@@ -27,6 +27,13 @@ grid = gridgen l
           w _ 0 = 0.1
           w _ _ = 0.01
 
+sudokugrid = gridgen l 9 9
+    where l dir len (i, j) = l' dir len # lw (w i j) # lineCap LineCapRound
+          l' V = vline
+          l' H = hline
+          w k _ | k `mod` 3 == 0 = 0.1
+          w _ _ = 0.01
+
 smash = withEnvelope (vrule 0 :: D R2)
 
 dot = circle 0.05 # fc black # smash
