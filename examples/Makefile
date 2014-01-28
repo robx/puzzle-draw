@@ -1,4 +1,4 @@
-TARGETS = pyramid.svg kpyramid.svg kpyramid-sol.svg litsplus.svg thermo.svg
+TARGETS = pyramid.svg kpyramid.svg kpyramid-sol.svg litsplus.svg thermo.svg magictapa.svg
 
 DRAWGRID = ../dist/build/drawgrid/drawgrid
 DRAWPYRAMID = ../dist/build/drawpyramid/drawpyramid
@@ -25,10 +25,10 @@ thermo.svg: thermo
 	./thermo -w 400 -o $@
 
 magictapa: magictapa.hs
-	ghc --make thermo
+	ghc --make magictapa
 
 magictapa.svg: magictapa
-	./magictapa -w 200 -o $@
+	./magictapa -w 400 -o $@
 
 clean:
 	rm -f $(TARGETS)

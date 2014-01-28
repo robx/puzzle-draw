@@ -10,11 +10,10 @@ import Diagrams.Backend.SVG.CmdLine
 import Graphics.SVGFonts.ReadFont
 
 -- prettier with a different font
---font = outlMap "SourceCodeSans-Light.svg"
+font' = outlMap "../fonts/SourceSansPro-Light.svg"
+--font' = lin
 
-font = lin
-
-text' t = stroke (textSVG' $ TextOpts t font INSIDE_H KERN False 1 1)
+text' t = stroke (textSVG' $ TextOpts t font' INSIDE_H KERN False 1 1)
           # fc black # scale 0.3
 
 interleave [] _ = []
@@ -35,6 +34,6 @@ drawclue (pt, ws) = spread unitY (map (centerXY . text') ws)
                   # centerY
                   # translate ((r2 pt) + (0.5 ^& 0.5))
 
-puzzle = mconcat (map dclue clues) `atop` grid 6 6
+puzzle = mconcat (map drawclue clues) `atop` grid 6 6
 
 main = defaultMain (frame puzzle)
