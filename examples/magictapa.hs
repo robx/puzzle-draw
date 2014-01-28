@@ -10,8 +10,8 @@ import Diagrams.Backend.SVG.CmdLine
 import Graphics.SVGFonts.ReadFont
 
 -- prettier with a different font
-font' = outlMap "../fonts/SourceSansPro-Light.svg"
---font' = lin
+--font' = outlMap "../fonts/SourceSansPro-Light.svg"
+font' = lin
 
 text' t = stroke (textSVG' $ TextOpts t font' INSIDE_H KERN False 1 1)
           # fc black # scale 0.3
