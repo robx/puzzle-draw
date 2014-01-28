@@ -20,7 +20,7 @@ gridgen line x y = (hcatsep . map (line V y') $ zip [0..x] [x,x-1..0])
           y' = fromIntegral y
 
 grid = gridgen l
-    where l dir len (i, j) = l' dir len # lw (w i j) # lineCap LineCapRound
+    where l dir len (i, j) = l' dir len # lw (w i j) # lineCap LineCapSquare
           l' V = vline
           l' H = hline
           w 0 _ = 0.1
@@ -28,7 +28,7 @@ grid = gridgen l
           w _ _ = 0.01
 
 sudokugrid = gridgen l 9 9
-    where l dir len (i, j) = l' dir len # lw (w i j) # lineCap LineCapRound
+    where l dir len (i, j) = l' dir len # lw (w i j) # lineCap LineCapSquare
           l' V = vline
           l' H = hline
           w k _ | k `mod` 3 == 0 = 0.1
