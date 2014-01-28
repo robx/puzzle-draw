@@ -24,5 +24,11 @@ thermo: thermo.hs
 thermo.svg: thermo
 	./thermo -w 400 -o $@
 
+magictapa: magictapa.hs
+	ghc --make thermo
+
+magictapa.svg: magictapa
+	./magictapa -w 200 -o $@
+
 clean:
 	rm -f $(TARGETS)
