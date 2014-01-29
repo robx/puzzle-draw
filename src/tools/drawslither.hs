@@ -8,6 +8,6 @@ import Control.Monad
 import Diagrams.Prelude
 import Diagrams.Backend.SVG.CmdLine
 
-readGrid = liftM (NG . filter (not . null) . lines) getContents
+readGrid = liftM (fmap charToIntClue . fromListList . filter (not . null) . lines) getContents
 
 main = liftM (frame . drawSlitherGrid) readGrid >>= defaultMain
