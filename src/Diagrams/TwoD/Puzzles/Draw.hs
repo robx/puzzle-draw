@@ -23,8 +23,8 @@ grid = gridgen l
     where l dir len (i, j) = l' dir len # lw (w i j) # lineCap LineCapSquare
           l' V = vline
           l' H = hline
-          w 0 _ = 0.06
-          w _ 0 = 0.06
+          w 0 _ = 0.1
+          w _ 0 = 0.1
           w _ _ = 0.01
 
 sudokugrid = gridgen l 9 9
