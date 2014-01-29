@@ -36,4 +36,4 @@ drawclue (pt, ws) = spread unitY (map (centerXY . text') ws)
 
 puzzle = mconcat (map drawclue clues) `atop` grid 6 6
 
-main = defaultMain (frame puzzle)
+main = defaultMain (frame puzzle # bg white)
