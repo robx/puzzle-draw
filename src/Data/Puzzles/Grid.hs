@@ -9,6 +9,9 @@ type CharGrid = Grid Char
 type IntClue = Maybe Int
 type NumGrid = Grid IntClue
 
+data MasyuPearl = MWhite | MBlack
+type MasyuClue = Maybe MasyuPearl
+
 size :: Grid a -> (Int, Int)
 size (GG g) = (length (head g), length g)
 
@@ -26,6 +29,12 @@ fromListList = GG
 
 charToIntClue c
     | '0' <= c && c <= '9'  = Just $ fromEnum c - fromEnum '0'
+    | c == ' ' || c == '.'  = Nothing
+
+charToMasyuClue :: Char -> MasyuClue
+charToMasyuClue '*' = Just MBlack
+charToMasyuClue 'o' = Just MWhite
+charToMasyuClue c
     | c == ' ' || c == '.'  = Nothing
 
 points g = [ (x, y) | x <- [0..sx-1], y <- [0..sy-1] ]
