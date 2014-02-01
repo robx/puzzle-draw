@@ -1,8 +1,11 @@
-TARGETS = pyramid.svg kpyramid.svg kpyramid-sol.svg litsplus.svg thermo.svg magictapa.svg thermo.svg
+TARGETS = pyramid.svg kpyramid.svg kpyramid-sol.svg \
+          litsplus.svg thermo.svg magictapa.svg thermo.svg \
+          masyu.svg masyusample.svg
 
 DRAWGRID = ../dist/build/drawgrid/drawgrid
 DRAWPYRAMID = ../dist/build/drawpyramid/drawpyramid
 DRAWKPYRAMID = ../dist/build/drawkpyramid/drawkpyramid
+DRAWMASYU = ../dist/build/drawmasyu/drawmasyu
 
 all: $(TARGETS)
 
@@ -29,6 +32,15 @@ magictapa: magictapa.hs
 
 magictapa.svg: magictapa
 	./magictapa -w 400 -o $@
+
+masyu.svg: masyu.txt
+	$(DRAWMASYU) -w 300 -o $@ < $<
+
+masyusample: masyusample.hs
+	ghc --make masyusample
+
+masyusample.svg: masyusample
+	./masyusample -w 400 -o $@
 
 clean:
 	rm -f $(TARGETS)
