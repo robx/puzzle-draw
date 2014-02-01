@@ -8,6 +8,10 @@ import Control.Monad
 import Diagrams.Prelude
 import Diagrams.Backend.SVG.CmdLine
 
-readGrid = liftM (fmap charToIntClue . fromListList . filter (not . null) . lines) getContents
+gridFromStrings :: [String] -> Grid IntClue
+gridFromStrings = fmap charToIntClue . fromListList 
+
+readGrid :: IO (Grid IntClue)
+readGrid = liftM (gridFromStrings . filter (not . null) . lines) getContents
 
 main = liftM (frame . drawSlitherGrid) readGrid >>= defaultMain

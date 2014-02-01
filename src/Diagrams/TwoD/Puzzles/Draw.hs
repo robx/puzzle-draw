@@ -49,15 +49,22 @@ drawEdge (E p d) = line # translatep p
 
 fillBG p c = square 1 # fc c # alignBL # translatep p
 
-drawStr p s = text s # fontSize 0.7 # font "Helvetica" # translatep p
-
-drawCharGrid g = edges g # lw 0.08 # lineCap LineCapRound `atop` grid sx sy
+drawCharGrid g = edges g # lw 0.08 # lineCap LineCapSquare `atop` grid sx sy
     where (sx, sy) = size g
           edges = mconcat . map drawEdge . borders
 
-drawClues = translate (r2 (0.5, 0.5)) . mconcat . map (\ (p, c) -> drawStr p (show c))
+drawClues dc = translate (r2 (0.5, 0.5))
+             . mconcat
+             . map (\ (p, c) -> dc c # translatep p)
 
-drawSlitherGrid g = drawClues (clues g) `atop` slithergrid sx sy
+drawInt s = text (show s) # fontSize 0.7 # font "Helvetica"
+drawSlitherGrid g = drawClues drawInt (clues g) `atop` slithergrid sx sy
+    where (sx, sy) = size g
+
+pearl MWhite = circle 0.35 # lw 0.05
+pearl MBlack = pearl MWhite # fc black
+
+drawMasyuGrid g = drawClues pearl (clues g) `atop` grid sx sy
     where (sx, sy) = size g
 
 charGridBG g f = mconcat [maybe mempty (fillBG p) (f p) | p <- points g]
