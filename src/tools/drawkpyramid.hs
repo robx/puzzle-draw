@@ -7,7 +7,7 @@ import Data.Puzzles.Pyramid
 import Control.Monad
 
 import Diagrams.Prelude
-import Diagrams.Backend.SVG.CmdLine
+import Diagrams.Backend.Cairo.CmdLine
 
 getPyramid = liftM (readKropkiPyramid . lines) getContents
 

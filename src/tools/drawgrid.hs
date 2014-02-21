@@ -6,7 +6,7 @@ import Data.Puzzles.Grid
 import Control.Monad
 
 import Diagrams.Prelude
-import Diagrams.Backend.SVG.CmdLine
+import Diagrams.Backend.Cairo.CmdLine
 
 readGrid = liftM (fromListList . filter (not . null) . lines) getContents
 
