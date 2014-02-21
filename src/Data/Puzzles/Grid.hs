@@ -7,6 +7,7 @@ newtype Grid a = GG {unGG :: [[a]]}
 type CharGrid = Grid Char
 
 type IntClue = Maybe Int
+type CharClue = Maybe Char
 type NumGrid = Grid IntClue
 
 data MasyuPearl = MWhite | MBlack
@@ -30,6 +31,10 @@ fromListList = GG
 charToIntClue c
     | '0' <= c && c <= '9'  = Just $ fromEnum c - fromEnum '0'
     | c == ' ' || c == '.'  = Nothing
+
+charToCharClue c
+    | c == ' ' || c == '.'  = Nothing
+    | otherwise             = Just c
 
 charToMasyuClue :: Char -> MasyuClue
 charToMasyuClue '*' = Just MBlack

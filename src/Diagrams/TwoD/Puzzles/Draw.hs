@@ -47,9 +47,9 @@ drawEdge (E p d) = line # translatep p
     where line = case d of V -> vline 1
                            H -> hline 1
 
-fillBG p c = square 1 # fc c # alignBL # translatep p
+fillBG c = square 1 # fc c # alignBL
 
-drawCharGrid g = edges g # lw 0.08 # lineCap LineCapSquare `atop` grid sx sy
+drawAreaGrid g = edges g # lw 0.08 # lineCap LineCapSquare `atop` grid sx sy
     where (sx, sy) = size g
           edges = mconcat . map drawEdge . borders
 
@@ -57,7 +57,15 @@ drawClues dc = translate (r2 (0.5, 0.5))
              . mconcat
              . map (\ (p, c) -> dc c # translatep p)
 
-drawInt s = text (show s) # fontSize 0.7 # font "Helvetica"
+drawText t = text t # fontSize 0.7 # font "Helvetica"
+drawInt s = drawText (show s)
+drawChar c = drawText [c]
+
+fillogrid x y = grid x y -- TODO: dashed lines
+
+drawClueGrid g = drawClues drawChar (clues g) `atop` grid sx sy
+    where (sx, sy) = size g
+
 drawSlitherGrid g = drawClues drawInt (clues g) `atop` slithergrid sx sy
     where (sx, sy) = size g
 
@@ -67,12 +75,14 @@ pearl MBlack = pearl MWhite # fc black
 drawMasyuGrid g = drawClues pearl (clues g) `atop` grid sx sy
     where (sx, sy) = size g
 
-charGridBG g f = mconcat [maybe mempty (fillBG p) (f p) | p <- points g]
+charGridBG g f = mconcat [ maybe mempty (translatep p . fillBG) (f p)
+                         | p <- points g
+                         ]
 
-drawGridBG g f = drawCharGrid g `atop` charGridBG g f
+drawGridBG g f = drawAreaGrid g `atop` charGridBG g f
 drawGridBG' g f' = drawGridBG g (\p -> f' (g ! p))
 
-drawCharGridG g = drawGridBG' g cols
+drawAreaGridG g = drawGridBG' g cols
     where cols c | 'A' <= c && c <= 'Z'  = Just (blend 0.1 black white)
                  | otherwise             = Nothing
 
