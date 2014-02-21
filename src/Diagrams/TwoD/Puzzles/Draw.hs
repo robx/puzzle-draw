@@ -75,6 +75,18 @@ pearl MBlack = pearl MWhite # fc black
 drawMasyuGrid g = drawClues pearl (clues g) `atop` grid sx sy
     where (sx, sy) = size g
 
+cross :: Path R2
+cross = fromVertices [p2 (-1/2,-1/2), p2 (1/2,1/2)]
+    <> fromVertices [p2 (1/2,-1/2), p2 (-1/2,1/2)]
+
+drawCompassClue (n, e, s, w) = mconcat
+    [ text n # translate (r2 (0,1/3))
+    , text e # translate (r2 (1/3,0))
+    , text s # translate (r2 (0,-1/3))
+    , text w # translate (r2 (-1/3,0))
+    , stroke cross
+    ] # fontSize 0.3 
+
 charGridBG g f = mconcat [ maybe mempty (translatep p . fillBG) (f p)
                          | p <- points g
                          ]
