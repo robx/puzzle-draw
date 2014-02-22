@@ -22,6 +22,6 @@ thermos = map (thermo . map p2)
 
 clues = [ ((1, 1), 1), ((1, 7), 3), ((7, 1), 2), ((7, 7), 7) ]
 
-d = (drawClues clues `atop` sudokugrid `atop` mconcat thermos) # frame
+d = (drawClues drawInt clues `atop` sudokugrid `atop` mconcat thermos) # frame
 
 main = defaultMain d
