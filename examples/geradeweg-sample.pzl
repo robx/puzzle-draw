@@ -1,0 +1,21 @@
+type: geradeweg
+puzzle:
+  - type: grid, square, compact
+    grid: |
+      .....
+      .211.
+      ..2..
+      3...4
+      .....
+solution:
+  - type: grid, square, loop
+    grid: |
+      o-o o-o-o
+      | | |   |
+      o 2 1-1 o
+      | |   | |
+      o o-2-o o
+      |       |
+      3-o-o-o 4
+            | |
+      . . . o-o
