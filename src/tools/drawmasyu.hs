@@ -10,4 +10,7 @@ import Diagrams.Backend.Cairo.CmdLine
 
 readGrid = liftM (fmap charToMasyuClue . fromListList . filter (not . null) . lines) getContents
 
-main = liftM (bg white . frame . drawMasyuGrid) readGrid >>= defaultMain
+drawMasyu g = drawClues pearl (clues g) `atop` gridpx sx sy (lc (blend 0.25 white black))
+    where (sx, sy) = size g
+
+main = liftM (bg white . drawMasyu) readGrid >>= defaultMain
