@@ -113,7 +113,7 @@ gridlines w h = (decoratePath xaxis . repeat . alignB . vrule . fromIntegral $ h
     where xaxis = fromVertices [ p2 (fromIntegral x, 0) | x <- [1..w-1] ]
           yaxis = fromVertices [ p2 (0, fromIntegral y) | y <- [1..h-1] ]
 
-gridres = 64
+gridres = 40
 onepix = 1 / (fromIntegral gridres)
 twopix = 2 * onepix
 fourpix = 4 * onepix
@@ -142,8 +142,8 @@ gridpx w h gridstyle =
 
 bgdashing ds offs c x = x # dashing ds offs <> x # lc c
 
-dashes = [9 / 64, 7 / 64]
-dashoffset = 4.5 / 64
+dashes = [5 / 40, 3 / 40]
+dashoffset = 2.5 / 40
 
 dashedgridpx w h = gridpx w h $ bgdashing dashes dashoffset white'
     where white' = blend 0.95 white black
