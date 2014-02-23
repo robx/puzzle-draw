@@ -1,5 +1,7 @@
 {-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies #-}
 
+module Main where
+
 import Diagrams.TwoD.Puzzles.Draw
 
 import Control.Monad
