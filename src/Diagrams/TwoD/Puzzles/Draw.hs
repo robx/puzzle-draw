@@ -106,3 +106,44 @@ thermo vs@(v:_) = (bulb `atop` line) # col # translate (r2 (0.5, 0.5))
           line = strokeLocLine (fromVertices vs) # lw 0.55 # lineCap LineCapSquare
           col = lc gr . fc gr
           gr = blend 0.6 white black
+
+gridlines :: Int -> Int -> Path R2
+gridlines w h = (decoratePath xaxis . repeat . alignB . vrule . fromIntegral $ h)
+            <> (decoratePath yaxis . repeat . alignL . hrule . fromIntegral $ w)
+    where xaxis = fromVertices [ p2 (fromIntegral x, 0) | x <- [1..w-1] ]
+          yaxis = fromVertices [ p2 (0, fromIntegral y) | y <- [1..h-1] ]
+
+gridres = 64
+onepix = 1 / (fromIntegral gridres)
+twopix = 2 * onepix
+fourpix = 4 * onepix
+
+gridwidth = onepix
+framewidthfactor = 4
+
+borderwidth = 1 / 4 + onepix / 2
+
+outframe w h = strokePointLoop r # lw fw
+    where wd = fromIntegral w
+          hd = fromIntegral h
+          strokePointLoop = strokeLocTrail . mapLoc (wrapLoop . closeLine)
+                            . fromVertices . map p2
+          fw = framewidthfactor * gridwidth
+          e = fw / 2 - gridwidth / 2
+          r = [(-e, -e), (wd + e, -e), (wd + e, hd + e), (-e, hd + e)]
+
+gridpx w h gridstyle =
+    outframe w h 
+    <> stroke (gridlines w h) # lw gridwidth # gridstyle
+    <> phantom (f :: D R2)
+    where f = stroke . translate (r2 (-bw, -bw)) . alignBL
+              $ rect ((fromIntegral w) + 2 * bw) ((fromIntegral h) + 2 * bw)
+          bw = borderwidth
+
+bgdashing ds offs c x = x # dashing ds offs <> x # lc c
+
+dashes = [9 / 64, 7 / 64]
+dashoffset = 4.5 / 64
+
+dashedgridpx w h = gridpx w h $ bgdashing dashes dashoffset white'
+    where white' = blend 0.95 white black
