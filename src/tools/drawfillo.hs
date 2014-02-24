@@ -11,7 +11,7 @@ import Diagrams.Backend.Cairo.CmdLine
 fromStr = fmap charToCharClue . fromListList . filter (not . null) . lines
 readGrid = liftM fromStr getContents
 
-d g = (drawClues drawChar (clues g) `atop` fillogrid sx sy) # frame # bg white
+d g = (drawClues drawChar (clues g) `atop` dashedgridpx sx sy) # bg white
     where (sx, sy) = size g
 
 main = liftM d readGrid >>= defaultMain
