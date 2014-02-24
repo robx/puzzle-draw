@@ -1,6 +1,7 @@
 {-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies #-}
 
 import Diagrams.TwoD.Puzzles.Draw
+import Diagrams.Backend.Cairo.CmdLineSized
 import Data.Puzzles.Grid
 
 import Control.Monad
@@ -14,4 +15,6 @@ readGrid = liftM fromStr getContents
 d g = (drawClues drawChar (clues g) `atop` dashedgridpx sx sy) # bg white
     where (sx, sy) = size g
 
-main = liftM d readGrid >>= defaultMain
+main = do
+    g <- readGrid
+    mainWith (M (d g))
