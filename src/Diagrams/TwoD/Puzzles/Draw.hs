@@ -160,3 +160,11 @@ drawShadedGrid g = drawClues (const $ fillBG gray # centerXY) (clues g')
     where g' = fmap toMaybe g
           toMaybe True  = Just ()
           toMaybe False = Nothing
+
+dualEdge :: Edge -> Path R2
+dualEdge (E (x, y) d) = rule d # translate p
+    where rule V = vrule 1.0 # translate (r2 (0.5, 1))
+          rule H = hrule 1.0 # translate (r2 (1.0, 0.5))
+          p = r2 (fromIntegral x, fromIntegral y)
+
+drawDualEdges = lw edgewidth . lineCap LineCapSquare . stroke . mconcat . map dualEdge
