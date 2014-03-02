@@ -62,6 +62,12 @@ fillogrid x y = grid x y -- TODO: dashed lines
 drawClueGrid g = drawClues drawChar (clues g) `atop` grid sx sy
     where (sx, sy) = size g
 
+drawIntClues = drawClues drawInt . clues
+drawGrid g = gridpx sx sy id
+    where (sx, sy) = size g
+
+drawIntGrid g = drawIntClues g `atop` drawGrid g
+
 drawSlitherGrid g = drawClues drawInt (clues g) `atop` slithergrid sx sy
     where (sx, sy) = size g
 
