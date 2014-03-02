@@ -53,7 +53,7 @@ drawClues dc = translate (r2 (0.5, 0.5))
              . mconcat
              . map (\ (p, c) -> dc c # translatep p)
 
-drawText t = text t # fontSize 0.7 # font "Helvetica"
+drawText t = text t # fontSize 0.8 # font "Helvetica" # translate (r2 (0.04, -0.07))
 drawInt s = drawText (show s)
 drawChar c = drawText [c]
 
