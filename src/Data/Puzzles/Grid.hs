@@ -8,7 +8,7 @@ type CharGrid = Grid Char
 
 type IntClue = Maybe Int
 type CharClue = Maybe Char
-type NumGrid = Grid IntClue
+type IntGrid = Grid IntClue
 
 data MasyuPearl = MWhite | MBlack
 type MasyuClue = Maybe MasyuPearl
