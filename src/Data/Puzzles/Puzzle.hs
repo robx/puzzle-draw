@@ -127,3 +127,10 @@ parseMasyu :: Puzzle -> Result Masyu
 parseMasyu (P "masyu" p s) = PP <$>
                              (readMasyuGrid <$> (fromJSON p)) <*>
                              (readEdges' <$> (fromJSON s))
+
+type Nurikabe = ParsedPuzzle IntGrid ShadedGrid
+
+parseNurikabe :: Puzzle -> Result Nurikabe
+parseNurikabe (P _ p s) = PP <$>
+                          (readIntGrid <$> (fromJSON p)) <*>
+                          (readBoolGrid <$> (fromJSON s))

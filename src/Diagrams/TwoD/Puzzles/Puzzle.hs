@@ -23,6 +23,9 @@ drawFillominosol (PP _ sg) = drawIntGrid sg
 drawMasyu (PP mg _) = drawMasyuGrid mg
 drawMasyusol p@(PP mg l) = drawDualEdges l # solstyle `atop` drawMasyu p
 
+drawNurikabe (PP ig _) = drawIntGrid ig
+drawNurikabesol p@(PP _ sg) = drawNurikabe p `atop` drawShadedGrid sg
+
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
 type PuzzleSol b = (Diagram b R2, Diagram b R2)
