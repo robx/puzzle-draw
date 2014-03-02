@@ -8,7 +8,7 @@ import Data.Puzzles.Puzzle
 import Data.Puzzles.Grid
 
 drawLITS (PP ag _) = drawAreaGridG ag
-drawLITSsol p@(PP ag sg) = drawLITS p `atop` drawShadedGrid sg
+drawLITSsol p@(PP ag sg) = drawAreaGrid ag `atop` drawShadedGrid sg
 
 drawGeradeweg (PP ig _) = drawIntGrid ig
 drawGeradewegsol p@(PP ig l) = drawIntClues ig `atop` drawDualEdges l # solstyle `atop` drawGrid ig

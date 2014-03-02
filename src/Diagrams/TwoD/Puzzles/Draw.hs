@@ -92,6 +92,9 @@ drawCompassClue (n, e, s, w) = mconcat
 charGridBG g f = mconcat [ maybe mempty (translatep p . fillBG) (f p)
                          | p <- points g
                          ]
+charGridBGcaps g = charGridBG g (\p -> cols (g ! p))
+    where cols c | 'A' <= c && c <= 'Z'  = Just (blend 0.1 black white)
+                 | otherwise             = Nothing
 
 drawGridBG g f = drawAreaGrid g `atop` charGridBG g f
 drawGridBG' g f' = drawGridBG g (\p -> f' (g ! p))
