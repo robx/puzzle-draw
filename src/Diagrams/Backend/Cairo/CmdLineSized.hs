@@ -51,3 +51,9 @@ instance Mainable M where
             dopts = DiagramOpts (Just w'') Nothing (_outp opts)
             lopts = DiagramLoopOpts False Nothing 0
         mainRender (dopts, lopts) x
+
+instance ToResult M where
+    type Args M = ()
+    type ResultOf M = M
+
+    toResult d _ = d
