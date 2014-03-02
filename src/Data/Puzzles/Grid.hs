@@ -14,6 +14,8 @@ type IntGrid = Grid IntClue
 data MasyuPearl = MWhite | MBlack
 type MasyuClue = Maybe MasyuPearl
 
+type MasyuGrid = Grid MasyuClue
+
 size :: Grid a -> (Int, Int)
 size (GG g) = (length (head g), length g)
 

@@ -74,7 +74,7 @@ drawSlitherGrid g = drawClues drawInt (clues g) `atop` slithergrid sx sy
 pearl MWhite = circle 0.35 # lw 0.05
 pearl MBlack = pearl MWhite # fc black
 
-drawMasyuGrid g = drawClues pearl (clues g) `atop` grid sx sy
+drawMasyuGrid g = drawClues pearl (clues g) `atop` gridpx sx sy id
     where (sx, sy) = size g
 
 cross :: Path R2

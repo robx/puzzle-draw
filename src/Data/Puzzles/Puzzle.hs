@@ -58,6 +58,7 @@ readCharGrid = fromListList . lines
 readAreaGrid = readCharGrid
 readBoolGrid = fmap (== 'X') . readCharGrid
 readIntGrid = fmap charToIntClue . readCharGrid
+readMasyuGrid = fmap charToMasyuClue . readCharGrid
 
 parseLITS :: Puzzle -> Result LITS
 parseLITS (P "lits" p s) = PP <$>
@@ -123,3 +124,10 @@ parseFillomino (P "fillomino" p s) = PP <$>
                                      (readIntGrid <$> (fromJSON p)) <*>
                                      (readIntGrid <$> (fromJSON s))
 parseFillomino _                   = mzero
+
+type Masyu = ParsedPuzzle MasyuGrid Loop
+
+parseMasyu :: Puzzle -> Result Masyu
+parseMasyu (P "masyu" p s) = PP <$>
+                             (readMasyuGrid <$> (fromJSON p)) <*>
+                             (readEdges' <$> (fromJSON s))
