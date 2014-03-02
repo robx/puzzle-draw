@@ -56,7 +56,7 @@ type ShadedGrid = Grid Bool
 
 readCharGrid = fromListList . lines
 readAreaGrid = readCharGrid
-readBoolGrid = fmap (== 'X') . readCharGrid
+readBoolGrid = fmap (`elem` ['x', 'X']) . readCharGrid
 readIntGrid = fmap charToIntClue . readCharGrid
 readMasyuGrid = fmap charToMasyuClue . readCharGrid
 
