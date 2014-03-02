@@ -50,13 +50,14 @@ clues g = [ (p, fromJust $ g ! p) | p <- points g
                                   , isJust $ g ! p ]
 
 data Dir = V | H
+    deriving (Eq, Ord)
 
 instance Show Dir where
     show V = "|"
     show H = "-"
 
 data Edge = E Point Dir
-    deriving Show
+    deriving (Show, Eq, Ord)
 
 swap (x, y) = (y, x)
 
