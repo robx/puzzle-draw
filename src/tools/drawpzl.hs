@@ -18,8 +18,8 @@ import Diagrams.TwoD.Puzzles.Draw
 readGrid :: YP.Component -> CharGrid
 readGrid (YP.C _ g) = fromListList . lines $ g
 
-drawGrid :: CharGrid -> Diagram B R2
-drawGrid = frame . drawClueGrid . fmap charToCharClue
+drawGrid' :: CharGrid -> Diagram B R2
+drawGrid' = frame . drawClueGrid . fmap charToCharClue
 
 type Puzzle = [YP.Component]
 
@@ -29,7 +29,7 @@ readPuzzle fp = do
     return ps
 
 drawPuzzle :: Puzzle -> Diagram B R2
-drawPuzzle = mconcat . map (drawGrid . readGrid)
+drawPuzzle = mconcat . map (drawGrid' . readGrid)
 
 data PuzzleOpts = PuzzleOpts
     { _border  :: Maybe Double
