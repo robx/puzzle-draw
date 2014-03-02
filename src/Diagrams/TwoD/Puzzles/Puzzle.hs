@@ -17,4 +17,4 @@ drawGeradewegsol p@(PP ig l) = drawIntClues ig `atop` drawDualEdges l # solstyle
 drawFillomino (PP ig _) = drawIntGrid ig
 drawFillominosol (PP _ sg) = drawIntGrid sg
 
-drawExample p dp ds = (dp p ||| strutX 1.0 ||| ds p) # bg white
+drawExample p s = (p ||| strutX 1.0 ||| s) # bg white

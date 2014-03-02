@@ -24,20 +24,17 @@ import Data.Aeson (Result(..))
 import Data.Puzzles.Grid
 import Diagrams.TwoD.Puzzles.Draw
 
-fromResult (Success r) = r
-
-drawPuzzleGen p parse dp ds = M $ drawExample (fromResult . parse $ p) dp ds
-
-drawPuzzle :: Puzzle -> M
+drawPuzzle :: Puzzle -> (Diagram B R2, Diagram B R2)
 drawPuzzle p = case puzzleType p of
-    "lits" -> drawPuzzleGen p parseLITS drawLITS drawLITSsol
-    "litsplus" -> drawPuzzleGen p parseLITSPlus drawLITS drawLITSsol
-    "geradeweg" -> drawPuzzleGen p parseGeradeweg drawGeradeweg drawGeradewegsol
-    "fillomino" -> drawPuzzleGen p parseFillomino drawFillomino drawFillominosol
+    "lits" ->      f p parseLITS drawLITS drawLITSsol
+    "litsplus" ->  f p parseLITSPlus drawLITS drawLITSsol
+    "geradeweg" -> f p parseGeradeweg drawGeradeweg drawGeradewegsol
+    "fillomino" -> f p parseFillomino drawFillomino drawFillominosol
+    where f q parse draw drawsol = let Success x = parse q in (draw x, drawsol x)
 
 readDrawPuzzle :: FilePath -> IO M
 readDrawPuzzle fp = do
     Just p <- Y.decodeFile fp
-    return (drawPuzzle p)
+    return . M . uncurry drawExample . drawPuzzle $ p
 
 main = mainWith readDrawPuzzle
