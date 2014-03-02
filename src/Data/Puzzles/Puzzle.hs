@@ -61,14 +61,12 @@ readIntGrid = fmap charToIntClue . readCharGrid
 readMasyuGrid = fmap charToMasyuClue . readCharGrid
 
 parseLITS :: Puzzle -> Result LITS
-parseLITS (P "lits" p s) = PP <$>
+parseLITS (P _ p s) = PP <$>
                            (readAreaGrid <$> (fromJSON p)) <*>
                            (readBoolGrid <$> (fromJSON s))
-parseLITS _              = mzero
 
 parseLITSPlus :: Puzzle -> Result LITS
-parseLITSPlus (P "litsplus" p s) = parseLITS (P "lits" p s)
-parseLITSPlus _                  = mzero
+parseLITSPlus = parseLITS
 
 type Loop = [Edge] -- should have some properties...
 
@@ -112,18 +110,16 @@ readEdges' s = nub . sort . concat . map edges . points $ g
 type Geradeweg = ParsedPuzzle IntGrid Loop
 
 parseGeradeweg :: Puzzle -> Result Geradeweg
-parseGeradeweg (P "geradeweg" p s) = PP <$>
-                                     (readIntGrid <$> (fromJSON p)) <*>
-                                     (readEdges' <$> (fromJSON s))
-parseGeradeweg _                   = mzero
+parseGeradeweg (P _ p s) = PP <$>
+                           (readIntGrid <$> (fromJSON p)) <*>
+                           (readEdges' <$> (fromJSON s))
 
 type Fillomino = ParsedPuzzle IntGrid IntGrid
 
 parseFillomino :: Puzzle -> Result Fillomino
-parseFillomino (P "fillomino" p s) = PP <$>
-                                     (readIntGrid <$> (fromJSON p)) <*>
-                                     (readIntGrid <$> (fromJSON s))
-parseFillomino _                   = mzero
+parseFillomino (P _ p s) = PP <$>
+                           (readIntGrid <$> (fromJSON p)) <*>
+                           (readIntGrid <$> (fromJSON s))
 
 type Masyu = ParsedPuzzle MasyuGrid Loop
 
