@@ -155,3 +155,8 @@ drawAreaGrid g = drawedges g `atop` gridpx sx sy id
     where (sx, sy) = size g
           edges = mconcat . map drawEdge . borders
           drawedges = lineCap LineCapSquare . lw edgewidth . edges
+
+drawShadedGrid g = drawClues (const $ fillBG gray # centerXY) (clues g')
+    where g' = fmap toMaybe g
+          toMaybe True  = Just ()
+          toMaybe False = Nothing
