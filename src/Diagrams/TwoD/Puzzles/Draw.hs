@@ -49,10 +49,6 @@ drawEdge (E p d) = line # translatep p
 
 fillBG c = square 1 # fc c # alignBL
 
-drawAreaGrid g = edges g # lw 0.08 # lineCap LineCapSquare `atop` grid sx sy
-    where (sx, sy) = size g
-          edges = mconcat . map drawEdge . borders
-
 drawClues dc = translate (r2 (0.5, 0.5))
              . mconcat
              . map (\ (p, c) -> dc c # translatep p)
@@ -120,6 +116,7 @@ fourpix = 4 * onepix
 
 gridwidth = onepix
 framewidthfactor = 4
+edgewidth = 3 * onepix
 
 borderwidth = 1 / 4 + onepix / 2
 
@@ -147,3 +144,8 @@ dashoffset = 2.5 / 40
 
 dashedgridpx w h = gridpx w h $ bgdashing dashes dashoffset white'
     where white' = blend 0.95 white black
+
+drawAreaGrid g = drawedges g `atop` gridpx sx sy id
+    where (sx, sy) = size g
+          edges = mconcat . map drawEdge . borders
+          drawedges = lineCap LineCapSquare . lw edgewidth . edges
