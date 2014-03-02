@@ -3,6 +3,7 @@ module Data.Puzzles.Grid where
 import Data.Maybe
 
 newtype Grid a = GG {unGG :: [[a]]}
+    deriving Show
 
 type CharGrid = Grid Char
 
