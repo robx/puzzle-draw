@@ -35,4 +35,5 @@ krow (KR cs s ks) = ccat dots `atop` ccat clues
           clues = map (cellc s) cs
           dots = interleave (map phantom (clues :: [D R2])) (map kropki ks)
 
-kpyramid = vcat . map krow . unKP
+kpyramid p = phantom (frame s s) <> (alignBL . vcat . map krow . unKP $ p)
+    where s = psize (plainpyramid p)

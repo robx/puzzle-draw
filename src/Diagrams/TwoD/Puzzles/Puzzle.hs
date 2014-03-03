@@ -40,6 +40,9 @@ drawThermoSudokusol (PP (_, ts) sg) = drawIntClues sg <> sudokugrid sg <> drawTh
 drawPyramid (PP p _) = pyramid p
 drawPyramidsol (PP p q) = pyramid (mergepyramids p q)
 
+drawKropkiPyramid (PP p _) = kpyramid p
+drawKropkiPyramidsol (PP p q) = kpyramid (mergekpyramids p q)
+
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
 type PuzzleSol b = (Diagram b R2, Diagram b R2)

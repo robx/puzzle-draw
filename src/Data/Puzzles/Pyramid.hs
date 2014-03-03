@@ -24,6 +24,12 @@ mergepyramids (Pyr rs) (Pyr qs)
     | otherwise               = Pyr (zipWith mergerow rs qs)
     where mergerow (R es s) (R es' s') = R (zipWith mplus es es') (s || s')
 
+mergekpyramids (KP rs) (Pyr qs)
+    | length rs /= length qs  = error "can't merge differently sized pyramids"
+    | otherwise               = KP (zipWith mergerow rs qs)
+    where mergerow (KR es s ds) (R es' s') =
+              KR (zipWith mplus es es') (s || s') ds
+
 prow :: GenParser Char st Row
 prow = do s <- pshaded
           spaces
@@ -72,6 +78,10 @@ data KropkiRow = KR { entriesk :: [Maybe Int]
     deriving Show
 newtype RowKropkiPyramid = KP {unKP :: [KropkiRow]}
     deriving Show
+
+plainpyramid :: RowKropkiPyramid -> Pyramid
+plainpyramid (KP rows) = Pyr (map r rows)
+    where r x = R (entriesk x) (shadedk x)
 
 pkropkirow = do s <- pshaded
                 spaces

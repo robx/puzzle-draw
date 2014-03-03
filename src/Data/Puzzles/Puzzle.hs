@@ -198,3 +198,11 @@ type PPyramid = ParsedPuzzle (Pyramid, Pyramid)
 parsePyramid (P _ p s) = PP <$>
                          (readPyramid . lines <$> (fromJSON p)) <*>
                          (readPlainPyramid . lines <$> (fromJSON s))
+
+type PKropkiPyramid = ParsedPuzzle (RowKropkiPyramid, Pyramid)
+
+parseKropkiPyramid (P _ p s) = PP <$>
+                         (readKropkiPyramid . lines <$> (fromJSON p)) <*>
+                         (readPlainPyramid . lines <$> (fromJSON s))
+
+
