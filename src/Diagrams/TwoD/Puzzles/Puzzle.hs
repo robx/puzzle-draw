@@ -32,6 +32,9 @@ drawLatinTapasol p@(PP _ sg) = drawLatinTapa p <> drawClues drawChar (clues sg)
 drawSudoku (PP ig _) = drawIntClues ig <> sudokugrid ig
 drawSudokusol (PP _ sg) = drawIntClues sg <> sudokugrid sg 
 
+drawThermoSudoku (PP (ig, ts) _) = drawIntClues ig <> sudokugrid ig <> drawThermos ts
+drawThermoSudokusol (PP (_, ts) sg) = drawIntClues sg <> sudokugrid sg <> drawThermos ts
+
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
 type PuzzleSol b = (Diagram b R2, Diagram b R2)

@@ -21,6 +21,20 @@ size (GG g) = (length (head g), length g)
 
 type Point = (Int, Int)
 
+inBounds :: Grid a -> Point -> Bool
+inBounds g (x, y) = x >= 0 && y >= 0 && x < sx && y < sy
+    where (sx, sy) = size g
+
+add :: Point -> Point -> Point
+add (x, y) (x', y') = (x + x', y + y')
+
+neighbours :: Grid a -> Point -> [Point]
+neighbours g p = filter (inBounds g) . map (add p) $ deltas
+    where deltas = [ (dx, dy)
+                   | dx <- [-1..1], dy <- [-1..1]
+                   , dx /= 0 || dy /= 0
+                   ]
+
 (!) :: Grid a -> Point -> a
 g@(GG g') ! (x, y) = g' !! (sy - y - 1) !! x
     where (_, sy) = size g
@@ -33,7 +47,7 @@ fromListList = GG
 
 charToIntClue c
     | '0' <= c && c <= '9'  = Just $ fromEnum c - fromEnum '0'
-    | c == ' ' || c == '.'  = Nothing
+    | otherwise             = Nothing
 
 charToCharClue c
     | c == ' ' || c == '.' || c == '-'  = Nothing

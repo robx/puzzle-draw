@@ -7,6 +7,8 @@ import Data.Aeson
 import Data.Yaml
 import Data.List
 import qualified Data.HashMap.Strict as HM
+import Data.Char (isAlpha)
+import Data.Maybe (catMaybes)
 
 import Data.Puzzles.Grid
 
@@ -161,4 +163,31 @@ type Sudoku = ParsedPuzzle IntGrid IntGrid
 
 parseSudoku (P _ p s) = PP <$>
                         (readIntGrid <$> (fromJSON p)) <*>
+                        (readIntGrid <$> (fromJSON s))
+
+type Thermometer = [Point]
+
+readThermos :: CharGrid -> (IntGrid, [Thermometer])
+readThermos cg = (ig, thermos)
+    where ig = fmap charToIntClue cg
+          thermos = catMaybes [ thermo p | p <- points cg ]
+          at p = cg ! p
+          isStart p = let c = at p in
+                      isAlpha c
+                      && (null
+                         . filter (\q -> at q == (pred c))
+                         . neighbours cg
+                         $ p)
+          thermo p | isStart p = Just (p : thermo' p)
+                   | otherwise = Nothing
+          thermo' p = p : ps
+              where ss = filter (\q -> at q == (succ (at p))) (neighbours cg p)
+                    ps | length ss == 1  = thermo' (head ss)
+                       | length ss == 0  = []
+                       | otherwise       = error "invalid thermo"
+
+type ThermoSudoku = ParsedPuzzle (IntGrid, [[Point]])
+
+parseThermoSudoku (P _ p s) = PP <$>
+                        (readThermos . readCharGrid <$> (fromJSON p)) <*>
                         (readIntGrid <$> (fromJSON s))

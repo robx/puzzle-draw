@@ -6,6 +6,8 @@ import Diagrams.Prelude
 import Diagrams.Util
 import Diagrams.Combinators
 
+import Control.Arrow ((***))
+
 import Data.Puzzles.Grid
 
 vline n = strokeLine . fromVertices . map p2 $ [(0, 0), (0, n)]
@@ -108,6 +110,8 @@ thermo vs@(v:_) = (bulb `atop` line) # col # translate (r2 (0.5, 0.5))
           line = strokeLocLine (fromVertices vs) # lw 0.55 # lineCap LineCapSquare
           col = lc gr . fc gr
           gr = blend 0.6 white black
+
+drawThermos = mconcat . map (thermo . map p2 . map (fromIntegral *** fromIntegral))
 
 gridlines :: Int -> Int -> Path R2
 gridlines w h = (decoratePath xaxis . repeat . alignB . vrule . fromIntegral $ h)
