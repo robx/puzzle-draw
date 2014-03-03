@@ -48,6 +48,9 @@ drawClues dc = translate (r2 (0.5, 0.5))
              . mconcat
              . map (\ (p, c) -> dc c # translatep p)
 
+drawCrosses g = drawClues c (clues g)
+    where c _ = stroke cross # scale 0.8 # lw edgewidth
+
 text' t = text t # fontSize 0.8 # font "Helvetica" # translate (r2 (0.04, -0.07))
 text'' t = text' t `atop` rect (fromIntegral (length t) * 0.4) 0.7 # lc red
 

@@ -211,3 +211,20 @@ parseSlitherLink :: Puzzle -> Result SlitherLink
 parseSlitherLink (P _ p s) = PP <$>
                            (readIntGrid <$> (fromJSON p)) <*>
                            (readEdges' <$> (fromJSON s))
+
+readXGrid = fmap f . readCharGrid
+    where f 'X' = Just ()
+          f _   = Nothing
+
+newtype LSol = LSol { unLSol :: (Loop, Grid (Maybe ())) }
+instance FromJSON LSol where
+    parseJSON (Object v) = LSol <$> ((,) <$>
+                           (readEdges' <$> v .: "loop") <*>
+                           (readXGrid <$> v .: "liars"))
+
+type LiarSlitherLink = ParsedPuzzle IntGrid (Loop, Grid (Maybe ()))
+
+parseLiarSlitherLink :: Puzzle -> Result LiarSlitherLink
+parseLiarSlitherLink (P _ p s) = PP <$>
+                                 (readIntGrid <$> fromJSON p) <*>
+                                 (unLSol <$> fromJSON s)

@@ -46,6 +46,11 @@ drawKropkiPyramidsol (PP p q) = kpyramid (mergekpyramids p q)
 drawSlither (PP ig _) = drawSlitherGrid ig
 drawSlithersol p@(PP _ l) = drawSlither p <> drawedges l # solstyle
 
+drawLiarSlither (PP ig _) = drawSlitherGrid ig
+drawLiarSlithersol p@(PP _ (l, cs)) = drawCrosses cs # solstyle 
+                                      <> drawSlither p
+                                      <> drawedges l # solstyle
+
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
 type PuzzleSol b = (Diagram b R2, Diagram b R2)
