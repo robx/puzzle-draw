@@ -11,6 +11,7 @@ import Data.Char (isAlpha)
 import Data.Maybe (catMaybes)
 
 import Data.Puzzles.Grid
+import Data.Puzzles.Pyramid
 
 {-
 
@@ -191,3 +192,9 @@ type ThermoSudoku = ParsedPuzzle (IntGrid, [[Point]])
 parseThermoSudoku (P _ p s) = PP <$>
                         (readThermos . readCharGrid <$> (fromJSON p)) <*>
                         (readIntGrid <$> (fromJSON s))
+
+type PPyramid = ParsedPuzzle (Pyramid, Pyramid)
+
+parsePyramid (P _ p s) = PP <$>
+                         (readPyramid . lines <$> (fromJSON p)) <*>
+                         (readPlainPyramid . lines <$> (fromJSON s))

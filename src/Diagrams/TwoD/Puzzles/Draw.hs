@@ -102,9 +102,6 @@ drawAreaGridG g = drawGridBG' g cols
     where cols c | 'A' <= c && c <= 'Z'  = Just (blend 0.1 black white)
                  | otherwise             = Nothing
 
-frame = extrudeLeft x . extrudeRight x . extrudeTop x . extrudeBottom x . centerXY
-    where x = 1.0
-
 thermo vs@(v:_) = (bulb `atop` line) # col # translate (r2 (0.5, 0.5))
     where bulb = circle 0.4 # moveTo v
           line = strokeLocLine (fromVertices vs) # lw 0.55 # lineCap LineCapSquare
@@ -142,10 +139,12 @@ outframe w h = strokePointLoop r # lw fw
 gridpx w h gridstyle =
     outframe w h 
     <> stroke (gridlines w h) # lw gridwidth # gridstyle
-    <> phantom (f :: D R2)
-    where f = stroke . translate (r2 (-bw, -bw)) . alignBL
-              $ rect ((fromIntegral w) + 2 * bw) ((fromIntegral h) + 2 * bw)
-          bw = borderwidth
+    <> phantom (frame w h)
+
+frame :: Int -> Int -> D R2
+frame w h = stroke . translate (r2 (-bw, -bw)) . alignBL
+        $ rect ((fromIntegral w) + 2 * bw) ((fromIntegral h) + 2 * bw)
+    where bw = borderwidth
 
 bgdashing ds offs c x = x # dashing ds offs <> x # lc c
 

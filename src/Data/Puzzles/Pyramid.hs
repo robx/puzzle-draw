@@ -2,13 +2,15 @@ module Data.Puzzles.Pyramid where
 
 import Data.Char (digitToInt)
 import Text.ParserCombinators.Parsec
-import Control.Monad (liftM2)
+import Control.Monad (liftM2, mplus)
 
 data Row = R { entries :: [Maybe Int]
              , shaded :: Bool
              }
 
-newtype Pyramid = P {unP :: [Row]}
+newtype Pyramid = Pyr {unPyr :: [Row]}
+
+psize (Pyr rows) = length rows
 
 ex1 = [ "G     ."
       , "W    . ."
@@ -16,6 +18,11 @@ ex1 = [ "G     ."
       , "G  . 1 . ."
       , "G 1 . . . 3"
       ]
+
+mergepyramids (Pyr rs) (Pyr qs)
+    | length rs /= length qs  = error "can't merge differently sized pyramids"
+    | otherwise               = Pyr (zipWith mergerow rs qs)
+    where mergerow (R es s) (R es' s') = R (zipWith mplus es es') (s || s')
 
 prow :: GenParser Char st Row
 prow = do s <- pshaded
@@ -33,7 +40,10 @@ readrow cs = r
     where Right r = parse prow "(unknown)" cs
 
 readPyramid :: [String] -> Pyramid
-readPyramid = P . map readrow
+readPyramid = Pyr . map readrow
+
+readPlainPyramid :: [String] -> Pyramid
+readPlainPyramid = readPyramid . map ('W':)
 
 showClues :: [Maybe Int] -> String
 showClues = map showClue
@@ -44,7 +54,7 @@ instance Show Row where
     show (R c False) = 'W' : showClues c
 
 instance Show Pyramid where
-    show = unlines . map show . unP
+    show = unlines . map show . unPyr
 
 ex2 = [ "G     2"
       , "G    . ."

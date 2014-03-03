@@ -7,19 +7,20 @@ import Diagrams.Util
 import Diagrams.Combinators
 
 import Data.Puzzles.Pyramid
-import Diagrams.TwoD.Puzzles.Draw (smash)
+import Diagrams.TwoD.Puzzles.Draw (smash, text', onepix, borderwidth, frame)
 
 pgray = blend 0.6 white black
 
-cell s = square 1 # lw 0.03 # if s then fc pgray else id
+cell s = square 1 # lw onepix # if s then fc pgray else id
 
 clue Nothing = mempty
-clue (Just c) = text (show c) # fontSize 0.7 # font "Helvetica"
+clue (Just c) = text' (show c)
 cellc s c = clue c `atop` cell s
 
 row (R cs s) = centerX . hcat . map (cellc s) $ cs
 
-pyramid = vcat . map row . unP
+pyramid p = phantom (frame s s) <> (alignBL . vcat . map row . unPyr $ p)
+    where s = psize p
 
 kropki None = mempty
 kropki c = circle 0.1 # lw 0.03 # fc (col c) # smash

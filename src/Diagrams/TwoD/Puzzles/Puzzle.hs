@@ -3,9 +3,11 @@ module Diagrams.TwoD.Puzzles.Puzzle where
 import Diagrams.Prelude
 
 import Diagrams.TwoD.Puzzles.Draw
+import Diagrams.TwoD.Puzzles.Pyramid
 import Data.Puzzles.Puzzle
 
 import Data.Puzzles.Grid
+import Data.Puzzles.Pyramid
 
 drawLITS (PP ag _) = drawAreaGridG ag
 drawLITSsol p@(PP ag sg) = drawAreaGrid ag `atop` drawShadedGrid sg
@@ -34,6 +36,9 @@ drawSudokusol (PP _ sg) = drawIntClues sg <> sudokugrid sg
 
 drawThermoSudoku (PP (ig, ts) _) = drawIntClues ig <> sudokugrid ig <> drawThermos ts
 drawThermoSudokusol (PP (_, ts) sg) = drawIntClues sg <> sudokugrid sg <> drawThermos ts
+
+drawPyramid (PP p _) = pyramid p
+drawPyramidsol (PP p q) = pyramid (mergepyramids p q)
 
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
