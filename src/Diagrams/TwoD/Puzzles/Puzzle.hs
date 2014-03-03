@@ -18,8 +18,8 @@ solstyle = lc (blend 0.8 black white)
 drawGeradeweg (PP ig _) = drawIntGrid ig
 drawGeradewegsol p@(PP ig l) = drawIntClues ig `atop` drawDualEdges l # solstyle `atop` drawGrid ig
 
-drawFillomino (PP ig _) = drawIntGrid ig
-drawFillominosol (PP _ sg) = drawIntGrid sg
+drawFillomino (PP ig _) = drawFillo ig
+drawFillominosol (PP _ sg) = drawFillo sg
 
 -- drawMasyu :: Masyu -> QDiagram b R2 Any
 drawMasyu (PP mg _) = drawMasyuGrid mg

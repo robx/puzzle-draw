@@ -59,7 +59,8 @@ drawText = text'
 drawInt s = drawText (show s)
 drawChar c = drawText [c]
 
-fillogrid x y = dashedgridpx x y
+drawFillo g = drawIntClues g <> dashedgridpx x y
+    where (x, y) = size g
 
 drawClueGrid g = drawClues drawChar (clues g) `atop` gridpx sx sy id
     where (sx, sy) = size g
