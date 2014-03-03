@@ -26,6 +26,9 @@ drawMasyusol p@(PP mg l) = drawDualEdges l # solstyle `atop` drawMasyu p
 drawNurikabe (PP ig _) = drawIntGrid ig
 drawNurikabesol p@(PP _ sg) = drawNurikabe p `atop` drawShadedGrid sg
 
+drawLatinTapa (PP cg _) = drawGrid cg <> drawWordsClues cg
+drawLatinTapasol p@(PP _ sg) = drawLatinTapa p <> drawClues drawChar (clues sg)
+
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
 type PuzzleSol b = (Diagram b R2, Diagram b R2)

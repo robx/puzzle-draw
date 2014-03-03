@@ -53,13 +53,17 @@ drawClues dc = translate (r2 (0.5, 0.5))
              . mconcat
              . map (\ (p, c) -> dc c # translatep p)
 
-drawText t = text t # fontSize 0.8 # font "Helvetica" # translate (r2 (0.04, -0.07))
+text' t = text t # fontSize 0.8 # font "Helvetica" # translate (r2 (0.04, -0.07))
+text'' t = text' t `atop` rect (fromIntegral (length t) * 0.4) 0.7 # lc red
+
+drawText = text'
+
 drawInt s = drawText (show s)
 drawChar c = drawText [c]
 
-fillogrid x y = grid x y -- TODO: dashed lines
+fillogrid x y = dashedgridpx x y
 
-drawClueGrid g = drawClues drawChar (clues g) `atop` grid sx sy
+drawClueGrid g = drawClues drawChar (clues g) `atop` gridpx sx sy id
     where (sx, sy) = size g
 
 drawIntClues = drawClues drawInt . clues
@@ -171,3 +175,17 @@ dualEdge (E (x, y) d) = rule d # translate p
           p = r2 (fromIntegral x, fromIntegral y)
 
 drawDualEdges = lw edgewidth . lineCap LineCapSquare . stroke . mconcat . map dualEdge
+
+interleave [] _ = []
+interleave (x:xs) ys = x : interleave ys xs
+
+spread v things = cat v . interleave (repeat (strut vgap)) $ things
+    where ds = map (diameter v) things
+          gap = (magnitude v - sum ds) / fromIntegral ((length things) + 1)
+          vgap = (gap / magnitude v) *^ v
+
+drawWords ws = spread (-1.0 *^ unitY) (map (centerXY . scale 0.3 . drawText) ws)
+               # centerY
+
+drawWordsClues = drawClues drawWords . clues
+

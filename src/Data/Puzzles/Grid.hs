@@ -36,8 +36,8 @@ charToIntClue c
     | c == ' ' || c == '.'  = Nothing
 
 charToCharClue c
-    | c == ' ' || c == '.'  = Nothing
-    | otherwise             = Just c
+    | c == ' ' || c == '.' || c == '-'  = Nothing
+    | otherwise                         = Just c
 
 charToMasyuClue :: Char -> MasyuClue
 charToMasyuClue '*' = Just MBlack

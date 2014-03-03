@@ -87,6 +87,7 @@ drawPuzzle p = case puzzleType p of
     "fillomino" -> f p parseFillomino drawFillomino drawFillominosol
     "masyu" ->     f p parseMasyu drawMasyu drawMasyusol
     "nurikabe" ->  f p parseNurikabe drawNurikabe drawNurikabesol
+    "latintapa" -> f p parseLatinTapa drawLatinTapa drawLatinTapasol
     where f q parse draw drawsol = let Success x = parse q in (draw x, drawsol x)
 
 readPuzzle :: FilePath -> IO Puzzle

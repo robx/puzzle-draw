@@ -6,6 +6,7 @@ import Control.Monad
 import Data.Aeson
 import Data.Yaml
 import Data.List
+import qualified Data.HashMap.Strict as HM
 
 import Data.Puzzles.Grid
 
@@ -53,9 +54,11 @@ type LITS = ParsedPuzzle AreaGrid ShadedGrid
 
 type AreaGrid = CharGrid
 type ShadedGrid = Grid Bool
+type CharClueGrid = Grid (Maybe Char)
 
 readCharGrid = fromListList . lines
 readAreaGrid = readCharGrid
+readCharClueGrid = fmap charToCharClue . readCharGrid
 readBoolGrid = fmap (`elem` ['x', 'X']) . readCharGrid
 readIntGrid = fmap charToIntClue . readCharGrid
 readMasyuGrid = fmap charToMasyuClue . readCharGrid
@@ -134,3 +137,22 @@ parseNurikabe :: Puzzle -> Result Nurikabe
 parseNurikabe (P _ p s) = PP <$>
                           (readIntGrid <$> (fromJSON p)) <*>
                           (readBoolGrid <$> (fromJSON s))
+
+newtype RefGrid a = RefGrid { unRG :: Grid (Maybe a) }
+
+merge :: CharGrid -> HM.HashMap String a -> RefGrid a
+merge g m = RefGrid (f <$> g)
+    where f c | isref c   = Just (m HM.! [c])
+              | otherwise = Nothing
+          isref c = c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'
+
+instance (FromJSON a) => FromJSON (RefGrid a) where
+    parseJSON (Object v) = merge <$>
+                           (readCharGrid <$> (v .: "grid")) <*>
+                           v .: "clues"
+
+type LatinTapa = ParsedPuzzle (Grid [String]) CharClueGrid
+
+parseLatinTapa (P _ p s) = PP <$>
+                           (unRG <$> (fromJSON p)) <*>
+                           (readCharClueGrid <$> (fromJSON s))
