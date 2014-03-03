@@ -29,6 +29,9 @@ drawNurikabesol p@(PP _ sg) = drawNurikabe p `atop` drawShadedGrid sg
 drawLatinTapa (PP cg _) = drawGrid cg <> drawWordsClues cg
 drawLatinTapasol p@(PP _ sg) = drawLatinTapa p <> drawClues drawChar (clues sg)
 
+drawSudoku (PP ig _) = drawIntClues ig <> sudokugrid ig
+drawSudokusol (PP _ sg) = drawIntClues sg <> sudokugrid sg 
+
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
 type PuzzleSol b = (Diagram b R2, Diagram b R2)

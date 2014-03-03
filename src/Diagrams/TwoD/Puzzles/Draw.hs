@@ -27,13 +27,6 @@ grid = gridgen l
           w _ 0 = 0.1
           w _ _ = 0.01
 
-sudokugrid = gridgen l 9 9
-    where l dir len (i, j) = l' dir len # lw (w i j) # lineCap LineCapSquare
-          l' V = vline
-          l' H = hline
-          w k _ | k `mod` 3 == 0 = 0.1
-          w _ _ = 0.01
-
 smash = withEnvelope (vrule 0 :: D R2)
 
 dot = circle 0.05 # fc black # smash
@@ -158,10 +151,13 @@ dashoffset = 2.5 / 40
 dashedgridpx w h = gridpx w h $ bgdashing dashes dashoffset white'
     where white' = blend 0.95 white black
 
-drawAreaGrid g = drawedges g `atop` gridpx sx sy id
+drawedges = lineCap LineCapSquare . lw edgewidth . mconcat . map drawEdge
+
+sudokugrid g = drawedges (sudokubordersg g) `atop` gridpx sx sy id
     where (sx, sy) = size g
-          edges = mconcat . map drawEdge . borders
-          drawedges = lineCap LineCapSquare . lw edgewidth . edges
+
+drawAreaGrid g = drawedges (borders g) `atop` gridpx sx sy id
+    where (sx, sy) = size g
 
 drawShadedGrid g = drawClues (const $ fillBG gray # centerXY) (clues g')
     where g' = fmap toMaybe g

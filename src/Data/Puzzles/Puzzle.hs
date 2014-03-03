@@ -156,3 +156,9 @@ type LatinTapa = ParsedPuzzle (Grid [String]) CharClueGrid
 parseLatinTapa (P _ p s) = PP <$>
                            (unRG <$> (fromJSON p)) <*>
                            (readCharClueGrid <$> (fromJSON s))
+
+type Sudoku = ParsedPuzzle IntGrid IntGrid
+
+parseSudoku (P _ p s) = PP <$>
+                        (readIntGrid <$> (fromJSON p)) <*>
+                        (readIntGrid <$> (fromJSON s))
