@@ -117,26 +117,6 @@ executable drawkpyramid
                        diagrams-cairo >= 1.0 && < 1.1,
                        parsec >= 3.1 && < 3.2
 
-executable drawmasyu
-  main-is:          drawmasyu.hs
-  hs-source-dirs:   src/tools
-  build-depends:       base >= 4.2 && < 4.8,
-                       puzzle-draw,
-                       diagrams-lib >= 0.6 && < 1.1,
-                       diagrams-svg >= 0.8.0.1 && < 1.1,
-                       diagrams-cairo >= 1.0 && < 1.1,
-                       parsec >= 3.1 && < 3.2
-
-executable drawfillo
-  main-is:          drawfillo.hs
-  hs-source-dirs:   src/tools
-  build-depends:       base >= 4.2 && < 4.8,
-                       puzzle-draw,
-                       diagrams-lib >= 0.6 && < 1.1,
-                       diagrams-svg >= 0.8.0.1 && < 1.1,
-                       diagrams-cairo >= 1.0 && < 1.1,
-                       parsec >= 3.1 && < 3.2
-
 executable draw
   main-is:          draw.hs
   hs-source-dirs:   src/tools
