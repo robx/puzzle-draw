@@ -80,8 +80,7 @@ drawMasyuGrid g = drawClues pearl (clues g) `atop` gridpx sx sy id
     where (sx, sy) = size g
 
 cross :: Path R2
-cross = fromVertices [p2 (-1/2,-1/2), p2 (1/2,1/2)]
-    <> fromVertices [p2 (1/2,-1/2), p2 (-1/2,1/2)]
+cross = ur <> dr
 
 drawCompassClue (n, e, s, w) = mconcat
     [ text n # translate (r2 (0,1/3))
@@ -191,3 +190,25 @@ drawWords ws = spread (-1.0 *^ unitY) (map (centerXY . scale 0.3 . drawText) ws)
 
 drawWordsClues = drawClues drawWords . clues
 
+ur :: Path R2
+ur = fromVertices [p2 (-1/2,-1/2), p2 (1/2,1/2)]
+
+dr :: Path R2
+dr = fromVertices [p2 (1/2,-1/2), p2 (-1/2,1/2)]
+
+drawTight d (Single x) = d x
+drawTight d (UR x y) = stroke ur # lw onepix
+                       <> d x # scale s # translate (r2 (-t,t))
+                       <> d y # scale s # translate (r2 (t,-t))
+    where t = 1/5
+          s = 2/3
+drawTight d (DR x y) = stroke dr # lw onepix
+                       <> d x # scale s # translate (r2 (-t,-t))
+                       <> d y # scale s # translate (r2 (t,t))
+    where t = 1/5
+          s = 2/3
+
+drawTightGrid d g = drawClues (drawTight d) (clues . fmap Just $ g)
+                    <> gridpx sx sy id
+                    <> phantom (frame (sx + 2) (sy + 2) # translate (r2 (-1,-1)))
+    where (sx, sy) = size g

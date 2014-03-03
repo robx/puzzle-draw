@@ -51,6 +51,12 @@ drawLiarSlithersol p@(PP _ (l, cs)) = drawCrosses cs # solstyle
                                       <> drawSlither p
                                       <> drawedges l # solstyle
 
+drawTightfitSkyscraper (PP (o, g) _) = drawClues drawInt (clueso o)
+                                       <> drawTightGrid (const mempty) g
+drawTightfitSkyscrapersol (PP (o, _) s) = drawClues drawInt (clueso o)
+                                          <> drawTightGrid drawInt s
+
+
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
 type PuzzleSol b = (Diagram b R2, Diagram b R2)

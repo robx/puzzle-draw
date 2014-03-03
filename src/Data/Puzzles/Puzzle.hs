@@ -7,7 +7,7 @@ import Data.Aeson
 import Data.Yaml
 import Data.List
 import qualified Data.HashMap.Strict as HM
-import Data.Char (isAlpha)
+import Data.Char (isAlpha, digitToInt)
 import Data.Maybe (catMaybes)
 
 import Data.Puzzles.Grid
@@ -228,3 +228,36 @@ parseLiarSlitherLink :: Puzzle -> Result LiarSlitherLink
 parseLiarSlitherLink (P _ p s) = PP <$>
                                  (readIntGrid <$> fromJSON p) <*>
                                  (unLSol <$> fromJSON s)
+
+type TightfitSkyscraper = ParsedPuzzle (OutsideClues (Maybe Int), Grid (Tightfit ()))
+                                       (Grid (Tightfit Int))
+
+readTightOutside :: String -> (OutsideClues (Maybe Int), Grid (Tightfit ()))
+readTightOutside s = (OC l r b t, gt)
+    where g = readCharGrid s
+          (w', h') = size g
+          w = w' - 2
+          h = h' - 2
+          l = map charToIntClue [ g ! (0, y+1) | y <- [0..h-1] ]
+          r = map charToIntClue [ g ! (w'-1, y+1) | y <- [0..h-1] ]
+          b = map charToIntClue [ g ! (x+1, 0) | x <- [0..w-1] ]
+          t = map charToIntClue [ g ! (x+1, h'-1) | x <- [0..w-1] ]
+          readTight '.' = Single ()
+          readTight '/' = UR () ()
+          readTight '\\' = DR () ()
+          gt = fromListList [ [ readTight (g ! (x, y)) | x <- [1..w'-2] ]
+                            | y <- [h'-2,h'-3..1]
+                            ]
+
+readTightInt [c] = Single (digitToInt c)
+readTightInt (c:'/':d:[]) = UR (digitToInt c) (digitToInt d)
+readTightInt (c:'\\':d:[]) = DR (digitToInt c) (digitToInt d)
+
+readTightIntGrid :: String -> Grid (Tightfit Int)
+readTightIntGrid = fromListList . map (map readTightInt . words) . lines
+
+parseTightfitSkyscraper :: Puzzle -> Result TightfitSkyscraper
+parseTightfitSkyscraper (P _ p s) = PP <$>
+                                    (readTightOutside <$> fromJSON p) <*>
+                                    (readTightIntGrid <$> fromJSON s)
+

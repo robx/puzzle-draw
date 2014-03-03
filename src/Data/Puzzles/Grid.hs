@@ -110,3 +110,24 @@ sudokubordersg g = sudokuborders s
    where (w, h) = size g
          s | w == h    = w
            | otherwise = error "non-square sudoku grid?"
+
+data Tightfit a = Single a | UR a a | DR a a
+
+instance Show a => Show (Tightfit a) where
+    show c = "(" ++ show' c ++ ")"
+        where show' (Single x) = show x
+              show' (UR x y)   = show x ++ "/" ++ show y
+              show' (DR x y)   = show x ++ "\\" ++ show y
+
+data OutsideClues a = OC { left :: [a], right :: [a], bottom :: [a], top :: [a] }
+
+clueso (OC l r b t) = catMaybes . map liftMaybe . concat $
+                             [ zipWith (\ y c -> ((-1, y), c)) [0..h-1] l
+                             , zipWith (\ y c -> (( w, y), c)) [0..h-1] r
+                             , zipWith (\ x c -> (( x,-1), c)) [0..w-1] b
+                             , zipWith (\ x c -> (( x, h), c)) [0..w-1] t
+                             ]
+    where w = length b
+          h = length l
+          liftMaybe (p, Just x) = Just (p, x)
+          liftMaybe (p, Nothing) = Nothing
