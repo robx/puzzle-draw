@@ -33,7 +33,7 @@ smash = withEnvelope (vrule 0 :: D R2)
 
 dot = circle 0.05 # fc black # smash
 
-slithergrid x y = dots
+slithergrid x y = dots <> phantom (frame x y)
     where dots = hcatsep . replicate (x + 1) . vcatsep . replicate (y + 1) $ dot
 
 translatep (x, y) = translate . r2 $ (fromIntegral x, fromIntegral y)

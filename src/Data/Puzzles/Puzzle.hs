@@ -205,4 +205,9 @@ parseKropkiPyramid (P _ p s) = PP <$>
                          (readKropkiPyramid . lines <$> (fromJSON p)) <*>
                          (readPlainPyramid . lines <$> (fromJSON s))
 
+type SlitherLink = ParsedPuzzle IntGrid Loop
 
+parseSlitherLink :: Puzzle -> Result SlitherLink
+parseSlitherLink (P _ p s) = PP <$>
+                           (readIntGrid <$> (fromJSON p)) <*>
+                           (readEdges' <$> (fromJSON s))
