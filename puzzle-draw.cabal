@@ -67,56 +67,6 @@ library
                        unordered-containers >= 0.2 && < 0.3
   hs-source-dirs:      src
 
-executable drawgrid
-  main-is:          drawgrid.hs
-  hs-source-dirs:   src/tools
-  build-depends:       base >= 4.2 && < 4.8,
-                       puzzle-draw,
-                       diagrams-lib >= 0.6 && < 1.1,
-                       diagrams-svg >= 0.8.0.1 && < 1.1,
-                       diagrams-cairo >= 1.0 && < 1.1,
-                       parsec >= 3.1 && < 3.2
-
-executable drawcluegrid
-  main-is:          drawcluegrid.hs
-  hs-source-dirs:   src/tools
-  build-depends:       base >= 4.2 && < 4.8,
-                       puzzle-draw,
-                       diagrams-lib >= 0.6 && < 1.1,
-                       diagrams-svg >= 0.8.0.1 && < 1.1,
-                       diagrams-cairo >= 1.0 && < 1.1,
-                       parsec >= 3.1 && < 3.2
-
-executable drawslither
-  main-is:          drawslither.hs
-  hs-source-dirs:   src/tools
-  build-depends:       base >= 4.2 && < 4.8,
-                       puzzle-draw,
-                       diagrams-lib >= 0.6 && < 1.1,
-                       diagrams-svg >= 0.8.0.1 && < 1.1,
-                       diagrams-cairo >= 1.0 && < 1.1,
-                       parsec >= 3.1 && < 3.2
-
-executable drawpyramid
-  main-is:          drawpyramid.hs
-  hs-source-dirs:   src/tools
-  build-depends:       base >= 4.2 && < 4.8,
-                       puzzle-draw,
-                       diagrams-lib >= 0.6 && < 1.1,
-                       diagrams-svg >= 0.8.0.1 && < 1.1,
-                       diagrams-cairo >= 1.0 && < 1.1,
-                       parsec >= 3.1 && < 3.2
-
-executable drawkpyramid
-  main-is:          drawkpyramid.hs
-  hs-source-dirs:   src/tools
-  build-depends:       base >= 4.2 && < 4.8,
-                       puzzle-draw,
-                       diagrams-lib >= 0.6 && < 1.1,
-                       diagrams-svg >= 0.8.0.1 && < 1.1,
-                       diagrams-cairo >= 1.0 && < 1.1,
-                       parsec >= 3.1 && < 3.2
-
 executable draw
   main-is:          draw.hs
   hs-source-dirs:   src/tools
