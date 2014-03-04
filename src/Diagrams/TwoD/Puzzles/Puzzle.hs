@@ -68,6 +68,9 @@ drawCurveDatasol p@(PP _ es) = drawedges es # solstyle # translate (r2 (1/2,1/2)
 drawDoubleBack (PP g _) = drawAreaGridG g
 drawDoubleBacksol p@(PP _ l) = drawDualEdges l # solstyle <> drawDoubleBack p
 
+drawSlalom (PP g _) = drawSlalomGrid g
+drawSlalomsol p@(PP _ s) = drawSlalom p <> drawSlalomDiags s # solstyle
+
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
 type PuzzleSol b = (Diagram b R2, Diagram b R2)

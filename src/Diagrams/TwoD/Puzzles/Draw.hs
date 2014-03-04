@@ -242,3 +242,14 @@ drawMarkedWords = mconcat . map drawMarkedWord
 fit f a = scale (f / (max (magnitude (diameter unitX a)) (magnitude (diameter unitY a)))) a
 
 drawCurve = lw onepix . fit 0.6 . centerXY . mconcat . map drawEdge
+
+drawSlalomClue x = text' (show x) # scale 0.75 <> circle 0.4 # fc white # lw onepix
+
+drawSlalomGrid g = drawClues drawSlalomClue (clues g) # translate (r2 (-1/2,-1/2))
+                   <> gridpx (w-1) (h-1) id
+                   <> phantom (frame w h) # translate (r2 (-1/2,-1/2))
+    where (w, h) = size g
+
+drawSlalomDiags g = drawClues diag (clues (fmap Just g))
+    where diag '/' = stroke ur # lw edgewidth
+          diag '\\' = stroke dr # lw edgewidth

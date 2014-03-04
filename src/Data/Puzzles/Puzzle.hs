@@ -312,3 +312,8 @@ type DoubleBack = ParsedPuzzle AreaGrid Loop
 parseDoubleBack (P _ p s) = PP <$>
                             (readAreaGrid <$> (fromJSON p)) <*>
                             (readEdges' <$> (fromJSON s))
+
+type Slalom = ParsedPuzzle IntGrid CharGrid
+parseSlalom (P _ p s) = PP <$>
+                        (readIntGrid <$> fromJSON p) <*>
+                        (readCharGrid <$> fromJSON s)
