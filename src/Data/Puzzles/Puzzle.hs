@@ -295,3 +295,15 @@ parseWordsearch :: Puzzle -> Result Wordsearch
 parseWordsearch (P _ p s) = PP <$>
                             (unGW <$> fromJSON p) <*>
                             (unGM <$> fromJSON s)
+
+type CurveData = ParsedPuzzle (Grid (Maybe [Edge])) [Edge]
+
+newtype Curve = Curve { unCurve :: [Edge] }
+
+instance FromJSON Curve where
+    parseJSON v = Curve <$> (readEdges <$> parseJSON v)
+
+parseCurveData :: Puzzle -> Result CurveData
+parseCurveData (P _ p s) = PP <$>
+                           (fmap (fmap unCurve) . unRG <$> (fromJSON p)) <*>
+                           (readEdges <$> (fromJSON s))

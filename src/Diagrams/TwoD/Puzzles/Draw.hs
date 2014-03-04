@@ -238,3 +238,7 @@ drawMarkedWord (MW s e) = stroke $ expandTrail' with {_expandCap = LineCapSquare
     where t = fromVertices [p2i s, p2i e] # translate (r2 (1/2,1/2))
 
 drawMarkedWords = mconcat . map drawMarkedWord
+
+fit f a = scale (f / (max (magnitude (diameter unitX a)) (magnitude (diameter unitY a)))) a
+
+drawCurve = lw onepix . fit 0.6 . centerXY . mconcat . map drawEdge

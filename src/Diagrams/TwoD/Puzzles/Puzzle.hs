@@ -62,6 +62,9 @@ drawWordloopsol (PP _ s) = drawClueGrid s
 drawWordsearch (PP (g, ws) _) = drawClueGrid g `besides` stackWords ws
 drawWordsearchsol (PP _ (g, mw)) = drawMarkedWords mw # solstyle <> drawClueGrid g
 
+drawCurveData (PP g _) = drawClues drawCurve (clues g) <> drawGrid g
+drawCurveDatasol p@(PP _ es) = drawedges es # solstyle # translate (r2 (1/2,1/2)) <> drawCurveData p
+
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
 type PuzzleSol b = (Diagram b R2, Diagram b R2)

@@ -133,4 +133,3 @@ clueso (OC l r b t) = catMaybes . map liftMaybe . concat $
           liftMaybe (p, Nothing) = Nothing
 
 data MarkedWord = MW { mwstart :: Point, mwend :: Point }
-

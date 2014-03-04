@@ -97,6 +97,7 @@ drawPuzzle p = case puzzleType p of
     "skyscrapers-tightfit" -> f p parseTightfitSkyscraper drawTightfitSkyscraper drawTightfitSkyscrapersol
     "wordloop" -> f p parseWordloop drawWordloop drawWordloopsol
     "wordsearch" -> f p parseWordsearch drawWordsearch drawWordsearchsol
+    "curvedata" -> f p parseCurveData drawCurveData drawCurveDatasol
     where f q parse draw drawsol = let Success x = parse q in (draw x, drawsol x)
 
 readPuzzle :: FilePath -> IO Puzzle
@@ -112,4 +113,3 @@ main = do
               then [DrawExample]
               else [DrawPuzzle, DrawSolution]
     mapM (renderPuzzle opts ps) ocs
-
