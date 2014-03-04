@@ -56,6 +56,8 @@ drawTightfitSkyscraper (PP (o, g) _) = drawClues drawInt (clueso o)
 drawTightfitSkyscrapersol (PP (o, _) s) = drawClues drawInt (clueso o)
                                           <> drawTightGrid drawInt s
 
+drawWordloop (PP (g, ws) _) = drawClueGrid g `besides` stackWords ws
+drawWordloopsol (PP _ s) = drawClueGrid s
 
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 

@@ -261,3 +261,16 @@ parseTightfitSkyscraper (P _ p s) = PP <$>
                                     (readTightOutside <$> fromJSON p) <*>
                                     (readTightIntGrid <$> fromJSON s)
 
+type Wordloop = ParsedPuzzle (CharClueGrid, [String]) CharClueGrid
+
+newtype GridWords = GW { unGW :: (CharClueGrid, [String]) }
+
+instance FromJSON GridWords where
+    parseJSON (Object v) = GW <$> ((,) <$>
+                                   (readCharClueGrid <$> v .: "grid") <*>
+                                   v .: "words")
+
+parseWordloop :: Puzzle -> Result Wordloop
+parseWordloop (P _ p s) = PP <$>
+                          (unGW <$> fromJSON p) <*>
+                          (readCharClueGrid <$> fromJSON s)

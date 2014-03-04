@@ -95,6 +95,7 @@ drawPuzzle p = case puzzleType p of
     "slitherlink" -> f p parseSlitherLink drawSlither drawSlithersol
     "slitherlinkliar" -> f p parseLiarSlitherLink drawLiarSlither drawLiarSlithersol
     "skyscrapers-tightfit" -> f p parseTightfitSkyscraper drawTightfitSkyscraper drawTightfitSkyscrapersol
+    "wordloop" -> f p parseWordloop drawWordloop drawWordloopsol
     where f q parse draw drawsol = let Success x = parse q in (draw x, drawsol x)
 
 readPuzzle :: FilePath -> IO Puzzle

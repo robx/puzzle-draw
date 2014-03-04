@@ -1,4 +1,4 @@
-{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE NoMonomorphismRestriction, FlexibleContexts #-}
 
 module Diagrams.TwoD.Puzzles.Draw where
 
@@ -52,7 +52,9 @@ drawCrosses g = drawClues c (clues g)
     where c _ = stroke cross # scale 0.8 # lw edgewidth
 
 text' t = text t # fontSize 0.8 # font "Helvetica" # translate (r2 (0.04, -0.07))
-text'' t = text' t `atop` rect (fromIntegral (length t) * 0.4) 0.7 # lc red
+          <> phantom (textrect t :: D R2)
+textrect t = rect (fromIntegral (length t) * 0.4) 0.7 # lc red
+text'' t = text' t `atop` textrect t
 
 drawText = text'
 
@@ -213,3 +215,15 @@ drawTightGrid d g = drawClues (drawTight d) (clues . fmap Just $ g)
                     <> gridpx sx sy id
                     <> phantom (frame (sx + 2) (sy + 2) # translate (r2 (-1,-1)))
     where (sx, sy) = size g
+
+stackWords = vcat' with {_sep = 0.1} . scale 0.8 . map (alignL . text')
+
+-- a ||| b, a and b are aligned by vertical center, origin is origin of a
+
+besides :: (Semigroup m, Backend b R2, Monoid m, Renderable (Path R2) b) =>
+           QDiagram b R2 m -> QDiagram b R2 m -> QDiagram b R2 m
+besides a b = a ||| strutX 0.5 ||| b'
+    where b' = b # centerY # translate (dmid *^ unitY)
+          dtop = magnitude $ envelopeV unitY a
+          dbot = magnitude $ envelopeV ((-1) *^ unitY) a
+          dmid = (dtop + dbot) / 2 - dbot
