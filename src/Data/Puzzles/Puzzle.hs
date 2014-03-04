@@ -307,3 +307,8 @@ parseCurveData :: Puzzle -> Result CurveData
 parseCurveData (P _ p s) = PP <$>
                            (fmap (fmap unCurve) . unRG <$> (fromJSON p)) <*>
                            (readEdges <$> (fromJSON s))
+
+type DoubleBack = ParsedPuzzle AreaGrid Loop
+parseDoubleBack (P _ p s) = PP <$>
+                            (readAreaGrid <$> (fromJSON p)) <*>
+                            (readEdges' <$> (fromJSON s))
