@@ -133,3 +133,6 @@ clueso (OC l r b t) = catMaybes . map liftMaybe . concat $
           liftMaybe (p, Nothing) = Nothing
 
 data MarkedWord = MW { mwstart :: Point, mwend :: Point }
+
+data CompassC = CC (Maybe Int) (Maybe Int) (Maybe Int) (Maybe Int)
+type CompassClue = Maybe CompassC

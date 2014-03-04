@@ -100,6 +100,7 @@ drawPuzzle p = case puzzleType p of
     "curvedata" -> f p parseCurveData drawCurveData drawCurveDatasol
     "doubleback" -> f p parseDoubleBack drawDoubleBack drawDoubleBacksol
     "slalom" -> f p parseSlalom drawSlalom drawSlalomsol
+    "compass" -> f p parseCompass drawCompass drawCompasssol
     where f q parse draw drawsol = let Success x = parse q in (draw x, drawsol x)
 
 readPuzzle :: FilePath -> IO Puzzle

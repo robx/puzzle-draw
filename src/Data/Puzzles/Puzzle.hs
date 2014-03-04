@@ -317,3 +317,15 @@ type Slalom = ParsedPuzzle IntGrid CharGrid
 parseSlalom (P _ p s) = PP <$>
                         (readIntGrid <$> fromJSON p) <*>
                         (readCharGrid <$> fromJSON s)
+
+type Compass = ParsedPuzzle (Grid CompassClue) AreaGrid
+
+instance FromJSON CompassC where
+    parseJSON v = comp . words <$> parseJSON v
+        where c "." = Nothing
+              c x   = Just (read x)
+              comp [n, e, s, w] = CC (c n) (c e) (c s) (c w)
+
+parseCompass (P _ p s) = PP <$>
+                         (unRG <$> fromJSON p) <*>
+                         (readAreaGrid <$> fromJSON s)

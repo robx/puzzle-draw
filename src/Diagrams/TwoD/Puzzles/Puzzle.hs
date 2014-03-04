@@ -71,6 +71,9 @@ drawDoubleBacksol p@(PP _ l) = drawDualEdges l # solstyle <> drawDoubleBack p
 drawSlalom (PP g _) = drawSlalomGrid g
 drawSlalomsol p@(PP _ s) = drawSlalom p <> drawSlalomDiags s # solstyle
 
+drawCompass (PP g _) = drawCompassGrid g
+drawCompasssol (PP g s) = drawCompassClues g <> drawAreaGridG s
+
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
 type PuzzleSol b = (Diagram b R2, Diagram b R2)

@@ -89,13 +89,15 @@ drawMasyuGrid g = drawClues pearl (clues g) `atop` gridpx sx sy id
 cross :: Path R2
 cross = ur <> dr
 
-drawCompassClue (n, e, s, w) = mconcat
-    [ text n # translate (r2 (0,1/3))
-    , text e # translate (r2 (1/3,0))
-    , text s # translate (r2 (0,-1/3))
-    , text w # translate (r2 (-1/3,0))
-    , stroke cross
-    ] # fontSize 0.3 
+drawCompassClue (CC n e s w) = texts <> stroke cross # lw onepix
+    where tx Nothing _ = mempty
+          tx (Just x) v = text' (show x) # scale 0.5 # translate (r2 v)
+          texts = mconcat . zipWith tx [n, e, s, w] $
+                  [(0,f), (f,0), (0,-f), (-f,0)]
+          f = 3/10
+drawCompassClues g = drawClues drawCompassClue (clues g)
+
+drawCompassGrid g = drawCompassClues g <> drawGrid g
 
 charGridBG g f = mconcat [ maybe mempty (translatep p . fillBG) (f p)
                          | p <- points g
