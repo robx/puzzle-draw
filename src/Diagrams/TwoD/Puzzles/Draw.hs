@@ -5,6 +5,7 @@ module Diagrams.TwoD.Puzzles.Draw where
 import Diagrams.Prelude
 import Diagrams.Util
 import Diagrams.Combinators
+import Diagrams.TwoD.Offset
 import Graphics.SVGFonts.ReadFont
 
 import Control.Arrow ((***))
@@ -116,7 +117,9 @@ thermo vs@(v:_) = (bulb `atop` line) # col # translate (r2 (0.5, 0.5))
           col = lc gr . fc gr
           gr = blend 0.6 white black
 
-drawThermos = mconcat . map (thermo . map p2 . map (fromIntegral *** fromIntegral))
+p2i = p2 . (fromIntegral *** fromIntegral)
+
+drawThermos = mconcat . map (thermo . map p2i)
 
 gridlines :: Int -> Int -> Path R2
 gridlines w h = (decoratePath xaxis . repeat . alignB . vrule . fromIntegral $ h)
@@ -230,3 +233,8 @@ besides a b = a ||| strutX 0.5 ||| b'
           dtop = magnitude $ envelopeV unitY a
           dbot = magnitude $ envelopeV ((-1) *^ unitY) a
           dmid = (dtop + dbot) / 2 - dbot
+
+drawMarkedWord (MW s e) = stroke $ expandTrail' with {_expandCap = LineCapSquare} 0.3 t
+    where t = fromVertices [p2i s, p2i e] # translate (r2 (1/2,1/2))
+
+drawMarkedWords = mconcat . map drawMarkedWord

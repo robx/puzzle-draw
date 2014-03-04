@@ -274,3 +274,24 @@ parseWordloop :: Puzzle -> Result Wordloop
 parseWordloop (P _ p s) = PP <$>
                           (unGW <$> fromJSON p) <*>
                           (readCharClueGrid <$> fromJSON s)
+
+type Wordsearch = ParsedPuzzle (CharClueGrid, [String]) (CharClueGrid, [MarkedWord])
+
+instance FromJSON MarkedWord where
+    parseJSON v = MW <$> 
+                  ((,) <$> ((!!0) <$> x) <*> ((!!1) <$> x)) <*>
+                  ((,) <$> ((!!2) <$> x) <*> ((!!3) <$> x))
+        where x = map read . words <$> parseJSON v :: Parser [Int]
+
+newtype GridMarked = GM { unGM :: (CharClueGrid, [MarkedWord]) }
+
+instance FromJSON GridMarked where
+    parseJSON (Object v) = GM <$> ((,) <$>
+                                   (readCharClueGrid <$> v .: "grid") <*>
+                                   (v .: "words"))
+    parseJSON _          = mzero
+
+parseWordsearch :: Puzzle -> Result Wordsearch
+parseWordsearch (P _ p s) = PP <$>
+                            (unGW <$> fromJSON p) <*>
+                            (unGM <$> fromJSON s)

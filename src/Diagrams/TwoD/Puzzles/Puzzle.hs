@@ -59,6 +59,9 @@ drawTightfitSkyscrapersol (PP (o, _) s) = drawClues drawInt (clueso o)
 drawWordloop (PP (g, ws) _) = drawClueGrid g `besides` stackWords ws
 drawWordloopsol (PP _ s) = drawClueGrid s
 
+drawWordsearch (PP (g, ws) _) = drawClueGrid g `besides` stackWords ws
+drawWordsearchsol (PP _ (g, mw)) = drawMarkedWords mw # solstyle <> drawClueGrid g
+
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
 type PuzzleSol b = (Diagram b R2, Diagram b R2)
