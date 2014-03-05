@@ -58,7 +58,7 @@ toDiagramOpts :: OutputChoice -> Double -> PuzzleOpts -> DiagramOpts
 toDiagramOpts oc w (PuzzleOpts f e i) =
     DiagramOpts (Just w') Nothing out
     where w' = case f of "png" -> round (40 * w)
-                         _     -> round . cmtopoint $ w
+                         _     -> round . cmtopoint $ (0.8 * w)
           base = takeBaseName i
           out = addExtension (base ++ (outputSuffix oc)) f
 
