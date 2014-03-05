@@ -1,5 +1,6 @@
 module Main where
 
+import System.Exit
 import Diagrams.Backend.CmdLine
 
 import Diagrams.TwoD.Puzzles.Draw
@@ -12,7 +13,7 @@ import Options.Applicative
 
 import Control.Monad
 
-import Diagrams.Prelude hiding (value, option, (<>))
+import Diagrams.Prelude hiding (value, option, (<>), Result)
 import Diagrams.Backend.Cairo.CmdLine
 
 import System.FilePath
@@ -79,7 +80,7 @@ defaultOpts optsParser = do
                  <> header prog)
     execParser p
 
-drawPuzzle :: Puzzle -> (Diagram B R2, Diagram B R2)
+drawPuzzle :: Puzzle -> Result (Diagram B R2, Diagram B R2)
 drawPuzzle p = case puzzleType p of
     "lits" ->      f p parseLITS drawLITS drawLITSsol
     "litsplus" ->  f p parseLITSPlus drawLITS drawLITSsol
@@ -101,18 +102,20 @@ drawPuzzle p = case puzzleType p of
     "doubleback" -> f p parseDoubleBack drawDoubleBack drawDoubleBacksol
     "slalom" -> f p parseSlalom drawSlalom drawSlalomsol
     "compass" -> f p parseCompass drawCompass drawCompasssol
-    where f q parse draw drawsol = let Success x = parse q in (draw x, drawsol x)
+    t -> Error $ "unknown puzzle type: " ++ t
+    where f q parse draw drawsol = (\x -> (draw x, drawsol x)) <$> parse q
 
-readPuzzle :: FilePath -> IO Puzzle
-readPuzzle fp = do
-    Just p <- Y.decodeFile fp
-    return p
+readPuzzle :: FilePath -> IO (Maybe Puzzle)
+readPuzzle = Y.decodeFile
 
 main = do
     opts <- defaultOpts puzzleOpts
-    p <- readPuzzle (_input opts)
+    mp <- readPuzzle (_input opts)
+    p <- case mp of Nothing -> putStrLn "failed to parse yaml" >> exitFailure >> return undefined
+                    Just p  -> return p
     let ps = drawPuzzle p
         ocs = if _example opts
               then [DrawExample]
               else [DrawPuzzle, DrawSolution]
-    mapM (renderPuzzle opts ps) ocs
+    case ps of Success ps' -> mapM_ (renderPuzzle opts ps') ocs
+               Error e -> putStrLn e >> exitFailure

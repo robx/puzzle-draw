@@ -221,6 +221,7 @@ instance FromJSON LSol where
     parseJSON (Object v) = LSol <$> ((,) <$>
                            (readEdges' <$> v .: "loop") <*>
                            (readXGrid <$> v .: "liars"))
+    parseJSON _          = mzero
 
 type LiarSlitherLink = ParsedPuzzle IntGrid (Loop, Grid (Maybe ()))
 
