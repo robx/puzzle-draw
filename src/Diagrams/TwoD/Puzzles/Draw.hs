@@ -228,9 +228,17 @@ stackWords = vcat' with {_sep = 0.1} . scale 0.8 . map (alignL . text')
 
 -- a ||| b, a and b are aligned by vertical center, origin is origin of a
 
-besides :: (Semigroup m, Backend b R2, Monoid m, Renderable (Path R2) b) =>
+besidesL :: (Semigroup m, Backend b R2, Monoid m, Renderable (Path R2) b) =>
            QDiagram b R2 m -> QDiagram b R2 m -> QDiagram b R2 m
-besides a b = a ||| strutX 0.5 ||| b'
+besidesL a b = a ||| strutX 0.5 ||| b'
+    where b' = b # centerY # translate (dmid *^ unitY)
+          dtop = magnitude $ envelopeV unitY a
+          dbot = magnitude $ envelopeV ((-1) *^ unitY) a
+          dmid = (dtop + dbot) / 2 - dbot
+
+besidesR :: (Semigroup m, Backend b R2, Monoid m, Renderable (Path R2) b) =>
+           QDiagram b R2 m -> QDiagram b R2 m -> QDiagram b R2 m
+besidesR b a =  b' ||| strutX 0.5 ||| a
     where b' = b # centerY # translate (dmid *^ unitY)
           dtop = magnitude $ envelopeV unitY a
           dbot = magnitude $ envelopeV ((-1) *^ unitY) a

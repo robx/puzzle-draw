@@ -56,10 +56,10 @@ drawTightfitSkyscraper (PP (o, g) _) = drawClues drawInt (clueso o)
 drawTightfitSkyscrapersol (PP (o, _) s) = drawClues drawInt (clueso o)
                                           <> drawTightGrid drawInt s
 
-drawWordloop (PP (g, ws) _) = drawClueGrid g `besides` stackWords ws
+drawWordloop (PP (g, ws) _) = stackWords ws `besidesR` drawClueGrid g
 drawWordloopsol (PP _ s) = drawClueGrid s
 
-drawWordsearch (PP (g, ws) _) = drawClueGrid g `besides` stackWords ws
+drawWordsearch (PP (g, ws) _) = stackWords ws `besidesR` drawClueGrid g
 drawWordsearchsol (PP _ (g, mw)) = drawMarkedWords mw # solstyle <> drawClueGrid g
 
 drawCurveData (PP g _) = drawClues drawCurve (clues g) <> drawGrid g
