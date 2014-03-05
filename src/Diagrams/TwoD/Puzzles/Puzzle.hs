@@ -81,4 +81,4 @@ type PuzzleSol b = (Diagram b R2, Diagram b R2)
 --draw :: PuzzleSol -> OutputChoice -> Diagram B R2
 draw (p, s) DrawPuzzle = p # bg white
 draw (p, s) DrawSolution = s # bg white
-draw (p, s) DrawExample = (p ||| strutX 1.0 ||| s) # bg white
+draw (p, s) DrawExample = (p ||| strutX 2.0 ||| s) # bg white
