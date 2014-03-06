@@ -64,6 +64,8 @@ readAreaGrid = readCharGrid
 readCharClueGrid = fmap charToCharClue . readCharGrid
 readBoolGrid = fmap (`elem` ['x', 'X']) . readCharGrid
 readIntGrid = fmap charToIntClue . readCharGrid
+readStrGrid = fromListList . map words . lines
+readWideIntGrid = fmap strToIntClue . readStrGrid
 readMasyuGrid = fmap charToMasyuClue . readCharGrid
 
 parseLITS :: Puzzle -> Result LITS
@@ -138,7 +140,7 @@ type Nurikabe = ParsedPuzzle IntGrid ShadedGrid
 
 parseNurikabe :: Puzzle -> Result Nurikabe
 parseNurikabe (P _ p s) = PP <$>
-                          (readIntGrid <$> (fromJSON p)) <*>
+                          (readWideIntGrid <$> (fromJSON p)) <*>
                           (readBoolGrid <$> (fromJSON s))
 
 newtype RefGrid a = RefGrid { unRG :: Grid (Maybe a) }

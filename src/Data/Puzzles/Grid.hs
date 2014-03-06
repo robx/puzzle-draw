@@ -1,6 +1,8 @@
 module Data.Puzzles.Grid where
 
 import Data.Maybe
+import Text.Read
+
 
 newtype Grid a = GG {unGG :: [[a]]}
     deriving Show
@@ -48,6 +50,9 @@ fromListList = GG
 charToIntClue c
     | '0' <= c && c <= '9'  = Just $ fromEnum c - fromEnum '0'
     | otherwise             = Nothing
+
+strToIntClue :: String -> IntClue
+strToIntClue = readMaybe
 
 charToCharClue c
     | c == ' ' || c == '.' || c == '-'  = Nothing
