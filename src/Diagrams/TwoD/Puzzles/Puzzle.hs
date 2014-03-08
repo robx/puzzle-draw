@@ -32,7 +32,7 @@ drawNurikabe (PP ig _) = drawIntGrid ig
 drawNurikabesol p@(PP _ sg) = drawNurikabe p `atop` drawShadedGrid sg
 
 drawLatinTapa (PP cg _) = drawGrid cg <> drawWordsClues cg
-drawLatinTapasol p@(PP _ sg) = drawLatinTapa p <> drawClues drawChar (clues sg)
+drawLatinTapasol p@(PP _ sg) = drawLatinTapa p <> atCentres drawChar (clues sg)
 
 drawSudoku (PP ig _) = drawIntClues ig <> sudokugrid ig
 drawSudokusol (PP _ sg) = drawIntClues sg <> sudokugrid sg 
@@ -54,9 +54,9 @@ drawLiarSlithersol p@(PP _ (l, cs)) = drawCrosses cs # solstyle
                                       <> drawSlither p
                                       <> drawedges l # solstyle
 
-drawTightfitSkyscraper (PP (o, g) _) = drawClues drawInt (clueso o)
+drawTightfitSkyscraper (PP (o, g) _) = atCentres drawInt (clueso o)
                                        <> drawTightGrid (const mempty) g
-drawTightfitSkyscrapersol (PP (o, _) s) = drawClues drawInt (clueso o)
+drawTightfitSkyscrapersol (PP (o, _) s) = atCentres drawInt (clueso o)
                                           <> drawTightGrid drawInt s
 
 drawWordloop (PP (g, ws) _) = stackWords ws `besidesR` drawClueGrid g
@@ -65,7 +65,7 @@ drawWordloopsol (PP _ s) = drawClueGrid s
 drawWordsearch (PP (g, ws) _) = stackWords ws `besidesR` drawClueGrid g
 drawWordsearchsol (PP _ (g, mw)) = drawMarkedWords mw # solstyle <> drawClueGrid g
 
-drawCurveData (PP g _) = drawClues drawCurve (clues g) <> drawGrid g
+drawCurveData (PP g _) = atCentres drawCurve (clues g) <> drawGrid g
 drawCurveDatasol p@(PP _ es) = drawedges es # solstyle # translate (r2 (1/2,1/2)) <> drawCurveData p
 
 drawDoubleBack (PP g _) = drawAreaGridG g
