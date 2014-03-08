@@ -20,19 +20,6 @@ hline n = strokeLine . fromVertices . map p2 $ [(0, 0), (n, 0)]
 hcatsep = hcat' with {_sep = 1}
 vcatsep = cat' (r2 (0,1)) with {_sep = 1}
 
-gridgen line x y = (hcatsep . map (line V y') $ zip [0..x] [x,x-1..0])
-                   `atop` (vcatsep . map (line H x') $ zip [0..y] [y,y-1..0])
-    where x' = fromIntegral x
-          y' = fromIntegral y
-
-grid = gridgen l
-    where l dir len (i, j) = l' dir len # lw (w i j) # lineCap LineCapSquare
-          l' V = vline
-          l' H = hline
-          w 0 _ = 0.1
-          w _ 0 = 0.1
-          w _ _ = 0.01
-
 smash = withEnvelope (vrule 0 :: D R2)
 
 dot = circle 0.05 # fc black # smash
