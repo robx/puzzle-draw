@@ -7,8 +7,11 @@ import Diagrams.Prelude hiding (Point)
 import Data.Puzzles.Grid
 
 import Diagrams.TwoD.Puzzles.Lib
-import Diagrams.TwoD.Puzzles.Things
 import Diagrams.TwoD.Puzzles.Widths
+
+-- | Draw a small black dot with no envelope.
+dot :: (Renderable (Path R2) b, Backend b R2) => Diagram b R2
+dot = circle 0.05 # fc black # smash
 
 -- | Draw a Slither Link style grid of dots of the specified size.
 slithergrid :: (Backend b R2, Renderable (Path R2) b) =>

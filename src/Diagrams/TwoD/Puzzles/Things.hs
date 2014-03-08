@@ -6,9 +6,11 @@ import Diagrams.Prelude
 import Diagrams.TwoD.Offset
 
 import Data.Puzzles.Things
+import Data.Puzzles.Grid
 
 import Diagrams.TwoD.Puzzles.Lib
 import Diagrams.TwoD.Puzzles.Widths
+import Diagrams.TwoD.Puzzles.Grid
 
 pearl MWhite = circle 0.35 # lw 0.05
 pearl MBlack = pearl MWhite # fc black
@@ -21,6 +23,9 @@ dr = fromVertices [p2 (1/2,-1/2), p2 (-1/2,1/2)]
 
 cross :: Path R2
 cross = ur <> dr
+
+drawCross :: Renderable (Path R2) b => Diagram b R2
+drawCross = stroke cross # scale 0.8 # lw edgewidth
 
 drawCompassClue (CC n e s w) = texts <> stroke cross # lw onepix
     where tx Nothing _ = mempty
@@ -70,6 +75,11 @@ drawText = text'
 drawInt s = drawText (show s)
 drawChar c = drawText [c]
 
--- | Draw a small black dot with no envelope.
-dot :: (Renderable (Path R2) b, Backend b R2) => Diagram b R2
-dot = circle 0.05 # fc black # smash
+-- | Stack a list of words into a unit square.
+drawWords ws = spread (-1.0 *^ unitY) (map (centerXY . scale 0.4 . drawText) ws)
+               # centerY
+
+-- | Fit a line drawing into a unit square.
+--   For example, a Curve Data clue.
+drawCurve :: Renderable (Path R2) b => [Edge] -> Diagram b R2
+drawCurve = lw onepix . fit 0.6 . centerXY . mconcat . map drawEdge

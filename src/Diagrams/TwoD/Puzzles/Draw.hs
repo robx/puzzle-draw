@@ -38,17 +38,12 @@ drawCompassGrid g = drawCompassClues g <> drawGrid g
 sudokugrid g = drawedges (sudokubordersg g) `atop` grid sx sy id
     where (sx, sy) = size g
 
-drawWords ws = spread (-1.0 *^ unitY) (map (centerXY . scale 0.4 . drawText) ws)
-               # centerY
-
 drawWordsClues = atCentres drawWords . clues
 
 drawTightGrid d g = atCentres (drawTight d) (clues . fmap Just $ g)
                     <> grid sx sy id
                     <> phantom (frame (sx + 2) (sy + 2) # translate (r2 (-1,-1)))
     where (sx, sy) = size g
-
-drawCurve = lw onepix . fit 0.6 . centerXY . mconcat . map drawEdge
 
 drawSlalomGrid g = atCentres drawSlalomClue (clues g) # translate (r2 (-1/2,-1/2))
                    <> grid (w-1) (h-1) id
@@ -59,5 +54,4 @@ drawSlalomDiags g = atCentres diag (clues (fmap Just g))
     where diag '/' = stroke ur # lw edgewidth
           diag '\\' = stroke dr # lw edgewidth
 
-drawCrosses g = atCentres c (clues g)
-    where c _ = stroke cross # scale 0.8 # lw edgewidth
+drawCrosses g = atCentres (const drawCross) (clues g)
