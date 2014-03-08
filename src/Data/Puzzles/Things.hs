@@ -21,3 +21,8 @@ instance Show a => Show (Tightfit a) where
               show' (DR x y)   = show x ++ "\\" ++ show y
 
 data MarkedWord = MW { mwstart :: Point, mwend :: Point }
+
+type Loop = [Edge] -- should have some properties...
+
+type Thermometer = [Point]
+
