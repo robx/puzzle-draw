@@ -1,4 +1,6 @@
-{-# LANGUAGE NoMonomorphismRestriction, FlexibleContexts, TypeFamilies #-}
+{-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE TypeFamilies              #-}
 
 module Diagrams.TwoD.Puzzles.Draw where
 

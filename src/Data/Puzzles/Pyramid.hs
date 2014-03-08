@@ -5,7 +5,7 @@ import Text.ParserCombinators.Parsec
 import Control.Monad (liftM2, mplus)
 
 data Row = R { entries :: [Maybe Int]
-             , shaded :: Bool
+             , shaded  :: Bool
              }
 
 newtype Pyramid = Pyr {unPyr :: [Row]}
@@ -72,8 +72,8 @@ ex2 = [ "G     2"
 data KropkiDot = None | Black | White
     deriving Show
 data KropkiRow = KR { entriesk :: [Maybe Int]
-                    , shadedk :: Bool
-                    , dotsk :: [KropkiDot]
+                    , shadedk  :: Bool
+                    , dotsk    :: [KropkiDot]
                     }
     deriving Show
 newtype RowKropkiPyramid = KP {unKP :: [KropkiRow]}

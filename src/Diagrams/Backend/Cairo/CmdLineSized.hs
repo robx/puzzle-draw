@@ -15,8 +15,8 @@ import System.FilePath (splitExtension)
 import Options.Applicative
 
 data SizedOpts = SizedOpts
-    { _scale   :: Maybe Double
-    , _outp    :: String
+    { _scale :: Maybe Double
+    , _outp  :: String
     }
 
 sizedOpts :: Parser SizedOpts

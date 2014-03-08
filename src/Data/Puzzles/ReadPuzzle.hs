@@ -162,7 +162,7 @@ parseWordloop (P _ p s) = PP <$>
 type Wordsearch = ParsedPuzzle (CharClueGrid, [String]) (CharClueGrid, [MarkedWord])
 
 instance FromJSON MarkedWord where
-    parseJSON v = MW <$> 
+    parseJSON v = MW <$>
                   ((,) <$> ((!!0) <$> x) <*> ((!!1) <$> x)) <*>
                   ((,) <$> ((!!2) <$> x) <*> ((!!3) <$> x))
         where x = map read . words <$> parseJSON v :: Parser [Int]
