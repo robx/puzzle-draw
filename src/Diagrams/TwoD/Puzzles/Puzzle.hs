@@ -4,6 +4,9 @@ import Diagrams.Prelude
 
 import Diagrams.TwoD.Puzzles.Draw
 import Diagrams.TwoD.Puzzles.Pyramid
+import Diagrams.TwoD.Puzzles.Things
+import Diagrams.TwoD.Puzzles.Lib
+
 import Data.Puzzles.ReadPuzzle
 
 import Data.Puzzles.Grid

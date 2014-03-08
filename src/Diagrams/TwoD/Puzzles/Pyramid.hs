@@ -7,7 +7,9 @@ import Diagrams.Util
 import Diagrams.Combinators
 
 import Data.Puzzles.Pyramid
-import Diagrams.TwoD.Puzzles.Draw (smash, text', onepix, borderwidth, frame)
+import Diagrams.TwoD.Puzzles.Lib
+import Diagrams.TwoD.Puzzles.Widths
+import Diagrams.TwoD.Puzzles.Draw (frame)
 
 pgray = blend 0.6 white black
 
@@ -26,9 +28,6 @@ kropki None = mempty
 kropki c = circle 0.1 # lw 0.03 # fc (col c) # smash
     where col White = white
           col Black = blend 0.98 black white
-
-interleave [] ys = ys
-interleave (x:xs) ys = x : interleave ys xs
 
 krow (KR cs s ks) = ccat dots `atop` ccat clues
     where ccat = centerX . hcat
