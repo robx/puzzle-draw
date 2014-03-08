@@ -6,6 +6,7 @@ import Control.Monad
 import Data.Aeson
 import Data.Yaml
 import qualified Data.HashMap.Strict as HM
+import Data.Char (isAlpha)
 
 import Data.Puzzles.Grid
 import Data.Puzzles.Pyramid

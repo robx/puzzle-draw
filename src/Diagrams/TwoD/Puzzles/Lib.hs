@@ -36,7 +36,7 @@ spread v things = cat v . interleave (repeat (strut vgap)) $ things
 -- a ||| b, a and b are aligned by vertical center, origin is origin of a
 
 dmid a = (dtop + dbot) / 2 - dbot
-    where menv = magnitude . envelopeV
+    where menv v = magnitude . envelopeV v
           dtop = menv unitY a
           dbot = menv ((-1) *^ unitY) a
 
