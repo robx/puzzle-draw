@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Data.Puzzles.Puzzle where
+module Data.Puzzles.ReadPuzzle where
 
 import Control.Applicative
 import Control.Monad
@@ -12,28 +12,8 @@ import Data.Maybe (catMaybes)
 
 import Data.Puzzles.Grid
 import Data.Puzzles.Pyramid
-
-{-
-
-LITS, LITS+	area grid	shaded
-geradeweg	int grid	loop
-nurikabe	int grid	shaded
-kpyramid	kpyramid	int pyramid
-doubleback	area grid	loop
-skyscraper	tightfit grid	a/b int grid
-		  (border int, '/\')
-compass		ref grid, compass	area grid
-curve data	ref grid, curves	loop'
-slither link	int grid	edge loop
-slither link liar	int grid	edge loop, X grid
-latin tapa	ref grid, words		letter grid
-slalom		int grid	/\ grid
-sudoku		int grid	int grid
-thermo sudoku	int/thermo grid	int grid
-wordloop	char grid	char grid
-wordsearch	char grid, words	char grid, lines
-
--}
+import Data.Puzzles.Read
+import Data.Puzzles.Things
 
 data Puzzle = P { puzzleType :: String
                 , puzzle     :: Value
@@ -55,9 +35,12 @@ data ParsedPuzzle a b = PP { pzl :: a
 
 type LITS = ParsedPuzzle AreaGrid ShadedGrid
 
+type CharGrid = Grid Char
+type MasyuGrid = Grid MasyuClue
 type AreaGrid = CharGrid
 type ShadedGrid = Grid Bool
 type CharClueGrid = Grid (Maybe Char)
+type IntGrid = Grid (Clue Int)
 
 readCharGrid = fromListList . lines
 readAreaGrid = readCharGrid

@@ -8,7 +8,7 @@ import Diagrams.TwoD.Puzzles.Puzzle
 import Diagrams.BoundingBox
 
 import Data.Puzzles.Grid
-import Data.Puzzles.Puzzle
+import Data.Puzzles.ReadPuzzle
 import Options.Applicative
 
 import Control.Monad

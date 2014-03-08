@@ -45,8 +45,11 @@ cabal-version:       >=1.8
 library
   -- Modules exported by the library.
   exposed-modules:     Data.Puzzles.Grid
+                       Data.Puzzles.Read
+                       Data.Puzzles.Things
                        Data.Puzzles.Pyramid
-                       Data.Puzzles.Puzzle
+                       Data.Puzzles.Sudoku
+                       Data.Puzzles.ReadPuzzle
                        Diagrams.TwoD.Puzzles.Draw
                        Diagrams.TwoD.Puzzles.Pyramid
                        Diagrams.TwoD.Puzzles.Puzzle
@@ -68,8 +71,8 @@ library
                        SVGFonts >= 1.4 && < 1.5
   hs-source-dirs:      src
 
-executable draw
-  main-is:          draw.hs
+executable drawpuzzle
+  main-is:          drawpuzzle.hs
   hs-source-dirs:   src/tools
   build-depends:       base >= 4.2 && < 4.8,
                        puzzle-draw,

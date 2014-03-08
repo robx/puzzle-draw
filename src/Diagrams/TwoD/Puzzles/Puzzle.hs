@@ -4,7 +4,7 @@ import Diagrams.Prelude
 
 import Diagrams.TwoD.Puzzles.Draw
 import Diagrams.TwoD.Puzzles.Pyramid
-import Data.Puzzles.Puzzle
+import Data.Puzzles.ReadPuzzle
 
 import Data.Puzzles.Grid
 import Data.Puzzles.Pyramid

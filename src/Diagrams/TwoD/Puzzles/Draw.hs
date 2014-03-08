@@ -11,6 +11,8 @@ import Graphics.SVGFonts.ReadFont
 import Control.Arrow ((***))
 
 import Data.Puzzles.Grid
+import Data.Puzzles.Things
+import Data.Puzzles.Sudoku
 
 vline n = strokeLine . fromVertices . map p2 $ [(0, 0), (0, n)]
 hline n = strokeLine . fromVertices . map p2 $ [(0, 0), (n, 0)]
