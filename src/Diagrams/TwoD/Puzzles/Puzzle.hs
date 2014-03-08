@@ -132,8 +132,8 @@ data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
 draw :: (Backend b R2, Renderable (Path R2) b) =>
         RenderPuzzle b a -> a -> OutputChoice -> Diagram b R2
-draw rp p DrawPuzzle   = (puzzle rp) p # bg white
-draw rp p DrawSolution = (solution rp) p # bg white
-draw rp p DrawExample  = ((puzzle rp) p
+draw rp p DrawPuzzle   = puzzle rp p # bg white
+draw rp p DrawSolution = solution rp p # bg white
+draw rp p DrawExample  = (puzzle rp p
                           ||| strutX 2.0
-                          ||| (solution rp) p) # bg white
+                          ||| solution rp p) # bg white

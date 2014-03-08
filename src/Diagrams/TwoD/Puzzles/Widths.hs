@@ -4,7 +4,7 @@ gridres :: Int
 gridres = 40
 
 onepix :: Double
-onepix = 1 / (fromIntegral gridres)
+onepix = 1 / fromIntegral gridres
 
 twopix = 2 * onepix
 fourpix = 4 * onepix

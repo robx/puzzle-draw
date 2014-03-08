@@ -80,7 +80,7 @@ drawGrid g = grid sx sy id
 
 frame :: Int -> Int -> D R2
 frame w h = stroke . translate (r2 (-bw, -bw)) . alignBL
-        $ rect ((fromIntegral w) + 2 * bw) ((fromIntegral h) + 2 * bw)
+        $ rect (fromIntegral w + 2 * bw) (fromIntegral h + 2 * bw)
     where bw = borderwidth
 
 bgdashing ds offs c x = x # dashing ds offs <> x # lc c

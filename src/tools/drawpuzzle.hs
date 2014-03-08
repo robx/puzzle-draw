@@ -1,29 +1,26 @@
 module Main where
 
-import System.Exit
+import Diagrams.Prelude hiding (value, option, (<>), Result)
+import Diagrams.Backend.Cairo.CmdLine
+import Diagrams.BoundingBox
 import Diagrams.Backend.CmdLine
 
 import Diagrams.TwoD.Puzzles.Draw
 import Diagrams.TwoD.Puzzles.Puzzle
-import Diagrams.BoundingBox
 
 import Data.Puzzles.Grid
 import Data.Puzzles.ReadPuzzle
+
 import Options.Applicative
-
 import Control.Monad
-
-import Diagrams.Prelude hiding (value, option, (<>), Result)
-import Diagrams.Backend.Cairo.CmdLine
 
 import System.FilePath
 import System.Environment (getProgName)
+import System.Exit
 
 import qualified Data.Yaml as Y
 import Data.Aeson (Result(..))
 
-import Data.Puzzles.Grid
-import Diagrams.TwoD.Puzzles.Draw
 
 data PuzzleOpts = PuzzleOpts
     { _format  :: String
@@ -41,7 +38,7 @@ puzzleOpts = PuzzleOpts
     <*> switch
             (long "example" <> short 'e'
              <> help "Example formatting (puzzle next to solution)")
-    <*> (argument str)
+    <*> argument str
             (metavar "INPUT"
              <> help "Puzzle file in .pzl format")
 
@@ -61,7 +58,7 @@ toDiagramOpts oc w (PuzzleOpts f e i) =
     where w' = case f of "png" -> round (40 * w)
                          _     -> round . cmtopoint $ (0.8 * w)
           base = takeBaseName i
-          out = addExtension (base ++ (outputSuffix oc)) f
+          out = addExtension (base ++ outputSuffix oc) f
 
 renderPuzzle :: PuzzleOpts -> (OutputChoice -> Diagram B R2) ->
                 OutputChoice -> IO ()
@@ -118,5 +115,5 @@ main = do
         ocs = if _example opts
               then [DrawExample]
               else [DrawPuzzle, DrawSolution]
-    case ps of Success ps' -> sequence_ . map (renderPuzzle opts ps') $ ocs
+    case ps of Success ps' -> mapM_ (renderPuzzle opts ps') ocs
                Error e -> putStrLn e >> exitFailure

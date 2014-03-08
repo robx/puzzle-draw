@@ -16,8 +16,8 @@ strToIntClue :: String -> IntClue
 strToIntClue = readMaybe
 
 charToCharClue c
-    | c == ' ' || c == '.' || c == '-'  = Nothing
-    | otherwise                         = Just c
+    | c `elem` [' ', '.', '-']  = Nothing
+    | otherwise                 = Just c
 
 charToMasyuClue :: Char -> MasyuClue
 charToMasyuClue '*' = Just MBlack
@@ -75,7 +75,7 @@ readEdges s = horiz ++ vert
 --  └──┐│
 --     └┘
 readEdges' :: String -> [Edge]
-readEdges' s = nub . sort . concat . map edges . points $ g
+readEdges' s = nub . sort . concatMap edges . points $ g
     where g = readCharGrid s
           (w, h) = size g
           isV c = c `elem` "│└┘"
@@ -89,17 +89,17 @@ readThermos cg = (ig, thermos)
           at p = cg ! p
           isStart p = let c = at p in
                       isAlpha c
-                      && (null
-                         . filter (\q -> at q == (pred c))
+                      && (not
+                         . any (\q -> at q == pred c)
                          . neighbours cg
                          $ p)
           thermo p | isStart p = Just (p : thermo' p)
                    | otherwise = Nothing
-          thermo' p = p : ps
-              where ss = filter (\q -> at q == (succ (at p))) (neighbours cg p)
-                    ps | length ss == 1  = thermo' (head ss)
-                       | length ss == 0  = []
-                       | otherwise       = error "invalid thermo"
+          thermo' p = p : ps ss
+              where ss = filter (\q -> at q == succ (at p)) (neighbours cg p)
+                    ps [s]  = thermo' s
+                    ps []   = []
+                    ps _    = error "invalid thermo"
 
 readTightOutside :: String -> (OutsideClues (Maybe Int), Grid (Tightfit ()))
 readTightOutside s = (OC l r b t, gt)

@@ -43,7 +43,7 @@ instance Mainable M where
 
     mainRender opts (M x) = do
         let w = fst . unr2 . boxExtents . boundingBox $ x
-            w' = (fromMaybe 1 (_scale opts)) * w
+            w' = fromMaybe 1 (_scale opts) * w
             (base, ext) = splitExtension (_outp opts)
             w'' = case ext of
                       ".png" -> round (40 * w')

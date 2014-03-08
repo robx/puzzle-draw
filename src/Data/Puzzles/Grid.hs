@@ -9,7 +9,7 @@ newtype Grid a = GG {unGG :: [[a]]}
 type Point = (Int, Int)
 
 (!) :: Grid a -> Point -> a
-g@(GG g') ! (x, y) = g' !! (sy - y - 1) !! x
+(!) g@(GG g') (x, y) = g' !! (sy - y - 1) !! x
     where (_, sy) = size g
 
 instance Functor Grid where
@@ -60,7 +60,7 @@ borders g = [ E p V | p <- vborders ] ++ [ E p H | p <- hborders ]
 
 data OutsideClues a = OC { left :: [a], right :: [a], bottom :: [a], top :: [a] }
 
-clueso (OC l r b t) = catMaybes . map liftMaybe . concat $
+clueso (OC l r b t) = mapMaybe . concat $
                              [ zipWith (\ y c -> ((-1, y), c)) [0..h-1] l
                              , zipWith (\ y c -> (( w, y), c)) [0..h-1] r
                              , zipWith (\ x c -> (( x,-1), c)) [0..w-1] b
