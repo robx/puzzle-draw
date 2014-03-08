@@ -63,9 +63,10 @@ toDiagramOpts oc w (PuzzleOpts f e i) =
           base = takeBaseName i
           out = addExtension (base ++ (outputSuffix oc)) f
 
-renderPuzzle :: PuzzleOpts -> PuzzleSol B -> OutputChoice -> IO ()
-renderPuzzle opts (p, s) oc = do
-    let x = draw (p, s) oc
+renderPuzzle :: PuzzleOpts -> (OutputChoice -> Diagram B R2) ->
+                OutputChoice -> IO ()
+renderPuzzle opts r oc = do
+    let x = r oc
         w = fst . unr2 . boxExtents . boundingBox $ x
         dopts = toDiagramOpts oc w opts
         lopts = DiagramLoopOpts False Nothing 0
@@ -80,30 +81,30 @@ defaultOpts optsParser = do
                  <> header prog)
     execParser p
 
-drawPuzzle :: Puzzle -> Result (Diagram B R2, Diagram B R2)
+drawPuzzle :: Puzzle -> Result (OutputChoice -> Diagram B R2)
 drawPuzzle p = case puzzleType p of
-    "lits" ->      f p parseLITS drawLITS drawLITSsol
-    "litsplus" ->  f p parseLITSPlus drawLITS drawLITSsol
-    "geradeweg" -> f p parseGeradeweg drawGeradeweg drawGeradewegsol
-    "fillomino" -> f p parseFillomino drawFillomino drawFillominosol
-    "masyu" ->     f p parseMasyu drawMasyu drawMasyusol
-    "nurikabe" ->  f p parseNurikabe drawNurikabe drawNurikabesol
-    "latintapa" -> f p parseLatinTapa drawLatinTapa drawLatinTapasol
-    "sudoku" ->    f p parseSudoku drawSudoku drawSudokusol
-    "thermosudoku" -> f p parseThermoSudoku drawThermoSudoku drawThermoSudokusol
-    "pyramid" ->   f p parsePyramid drawPyramid drawPyramidsol
-    "rowkropkipyramid" -> f p parseKropkiPyramid drawKropkiPyramid drawKropkiPyramidsol
-    "slitherlink" -> f p parseSlitherLink drawSlither drawSlithersol
-    "slitherlinkliar" -> f p parseLiarSlitherLink drawLiarSlither drawLiarSlithersol
-    "skyscrapers-tightfit" -> f p parseTightfitSkyscraper drawTightfitSkyscraper drawTightfitSkyscrapersol
-    "wordloop" -> f p parseWordloop drawWordloop drawWordloopsol
-    "wordsearch" -> f p parseWordsearch drawWordsearch drawWordsearchsol
-    "curvedata" -> f p parseCurveData drawCurveData drawCurveDatasol
-    "doubleback" -> f p parseDoubleBack drawDoubleBack drawDoubleBacksol
-    "slalom" -> f p parseSlalom drawSlalom drawSlalomsol
-    "compass" -> f p parseCompass drawCompass drawCompasssol
+    "lits" ->      f p parseLITS lits
+    "litsplus" ->  f p parseLITSPlus lits
+    "geradeweg" -> f p parseGeradeweg geradeweg
+    "fillomino" -> f p parseFillomino fillomino
+    "masyu" ->     f p parseMasyu masyu
+    "nurikabe" ->  f p parseNurikabe nurikabe
+    "latintapa" -> f p parseLatinTapa latintapa
+    "sudoku" ->    f p parseSudoku sudoku
+    "thermosudoku" -> f p parseThermoSudoku thermosudoku
+    "pyramid" ->   f p parsePyramid pyramid
+    "rowkropkipyramid" -> f p parseKropkiPyramid kpyramid
+    "slitherlink" -> f p parseSlitherLink slither
+    "slitherlinkliar" -> f p parseLiarSlitherLink liarslither
+    "skyscrapers-tightfit" -> f p parseTightfitSkyscraper tightfitskyscrapers
+    "wordloop" -> f p parseWordloop wordloop
+    "wordsearch" -> f p parseWordsearch wordsearch
+    "curvedata" -> f p parseCurveData curvedata
+    "doubleback" -> f p parseDoubleBack doubleback
+    "slalom" -> f p parseSlalom slalom
+    "compass" -> f p parseCompass compass
     t -> Error $ "unknown puzzle type: " ++ t
-    where f q parse draw drawsol = (\x -> (draw x, drawsol x)) <$> parse q
+    where f q parse rp = draw rp <$> parse q
 
 readPuzzle :: FilePath -> IO (Maybe Puzzle)
 readPuzzle = Y.decodeFile
@@ -117,5 +118,5 @@ main = do
         ocs = if _example opts
               then [DrawExample]
               else [DrawPuzzle, DrawSolution]
-    case ps of Success ps' -> mapM_ (renderPuzzle opts ps') ocs
+    case ps of Success ps' -> sequence_ . map (renderPuzzle opts ps') $ ocs
                Error e -> putStrLn e >> exitFailure

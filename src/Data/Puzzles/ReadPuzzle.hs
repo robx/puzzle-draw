@@ -81,8 +81,9 @@ instance (FromJSON a) => FromJSON (RefGrid a) where
                            (readCharGrid <$> (v .: "grid")) <*>
                            v .: "clues"
 
-type LatinTapa = ParsedPuzzle (Grid [String]) CharClueGrid
+type LatinTapa = ParsedPuzzle (Grid (Clue [String])) CharClueGrid
 
+parseLatinTapa :: Puzzle -> Result LatinTapa
 parseLatinTapa (P _ p s) = PP <$>
                            (unRG <$> (fromJSON p)) <*>
                            (readCharClueGrid <$> (fromJSON s))
@@ -93,20 +94,23 @@ parseSudoku (P _ p s) = PP <$>
                         (readIntGrid <$> (fromJSON p)) <*>
                         (readIntGrid <$> (fromJSON s))
 
-type ThermoSudoku = ParsedPuzzle (IntGrid, [Thermometer])
+type ThermoSudoku = ParsedPuzzle (IntGrid, [Thermometer]) IntGrid
 
+parseThermoSudoku :: Puzzle -> Result ThermoSudoku
 parseThermoSudoku (P _ p s) = PP <$>
                         (readThermos . readCharGrid <$> (fromJSON p)) <*>
                         (readIntGrid <$> (fromJSON s))
 
-type PPyramid = ParsedPuzzle (Pyramid, Pyramid)
+type PPyramid = ParsedPuzzle Pyramid Pyramid
 
+parsePyramid :: Puzzle -> Result PPyramid
 parsePyramid (P _ p s) = PP <$>
                          (readPyramid . lines <$> (fromJSON p)) <*>
                          (readPlainPyramid . lines <$> (fromJSON s))
 
-type PKropkiPyramid = ParsedPuzzle (RowKropkiPyramid, Pyramid)
+type PKropkiPyramid = ParsedPuzzle RowKropkiPyramid Pyramid
 
+parseKropkiPyramid :: Puzzle -> Result PKropkiPyramid
 parseKropkiPyramid (P _ p s) = PP <$>
                          (readKropkiPyramid . lines <$> (fromJSON p)) <*>
                          (readPlainPyramid . lines <$> (fromJSON s))
@@ -132,10 +136,10 @@ parseLiarSlitherLink (P _ p s) = PP <$>
                                  (readIntGrid <$> fromJSON p) <*>
                                  (unLSol <$> fromJSON s)
 
-type TightfitSkyscraper = ParsedPuzzle (OutsideClues (Maybe Int), Grid (Tightfit ()))
-                                       (Grid (Tightfit Int))
+type TightfitSkyscrapers = ParsedPuzzle (OutsideClues (Maybe Int), Grid (Tightfit ()))
+                                        (Grid (Tightfit Int))
 
-parseTightfitSkyscraper :: Puzzle -> Result TightfitSkyscraper
+parseTightfitSkyscraper :: Puzzle -> Result TightfitSkyscrapers
 parseTightfitSkyscraper (P _ p s) = PP <$>
                                     (readTightOutside <$> fromJSON p) <*>
                                     (readTightIntGrid <$> fromJSON s)
