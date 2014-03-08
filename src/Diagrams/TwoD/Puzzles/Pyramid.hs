@@ -9,7 +9,7 @@ import Diagrams.Combinators
 import Data.Puzzles.Pyramid
 import Diagrams.TwoD.Puzzles.Lib
 import Diagrams.TwoD.Puzzles.Widths
-import Diagrams.TwoD.Puzzles.Draw (frame)
+import Diagrams.TwoD.Puzzles.Grid (frame)
 
 pgray = blend 0.6 white black
 

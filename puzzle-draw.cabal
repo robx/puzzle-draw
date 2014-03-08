@@ -51,6 +51,7 @@ library
                        Data.Puzzles.Sudoku
                        Data.Puzzles.ReadPuzzle
                        Diagrams.TwoD.Puzzles.Draw
+                       Diagrams.TwoD.Puzzles.Grid
                        Diagrams.TwoD.Puzzles.Lib
                        Diagrams.TwoD.Puzzles.Things
                        Diagrams.TwoD.Puzzles.Widths

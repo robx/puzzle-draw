@@ -3,6 +3,7 @@ module Diagrams.TwoD.Puzzles.Puzzle where
 import Diagrams.Prelude
 
 import Diagrams.TwoD.Puzzles.Draw
+import Diagrams.TwoD.Puzzles.Grid
 import Diagrams.TwoD.Puzzles.Pyramid
 import Diagrams.TwoD.Puzzles.Things
 import Diagrams.TwoD.Puzzles.Lib

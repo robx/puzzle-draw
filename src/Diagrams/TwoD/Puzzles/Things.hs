@@ -69,3 +69,7 @@ drawText = text'
 
 drawInt s = drawText (show s)
 drawChar c = drawText [c]
+
+-- | Draw a small black dot with no envelope.
+dot :: (Renderable (Path R2) b, Backend b R2) => Diagram b R2
+dot = circle 0.05 # fc black # smash
