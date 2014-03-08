@@ -1,8 +1,8 @@
-{-# LANGUAGE NoMonomorphismRestriction, FlexibleContexts #-}
+{-# LANGUAGE NoMonomorphismRestriction, FlexibleContexts, TypeFamilies #-}
 
 module Diagrams.TwoD.Puzzles.Draw where
 
-import Diagrams.Prelude
+import Diagrams.Prelude hiding (Point)
 import Diagrams.Util
 import Diagrams.Combinators
 
