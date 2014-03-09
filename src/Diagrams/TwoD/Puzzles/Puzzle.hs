@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 module Diagrams.TwoD.Puzzles.Puzzle (
+    PuzzleSol,
     RenderPuzzle,
     OutputChoice(..),
     draw,
@@ -26,7 +27,8 @@ import qualified Data.Puzzles.Pyramid as Pyr
 
 import Control.Applicative (liftA2)
 
-type RenderPuzzle b a = a -> (Diagram b R2, Diagram b R2)
+type PuzzleSol b = (Diagram b R2, Diagram b R2)
+type RenderPuzzle b a = a -> PuzzleSol b
 
 lits :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b LITS
 lits = liftA2 (,)
@@ -154,9 +156,8 @@ data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 --   render the puzzle, its solution, or a side-by-side
 --   example with puzzle and solution.
 draw :: (Backend b R2, Renderable (Path R2) b) =>
-        RenderPuzzle b a -> a -> OutputChoice -> Diagram b R2
-draw rp x o = d o # bg white
-    where (p, s) = rp x
-          d DrawPuzzle   = p
+        PuzzleSol b -> OutputChoice -> Diagram b R2
+draw (p, s) o = d o # bg white
+    where d DrawPuzzle   = p
           d DrawSolution = s
           d DrawExample  = p ||| strutX 2.0 ||| s

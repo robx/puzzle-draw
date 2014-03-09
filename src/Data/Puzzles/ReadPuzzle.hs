@@ -4,6 +4,8 @@ module Data.Puzzles.ReadPuzzle (
     TypedPuzzle(..),
     puzzleType,
     dropType,
+    RawPuzzle,
+    ReadPuzzle,
 
     lits, litsplus, geradeweg, fillomino, masyu, nurikabe, latintapa,
     sudoku, thermosudoku, pyramid, kpyramid, slither,
@@ -30,12 +32,6 @@ data TypedPuzzle = TP String Value Value
 puzzleType :: TypedPuzzle -> String
 puzzleType (TP t _ _) = t
 
-data RawPuzzle = RP Value Value
-    deriving Show
-
-dropType :: TypedPuzzle -> RawPuzzle
-dropType (TP _ p s) = RP p s
-
 instance FromJSON TypedPuzzle where
     parseJSON (Object v) = TP              <$>
                            v .: "type"     <*>
@@ -43,30 +39,38 @@ instance FromJSON TypedPuzzle where
                            v .: "solution"
     parseJSON _          = mzero
 
-lits :: RawPuzzle -> Result LITS
+data RawPuzzle = RP Value Value
+    deriving Show
+
+dropType :: TypedPuzzle -> RawPuzzle
+dropType (TP _ p s) = RP p s
+
+type ReadPuzzle a = RawPuzzle -> Result a
+
+lits :: ReadPuzzle LITS
 lits (RP p s) = PD <$>
     (readAreaGrid <$> fromJSON p) <*>
     (readBoolGrid <$> fromJSON s)
 
-litsplus :: RawPuzzle -> Result LITS
+litsplus :: ReadPuzzle LITS
 litsplus = lits
 
-geradeweg :: RawPuzzle -> Result Geradeweg
+geradeweg :: ReadPuzzle Geradeweg
 geradeweg (RP p s) = PD <$>
     (readIntGrid <$> fromJSON p) <*>
     (readEdges' <$> fromJSON s)
 
-fillomino :: RawPuzzle -> Result Fillomino
+fillomino :: ReadPuzzle Fillomino
 fillomino (RP p s) = PD <$>
     (readIntGrid <$> fromJSON p) <*>
     (readIntGrid <$> fromJSON s)
 
-masyu :: RawPuzzle -> Result Masyu
+masyu :: ReadPuzzle Masyu
 masyu (RP p s) = PD <$>
     (readMasyuGrid <$> fromJSON p) <*>
     (readEdges' <$> fromJSON s)
 
-nurikabe :: RawPuzzle -> Result Nurikabe
+nurikabe :: ReadPuzzle Nurikabe
 nurikabe (RP p s) = PD <$>
     (readWideIntGrid <$> fromJSON p) <*>
     (readBoolGrid <$> fromJSON s)
@@ -84,31 +88,32 @@ instance (FromJSON a) => FromJSON (RefGrid a) where
                            (readCharGrid <$> (v .: "grid")) <*>
                            v .: "clues"
 
-latintapa :: RawPuzzle -> Result LatinTapa
+latintapa :: ReadPuzzle LatinTapa
 latintapa (RP p s) = PD <$>
     (unRG <$> fromJSON p) <*>
     (readCharClueGrid <$> fromJSON s)
 
+sudoku :: ReadPuzzle Sudoku
 sudoku (RP p s) = PD <$>
     (readIntGrid <$> fromJSON p) <*>
     (readIntGrid <$> fromJSON s)
 
-thermosudoku :: RawPuzzle -> Result ThermoSudoku
+thermosudoku :: ReadPuzzle ThermoSudoku
 thermosudoku (RP p s) = PD <$>
     (readThermos . readCharGrid <$> fromJSON p) <*>
     (readIntGrid <$> fromJSON s)
 
-pyramid :: RawPuzzle -> Result Pyramid
+pyramid :: ReadPuzzle Pyramid
 pyramid (RP p s) = PD <$>
     (Pyr.readPyramid . lines <$> fromJSON p) <*>
     (Pyr.readPlainPyramid . lines <$> fromJSON s)
 
-kpyramid :: RawPuzzle -> Result RowKropkiPyramid
+kpyramid :: ReadPuzzle RowKropkiPyramid
 kpyramid (RP p s) = PD <$>
     (Pyr.readKropkiPyramid . lines <$> fromJSON p) <*>
     (Pyr.readPlainPyramid . lines <$> fromJSON s)
 
-slither :: RawPuzzle -> Result SlitherLink
+slither :: ReadPuzzle SlitherLink
 slither (RP p s) = PD <$>
     (readIntGrid <$> fromJSON p) <*>
     (readEdges' <$> fromJSON s)
@@ -120,12 +125,12 @@ instance FromJSON LSol where
                            (readXGrid <$> v .: "liars"))
     parseJSON _          = mzero
 
-liarslither :: RawPuzzle -> Result LiarSlitherLink
+liarslither :: ReadPuzzle LiarSlitherLink
 liarslither (RP p s) = PD <$>
     (readIntGrid <$> fromJSON p) <*>
     (unLSol <$> fromJSON s)
 
-tightfitskyscrapers :: RawPuzzle -> Result TightfitSkyscrapers
+tightfitskyscrapers :: ReadPuzzle TightfitSkyscrapers
 tightfitskyscrapers (RP p s) = PD <$>
     (readTightOutside <$> fromJSON p) <*>
     (readTightIntGrid <$> fromJSON s)
@@ -137,7 +142,7 @@ instance FromJSON GridWords where
                                    (readCharClueGrid <$> v .: "grid") <*>
                                    v .: "words")
 
-wordloop :: RawPuzzle -> Result Wordloop
+wordloop :: ReadPuzzle Wordloop
 wordloop (RP p s) = PD <$>
     (unGW <$> fromJSON p) <*>
     (readCharClueGrid <$> fromJSON s)
@@ -156,7 +161,7 @@ instance FromJSON GridMarked where
                                    (v .: "words"))
     parseJSON _          = mzero
 
-wordsearch :: RawPuzzle -> Result Wordsearch
+wordsearch :: ReadPuzzle Wordsearch
 wordsearch (RP p s) = PD <$>
     (unGW <$> fromJSON p) <*>
     (unGM <$> fromJSON s)
@@ -166,15 +171,17 @@ newtype Curve = Curve { unCurve :: [Edge] }
 instance FromJSON Curve where
     parseJSON v = Curve <$> (readEdges <$> parseJSON v)
 
-curvedata :: RawPuzzle -> Result CurveData
+curvedata :: ReadPuzzle CurveData
 curvedata (RP p s) = PD <$>
     (fmap (fmap unCurve) . unRG <$> fromJSON p) <*>
     (readEdges <$> fromJSON s)
 
+doubleback :: ReadPuzzle DoubleBack
 doubleback (RP p s) = PD <$>
     (readAreaGrid <$> fromJSON p) <*>
     (readEdges' <$> fromJSON s)
 
+slalom :: ReadPuzzle Slalom
 slalom (RP p s) = PD <$>
     (readIntGrid <$> fromJSON p) <*>
     (readCharGrid <$> fromJSON s)
@@ -185,6 +192,7 @@ instance FromJSON CompassC where
               c x   = Just (read x)
               comp [n, e, s, w] = CC (c n) (c e) (c s) (c w)
 
+compass :: ReadPuzzle Compass
 compass (RP p s) = PD <$>
     (unRG <$> fromJSON p) <*>
     (readAreaGrid <$> fromJSON s)

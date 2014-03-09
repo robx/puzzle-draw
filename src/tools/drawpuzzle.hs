@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module Main where
 
 import Diagrams.Prelude hiding (value, option, (<>), Result)
@@ -9,9 +11,10 @@ import Diagrams.TwoD.Puzzles.Draw
 
 import Data.Puzzles.Grid
 import qualified Data.Puzzles.ReadPuzzle as R
-import Data.Puzzles.ReadPuzzle (TypedPuzzle, puzzleType, dropType)
+import Data.Puzzles.ReadPuzzle (
+    TypedPuzzle, puzzleType, dropType, RawPuzzle, ReadPuzzle)
 import qualified Diagrams.TwoD.Puzzles.Puzzle as D
-import Diagrams.TwoD.Puzzles.Puzzle (OutputChoice(..), draw)
+import Diagrams.TwoD.Puzzles.Puzzle (OutputChoice(..), RenderPuzzle, draw)
 import Options.Applicative
 import Control.Monad
 
@@ -79,30 +82,36 @@ defaultOpts optsParser = do
                  <> header prog)
     execParser p
 
-drawPuzzle :: TypedPuzzle -> Result (OutputChoice -> Diagram B R2)
-drawPuzzle p = case puzzleType p of
-    "lits" ->      f p R.lits D.lits
-    "litsplus" ->  f p R.litsplus D.litsplus
-    "geradeweg" -> f p R.geradeweg D.geradeweg
-    "fillomino" -> f p R.fillomino D.fillomino
-    "masyu" ->     f p R.masyu D.masyu
-    "nurikabe" ->  f p R.nurikabe D.nurikabe
-    "latintapa" -> f p R.latintapa D.latintapa
-    "sudoku" ->    f p R.sudoku D.sudoku
-    "thermosudoku" -> f p R.thermosudoku D.thermosudoku
-    "pyramid" ->   f p R.pyramid D.pyramid
-    "rowkropkipyramid" -> f p R.kpyramid D.kpyramid
-    "slitherlink" -> f p R.slither D.slither
-    "slitherlinkliar" -> f p R.liarslither D.liarslither
-    "skyscrapers-tightfit" -> f p R.tightfitskyscrapers D.tightfitskyscrapers
-    "wordloop" -> f p R.wordloop D.wordloop
-    "wordsearch" -> f p R.wordsearch D.wordsearch
-    "curvedata" -> f p R.curvedata D.curvedata
-    "doubleback" -> f p R.doubleback D.doubleback
-    "slalom" -> f p R.slalom D.slalom
-    "compass" -> f p R.compass D.compass
-    t -> Error $ "unknown puzzle type: " ++ t
-    where f q parse rp = draw rp <$> parse (dropType q)
+rd :: ReadPuzzle a -> RenderPuzzle b a ->
+      RawPuzzle -> Result (Diagram b R2, Diagram b R2)
+rd r d x = d <$> r x
+
+rdtype :: (Backend b R2, Renderable (Path R2) b) =>
+          String -> RawPuzzle -> Result (Diagram b R2, Diagram b R2)
+rdtype "lits"                 = rd R.lits                D.lits
+rdtype "litsplus"             = rd R.litsplus            D.litsplus
+rdtype "geradeweg"            = rd R.geradeweg           D.geradeweg
+rdtype "fillomino"            = rd R.fillomino           D.fillomino
+rdtype "masyu"                = rd R.masyu               D.masyu
+rdtype "nurikabe"             = rd R.nurikabe            D.nurikabe
+rdtype "latintapa"            = rd R.latintapa           D.latintapa
+rdtype "sudoku"               = rd R.sudoku              D.sudoku
+rdtype "thermosudoku"         = rd R.thermosudoku        D.thermosudoku
+rdtype "pyramid"              = rd R.pyramid             D.pyramid
+rdtype "rowkropkipyramid"     = rd R.kpyramid            D.kpyramid
+rdtype "slitherlink"          = rd R.slither             D.slither
+rdtype "slitherlinkliar"      = rd R.liarslither         D.liarslither
+rdtype "skyscrapers-tightfit" = rd R.tightfitskyscrapers D.tightfitskyscrapers
+rdtype "wordloop"             = rd R.wordloop            D.wordloop
+rdtype "wordsearch"           = rd R.wordsearch          D.wordsearch
+rdtype "curvedata"            = rd R.curvedata           D.curvedata
+rdtype "doubleback"           = rd R.doubleback          D.doubleback
+rdtype "slalom"               = rd R.slalom              D.slalom
+rdtype "compass"              = rd R.compass             D.compass
+rdtype t                      = const . Error $ "unknown puzzle type: " ++ t
+
+drawPuzzle :: TypedPuzzle -> Result (Diagram B R2, Diagram B R2)
+drawPuzzle p = rdtype (puzzleType p) (dropType p)
 
 readPuzzle :: FilePath -> IO (Maybe TypedPuzzle)
 readPuzzle = Y.decodeFile
@@ -118,5 +127,5 @@ main = do
         ocs = if _example opts
               then [DrawExample]
               else [DrawPuzzle, DrawSolution]
-    case ps of Success ps' -> mapM_ (renderPuzzle opts ps') ocs
+    case ps of Success ps' -> mapM_ (renderPuzzle opts (draw ps')) ocs
                Error e -> putStrLn e >> exitFailure
