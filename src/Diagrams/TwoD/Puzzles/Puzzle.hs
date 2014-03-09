@@ -1,6 +1,15 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Diagrams.TwoD.Puzzles.Puzzle where
+module Diagrams.TwoD.Puzzles.Puzzle (
+    RenderPuzzle,
+    OutputChoice(..),
+    draw,
+    
+    lits, geradeweg, fillomino, masyu, nurikabe, latintapa,
+    sudoku, thermosudoku, pyramid, kpyramid, slither,
+    liarslither, tightfitskyscrapers, wordloop, wordsearch,
+    curvedata, doubleback, slalom, compass
+    ) where
 
 import Diagrams.Prelude
 
@@ -21,69 +30,73 @@ type RenderPuzzle b a = a -> (Diagram b R2, Diagram b R2)
 
 lits :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b LITS
 lits = liftA2 (,)
-       (drawAreaGridG . pzl)
-       (drawAreaGrid . pzl <> drawShadedGrid . sol)
+    (drawAreaGridG . pzl)
+    (drawAreaGrid . pzl <> drawShadedGrid . sol)
 
 solstyle :: HasStyle a => a -> a
 solstyle = lc (blend 0.8 black white)
 
 geradeweg :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b Geradeweg
 geradeweg = liftA2 (,)
-     (drawIntGrid . pzl)
-     (drawIntClues . pzl
-      <> solstyle . drawDualEdges . sol
-      <> drawGrid . pzl)
+    (drawIntGrid . pzl)
+    (drawIntClues . pzl
+     <> solstyle . drawDualEdges . sol
+     <> drawGrid . pzl)
 
 fillomino :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b Fillomino
-fillomino = liftA2 (,) (drawFillo . pzl) (drawFillo . sol)
+fillomino = liftA2 (,)
+    (drawFillo . pzl)
+    (drawFillo . sol)
 
 masyu :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b Masyu
-masyu = liftA2 (,) (drawMasyuGrid . pzl)
-                   (solstyle . drawDualEdges . sol <> drawMasyuGrid . pzl)
+masyu = liftA2 (,)
+    (drawMasyuGrid . pzl)
+    (solstyle . drawDualEdges . sol <> drawMasyuGrid . pzl)
 
 nurikabe :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b Nurikabe
-nurikabe = liftA2 (,) (drawIntGrid . pzl)
-                      (drawIntGrid . pzl <> drawShadedGrid . sol)
+nurikabe = liftA2 (,)
+    (drawIntGrid . pzl)
+    (drawIntGrid . pzl <> drawShadedGrid . sol)
 
 latintapa :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b LatinTapa
 latintapa = liftA2 (,)
-            l
-            (l <> atCentres drawChar . clues . sol)
+    l
+    (l <> atCentres drawChar . clues . sol)
     where l = (drawGrid <> drawWordsClues) . pzl
 
 sudoku :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b Sudoku
 sudoku = liftA2 (,)
-         ((drawIntClues <> sudokugrid) . pzl)
-         ((drawIntClues <> sudokugrid) . sol)
+    ((drawIntClues <> sudokugrid) . pzl)
+    ((drawIntClues <> sudokugrid) . sol)
 
 thermosudoku :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b ThermoSudoku
 thermosudoku = liftA2 (,)
-               ((drawIntClues . fst <> sudokugrid . fst <> drawThermos . snd) . pzl)
-               (drawIntClues . sol <> sudokugrid . sol <> drawThermos . snd . pzl)
+    ((drawIntClues . fst <> sudokugrid . fst <> drawThermos . snd) . pzl)
+    (drawIntClues . sol <> sudokugrid . sol <> drawThermos . snd . pzl)
 
 pyramid :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b PPyramid
 pyramid = liftA2 (,)
-          (Pyr.pyramid . pzl)
-          (Pyr.pyramid . merge)
+    (Pyr.pyramid . pzl)
+    (Pyr.pyramid . merge)
     where merge (PP p q) = mergepyramids p q
 
 kpyramid :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b PKropkiPyramid
 kpyramid = liftA2 (,)
-          (Pyr.kpyramid . pzl)
-          (Pyr.kpyramid . merge)
+    (Pyr.kpyramid . pzl)
+    (Pyr.kpyramid . merge)
     where merge (PP p q) = mergekpyramids p q
 
 slither :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b SlitherLink
 slither = liftA2 (,)
-          (drawSlitherGrid . pzl)
-          (drawSlitherGrid . pzl <> solstyle . drawedges . sol)
+    (drawSlitherGrid . pzl)
+    (drawSlitherGrid . pzl <> solstyle . drawedges . sol)
 
 liarslither :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b LiarSlitherLink
 liarslither = liftA2 (,)
-              (drawSlitherGrid . pzl)
-              (solstyle . drawCrosses . snd . sol
-               <> drawSlitherGrid . pzl
-               <> solstyle . drawedges . fst . sol)
+    (drawSlitherGrid . pzl)
+    (solstyle . drawCrosses . snd . sol
+     <> drawSlitherGrid . pzl
+     <> solstyle . drawedges . fst . sol)
 
 tightfitskyscrapers :: (Backend b R2, Renderable (Path R2) b) =>
                        RenderPuzzle b TightfitSkyscrapers
@@ -98,34 +111,36 @@ wordgrid :: (Backend b R2, Renderable (Path R2) b) =>
 wordgrid g ws = stackWords ws `besidesR` drawClueGrid g
 
 wordloop :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b Wordloop
-wordloop = liftA2 (,) (uncurry wordgrid . pzl) (drawClueGrid . sol)
+wordloop = liftA2 (,)
+    (uncurry wordgrid . pzl)
+    (drawClueGrid . sol)
 
 wordsearch :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b Wordsearch
 wordsearch = liftA2 (,)
-             (uncurry wordgrid . pzl) 
-             (solstyle . drawMarkedWords . snd . sol
-              <> drawClueGrid . fst . sol)
+    (uncurry wordgrid . pzl) 
+    (solstyle . drawMarkedWords . snd . sol
+     <> drawClueGrid . fst . sol)
 
 curvedata :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b CurveData
 curvedata = liftA2 (,)
-            cd
-            ((solstyle . drawDualEdges . sol) <> cd)
-     where cd = (atCentres drawCurve . clues <> drawGrid) . pzl
+    cd
+    ((solstyle . drawDualEdges . sol) <> cd)
+    where cd = (atCentres drawCurve . clues <> drawGrid) . pzl
 
 doubleback :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b DoubleBack
 doubleback = liftA2 (,)
-             (drawAreaGridG . pzl)
-             (solstyle . drawDualEdges . sol <> drawAreaGridG . pzl)
+    (drawAreaGridG . pzl)
+    (solstyle . drawDualEdges . sol <> drawAreaGridG . pzl)
 
 slalom :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b Slalom
 slalom = liftA2 (,)
-         (drawSlalomGrid . pzl)
-         (drawSlalomGrid . pzl <> solstyle . drawSlalomDiags . sol)
+    (drawSlalomGrid . pzl)
+    (drawSlalomGrid . pzl <> solstyle . drawSlalomDiags . sol)
 
 compass :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b Compass
 compass = liftA2 (,)
-          (drawCompassGrid . pzl)
-          (drawCompassClues . pzl <> drawAreaGridG . sol)
+    (drawCompassGrid . pzl)
+    (drawCompassClues . pzl <> drawAreaGridG . sol)
 
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
