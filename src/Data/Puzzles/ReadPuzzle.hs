@@ -1,5 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Data.Puzzles.ReadPuzzle where
+
+module Data.Puzzles.ReadPuzzle (
+    TypedPuzzle(..),
+    puzzleType,
+    dropType,
+
+    lits, litsplus, geradeweg, fillomino, masyu, nurikabe, latintapa,
+    sudoku, thermosudoku, pyramid, kpyramid, slither,
+    liarslither, tightfitskyscrapers, wordloop, wordsearch,
+    curvedata, doubleback, slalom, compass
+    ) where
 
 import Control.Applicative
 import Control.Monad
@@ -9,65 +19,57 @@ import qualified Data.HashMap.Strict as HM
 import Data.Char (isAlpha)
 
 import Data.Puzzles.Grid
-import Data.Puzzles.Pyramid
+import qualified Data.Puzzles.Pyramid as Pyr
 import Data.Puzzles.Read
 import Data.Puzzles.Things
+import Data.Puzzles.PuzzleTypes
 
-data Puzzle = P { puzzleType :: String
-                , puzzle     :: Value
-                , solution   :: Value
-                }
+data TypedPuzzle = TP String Value Value
     deriving Show
 
-instance FromJSON Puzzle where
-    parseJSON (Object v) = P               <$>
+puzzleType :: TypedPuzzle -> String
+puzzleType (TP t _ _) = t
+
+data RawPuzzle = RP Value Value
+    deriving Show
+
+dropType :: TypedPuzzle -> RawPuzzle
+dropType (TP _ p s) = RP p s
+
+instance FromJSON TypedPuzzle where
+    parseJSON (Object v) = TP              <$>
                            v .: "type"     <*>
                            v .: "puzzle"   <*>
                            v .: "solution"
     parseJSON _          = mzero
 
-data ParsedPuzzle a b = PP { pzl :: a
-                           , sol :: b
-                           }
-    deriving Show
+lits :: RawPuzzle -> Result LITS
+lits (RP p s) = PD <$>
+    (readAreaGrid <$> fromJSON p) <*>
+    (readBoolGrid <$> fromJSON s)
 
-type LITS = ParsedPuzzle AreaGrid ShadedGrid
+litsplus :: RawPuzzle -> Result LITS
+litsplus = lits
 
-parseLITS :: Puzzle -> Result LITS
-parseLITS (P _ p s) = PP <$>
-                           (readAreaGrid <$> fromJSON p) <*>
-                           (readBoolGrid <$> fromJSON s)
+geradeweg :: RawPuzzle -> Result Geradeweg
+geradeweg (RP p s) = PD <$>
+    (readIntGrid <$> fromJSON p) <*>
+    (readEdges' <$> fromJSON s)
 
-parseLITSPlus :: Puzzle -> Result LITS
-parseLITSPlus = parseLITS
+fillomino :: RawPuzzle -> Result Fillomino
+fillomino (RP p s) = PD <$>
+    (readIntGrid <$> fromJSON p) <*>
+    (readIntGrid <$> fromJSON s)
 
-type Geradeweg = ParsedPuzzle IntGrid Loop
+masyu :: RawPuzzle -> Result Masyu
+masyu (RP p s) = PD <$>
+    (readMasyuGrid <$> fromJSON p) <*>
+    (readEdges' <$> fromJSON s)
 
-parseGeradeweg :: Puzzle -> Result Geradeweg
-parseGeradeweg (P _ p s) = PP <$>
-                           (readIntGrid <$> fromJSON p) <*>
-                           (readEdges' <$> fromJSON s)
-
-type Fillomino = ParsedPuzzle IntGrid IntGrid
-
-parseFillomino :: Puzzle -> Result Fillomino
-parseFillomino (P _ p s) = PP <$>
-                           (readIntGrid <$> fromJSON p) <*>
-                           (readIntGrid <$> fromJSON s)
-
-type Masyu = ParsedPuzzle MasyuGrid Loop
-
-parseMasyu :: Puzzle -> Result Masyu
-parseMasyu (P "masyu" p s) = PP <$>
-                             (readMasyuGrid <$> fromJSON p) <*>
-                             (readEdges' <$> fromJSON s)
-
-type Nurikabe = ParsedPuzzle IntGrid ShadedGrid
-
-parseNurikabe :: Puzzle -> Result Nurikabe
-parseNurikabe (P _ p s) = PP <$>
-                          (readWideIntGrid <$> fromJSON p) <*>
-                          (readBoolGrid <$> fromJSON s)
+nurikabe :: RawPuzzle -> Result Nurikabe
+nurikabe (RP p s) = PD <$>
+    (readWideIntGrid <$> fromJSON p) <*>
+    (readBoolGrid <$> fromJSON s)
 
 newtype RefGrid a = RefGrid { unRG :: Grid (Maybe a) }
 
@@ -82,46 +84,34 @@ instance (FromJSON a) => FromJSON (RefGrid a) where
                            (readCharGrid <$> (v .: "grid")) <*>
                            v .: "clues"
 
-type LatinTapa = ParsedPuzzle (Grid (Clue [String])) CharClueGrid
+latintapa :: RawPuzzle -> Result LatinTapa
+latintapa (RP p s) = PD <$>
+    (unRG <$> fromJSON p) <*>
+    (readCharClueGrid <$> fromJSON s)
 
-parseLatinTapa :: Puzzle -> Result LatinTapa
-parseLatinTapa (P _ p s) = PP <$>
-                           (unRG <$> fromJSON p) <*>
-                           (readCharClueGrid <$> fromJSON s)
+sudoku (RP p s) = PD <$>
+    (readIntGrid <$> fromJSON p) <*>
+    (readIntGrid <$> fromJSON s)
 
-type Sudoku = ParsedPuzzle IntGrid IntGrid
+thermosudoku :: RawPuzzle -> Result ThermoSudoku
+thermosudoku (RP p s) = PD <$>
+    (readThermos . readCharGrid <$> fromJSON p) <*>
+    (readIntGrid <$> fromJSON s)
 
-parseSudoku (P _ p s) = PP <$>
-                        (readIntGrid <$> fromJSON p) <*>
-                        (readIntGrid <$> fromJSON s)
+pyramid :: RawPuzzle -> Result Pyramid
+pyramid (RP p s) = PD <$>
+    (Pyr.readPyramid . lines <$> fromJSON p) <*>
+    (Pyr.readPlainPyramid . lines <$> fromJSON s)
 
-type ThermoSudoku = ParsedPuzzle (IntGrid, [Thermometer]) IntGrid
+kpyramid :: RawPuzzle -> Result RowKropkiPyramid
+kpyramid (RP p s) = PD <$>
+    (Pyr.readKropkiPyramid . lines <$> fromJSON p) <*>
+    (Pyr.readPlainPyramid . lines <$> fromJSON s)
 
-parseThermoSudoku :: Puzzle -> Result ThermoSudoku
-parseThermoSudoku (P _ p s) = PP <$>
-                        (readThermos . readCharGrid <$> fromJSON p) <*>
-                        (readIntGrid <$> fromJSON s)
-
-type PPyramid = ParsedPuzzle Pyramid Pyramid
-
-parsePyramid :: Puzzle -> Result PPyramid
-parsePyramid (P _ p s) = PP <$>
-                         (readPyramid . lines <$> fromJSON p) <*>
-                         (readPlainPyramid . lines <$> fromJSON s)
-
-type PKropkiPyramid = ParsedPuzzle RowKropkiPyramid Pyramid
-
-parseKropkiPyramid :: Puzzle -> Result PKropkiPyramid
-parseKropkiPyramid (P _ p s) = PP <$>
-                         (readKropkiPyramid . lines <$> fromJSON p) <*>
-                         (readPlainPyramid . lines <$> fromJSON s)
-
-type SlitherLink = ParsedPuzzle IntGrid Loop
-
-parseSlitherLink :: Puzzle -> Result SlitherLink
-parseSlitherLink (P _ p s) = PP <$>
-                           (readIntGrid <$> fromJSON p) <*>
-                           (readEdges' <$> fromJSON s)
+slither :: RawPuzzle -> Result SlitherLink
+slither (RP p s) = PD <$>
+    (readIntGrid <$> fromJSON p) <*>
+    (readEdges' <$> fromJSON s)
 
 newtype LSol = LSol { unLSol :: (Loop, Grid (Maybe ())) }
 instance FromJSON LSol where
@@ -130,22 +120,15 @@ instance FromJSON LSol where
                            (readXGrid <$> v .: "liars"))
     parseJSON _          = mzero
 
-type LiarSlitherLink = ParsedPuzzle IntGrid (Loop, Grid (Maybe ()))
+liarslither :: RawPuzzle -> Result LiarSlitherLink
+liarslither (RP p s) = PD <$>
+    (readIntGrid <$> fromJSON p) <*>
+    (unLSol <$> fromJSON s)
 
-parseLiarSlitherLink :: Puzzle -> Result LiarSlitherLink
-parseLiarSlitherLink (P _ p s) = PP <$>
-                                 (readIntGrid <$> fromJSON p) <*>
-                                 (unLSol <$> fromJSON s)
-
-type TightfitSkyscrapers = ParsedPuzzle (OutsideClues (Maybe Int), Grid (Tightfit ()))
-                                        (Grid (Tightfit Int))
-
-parseTightfitSkyscraper :: Puzzle -> Result TightfitSkyscrapers
-parseTightfitSkyscraper (P _ p s) = PP <$>
-                                    (readTightOutside <$> fromJSON p) <*>
-                                    (readTightIntGrid <$> fromJSON s)
-
-type Wordloop = ParsedPuzzle (CharClueGrid, [String]) CharClueGrid
+tightfitskyscrapers :: RawPuzzle -> Result TightfitSkyscrapers
+tightfitskyscrapers (RP p s) = PD <$>
+    (readTightOutside <$> fromJSON p) <*>
+    (readTightIntGrid <$> fromJSON s)
 
 newtype GridWords = GW { unGW :: (CharClueGrid, [String]) }
 
@@ -154,12 +137,10 @@ instance FromJSON GridWords where
                                    (readCharClueGrid <$> v .: "grid") <*>
                                    v .: "words")
 
-parseWordloop :: Puzzle -> Result Wordloop
-parseWordloop (P _ p s) = PP <$>
-                          (unGW <$> fromJSON p) <*>
-                          (readCharClueGrid <$> fromJSON s)
-
-type Wordsearch = ParsedPuzzle (CharClueGrid, [String]) (CharClueGrid, [MarkedWord])
+wordloop :: RawPuzzle -> Result Wordloop
+wordloop (RP p s) = PD <$>
+    (unGW <$> fromJSON p) <*>
+    (readCharClueGrid <$> fromJSON s)
 
 instance FromJSON MarkedWord where
     parseJSON v = MW <$>
@@ -175,34 +156,28 @@ instance FromJSON GridMarked where
                                    (v .: "words"))
     parseJSON _          = mzero
 
-parseWordsearch :: Puzzle -> Result Wordsearch
-parseWordsearch (P _ p s) = PP <$>
-                            (unGW <$> fromJSON p) <*>
-                            (unGM <$> fromJSON s)
-
-type CurveData = ParsedPuzzle (Grid (Maybe [Edge])) [Edge]
+wordsearch :: RawPuzzle -> Result Wordsearch
+wordsearch (RP p s) = PD <$>
+    (unGW <$> fromJSON p) <*>
+    (unGM <$> fromJSON s)
 
 newtype Curve = Curve { unCurve :: [Edge] }
 
 instance FromJSON Curve where
     parseJSON v = Curve <$> (readEdges <$> parseJSON v)
 
-parseCurveData :: Puzzle -> Result CurveData
-parseCurveData (P _ p s) = PP <$>
-                           (fmap (fmap unCurve) . unRG <$> fromJSON p) <*>
-                           (readEdges <$> fromJSON s)
+curvedata :: RawPuzzle -> Result CurveData
+curvedata (RP p s) = PD <$>
+    (fmap (fmap unCurve) . unRG <$> fromJSON p) <*>
+    (readEdges <$> fromJSON s)
 
-type DoubleBack = ParsedPuzzle AreaGrid Loop
-parseDoubleBack (P _ p s) = PP <$>
-                            (readAreaGrid <$> fromJSON p) <*>
-                            (readEdges' <$> fromJSON s)
+doubleback (RP p s) = PD <$>
+    (readAreaGrid <$> fromJSON p) <*>
+    (readEdges' <$> fromJSON s)
 
-type Slalom = ParsedPuzzle IntGrid CharGrid
-parseSlalom (P _ p s) = PP <$>
-                        (readIntGrid <$> fromJSON p) <*>
-                        (readCharGrid <$> fromJSON s)
-
-type Compass = ParsedPuzzle (Grid CompassClue) AreaGrid
+slalom (RP p s) = PD <$>
+    (readIntGrid <$> fromJSON p) <*>
+    (readCharGrid <$> fromJSON s)
 
 instance FromJSON CompassC where
     parseJSON v = comp . words <$> parseJSON v
@@ -210,6 +185,6 @@ instance FromJSON CompassC where
               c x   = Just (read x)
               comp [n, e, s, w] = CC (c n) (c e) (c s) (c w)
 
-parseCompass (P _ p s) = PP <$>
-                         (unRG <$> fromJSON p) <*>
-                         (readAreaGrid <$> fromJSON s)
+compass (RP p s) = PD <$>
+    (unRG <$> fromJSON p) <*>
+    (readAreaGrid <$> fromJSON s)

@@ -5,7 +5,7 @@ module Diagrams.TwoD.Puzzles.Puzzle (
     OutputChoice(..),
     draw,
     
-    lits, geradeweg, fillomino, masyu, nurikabe, latintapa,
+    lits, litsplus, geradeweg, fillomino, masyu, nurikabe, latintapa,
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass
@@ -15,14 +15,14 @@ import Diagrams.Prelude
 
 import Diagrams.TwoD.Puzzles.Draw
 import Diagrams.TwoD.Puzzles.Grid
-import qualified Diagrams.TwoD.Puzzles.Pyramid as Pyr
+import qualified Diagrams.TwoD.Puzzles.Pyramid as DPyr
 import Diagrams.TwoD.Puzzles.Things
 import Diagrams.TwoD.Puzzles.Lib
 
-import Data.Puzzles.ReadPuzzle hiding (puzzle, solution)
+import Data.Puzzles.PuzzleTypes
 
 import Data.Puzzles.Grid
-import Data.Puzzles.Pyramid
+import qualified Data.Puzzles.Pyramid as Pyr
 
 import Control.Applicative (liftA2)
 
@@ -32,6 +32,9 @@ lits :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b LITS
 lits = liftA2 (,)
     (drawAreaGridG . pzl)
     (drawAreaGrid . pzl <> drawShadedGrid . sol)
+
+litsplus :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b LITS
+litsplus = lits
 
 solstyle :: HasStyle a => a -> a
 solstyle = lc (blend 0.8 black white)
@@ -69,22 +72,25 @@ sudoku = liftA2 (,)
     ((drawIntClues <> sudokugrid) . pzl)
     ((drawIntClues <> sudokugrid) . sol)
 
-thermosudoku :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b ThermoSudoku
+thermosudoku :: (Backend b R2, Renderable (Path R2) b) =>
+    RenderPuzzle b ThermoSudoku
 thermosudoku = liftA2 (,)
     ((drawIntClues . fst <> sudokugrid . fst <> drawThermos . snd) . pzl)
     (drawIntClues . sol <> sudokugrid . sol <> drawThermos . snd . pzl)
 
-pyramid :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b PPyramid
+pyramid :: (Backend b R2, Renderable (Path R2) b) =>
+    RenderPuzzle b Pyramid
 pyramid = liftA2 (,)
-    (Pyr.pyramid . pzl)
-    (Pyr.pyramid . merge)
-    where merge (PP p q) = mergepyramids p q
+    (DPyr.pyramid . pzl)
+    (DPyr.pyramid . merge)
+    where merge (PD p q) = Pyr.mergepyramids p q
 
-kpyramid :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b PKropkiPyramid
+kpyramid :: (Backend b R2, Renderable (Path R2) b) =>
+    RenderPuzzle b RowKropkiPyramid
 kpyramid = liftA2 (,)
-    (Pyr.kpyramid . pzl)
-    (Pyr.kpyramid . merge)
-    where merge (PP p q) = mergekpyramids p q
+    (DPyr.kpyramid . pzl)
+    (DPyr.kpyramid . merge)
+    where merge (PD p q) = Pyr.mergekpyramids p q
 
 slither :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b SlitherLink
 slither = liftA2 (,)

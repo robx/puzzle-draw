@@ -49,6 +49,7 @@ library
                        Data.Puzzles.Things
                        Data.Puzzles.Pyramid
                        Data.Puzzles.Sudoku
+                       Data.Puzzles.PuzzleTypes
                        Data.Puzzles.ReadPuzzle
                        Diagrams.TwoD.Puzzles.Draw
                        Diagrams.TwoD.Puzzles.Grid

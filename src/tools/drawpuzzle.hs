@@ -6,11 +6,12 @@ import Diagrams.BoundingBox
 import Diagrams.Backend.CmdLine
 
 import Diagrams.TwoD.Puzzles.Draw
-import Diagrams.TwoD.Puzzles.Puzzle
 
 import Data.Puzzles.Grid
-import Data.Puzzles.ReadPuzzle
-
+import qualified Data.Puzzles.ReadPuzzle as R
+import Data.Puzzles.ReadPuzzle (TypedPuzzle, puzzleType, dropType)
+import qualified Diagrams.TwoD.Puzzles.Puzzle as D
+import Diagrams.TwoD.Puzzles.Puzzle (OutputChoice(..), draw)
 import Options.Applicative
 import Control.Monad
 
@@ -78,38 +79,40 @@ defaultOpts optsParser = do
                  <> header prog)
     execParser p
 
-drawPuzzle :: Puzzle -> Result (OutputChoice -> Diagram B R2)
+drawPuzzle :: TypedPuzzle -> Result (OutputChoice -> Diagram B R2)
 drawPuzzle p = case puzzleType p of
-    "lits" ->      f p parseLITS lits
-    "litsplus" ->  f p parseLITSPlus lits
-    "geradeweg" -> f p parseGeradeweg geradeweg
-    "fillomino" -> f p parseFillomino fillomino
-    "masyu" ->     f p parseMasyu masyu
-    "nurikabe" ->  f p parseNurikabe nurikabe
-    "latintapa" -> f p parseLatinTapa latintapa
-    "sudoku" ->    f p parseSudoku sudoku
-    "thermosudoku" -> f p parseThermoSudoku thermosudoku
-    "pyramid" ->   f p parsePyramid pyramid
-    "rowkropkipyramid" -> f p parseKropkiPyramid kpyramid
-    "slitherlink" -> f p parseSlitherLink slither
-    "slitherlinkliar" -> f p parseLiarSlitherLink liarslither
-    "skyscrapers-tightfit" -> f p parseTightfitSkyscraper tightfitskyscrapers
-    "wordloop" -> f p parseWordloop wordloop
-    "wordsearch" -> f p parseWordsearch wordsearch
-    "curvedata" -> f p parseCurveData curvedata
-    "doubleback" -> f p parseDoubleBack doubleback
-    "slalom" -> f p parseSlalom slalom
-    "compass" -> f p parseCompass compass
+    "lits" ->      f p R.lits D.lits
+    "litsplus" ->  f p R.litsplus D.litsplus
+    "geradeweg" -> f p R.geradeweg D.geradeweg
+    "fillomino" -> f p R.fillomino D.fillomino
+    "masyu" ->     f p R.masyu D.masyu
+    "nurikabe" ->  f p R.nurikabe D.nurikabe
+    "latintapa" -> f p R.latintapa D.latintapa
+    "sudoku" ->    f p R.sudoku D.sudoku
+    "thermosudoku" -> f p R.thermosudoku D.thermosudoku
+    "pyramid" ->   f p R.pyramid D.pyramid
+    "rowkropkipyramid" -> f p R.kpyramid D.kpyramid
+    "slitherlink" -> f p R.slither D.slither
+    "slitherlinkliar" -> f p R.liarslither D.liarslither
+    "skyscrapers-tightfit" -> f p R.tightfitskyscrapers D.tightfitskyscrapers
+    "wordloop" -> f p R.wordloop D.wordloop
+    "wordsearch" -> f p R.wordsearch D.wordsearch
+    "curvedata" -> f p R.curvedata D.curvedata
+    "doubleback" -> f p R.doubleback D.doubleback
+    "slalom" -> f p R.slalom D.slalom
+    "compass" -> f p R.compass D.compass
     t -> Error $ "unknown puzzle type: " ++ t
-    where f q parse rp = draw rp <$> parse q
+    where f q parse rp = draw rp <$> parse (dropType q)
 
-readPuzzle :: FilePath -> IO (Maybe Puzzle)
+readPuzzle :: FilePath -> IO (Maybe TypedPuzzle)
 readPuzzle = Y.decodeFile
 
 main = do
     opts <- defaultOpts puzzleOpts
     mp <- readPuzzle (_input opts)
-    p <- case mp of Nothing -> putStrLn "failed to parse yaml" >> exitFailure >> return undefined
+    p <- case mp of Nothing -> putStrLn "failed to parse yaml"
+                               >> exitFailure
+                               >> return undefined
                     Just p  -> return p
     let ps = drawPuzzle p
         ocs = if _example opts
