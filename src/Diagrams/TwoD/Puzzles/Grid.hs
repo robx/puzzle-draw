@@ -63,11 +63,6 @@ dashedgrid = grid' $ bgdashing dashes dashoffset white'
   where
     white' = blend 0.95 white black
 
-drawEdge :: Renderable (Path R2) b => Edge -> Diagram b R2
-drawEdge (E p d) = line # translatep p
-    where line = case d of V -> vline 1
-                           H -> hline 1
-
 fillBG c = square 1 # fc c # alignBL
 
 -- | In a square grid, use the first argument to draw things at the centres
@@ -100,12 +95,27 @@ frame (w, h) = stroke . translate (r2 (-bw, -bw)) . alignBL
   where
     bw = borderwidth
 
-drawedges :: Renderable (Path R2) b => [Edge] -> Diagram b R2
-drawedges = lineCap LineCapSquare . lw edgewidth . mconcat . map drawEdge
+edge :: Edge -> Path R2
+edge (E c d) = rule d # translate (r2i c)
+  where
+    rule V = vrule 1.0 # alignB
+    rule H = hrule 1.0 # alignL
+
+dualEdge :: Edge -> Path R2
+dualEdge = translate (r2 (1/2, 1/2)) . edge
+
+edgeStyle :: HasStyle a => a -> a
+edgeStyle = lineCap LineCapSquare . lw edgewidth
+
+drawEdges :: Renderable (Path R2) b => [Edge] -> Diagram b R2
+drawEdges = edgeStyle . stroke . mconcat . map edge
+
+drawDualEdges :: Renderable (Path R2) b => [Edge] -> Diagram b R2
+drawDualEdges = edgeStyle . stroke . mconcat . map dualEdge
 
 drawAreaGrid :: (Backend b R2, Renderable (Path R2) b, Eq a) =>
                   Grid a -> Diagram b R2
-drawAreaGrid = drawedges . borders <> grid . size
+drawAreaGrid = drawEdges . borders <> grid . size
 
 drawShadedGrid :: (Backend b R2, Renderable (Path R2) b) =>
                   Grid Bool -> Diagram b R2
@@ -114,12 +124,3 @@ drawShadedGrid = atCentres (const $ fillBG gray # centerXY) . clues . fmap toMay
     toMaybe True  = Just ()
     toMaybe False = Nothing
 
-dualEdge :: Edge -> Path R2
-dualEdge (E (x, y) d) = rule d # translate p
-  where
-    rule V = vrule 1.0 # translate (r2 (0.5, 1))
-    rule H = hrule 1.0 # translate (r2 (1.0, 0.5))
-    p = r2 (fromIntegral x, fromIntegral y)
-
-drawDualEdges :: Renderable (Path R2) b => [Edge] -> Diagram b R2
-drawDualEdges = lw edgewidth . lineCap LineCapSquare . stroke . mconcat . map dualEdge

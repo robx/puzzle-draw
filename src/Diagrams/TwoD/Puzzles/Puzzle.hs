@@ -97,14 +97,14 @@ kpyramid = liftA2 (,)
 slither :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b SlitherLink
 slither = liftA2 (,)
     (drawSlitherGrid . pzl)
-    (drawSlitherGrid . pzl <> solstyle . drawedges . sol)
+    (drawSlitherGrid . pzl <> solstyle . drawEdges . sol)
 
 liarslither :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b LiarSlitherLink
 liarslither = liftA2 (,)
     (drawSlitherGrid . pzl)
     (solstyle . drawCrosses . snd . sol
      <> drawSlitherGrid . pzl
-     <> solstyle . drawedges . fst . sol)
+     <> solstyle . drawEdges . fst . sol)
 
 tightfitskyscrapers :: (Backend b R2, Renderable (Path R2) b) =>
                        RenderPuzzle b TightfitSkyscrapers

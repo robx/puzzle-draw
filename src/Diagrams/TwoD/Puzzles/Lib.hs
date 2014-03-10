@@ -22,6 +22,9 @@ smash = withEnvelope (vrule 0 :: D R2)
 
 translatep (x, y) = translate . r2 $ (fromIntegral x, fromIntegral y)
 
+r2i :: (Int, Int) -> R2
+r2i = r2 . (fromIntegral *** fromIntegral)
+
 p2i :: (Int, Int) -> P2
 p2i = p2 . (fromIntegral *** fromIntegral)
 

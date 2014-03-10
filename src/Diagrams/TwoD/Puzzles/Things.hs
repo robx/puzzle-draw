@@ -76,10 +76,11 @@ drawInt s = drawText (show s)
 drawChar c = drawText [c]
 
 -- | Stack a list of words into a unit square.
-drawWords ws = spread (-1.0 *^ unitY) (map (centerXY . scale 0.4 . drawText) ws)
+drawWords ws = spread (-1.0 *^ unitY)
+                      (map (centerXY . scale 0.4 . drawText) ws)
                # centerY
 
 -- | Fit a line drawing into a unit square.
 --   For example, a Curve Data clue.
 drawCurve :: Renderable (Path R2) b => [Edge] -> Diagram b R2
-drawCurve = lw onepix . fit 0.6 . centerXY . mconcat . map drawEdge
+drawCurve = lw onepix . fit 0.6 . centerXY . mconcat . map (stroke . edge)
