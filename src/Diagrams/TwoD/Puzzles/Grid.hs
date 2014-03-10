@@ -63,31 +63,17 @@ dashedgrid = grid' $ bgdashing dashes dashoffset white'
   where
     white' = blend 0.95 white black
 
-fillBG c = square 1 # fc c # alignBL
-
 -- | In a square grid, use the first argument to draw things at the centres
 --   of cells given by coordinates.
-atCentres :: (Transformable a, Monoid a, V a ~ R2) => (t -> a) -> [(Coord, t)] -> a
+atCentres :: (Transformable a, Monoid a, V a ~ R2) =>
+             (t -> a) -> [(Coord, t)] -> a
 atCentres dc = translate (r2 (0.5, 0.5)) . atVertices dc
 
--- | In a square grid, use the first argument to draw things at the grid vertices
---   given by coordinates.
-atVertices :: (Transformable a, Monoid a, V a ~ R2) => (t -> a) -> [(Coord, t)] -> a
+-- | In a square grid, use the first argument to draw things
+--   at the grid vertices given by coordinates.
+atVertices :: (Transformable a, Monoid a, V a ~ R2) =>
+              (t -> a) -> [(Coord, t)] -> a
 atVertices dc = mconcat . map (\ (p, c) -> dc c # translatep p)
-
-charGridBG g f = mconcat [ maybe mempty (translatep p . fillBG) (f p)
-                         | p <- cells g
-                         ]
-charGridBGcaps g = charGridBG g (\p -> cols (g ! p))
-    where cols c | 'A' <= c && c <= 'Z'  = Just (blend 0.1 black white)
-                 | otherwise             = Nothing
-
-drawGridBG g f = drawAreaGrid g `atop` charGridBG g f
-drawGridBG' g f' = drawGridBG g (\p -> f' (g ! p))
-
-drawAreaGridG g = drawGridBG' g cols
-    where cols c | 'A' <= c && c <= 'Z'  = Just (blend 0.1 black white)
-                 | otherwise             = Nothing
 
 frame :: Size -> D R2
 frame (w, h) = stroke . translate (r2 (-bw, -bw)) . alignBL
@@ -124,3 +110,18 @@ drawShadedGrid = atCentres (const $ fillBG gray # centerXY) . clues . fmap toMay
     toMaybe True  = Just ()
     toMaybe False = Nothing
 
+fillBG c = square 1 # fc c # alignBL
+
+charGridBG g f = mconcat [ maybe mempty (translatep p . fillBG) (f p)
+                         | p <- cells g
+                         ]
+charGridBGcaps g = charGridBG g (\p -> cols (g ! p))
+    where cols c | 'A' <= c && c <= 'Z'  = Just (blend 0.1 black white)
+                 | otherwise             = Nothing
+
+drawGridBG g f = drawAreaGrid g `atop` charGridBG g f
+drawGridBG' g f' = drawGridBG g (\p -> f' (g ! p))
+
+drawAreaGridG g = drawGridBG' g cols
+    where cols c | 'A' <= c && c <= 'Z'  = Just (blend 0.1 black white)
+                 | otherwise             = Nothing
