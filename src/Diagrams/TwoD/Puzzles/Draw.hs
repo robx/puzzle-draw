@@ -1,5 +1,4 @@
 {-# LANGUAGE FlexibleContexts          #-}
-{-# LANGUAGE NoMonomorphismRestriction #-}
 {-# LANGUAGE TypeFamilies              #-}
 
 module Diagrams.TwoD.Puzzles.Draw where
@@ -17,15 +16,44 @@ import Diagrams.TwoD.Puzzles.Grid
 import Diagrams.TwoD.Puzzles.Widths
 import Diagrams.TwoD.Puzzles.Things
 
+drawFillo :: (Backend b R2, Renderable (Path R2) b) =>
+             Grid (Clue Int) -> Diagram b R2
 drawFillo = drawIntClues <> dashedgrid . size
+
+drawClueGrid :: (Backend b R2, Renderable (Path R2) b) =>
+                Grid (Clue Char) -> Diagram b R2
 drawClueGrid = atCentres drawChar . clues <> grid . size
+
+drawIntClues :: (Backend b R2, Renderable (Path R2) b) =>
+                Grid (Clue Int) -> Diagram b R2
 drawIntClues = atCentres drawInt . clues
+
+drawIntGrid :: (Backend b R2, Renderable (Path R2) b) =>
+               Grid (Clue Int) -> Diagram b R2
 drawIntGrid = drawIntClues <> grid . size
+
+drawSlitherGrid :: (Backend b R2, Renderable (Path R2) b) =>
+                   Grid (Clue Int) -> Diagram b R2
 drawSlitherGrid = atCentres drawInt . clues <> slithergrid . size
+
+drawMasyuGrid :: (Backend b R2, Renderable (Path R2) b) =>
+                 Grid MasyuClue -> Diagram b R2
 drawMasyuGrid = atCentres pearl . clues <> grid . size
+
+drawCompassClues :: (Backend b R2, Renderable (Path R2) b) =>
+                    Grid CompassClue -> Diagram b R2
 drawCompassClues = atCentres drawCompassClue . clues
+
+drawCompassGrid :: (Backend b R2, Renderable (Path R2) b) =>
+                   Grid CompassClue -> Diagram b R2
 drawCompassGrid = drawCompassClues <> grid . size
+
+sudokugrid :: (Backend b R2, Renderable (Path R2) b) =>
+              Grid (Clue Int) -> Diagram b R2
 sudokugrid = drawedges . sudokubordersg  <> grid . size
+
+drawWordsClues :: (Backend b R2, Renderable (Path R2) b) =>
+                  Grid (Clue [String]) -> Diagram b R2
 drawWordsClues = atCentres drawWords . clues
 
 drawTightGrid d g = atCentres (drawTight d) (clues . fmap Just $ g)
@@ -46,4 +74,6 @@ drawSlalomDiags = atCentres diag . clues . fmap Just
     where diag '/'  = stroke ur # lw edgewidth
           diag '\\' = stroke dr # lw edgewidth
 
+drawCrosses ::  (Backend b R2, Renderable (Path R2) b) =>
+                 Grid (Maybe a) -> Diagram b R2
 drawCrosses = atCentres (const drawCross) . clues
