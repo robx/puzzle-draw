@@ -35,7 +35,7 @@ drawTightGrid d g = atCentres (drawTight d) (clues . fmap Just $ g)
 
 drawSlalomGrid :: (Backend b R2, Renderable (Path R2) b) =>
                   Grid (Clue Int) -> Diagram b R2
-drawSlalomGrid g = atCentres drawSlalomClue (clues g) # translate (r2 (-1/2,-1/2))
+drawSlalomGrid g = atVertices drawSlalomClue (clues g)
                    <> grid (w-1, h-1)
                    <> phantom (frame (size g)) # translate (r2 (-1/2,-1/2))
     where (w, h) = size g
