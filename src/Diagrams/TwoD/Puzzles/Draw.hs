@@ -18,34 +18,25 @@ import Diagrams.TwoD.Puzzles.Widths
 import Diagrams.TwoD.Puzzles.Things
 
 drawFillo = drawIntClues <> dashedgrid . size
-
-drawClueGrid g = atCentres drawChar (clues g) <> grid (size g) id
-
+drawClueGrid = atCentres drawChar . clues <> grid . size
 drawIntClues = atCentres drawInt . clues
-
-drawIntGrid = drawIntClues <> drawGrid
-
+drawIntGrid = drawIntClues <> grid . size
 drawSlitherGrid = atCentres drawInt . clues <> slithergrid . size
-
-drawMasyuGrid g = atCentres pearl (clues g) <> grid (size g) id
-
+drawMasyuGrid = atCentres pearl . clues <> grid . size
 drawCompassClues = atCentres drawCompassClue . clues
-
-drawCompassGrid = drawCompassClues <> drawGrid
-
-sudokugrid g = drawedges (sudokubordersg g) <> grid (size g) id
-
+drawCompassGrid = drawCompassClues <> grid . size
+sudokugrid = drawedges . sudokubordersg  <> grid . size
 drawWordsClues = atCentres drawWords . clues
 
 drawTightGrid d g = atCentres (drawTight d) (clues . fmap Just $ g)
-                    <> grid (size g) id
+                    <> grid (size g)
                     <> phantom (frame (sx + 2, sy + 2) # translate (r2 (-1,-1)))
     where (sx, sy) = size g
 
 drawSlalomGrid :: (Backend b R2, Renderable (Path R2) b) =>
                   Grid (Clue Int) -> Diagram b R2
 drawSlalomGrid g = atCentres drawSlalomClue (clues g) # translate (r2 (-1/2,-1/2))
-                   <> grid (w-1, h-1) id
+                   <> grid (w-1, h-1)
                    <> phantom (frame (size g)) # translate (r2 (-1/2,-1/2))
     where (w, h) = size g
 

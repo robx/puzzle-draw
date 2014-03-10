@@ -37,12 +37,31 @@ outframe (w, h) = strokePointLoop r # lw fw
           e = fw / 2 - gridwidth / 2
           r = [(-e, -e), (wd + e, -e), (wd + e, hd + e), (-e, hd + e)]
 
-grid :: (Backend b R2, Renderable (Path R2) b) =>
-        Size -> (Diagram b R2 -> Diagram b R2) -> Diagram b R2
-grid s gridstyle =
+-- | Draw a square grid, applying the given style to the grid lines.
+grid' :: (Backend b R2, Renderable (Path R2) b) =>
+         (Diagram b R2 -> Diagram b R2) -> Size -> Diagram b R2
+grid' gridstyle s =
     outframe s
     <> stroke (gridlines s) # lw gridwidth # gridstyle
     <> phantom (frame s)
+
+-- | Draw a square grid with default grid line style.
+grid :: (Backend b R2, Renderable (Path R2) b) =>
+        Size -> Diagram b R2
+grid = grid' id
+
+bgdashing ds offs c x = x # dashing ds offs <> x # lc c
+dashes = [5 / 40, 3 / 40]
+dashoffset = 2.5 / 40
+
+-- | Draw a square grid with dashed grid lines. The gaps
+--   between dashes are off-white to aid in using filling
+--   tools.
+dashedgrid :: (Backend b R2, Renderable (Path R2) b) =>
+              Size -> Diagram b R2
+dashedgrid = grid' $ bgdashing dashes dashoffset white'
+  where
+    white' = blend 0.95 white black
 
 drawEdge :: Renderable (Path R2) b => Edge -> Diagram b R2
 drawEdge (E p d) = line # translatep p
@@ -57,7 +76,7 @@ atCentres :: (Transformable a, Monoid a, V a ~ R2) => (t -> a) -> [(Coord, t)] -
 atCentres dc = translate (r2 (0.5, 0.5)) . atVertices dc
 
 -- | In a square grid, use the first argument to draw things at the grid vertices
---   of given by coordinates.
+--   given by coordinates.
 atVertices :: (Transformable a, Monoid a, V a ~ R2) => (t -> a) -> [(Coord, t)] -> a
 atVertices dc = mconcat . map (\ (p, c) -> dc c # translatep p)
 
@@ -75,32 +94,23 @@ drawAreaGridG g = drawGridBG' g cols
     where cols c | 'A' <= c && c <= 'Z'  = Just (blend 0.1 black white)
                  | otherwise             = Nothing
 
-drawGrid g = grid (size g) id
-
 frame :: Size -> D R2
 frame (w, h) = stroke . translate (r2 (-bw, -bw)) . alignBL
                $ rect (fromIntegral w + 2 * bw) (fromIntegral h + 2 * bw)
   where
     bw = borderwidth
 
-bgdashing ds offs c x = x # dashing ds offs <> x # lc c
-
-dashes = [5 / 40, 3 / 40]
-dashoffset = 2.5 / 40
-
-dashedgrid :: (Backend b R2, Renderable (Path R2) b) =>
-              Size -> Diagram b R2
-dashedgrid s = grid s $ bgdashing dashes dashoffset white'
-    where white' = blend 0.95 white black
-
 drawedges :: Renderable (Path R2) b => [Edge] -> Diagram b R2
 drawedges = lineCap LineCapSquare . lw edgewidth . mconcat . map drawEdge
 
-drawAreaGrid g = drawedges (borders g) `atop` grid (size g) id
+drawAreaGrid :: (Backend b R2, Renderable (Path R2) b, Eq a) =>
+                  Grid a -> Diagram b R2
+drawAreaGrid = drawedges . borders <> grid . size
 
-drawShadedGrid g = atCentres (const $ fillBG gray # centerXY) (clues g')
+drawShadedGrid :: (Backend b R2, Renderable (Path R2) b) =>
+                  Grid Bool -> Diagram b R2
+drawShadedGrid = atCentres (const $ fillBG gray # centerXY) . clues . fmap toMaybe
   where
-    g' = fmap toMaybe g
     toMaybe True  = Just ()
     toMaybe False = Nothing
 

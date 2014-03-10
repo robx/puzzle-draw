@@ -46,7 +46,7 @@ geradeweg = liftA2 (,)
     (drawIntGrid . pzl)
     (drawIntClues . pzl
      <> solstyle . drawDualEdges . sol
-     <> drawGrid . pzl)
+     <> grid . size . pzl)
 
 fillomino :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b Fillomino
 fillomino = liftA2 (,)
@@ -67,7 +67,7 @@ latintapa :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b LatinTapa
 latintapa = liftA2 (,)
     l
     (l <> atCentres drawChar . clues . sol)
-    where l = (drawGrid <> drawWordsClues) . pzl
+    where l = (grid . size <> drawWordsClues) . pzl
 
 sudoku :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b Sudoku
 sudoku = liftA2 (,)
@@ -133,7 +133,7 @@ curvedata :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b CurveData
 curvedata = liftA2 (,)
     cd
     ((solstyle . drawDualEdges . sol) <> cd)
-    where cd = (atCentres drawCurve . clues <> drawGrid) . pzl
+    where cd = (atCentres drawCurve . clues <> grid . size) . pzl
 
 doubleback :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b DoubleBack
 doubleback = liftA2 (,)
