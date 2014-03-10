@@ -21,7 +21,7 @@ cellc s c = clue c `atop` cell s
 
 row (R cs s) = centerX . hcat . map (cellc s) $ cs
 
-pyramid p = phantom (frame s s) <> (alignBL . vcat . map row . unPyr $ p)
+pyramid p = phantom (frame (s, s)) <> (alignBL . vcat . map row . unPyr $ p)
     where s = psize p
 
 kropki None = mempty
@@ -34,5 +34,5 @@ krow (KR cs s ks) = ccat dots `atop` ccat clues
           clues = map (cellc s) cs
           dots = interleave (map phantom (clues :: [D R2])) (map kropki ks)
 
-kpyramid p = phantom (frame s s) <> (alignBL . vcat . map krow . unKP $ p)
+kpyramid p = phantom (frame (s, s)) <> (alignBL . vcat . map krow . unKP $ p)
     where s = psize (plainpyramid p)

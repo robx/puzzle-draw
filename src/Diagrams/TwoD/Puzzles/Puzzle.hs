@@ -109,9 +109,9 @@ liarslither = liftA2 (,)
 tightfitskyscrapers :: (Backend b R2, Renderable (Path R2) b) =>
                        RenderPuzzle b TightfitSkyscrapers
 tightfitskyscrapers = liftA2 (,)
-    (atCentres drawInt . clueso . fst . pzl
+    (atCentres drawInt . outsideclues . fst . pzl
      <> drawTightGrid (const mempty) . snd . pzl)
-    (atCentres drawInt . clueso . fst . pzl
+    (atCentres drawInt . outsideclues . fst . pzl
      <> drawTightGrid drawInt . sol)
 
 wordgrid :: (Backend b R2, Renderable (Path R2) b) =>

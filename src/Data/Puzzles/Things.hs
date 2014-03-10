@@ -12,6 +12,8 @@ type CompassClue = Clue CompassC
 
 type IntClue = Clue Int
 
+-- | A cell that is optionally bisected by a diagonal
+--   (up-right or down-right).
 data Tightfit a = Single a | UR a a | DR a a
 
 instance Show a => Show (Tightfit a) where
@@ -20,9 +22,12 @@ instance Show a => Show (Tightfit a) where
               show' (UR x y)   = show x ++ "/" ++ show y
               show' (DR x y)   = show x ++ "\\" ++ show y
 
-data MarkedWord = MW { mwstart :: Point, mwend :: Point }
+data MarkedWord = MW { mwstart :: Coord, mwend :: Coord }
 
-type Loop = [Edge] -- should have some properties...
+type Loop = [Edge]
 
-type Thermometer = [Point]
-
+-- | A thermometer, as a list of coordinates from bulb to end.
+--   There should be at least two entries, entries should be distinct,
+--   and successive entries should be neighbours (diagonal neighbours
+--   are fine).
+type Thermometer = [Coord]

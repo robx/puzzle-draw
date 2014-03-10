@@ -75,7 +75,7 @@ readEdges s = horiz ++ vert
 --  └──┐│
 --     └┘
 readEdges' :: String -> [Edge]
-readEdges' s = nub . sort . concatMap edges . points $ g
+readEdges' s = nub . sort . concatMap edges . cells $ g
     where g = readCharGrid s
           (w, h) = size g
           isV c = c `elem` "│└┘"
@@ -85,7 +85,7 @@ readEdges' s = nub . sort . concatMap edges . points $ g
 readThermos :: CharGrid -> (IntGrid, [Thermometer])
 readThermos cg = (ig, thermos)
     where ig = fmap charToIntClue cg
-          thermos = catMaybes [ thermo p | p <- points cg ]
+          thermos = catMaybes [ thermo p | p <- cells cg ]
           at p = cg ! p
           isStart p = let c = at p in
                       isAlpha c
