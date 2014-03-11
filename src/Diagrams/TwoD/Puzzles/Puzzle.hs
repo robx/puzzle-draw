@@ -32,7 +32,7 @@ type RenderPuzzle b a = a -> PuzzleSol b
 
 lits :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b LITS
 lits = liftA2 (,)
-    (drawAreaGridG . pzl)
+    (drawAreaGridGray . pzl)
     (drawAreaGrid . pzl <> drawShadedGrid . sol)
 
 litsplus :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b LITS
@@ -137,8 +137,8 @@ curvedata = liftA2 (,)
 
 doubleback :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b DoubleBack
 doubleback = liftA2 (,)
-    (drawAreaGridG . pzl)
-    (solstyle . drawDualEdges . sol <> drawAreaGridG . pzl)
+    (drawAreaGridGray . pzl)
+    (solstyle . drawDualEdges . sol <> drawAreaGridGray . pzl)
 
 slalom :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b Slalom
 slalom = liftA2 (,)
@@ -148,7 +148,7 @@ slalom = liftA2 (,)
 compass :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b Compass
 compass = liftA2 (,)
     (drawCompassGrid . pzl)
-    (drawCompassClues . pzl <> drawAreaGridG . sol)
+    (drawCompassClues . pzl <> drawAreaGridGray . sol)
 
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 

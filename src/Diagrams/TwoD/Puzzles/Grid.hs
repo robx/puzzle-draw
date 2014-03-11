@@ -2,6 +2,8 @@
 
 module Diagrams.TwoD.Puzzles.Grid where
 
+import Data.Char (isUpper)
+
 import Diagrams.Prelude
 
 import Data.Puzzles.Grid
@@ -109,25 +111,22 @@ drawAreaGrid :: (Backend b R2, Renderable (Path R2) b, Eq a) =>
                   Grid a -> Diagram b R2
 drawAreaGrid = drawEdges . borders <> grid . size
 
+fillBG c = square 1 # fc c
+
+shadeGrid :: (Backend b R2, Renderable (Path R2) b) =>
+              Grid (Maybe (Colour Double)) -> Diagram b R2
+shadeGrid = mconcat . atCentres' . fmap (maybe mempty fillBG)
+
 drawShadedGrid :: (Backend b R2, Renderable (Path R2) b) =>
                   Grid Bool -> Diagram b R2
-drawShadedGrid = atCentres (const $ fillBG gray # centerXY) . clues . fmap toMaybe
+drawShadedGrid = shadeGrid . fmap f
   where
-    toMaybe True  = Just ()
-    toMaybe False = Nothing
+    f True  = Just gray
+    f False = Nothing
 
-fillBG c = square 1 # fc c # alignBL
-
-charGridBG g f = mconcat [ maybe mempty (translatep p . fillBG) (f p)
-                         | p <- cells g
-                         ]
-charGridBGcaps g = charGridBG g (\p -> cols (g ! p))
-    where cols c | 'A' <= c && c <= 'Z'  = Just (blend 0.1 black white)
-                 | otherwise             = Nothing
-
-drawGridBG g f = drawAreaGrid g `atop` charGridBG g f
-drawGridBG' g f' = drawGridBG g (\p -> f' (g ! p))
-
-drawAreaGridG g = drawGridBG' g cols
-    where cols c | 'A' <= c && c <= 'Z'  = Just (blend 0.1 black white)
-                 | otherwise             = Nothing
+drawAreaGridGray :: (Backend b R2, Renderable (Path R2) b) =>
+                    Grid Char -> Diagram b R2
+drawAreaGridGray = drawAreaGrid <> shadeGrid . fmap cols
+  where
+    cols c | isUpper c  = Just (blend 0.1 black white)
+           | otherwise  = Nothing
