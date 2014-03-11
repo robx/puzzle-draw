@@ -69,11 +69,17 @@ atCentres :: (Transformable a, Monoid a, V a ~ R2) =>
              (t -> a) -> [(Coord, t)] -> a
 atCentres dc = translate (r2 (0.5, 0.5)) . atVertices dc
 
+atCentres' :: (Transformable a, V a ~ R2) => Grid a -> [a]
+atCentres' = translate (r2 (1/2, 1/2)) . atVertices'
+
 -- | In a square grid, use the first argument to draw things
 --   at the grid vertices given by coordinates.
 atVertices :: (Transformable a, Monoid a, V a ~ R2) =>
               (t -> a) -> [(Coord, t)] -> a
 atVertices dc = mconcat . map (\ (p, c) -> dc c # translatep p)
+
+atVertices' :: (Transformable a, V a ~ R2) => Grid a -> [a]
+atVertices' g = [ (g ! c) # translatep c | c <- cells g ]
 
 frame :: Size -> D R2
 frame (w, h) = stroke . translate (r2 (-bw, -bw)) . alignBL
