@@ -4,13 +4,13 @@ import Data.Puzzles.Grid
 import Data.Puzzles.Things
 
 import Text.Read (readMaybe)
-import Data.Char (digitToInt, isAlpha)
+import Data.Char (digitToInt, isAlpha, isDigit)
 import Data.List (nub, sort)
 import Data.Maybe (catMaybes)
 
 charToIntClue c
-    | '0' <= c && c <= '9'  = Just $ fromEnum c - fromEnum '0'
-    | otherwise             = Nothing
+    | isDigit c  = Just $ digitToInt c
+    | otherwise  = Nothing
 
 strToIntClue :: String -> IntClue
 strToIntClue = readMaybe
