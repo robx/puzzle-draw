@@ -58,6 +58,7 @@ library
                        Diagrams.TwoD.Puzzles.Widths
                        Diagrams.TwoD.Puzzles.Pyramid
                        Diagrams.TwoD.Puzzles.Puzzle
+                       Diagrams.TwoD.Puzzles.PuzzleDraw
                        Diagrams.Backend.Cairo.CmdLineSized
   
   -- Modules included in this library but not exported.
