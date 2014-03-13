@@ -21,7 +21,7 @@ sudokuborders s =
           rectborders h = [ E (h, y) V | y <- [0..2*h-1] ]
                           ++ [ E (x, 2*y) H | x <- [0..2*h-1], y <- [1..h-1] ]
 
-sudokubordersg :: Grid a -> [Edge]
+sudokubordersg :: SGrid a -> [Edge]
 sudokubordersg g = sudokuborders s
    where (w, h) = size g
          s | w == h    = w

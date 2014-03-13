@@ -115,7 +115,7 @@ tightfitskyscrapers = liftA2 (,)
      <> drawTightGrid drawInt . sol)
 
 wordgrid :: (Backend b R2, Renderable (Path R2) b) =>
-            Grid (Maybe Char) -> [String] -> Diagram b R2
+            SGrid (Maybe Char) -> [String] -> Diagram b R2
 wordgrid g ws = stackWords ws `besidesR` drawClueGrid g
 
 wordloop :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b Wordloop

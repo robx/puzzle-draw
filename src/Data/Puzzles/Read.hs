@@ -26,15 +26,25 @@ charToMasyuClue c
     | c == ' ' || c == '.'  = Nothing
 
 
-type CharGrid = Grid Char
-type MasyuGrid = Grid MasyuClue
+type CharGrid = SGrid Char
+type MasyuGrid = SGrid MasyuClue
 type AreaGrid = CharGrid
-type ShadedGrid = Grid Bool
-type CharClueGrid = Grid (Maybe Char)
-type IntGrid = Grid (Clue Int)
+type ShadedGrid = SGrid Bool
+type CharClueGrid = SGrid (Maybe Char)
+type IntGrid = SGrid (Clue Int)
 
-readCharGrid = fromListList . lines
+readCharGridUnfilled = fromListList . lines
+
+-- | Read a grid of characters, filling short lines
+-- to form a rectangle.
+readCharGrid g = fromListList filled
+  where
+    ls = lines g
+    w = maximum . map length $ ls
+    filled = map (take w . (++ (repeat ' '))) ls
+
 readAreaGrid = readCharGrid
+
 readCharClueGrid = fmap charToCharClue . readCharGrid
 readBoolGrid = fmap (`elem` ['x', 'X']) . readCharGrid
 readIntGrid = fmap charToIntClue . readCharGrid
@@ -101,7 +111,7 @@ readThermos cg = (ig, thermos)
                     ps []   = []
                     ps _    = error "invalid thermo"
 
-readTightOutside :: String -> (OutsideClues (Maybe Int), Grid (Tightfit ()))
+readTightOutside :: String -> (OutsideClues (Maybe Int), SGrid (Tightfit ()))
 readTightOutside s = (OC l r b t, gt)
     where g = readCharGrid s
           (w', h') = size g
@@ -122,5 +132,5 @@ readTightInt [c] = Single (digitToInt c)
 readTightInt (c:'/':d:[]) = UR (digitToInt c) (digitToInt d)
 readTightInt (c:'\\':d:[]) = DR (digitToInt c) (digitToInt d)
 
-readTightIntGrid :: String -> Grid (Tightfit Int)
+readTightIntGrid :: String -> SGrid (Tightfit Int)
 readTightIntGrid = fromListList . map (map readTightInt . words) . lines

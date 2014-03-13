@@ -71,7 +71,7 @@ atCentres :: (Transformable a, Monoid a, V a ~ R2) =>
              (t -> a) -> [(Coord, t)] -> a
 atCentres dc = translate (r2 (0.5, 0.5)) . atVertices dc
 
-atCentres' :: (Transformable a, V a ~ R2) => Grid a -> [a]
+atCentres' :: (Transformable a, V a ~ R2) => SGrid a -> [a]
 atCentres' = translate (r2 (1/2, 1/2)) . atVertices'
 
 -- | In a square grid, use the first argument to draw things
@@ -80,7 +80,7 @@ atVertices :: (Transformable a, Monoid a, V a ~ R2) =>
               (t -> a) -> [(Coord, t)] -> a
 atVertices dc = mconcat . map (\ (p, c) -> dc c # translatep p)
 
-atVertices' :: (Transformable a, V a ~ R2) => Grid a -> [a]
+atVertices' :: (Transformable a, V a ~ R2) => SGrid a -> [a]
 atVertices' g = [ (g ! c) # translatep c | c <- cells g ]
 
 frame :: Size -> D R2
@@ -108,24 +108,24 @@ drawDualEdges :: Renderable (Path R2) b => [Edge] -> Diagram b R2
 drawDualEdges = edgeStyle . stroke . mconcat . map dualEdge
 
 drawAreaGrid :: (Backend b R2, Renderable (Path R2) b, Eq a) =>
-                  Grid a -> Diagram b R2
+                  SGrid a -> Diagram b R2
 drawAreaGrid = drawEdges . borders <> grid . size
 
 fillBG c = square 1 # fc c
 
 shadeGrid :: (Backend b R2, Renderable (Path R2) b) =>
-              Grid (Maybe (Colour Double)) -> Diagram b R2
+              SGrid (Maybe (Colour Double)) -> Diagram b R2
 shadeGrid = mconcat . atCentres' . fmap (maybe mempty fillBG)
 
 drawShadedGrid :: (Backend b R2, Renderable (Path R2) b) =>
-                  Grid Bool -> Diagram b R2
+                  SGrid Bool -> Diagram b R2
 drawShadedGrid = shadeGrid . fmap f
   where
     f True  = Just gray
     f False = Nothing
 
 drawAreaGridGray :: (Backend b R2, Renderable (Path R2) b) =>
-                    Grid Char -> Diagram b R2
+                    SGrid Char -> Diagram b R2
 drawAreaGridGray = drawAreaGrid <> shadeGrid . fmap cols
   where
     cols c | isUpper c  = Just (blend 0.1 black white)

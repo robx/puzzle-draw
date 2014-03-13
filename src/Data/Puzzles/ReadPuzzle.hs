@@ -75,7 +75,7 @@ nurikabe (RP p s) = PD <$>
     (readWideIntGrid <$> fromJSON p) <*>
     (readBoolGrid <$> fromJSON s)
 
-newtype RefGrid a = RefGrid { unRG :: Grid (Maybe a) }
+newtype RefGrid a = RefGrid { unRG :: SGrid (Maybe a) }
 
 merge :: CharGrid -> HM.HashMap String a -> RefGrid a
 merge g m = RefGrid (f <$> g)
@@ -118,7 +118,7 @@ slither (RP p s) = PD <$>
     (readIntGrid <$> fromJSON p) <*>
     (readEdges' <$> fromJSON s)
 
-newtype LSol = LSol { unLSol :: (Loop, Grid (Maybe ())) }
+newtype LSol = LSol { unLSol :: (Loop, SGrid (Maybe ())) }
 instance FromJSON LSol where
     parseJSON (Object v) = LSol <$> ((,) <$>
                            (readEdges' <$> v .: "loop") <*>

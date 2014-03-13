@@ -1,59 +1,67 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module Data.Puzzles.Grid where
 
 import Data.Maybe
+import qualified Data.Map as Map
 import Text.Read
 
-newtype Grid a = GG {unGG :: [[a]]}
-    deriving Show
+import Data.Puzzles.GridShape hiding (size, cells)
+import qualified Data.Puzzles.GridShape as GS
 
--- | Coordinates of a grid cell, or of a vertex.
-type Coord = (Int, Int)
+data Grid s a = Grid
+                { shape :: s
+                , contents :: Map.Map (Cell s) a
+                }
 
--- | Size of a grid, as width and height.
-type Size = (Int, Int)
+type SGrid = Grid Square
+type Coord = Cell Square
+type Size = GridSize Square
 
-(!) :: Grid a -> Coord -> a
-(!) g@(GG g') (x, y) = g' !! (sy - y - 1) !! x
-    where (_, sy) = size g
+(!) :: (GridShape s, Ord (Cell s)) => Grid s a -> Cell s -> a
+(!) (Grid _ m) = (m Map.!)
 
-instance Functor Grid where
-    fmap f = GG . map (map f) . unGG
+instance Functor (Grid s) where
+    fmap f (Grid s m) = Grid s (fmap f m)
 
-fromListList :: [[a]] -> Grid a
-fromListList = GG
+fromListList :: [[a]] -> Grid Square a
+fromListList g = Grid s m
+  where
+    w = maximum . map length $ g
+    h = length g
+    s = Square w h
+    m = Map.fromList . concat
+      . zipWith (\y -> zipWith (\x -> (,) (x, y)) [0..]) [h-1,h-2..]
+      $ g
 
-size :: Grid a -> Size
-size (GG g) = (length (head g), length g)
+size :: GridShape s => Grid s a -> GridSize s
+size = GS.size . shape
 
-inBounds :: Grid a -> Coord -> Bool
-inBounds g (x, y) = x >= 0 && y >= 0 && x < sx && y < sy
-    where (sx, sy) = size g
+cells :: GridShape s => Grid s a -> [Cell s]
+cells = GS.cells . shape
 
-neighbours :: Grid a -> Coord -> [Coord]
+inBounds :: (GridShape s, Eq (Cell s)) => Grid s a -> Cell s -> Bool
+inBounds g c = c `elem` cells g
+
+clues :: GridShape s => Grid s (Maybe a) -> [(Cell s, a)]
+clues (Grid _ m) = [ (k, v) | (k, Just v) <- Map.toList m ]
+
+neighbours :: Grid Square a -> Cell Square -> [Cell Square]
 neighbours g p = filter (inBounds g) . map (add p) $ deltas
     where deltas = [ (dx, dy)
                    | dx <- [-1..1], dy <- [-1..1]
                    , dx /= 0 || dy /= 0
                    ]
-          add :: Coord -> Coord -> Coord
           add (x, y) (x', y') = (x + x', y + y')
-
-cells :: Grid a -> [Coord]
-cells g = [ (x, y) | x <- [0..sx-1], y <- [0..sy-1] ]
-    where (sx, sy) = size g
-
-clues :: Grid (Maybe a) -> [(Coord, a)]
-clues g = [ (p, fromJust $ g ! p) | p <- cells g
-                                  , isJust $ g ! p ]
 
 data Dir = V | H
     deriving (Eq, Ord, Show)
 
-data Edge = E Coord Dir
+data Edge = E (Cell Square) Dir
     deriving (Show, Eq, Ord)
 
 -- | The inner edges of a grid that separate unequal cells.
-borders :: Eq a => Grid a -> [Edge]
+borders :: Eq a => Grid Square a -> [Edge]
 borders g = [ E p V | p <- vborders ] ++ [ E p H | p <- hborders ]
   where
     borders' f (sx, sy) = [ (x + 1, y) | x <- [0 .. sx - 2]
