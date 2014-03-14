@@ -14,10 +14,10 @@ twopix = 2 * onepix
 fourpix = 4 * onepix
 
 gridwidth :: Double
-gridwidth = onepix
+gridwidth = onepix / 2
 
 framewidthfactor :: Double
-framewidthfactor = 4
+framewidthfactor = 8
 
 edgewidth, borderwidth :: Double
 edgewidth = 3 * onepix
