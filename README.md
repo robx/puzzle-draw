@@ -1,3 +1,5 @@
+[![Build Status](https://api.travis-ci.org/robx/puzzle-draw.png)](http://travis-ci.org/robx/puzzle-draw)
+
 puzzle-draw
 ===========
 
