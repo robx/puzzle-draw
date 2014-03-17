@@ -3,9 +3,7 @@ puzzle-draw
 
 Rendering logic puzzles
 
-This includes both library code for drawing puzzles
-and some excutables for rendering graphics from
-test descriptions.
+This includes library code for drawing puzzles.
 
-The examples/ subdirectory may help show how to use this.
-
+See puzzle-draw-cmdline for command line tools that
+use this.
