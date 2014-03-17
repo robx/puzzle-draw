@@ -49,6 +49,8 @@ dropType (TP _ p s) = RP p s
 
 type ReadPuzzle a = RawPuzzle -> Result a
 
+-- | A pair of parsers for a puzzle type.
+-- First parses the puzzle, second the solution.
 type ParsePuzzle a b = (Value -> Parser a, Value -> Parser b)
 
 toRead :: ParsePuzzle a b -> ReadPuzzle (PuzzleDef a b)
