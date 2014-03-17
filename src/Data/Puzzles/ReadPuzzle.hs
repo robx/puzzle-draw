@@ -16,6 +16,8 @@ module Data.Puzzles.ReadPuzzle (
 import Control.Applicative
 import Control.Monad
 import Data.Aeson
+import Data.Aeson.Types (parse)
+
 import Data.Yaml
 import qualified Data.HashMap.Strict as HM
 import Data.Char (isAlpha)
@@ -47,6 +49,11 @@ dropType (TP _ p s) = RP p s
 
 type ReadPuzzle a = RawPuzzle -> Result a
 
+type ParsePuzzle a b = (Value -> Parser a, Value -> Parser b)
+
+toRead :: ParsePuzzle a b -> ReadPuzzle (PuzzleDef a b)
+toRead (pp, ps) (RP p s) = PD <$> parse pp p <*> parse ps s
+
 lits :: ReadPuzzle LITS
 lits (RP p s) = PD <$>
     (readAreaGrid <$> fromJSON p) <*>
@@ -65,10 +72,11 @@ fillomino (RP p s) = PD <$>
     (readIntGrid <$> fromJSON p) <*>
     (readIntGrid <$> fromJSON s)
 
+masyu' :: ParsePuzzle (SGrid (Clue MasyuPearl)) Loop
+masyu' = (parseClueGrid, parseEdges)
+
 masyu :: ReadPuzzle Masyu
-masyu (RP p s) = PD <$>
-    (readMasyuGrid <$> fromJSON p) <*>
-    (readEdges' <$> fromJSON s)
+masyu = toRead masyu'
 
 nurikabe :: ReadPuzzle Nurikabe
 nurikabe (RP p s) = PD <$>
