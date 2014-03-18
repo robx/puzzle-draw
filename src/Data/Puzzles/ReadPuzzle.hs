@@ -24,6 +24,7 @@ import Data.Yaml
 import qualified Data.HashMap.Strict as HM
 import Data.Char (isAlpha)
 import qualified Data.Text as T
+import Text.Read (readMaybe)
 
 import Data.Puzzles.Grid
 import qualified Data.Puzzles.Pyramid as Pyr
@@ -222,11 +223,16 @@ slalom' = (parseClueGrid, \v -> rectToSGrid <$> parseJSON v)
 slalom :: ReadPuzzle Slalom
 slalom = toRead slalom'
 
+instance FromString Int where
+    parseString s = maybe empty pure $ readMaybe s
+
 instance FromJSON CompassC where
-    parseJSON v = comp . words <$> parseJSON v
-        where c "." = Nothing
-              c x   = Just (read x)
-              comp [n, e, s, w] = CC (c n) (c e) (c s) (c w)
+    parseJSON (String t) = comp . map T.unpack . T.words $ t
+        where c "." = pure Nothing
+              c x   = Just <$> parseString x
+              comp [n, e, s, w] = CC <$> c n <*> c e <*> c s <*> c w
+              comp _            = empty
+    parseJSON _          = empty
 
 compass :: ReadPuzzle Compass
 compass (RP p s) = PD <$>
