@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts, GADTs, StandaloneDeriving #-}
 
 module Data.Puzzles.Grid where
 
@@ -9,10 +9,11 @@ import Text.Read
 import Data.Puzzles.GridShape hiding (size, cells)
 import qualified Data.Puzzles.GridShape as GS
 
-data Grid s a = Grid
-                { shape :: s
-                , contents :: Map.Map (Cell s) a
-                }
+data Grid s a where
+    Grid :: { shape :: s
+            , contents :: Map.Map (Cell s) a} -> Grid s a
+
+deriving instance (Show a, Show s, GridShape s) => Show (Grid s a)
 
 type SGrid = Grid Square
 type Coord = Cell Square

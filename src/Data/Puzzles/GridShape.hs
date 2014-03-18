@@ -1,8 +1,8 @@
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeFamilies, FlexibleContexts #-}
 
 module Data.Puzzles.GridShape where
 
-class GridShape a where
+class Show (Cell a) => GridShape a where
     type GridSize a :: *
     type Cell     a :: *
     type Vertex   a :: *
@@ -12,6 +12,7 @@ class GridShape a where
     vertices :: a -> [Vertex a]
 
 data Square = Square Int Int
+    deriving Show
 
 instance GridShape Square where
     type GridSize Square = (Int, Int)
