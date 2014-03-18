@@ -12,7 +12,7 @@ module Data.Puzzles.ReadPuzzle (
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass,
 
-    geradeweg', tightfitskyscrapers', slalom', kpyramid'
+    geradeweg', tightfitskyscrapers', slalom', kpyramid', compass'
   ) where
 
 import Control.Applicative
@@ -230,3 +230,6 @@ compass :: ReadPuzzle Compass
 compass (RP p s) = PD <$>
     (unRG <$> fromJSON p) <*>
     (readAreaGrid <$> fromJSON s)
+
+compass' :: ParsePuzzle (SGrid (Clue CompassC)) CharGrid
+compass' = fromRead compass
