@@ -220,9 +220,18 @@ readTightOutside s = (OC l r b t, gt)
                             | y <- [h'-2,h'-3..1]
                             ]
 
+instance FromChar a => FromString (Tightfit a) where
+    parseString [c]           = Single <$> parseChar c
+    parseString (c: '/':d:[]) = UR <$> parseChar c <*> parseChar d
+    parseString (c:'\\':d:[]) = DR <$> parseChar c <*> parseChar d
+    parseString _             = empty
+
 readTightInt [c] = Single (digitToInt c)
 readTightInt (c:'/':d:[]) = UR (digitToInt c) (digitToInt d)
 readTightInt (c:'\\':d:[]) = DR (digitToInt c) (digitToInt d)
 
 readTightIntGrid :: String -> SGrid (Tightfit Int)
 readTightIntGrid = fromListList . map (map readTightInt . words) . lines
+
+parseTightIntGrid :: Value -> Parser (SGrid (Tightfit Int))
+parseTightIntGrid v = rectToSGrid . unSpaced <$> parseJSON v
