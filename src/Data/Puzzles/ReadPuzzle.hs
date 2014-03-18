@@ -23,6 +23,7 @@ import Data.Aeson.Types (parse)
 import Data.Yaml
 import qualified Data.HashMap.Strict as HM
 import Data.Char (isAlpha)
+import Data.Text (pack)
 
 import Data.Puzzles.Grid
 import qualified Data.Puzzles.Pyramid as Pyr
@@ -57,6 +58,19 @@ type ParsePuzzle a b = (Value -> Parser a, Value -> Parser b)
 
 toRead :: ParsePuzzle a b -> ReadPuzzle (PuzzleDef a b)
 toRead (pp, ps) (RP p s) = PD <$> parse pp p <*> parse ps s
+
+-- | Almost-inverse of toRead.
+-- We actually need to supply a valid solution to successfully
+-- parse a valid puzzle without solution, we hope "." will do.
+fromRead :: ReadPuzzle (PuzzleDef a b) -> ParsePuzzle a b
+fromRead r = (p, s)
+  where
+    rp v v' = RP v v'
+    vempty = String (pack ".")
+    p v = case r (rp v vempty) of Success (PD p' _) -> pure p'
+                                  Error _           -> empty
+    s v = case r (rp vempty v) of Success (PD _ s') -> pure s'
+                                  Error _           -> empty
 
 lits :: ReadPuzzle LITS
 lits (RP p s) = PD <$>
