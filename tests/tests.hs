@@ -6,6 +6,8 @@ import Data.Yaml
 
 import Data.Puzzles.ReadPuzzle (geradeweg', tightfitskyscrapers')
 
+import Data.Puzzles.Read (parseChar)
+
 main = defaultMain tests
 
 tests :: TestTree
@@ -73,4 +75,7 @@ unitTests = testGroup "Unit tests"
         testNonparse (snd tightfitskyscrapers') tightfit_sol_broken
     , testCase "don't parse broken tightfit solution" $
         testNonparse (snd tightfitskyscrapers') tightfit_sol_broken_2
+    , testCase "parse digit" $ (parseMaybe parseChar '5' :: Maybe Int) @=? Just 5
+    , testCase "don't parse hex chars" $ (parseMaybe parseChar 'a' :: Maybe Int) @=? Nothing
+    , testCase "don't break on non-digits" $ (parseMaybe parseChar ' ' :: Maybe Int) @=? Nothing
     ]
