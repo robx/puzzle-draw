@@ -12,7 +12,7 @@ module Data.Puzzles.ReadPuzzle (
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass,
 
-    geradeweg', tightfitskyscrapers'
+    geradeweg', tightfitskyscrapers', slalom'
   ) where
 
 import Control.Applicative
@@ -211,6 +211,9 @@ doubleback :: ReadPuzzle DoubleBack
 doubleback (RP p s) = PD <$>
     (readAreaGrid <$> fromJSON p) <*>
     (readEdges' <$> fromJSON s)
+
+slalom' :: ParsePuzzle (SGrid (Clue Int)) (SGrid Char)
+slalom' = fromRead slalom
 
 slalom :: ReadPuzzle Slalom
 slalom (RP p s) = PD <$>
