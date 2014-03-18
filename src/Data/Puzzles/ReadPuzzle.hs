@@ -12,7 +12,8 @@ module Data.Puzzles.ReadPuzzle (
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass,
 
-    geradeweg', tightfitskyscrapers', slalom', kpyramid', compass'
+    geradeweg', tightfitskyscrapers', slalom', kpyramid', compass',
+    thermosudoku'
   ) where
 
 import Control.Applicative
@@ -144,6 +145,9 @@ thermosudoku :: ReadPuzzle ThermoSudoku
 thermosudoku (RP p s) = PD <$>
     (readThermos . readCharGrid <$> fromJSON p) <*>
     (readIntGrid <$> fromJSON s)
+
+thermosudoku' :: ParsePuzzle (IntGrid, [Thermometer]) IntGrid
+thermosudoku' = fromRead thermosudoku
 
 pyramid' :: ParsePuzzle Pyr.Pyramid Pyr.Pyramid
 pyramid' = (parseJSON, parseJSON)
