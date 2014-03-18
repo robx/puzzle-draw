@@ -25,8 +25,6 @@ import Data.Puzzles.PuzzleTypes
 import Data.Puzzles.Grid
 import qualified Data.Puzzles.Pyramid as Pyr
 
-import Control.Applicative (liftA2)
-
 type PuzzleSol b = (Diagram b R2, Diagram b R2)
 type RenderPuzzle b a = a -> PuzzleSol b
 

@@ -4,14 +4,11 @@
 module Diagrams.TwoD.Puzzles.Draw where
 
 import Diagrams.Prelude
-import Diagrams.Util
-import Diagrams.Combinators
 
 import Data.Puzzles.Grid
 import Data.Puzzles.Things
 import Data.Puzzles.Sudoku
 
-import Diagrams.TwoD.Puzzles.Lib
 import Diagrams.TwoD.Puzzles.Grid
 import Diagrams.TwoD.Puzzles.Widths
 import Diagrams.TwoD.Puzzles.Things
