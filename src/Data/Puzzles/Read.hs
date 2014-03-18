@@ -21,6 +21,9 @@ class FromChar a where
 instance FromChar Char where
     parseChar = pure
 
+class FromString a where
+    parseString :: String -> Parser a
+
 instance FromChar Int where
     parseChar c
         | isDigit c  = digitToInt <$> parseChar c
@@ -39,6 +42,19 @@ instance FromChar a => FromJSON (Rect a) where
         h = length ls
         filledc = map (T.unpack . T.justifyLeft w ' ') ls
         filled = sequence . map (mapM parseChar) $ filledc
+    parseJSON _          = empty
+
+newtype SpacedRect a = SpacedRect { unSpaced :: Rect a }
+
+instance FromString a => FromJSON (SpacedRect a) where
+    parseJSON (String t) = if w == wmin then SpacedRect . Rect w h <$> p
+                                        else empty
+      where
+        ls = map T.words . T.lines $ t
+        w = maximum . map length $ ls
+        wmin = minimum . map length $ ls
+        h = length ls
+        p = sequence . map (mapM (parseString . T.unpack)) $ ls
     parseJSON _          = empty
 
 charToIntClue c
