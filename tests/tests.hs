@@ -7,7 +7,7 @@ import Data.Maybe (fromJust)
 
 import Control.DeepSeq
 
-import Data.Puzzles.ReadPuzzle (geradeweg', tightfitskyscrapers', slalom', kpyramid')
+import Data.Puzzles.ReadPuzzle (geradeweg', tightfitskyscrapers', slalom', kpyramid', compass')
 import Data.Puzzles.Read (parseChar)
 
 import Diagrams.TwoD.Puzzles.Draw
@@ -109,6 +109,60 @@ kpyramid_broken_3 = packLines $
     , "G a*.*.o.*6"
     ]
 
+compass_1 :: Value
+compass_1 = decodeLines $
+    [ "grid: |"
+    , "  ..."
+    , "  a.b"
+    , "clues:"
+    , "  a: 2 1 . 2"
+    , "  b: 21 . . 0"
+    ]
+
+compass_broken_1 :: Value
+compass_broken_1 = decodeLines $
+    [ "grid: |"
+    , "  a.b"
+    , "clues:"
+    , "  b: 21 . . 0"
+    ]
+
+compass_broken_2 :: Value
+compass_broken_2 = decodeLines $
+    [ "grid: |"
+    , "  a.b"
+    , "clues:"
+    , "  a: x . . 0"
+    , "  b: 21 . . 0"
+    ]
+
+compass_broken_3 :: Value
+compass_broken_3 = decodeLines $
+    [ "grid: |"
+    , "  a.b"
+    , "clues:"
+    , "  a: 1 . ."
+    , "  b: 21 . . 0"
+    ]
+
+compass_broken_4 :: Value
+compass_broken_4 = decodeLines $
+    [ "grid: |"
+    , "  a.b"
+    , "clues:"
+    , "  a: 1 . . 2 3"
+    , "  b: 21 . . 0"
+    ]
+
+compass_broken_5 :: Value
+compass_broken_5 = decodeLines $
+    [ "grid: |"
+    , "  a3b"
+    , "clues:"
+    , "  a: 1 . . 2 3"
+    , "  b: 21 . . 0"
+    ]
+
 justShow :: Show a => Maybe a -> Bool
 justShow Nothing = False
 justShow (Just x) = show x `deepseq` True
@@ -155,4 +209,10 @@ unitTests = testGroup "Unit tests"
     , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid') kpyramid_broken_1
     , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid') kpyramid_broken_2
     , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid') kpyramid_broken_3
+    , testCase "parse compass" $ testParse (fst compass') compass_1
+    , testCase "don't parse borken compass" $ testNonparse (fst compass') compass_broken_1
+    , testCase "don't parse borken compass" $ testNonparse (fst compass') compass_broken_2
+    , testCase "don't parse borken compass" $ testNonparse (fst compass') compass_broken_3
+    , testCase "don't parse borken compass" $ testNonparse (fst compass') compass_broken_4
+    , testCase "don't parse borken compass" $ testNonparse (fst compass') compass_broken_5
     ]
