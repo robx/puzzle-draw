@@ -6,7 +6,7 @@ import Data.Yaml
 
 import Control.DeepSeq
 
-import Data.Puzzles.ReadPuzzle (geradeweg', tightfitskyscrapers', slalom')
+import Data.Puzzles.ReadPuzzle (geradeweg', tightfitskyscrapers', slalom', kpyramid')
 import Data.Puzzles.Read (parseChar)
 
 import Diagrams.TwoD.Puzzles.Draw
@@ -61,6 +61,42 @@ tightfit_sol_broken_2 = pack "2/x 4 3/5"
 slalom_sol_broken :: Text
 slalom_sol_broken = pack "//\\ /\\x5 "
 
+kpyramid_1 :: Text
+kpyramid_1 = pack . unlines $
+    [ "G     3"
+    , "G    . ."
+    , "G   . . ."
+    , "W  .o. . ."
+    , "G 1*.*.o.*6"
+    ]
+
+kpyramid_broken_1 :: Text
+kpyramid_broken_1 = pack . unlines $
+    [ "  G     3"
+    , "  G    . 22"
+    , "  H   . aa ."
+    , "  W  .o. .|. "
+    , "  G 1*.*.o.*6"
+    ]
+
+kpyramid_broken_2 :: Text
+kpyramid_broken_2 = pack . unlines $
+    [ "G     3"
+    , "G    . 22"
+    , "H   . aa ."
+    , "W  .o. .|. "
+    , "G 1*.*.o.*6"
+    ]
+
+kpyramid_broken_3 :: Text
+kpyramid_broken_3 = pack . unlines $
+    [ "G     3"
+    , "G    . ."
+    , "G   . . ."
+    , "W  .o. . ."
+    , "G a*.*.o.*6"
+    ]
+
 justShow :: Show a => Maybe a -> Bool
 justShow Nothing = False
 justShow (Just x) = show x `deepseq` True
@@ -96,4 +132,8 @@ unitTests = testGroup "Unit tests"
     , testCase "don't parse invalid slalom solution" $ testNonparse (snd slalom') slalom_sol_broken
     , testCase "don't break rendering invalid slalom solution"
          $ testBreakSlalom @? "just testing against errors"
+    , testCase "parse kpyramid" $ testParse (fst kpyramid') kpyramid_1
+    , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid') kpyramid_broken_1
+    , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid') kpyramid_broken_2
+    , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid') kpyramid_broken_3
     ]

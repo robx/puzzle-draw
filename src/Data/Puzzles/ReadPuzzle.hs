@@ -12,7 +12,7 @@ module Data.Puzzles.ReadPuzzle (
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass,
 
-    geradeweg', tightfitskyscrapers', slalom'
+    geradeweg', tightfitskyscrapers', slalom', kpyramid'
   ) where
 
 import Control.Applicative
@@ -133,6 +133,9 @@ pyramid :: ReadPuzzle Pyramid
 pyramid (RP p s) = PD <$>
     (Pyr.readPyramid . lines <$> fromJSON p) <*>
     (Pyr.readPlainPyramid . lines <$> fromJSON s)
+
+kpyramid' :: ParsePuzzle Pyr.RowKropkiPyramid Pyr.Pyramid
+kpyramid' = fromRead kpyramid
 
 kpyramid :: ReadPuzzle RowKropkiPyramid
 kpyramid (RP p s) = PD <$>
