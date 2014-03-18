@@ -23,7 +23,7 @@ import Data.Aeson.Types (parse)
 import Data.Yaml
 import qualified Data.HashMap.Strict as HM
 import Data.Char (isAlpha)
-import Data.Text (pack)
+import qualified Data.Text as T
 
 import Data.Puzzles.Grid
 import qualified Data.Puzzles.Pyramid as Pyr
@@ -65,7 +65,7 @@ toRead (pp, ps) (RP p s) = PD <$> parse pp p <*> parse ps s
 fromRead :: ReadPuzzle (PuzzleDef a b) -> ParsePuzzle a b
 fromRead r = (p, s)
   where
-    vempty = String (pack ".")
+    vempty = String (T.pack ".")
     p v = case r (RP v vempty) of Success (PD p' _) -> pure p'
                                   Error _           -> empty
     s v = case r (RP vempty v) of Success (PD _ s') -> pure s'
