@@ -4,6 +4,8 @@ import Test.Tasty.HUnit
 import Data.Text (Text, pack)
 import Data.Yaml
 
+import Control.DeepSeq
+
 import Data.Puzzles.ReadPuzzle (geradeweg', tightfitskyscrapers')
 
 import Data.Puzzles.Read (parseChar)
@@ -51,26 +53,25 @@ tightfit_sol_broken = pack "2/1 4 /5"
 tightfit_sol_broken_2 :: Text
 tightfit_sol_broken_2 = pack "2/x 4 3/5"
 
-justShowLength :: Show a => Maybe a -> Int
-justShowLength = maybe (-1) (length . show)
+justShow :: Show a => Maybe a -> Bool
+justShow Nothing = False
+justShow (Just x) = show x `deepseq` True
 
-checkParse :: Show a => Int -> (Value -> Parser a) -> Text -> (Bool, String)
-checkParse n p t = (l >= n, "bad parse, show length " ++ show l ++ " < " ++ show n)
-  where
-    l = justShowLength (parseMaybe p (String t))
-testParse n p t = b @? e
-  where
-    (b, e) = checkParse n p t
+checkParse :: Show a => (Value -> Parser a) -> Text -> (Bool, String)
+checkParse p t = (justShow . parseMaybe p . String $ t, "bad parse")
 
-testNonparse p t = l == (-1) @? "parsed but shouldn't, length " ++ show l
+testParse p t = b @? e
   where
-    l = justShowLength (parseMaybe p (String t))
+    (b, e) = checkParse p t
+
+testNonparse p t = (not . justShow . parseMaybe p . String $ t)
+                   @? "parsed but shouldn't"
 
 unitTests = testGroup "Unit tests"
-    [ testCase "parse geradeweg" $ testParse 442 (fst geradeweg') geradeweg_1
-    , testCase "parse geradeweg solution" $ testParse 221 (snd geradeweg') geradeweg_1_sol
-    , testCase "parse tightfit" $ testParse 263 (fst tightfitskyscrapers') tightfit_1
-    , testCase "parse tightfit solution" $ testParse 168 (snd tightfitskyscrapers') tightfit_1_sol
+    [ testCase "parse geradeweg" $ testParse (fst geradeweg') geradeweg_1
+    , testCase "parse geradeweg solution" $ testParse (snd geradeweg') geradeweg_1_sol
+    , testCase "parse tightfit" $ testParse (fst tightfitskyscrapers') tightfit_1
+    , testCase "parse tightfit solution" $ testParse (snd tightfitskyscrapers') tightfit_1_sol
     , testCase "don't parse broken tightfit solution" $
         testNonparse (snd tightfitskyscrapers') tightfit_sol_broken
     , testCase "don't parse broken tightfit solution" $
