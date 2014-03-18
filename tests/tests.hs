@@ -57,13 +57,10 @@ justShow :: Show a => Maybe a -> Bool
 justShow Nothing = False
 justShow (Just x) = show x `deepseq` True
 
-checkParse :: Show a => (Value -> Parser a) -> Text -> (Bool, String)
-checkParse p t = (justShow . parseMaybe p . String $ t, "bad parse")
+testParse :: Show a => (Value -> Parser a) -> Text -> Assertion
+testParse p t = (justShow . parseMaybe p . String $ t) @? "bad parse"
 
-testParse p t = b @? e
-  where
-    (b, e) = checkParse p t
-
+testNonparse :: Show a => (Value -> Parser a) -> Text -> Assertion
 testNonparse p t = (not . justShow . parseMaybe p . String $ t)
                    @? "parsed but shouldn't"
 
