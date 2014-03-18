@@ -7,7 +7,7 @@ import Data.Maybe (fromJust)
 
 import Control.DeepSeq
 
-import Data.Puzzles.ReadPuzzle (geradeweg', tightfitskyscrapers', slalom', kpyramid', compass')
+import Data.Puzzles.ReadPuzzle
 import Data.Puzzles.Read (parseChar)
 
 import Diagrams.TwoD.Puzzles.Draw
@@ -163,6 +163,16 @@ compass_broken_5 = decodeLines $
     , "  b: 21 . . 0"
     ]
 
+thermo_1 :: Value
+thermo_1 = packLines $
+    [ ".b..2."
+    , "a.c5.1"
+    , ".d..6."
+    , ".4..c."
+    , "5.3b.d"
+    , ".2..a."
+    ]
+
 justShow :: Show a => Maybe a -> Bool
 justShow Nothing = False
 justShow (Just x) = show x `deepseq` True
@@ -215,4 +225,5 @@ unitTests = testGroup "Unit tests"
     , testCase "don't parse borken compass" $ testNonparse (fst compass') compass_broken_3
     , testCase "don't parse borken compass" $ testNonparse (fst compass') compass_broken_4
     , testCase "don't parse borken compass" $ testNonparse (fst compass') compass_broken_5
+    , testCase "parse thermo" $ testParse (fst thermosudoku') thermo_1
     ]
