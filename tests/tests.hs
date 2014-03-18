@@ -68,7 +68,7 @@ unitTests = testGroup "Unit tests"
     [ testCase "parse geradeweg" $ testParse 442 (fst geradeweg') geradeweg_1
     , testCase "parse geradeweg solution" $ testParse 221 (snd geradeweg') geradeweg_1_sol
     , testCase "parse tightfit" $ testParse 263 (fst tightfitskyscrapers') tightfit_1
-    , testCase "parse tightfit solution" $ testParse 169 (snd tightfitskyscrapers') tightfit_1_sol
+    , testCase "parse tightfit solution" $ testParse 168 (snd tightfitskyscrapers') tightfit_1_sol
     , testCase "don't parse broken tightfit solution" $
         testNonparse (snd tightfitskyscrapers') tightfit_sol_broken
     , testCase "don't parse broken tightfit solution" $
