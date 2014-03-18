@@ -22,6 +22,9 @@ import Data.Aeson.Types (parse)
 
 import Data.Yaml
 import qualified Data.HashMap.Strict as HM
+import Data.Hashable
+import qualified Data.Map as Map
+import qualified Data.Traversable as Traversable
 import Data.Char (isAlpha)
 import qualified Data.Text as T
 import Text.Read (readMaybe)
@@ -102,18 +105,29 @@ nurikabe (RP p s) = PD <$>
     (readWideIntGrid <$> fromJSON p) <*>
     (readBoolGrid <$> fromJSON s)
 
-newtype RefGrid a = RefGrid { unRG :: SGrid (Maybe a) }
+newtype RefGrid a = RefGrid { unRG :: SGrid a }
 
-merge :: CharGrid -> HM.HashMap String a -> RefGrid a
-merge g m = RefGrid (f <$> g)
-    where f c | isref c   = Just (m HM.! [c])
-              | otherwise = Nothing
-          isref = isAlpha
+data Ref = Ref { unRef :: Char }
+    deriving Show
 
-instance (FromJSON a) => FromJSON (RefGrid a) where
-    parseJSON (Object v) = merge <$>
-                           (readCharGrid <$> (v .: "grid")) <*>
-                           v .: "clues"
+instance FromChar Ref where
+    parseChar c | isAlpha c = pure (Ref c)
+    parseChar _             = empty
+
+hashmaptomap :: (Eq a, Hashable a, Ord a) => HM.HashMap a b -> Map.Map a b
+hashmaptomap = Map.fromList . HM.toList
+
+compose :: (Ord a, Ord b) => Map.Map a b -> Map.Map b c -> Maybe (Map.Map a c)
+compose m1 m2 = Traversable.sequence . Map.map (flip Map.lookup m2) $ m1
+
+instance FromJSON a => FromJSON (RefGrid a) where
+    parseJSON (Object v) = RefGrid <$> do
+        Grid s refs <- fmap (fmap ((:[]) . unRef)) . rectToClueGrid <$>
+                       (v .: "grid" :: Parser (Rect (Either Blank Ref)))
+        m <- hashmaptomap <$> v .: "clues"
+        case compose (Map.mapMaybe id refs) m of
+            Nothing -> mzero
+            Just m' -> return $ Grid s m'
     parseJSON _ = empty
 
 latintapa :: ReadPuzzle LatinTapa
