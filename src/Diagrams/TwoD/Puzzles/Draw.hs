@@ -53,6 +53,8 @@ drawWordsClues :: (Backend b R2, Renderable (Path R2) b) =>
                   SGrid (Clue [String]) -> Diagram b R2
 drawWordsClues = atCentres drawWords . clues
 
+drawTightGrid :: (Backend b R2, Renderable (Path R2) b) =>
+                 (t -> Diagram b R2) -> SGrid (Tightfit t) -> Diagram b R2
 drawTightGrid d g = atCentres (drawTight d) (clues . fmap Just $ g)
                     <> grid (size g)
                     <> phantom (frame (sx + 2, sy + 2) # translate (r2 (-1,-1)))
