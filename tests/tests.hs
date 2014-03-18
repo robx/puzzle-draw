@@ -9,6 +9,12 @@ import Control.DeepSeq
 import Data.Puzzles.ReadPuzzle (geradeweg', tightfitskyscrapers', slalom')
 import Data.Puzzles.Read (parseChar)
 
+import Diagrams.TwoD.Puzzles.Draw
+import Diagrams.Prelude
+import Diagrams.Backend.SVG
+
+import Text.Blaze.Svg.Renderer.Text (renderSvg)
+
 main = defaultMain tests
 
 tests :: TestTree
@@ -66,6 +72,15 @@ testNonparse :: Show a => (Value -> Parser a) -> Text -> Assertion
 testNonparse p t = (not . justShow . parseMaybe p . String $ t)
                    @? "parsed but shouldn't"
 
+testBreakSlalom :: Bool
+testBreakSlalom =
+    case parseMaybe (snd slalom') (String slalom_sol_broken) of
+        Nothing -> True
+        Just s  -> let d = drawSlalomDiags s
+                       svg = renderDia SVG (SVGOptions (Width 100) Nothing) d
+                       svgt = renderSvg svg
+                   in (show svgt) `deepseq` True
+
 unitTests = testGroup "Unit tests"
     [ testCase "parse geradeweg" $ testParse (fst geradeweg') geradeweg_1
     , testCase "parse geradeweg solution" $ testParse (snd geradeweg') geradeweg_1_sol
@@ -79,4 +94,6 @@ unitTests = testGroup "Unit tests"
     , testCase "don't parse hex chars" $ (parseMaybe parseChar 'a' :: Maybe Int) @=? Nothing
     , testCase "don't break on non-digits" $ (parseMaybe parseChar ' ' :: Maybe Int) @=? Nothing
     , testCase "don't parse invalid slalom solution" $ testNonparse (snd slalom') slalom_sol_broken
+    , testCase "don't break rendering invalid slalom solution"
+         $ testBreakSlalom @? "just testing against errors"
     ]
