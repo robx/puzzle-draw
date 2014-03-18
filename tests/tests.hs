@@ -2,6 +2,8 @@ import Test.Tasty
 import Test.Tasty.HUnit
 
 import Data.Yaml
+import qualified Data.ByteString.Char8 as B
+import Data.Maybe (fromJust)
 
 import Control.DeepSeq
 
@@ -19,6 +21,9 @@ main = defaultMain tests
 
 tests :: TestTree
 tests = testGroup "Tests" [unitTests]
+
+decodeLines :: [String] -> Value
+decodeLines = fromJust . decode . B.pack . unlines
 
 packLine :: String -> Value
 packLine = String . T.pack
