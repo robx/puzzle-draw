@@ -10,7 +10,9 @@ module Data.Puzzles.ReadPuzzle (
     lits, litsplus, geradeweg, fillomino, masyu, nurikabe, latintapa,
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
-    curvedata, doubleback, slalom, compass
+    curvedata, doubleback, slalom, compass,
+
+    geradeweg'
     ) where
 
 import Control.Applicative
@@ -64,10 +66,11 @@ lits (RP p s) = PD <$>
 litsplus :: ReadPuzzle LITS
 litsplus = lits
 
+geradeweg' :: ParsePuzzle (SGrid (Clue Int)) Loop
+geradeweg' = (parseClueGrid, parseEdges)
+
 geradeweg :: ReadPuzzle Geradeweg
-geradeweg (RP p s) = PD <$>
-    (readIntGrid <$> fromJSON p) <*>
-    (readEdges' <$> fromJSON s)
+geradeweg = toRead geradeweg'
 
 fillomino :: ReadPuzzle Fillomino
 fillomino (RP p s) = PD <$>

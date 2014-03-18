@@ -75,3 +75,14 @@ library
                        text >= 0.11 && < 0.12,
                        SVGFonts >= 1.4 && < 1.5
   hs-source-dirs:      src
+
+test-suite test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      tests
+  main-is:             tests.hs
+  build-depends:       base >= 4.2 && < 4.8,
+                       tasty >= 0.8 && < 0.9,
+                       tasty-hunit >= 0.8 && < 0.9,
+                       yaml >= 0.8 && < 0.9,
+                       text >= 0.11 && < 0.12,
+                       puzzle-draw
