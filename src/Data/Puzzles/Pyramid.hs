@@ -10,8 +10,10 @@ data Row = R { entries :: [Maybe Int]
 
 newtype Pyramid = Pyr {unPyr :: [Row]}
 
+psize :: Pyramid -> Int
 psize (Pyr rows) = length rows
 
+ex1 :: [String]
 ex1 = [ "G     ."
       , "W    . ."
       , "W   . 7 3"
@@ -19,11 +21,13 @@ ex1 = [ "G     ."
       , "G 1 . . . 3"
       ]
 
+mergepyramids :: Pyramid -> Pyramid -> Pyramid
 mergepyramids (Pyr rs) (Pyr qs)
     | length rs /= length qs  = error "can't merge differently sized pyramids"
     | otherwise               = Pyr (zipWith mergerow rs qs)
     where mergerow (R es s) (R es' s') = R (zipWith mplus es es') (s || s')
 
+mergekpyramids :: RowKropkiPyramid -> Pyramid -> RowKropkiPyramid
 mergekpyramids (KP rs) (Pyr qs)
     | length rs /= length qs  = error "can't merge differently sized pyramids"
     | otherwise               = KP (zipWith mergerow rs qs)
@@ -35,13 +39,20 @@ prow = do s <- pshaded
           spaces
           es <- pclues
           return (R es s)
+
+pshaded :: GenParser Char st Bool
 pshaded = (char 'G' >> return True) <|> (char 'W' >> return False)
+
+pclues :: GenParser Char st [Maybe Int]
 pclues = do c <- pclue
             cs <- many (spaces >> pclue)
             return (c:cs)
+
+pclue :: GenParser Char st (Maybe Int)
 pclue = fmap (Just . digitToInt) digit
         <|> (char '.' >> return Nothing)
 
+readrow :: String -> Row
 readrow cs = r
     where Right r = parse prow "(unknown)" cs
 
@@ -62,6 +73,7 @@ instance Show Row where
 instance Show Pyramid where
     show = unlines . map show . unPyr
 
+ex2 :: [String]
 ex2 = [ "G     2"
       , "G    . ."
       , "G   .o. ."
@@ -83,17 +95,23 @@ plainpyramid :: RowKropkiPyramid -> Pyramid
 plainpyramid (KP rows) = Pyr (map r rows)
     where r x = R (entriesk x) (shadedk x)
 
+pkropkirow :: GenParser Char st KropkiRow
 pkropkirow = do s <- pshaded
                 spaces
                 (ks, cs) <- pkropkiclues
                 return (KR cs s ks)
+
+pkropkiclues :: GenParser Char st ([KropkiDot], [Maybe Int])
 pkropkiclues = do c <- pclue
                   kcs <- many (liftM2 (,) pkropki pclue)
                   let (ks, cs) = unzip kcs in return (ks, c:cs)
+
+pkropki :: GenParser Char st KropkiDot
 pkropki = (char '*' >> return Black)
           <|> (char 'o' >> return White)
           <|> (char ' ' >> return None)
 
+readkropkirow :: String -> KropkiRow
 readkropkirow cs = r
     where Right r = parse pkropkirow "(unknown)" cs
 
