@@ -6,8 +6,7 @@ import Data.Yaml
 
 import Control.DeepSeq
 
-import Data.Puzzles.ReadPuzzle (geradeweg', tightfitskyscrapers')
-
+import Data.Puzzles.ReadPuzzle (geradeweg', tightfitskyscrapers', slalom')
 import Data.Puzzles.Read (parseChar)
 
 main = defaultMain tests
@@ -53,6 +52,9 @@ tightfit_sol_broken = pack "2/1 4 /5"
 tightfit_sol_broken_2 :: Text
 tightfit_sol_broken_2 = pack "2/x 4 3/5"
 
+slalom_sol_broken :: Text
+slalom_sol_broken = pack "//\\ /\\x5 "
+
 justShow :: Show a => Maybe a -> Bool
 justShow Nothing = False
 justShow (Just x) = show x `deepseq` True
@@ -76,4 +78,5 @@ unitTests = testGroup "Unit tests"
     , testCase "parse digit" $ (parseMaybe parseChar '5' :: Maybe Int) @=? Just 5
     , testCase "don't parse hex chars" $ (parseMaybe parseChar 'a' :: Maybe Int) @=? Nothing
     , testCase "don't break on non-digits" $ (parseMaybe parseChar ' ' :: Maybe Int) @=? Nothing
+    , testCase "don't parse invalid slalom solution" $ testNonparse (snd slalom') slalom_sol_broken
     ]
