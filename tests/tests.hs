@@ -1,7 +1,6 @@
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import Data.Text (Text, pack)
 import Data.Yaml
 
 import Control.DeepSeq
@@ -14,14 +13,21 @@ import Diagrams.Prelude
 import Diagrams.Backend.SVG
 
 import Text.Blaze.Svg.Renderer.Text (renderSvg)
+import qualified Data.Text as T
 
 main = defaultMain tests
 
 tests :: TestTree
 tests = testGroup "Tests" [unitTests]
 
-geradeweg_1 :: Text
-geradeweg_1 = pack . unlines $
+packLine :: String -> Value
+packLine = String . T.pack
+
+packLines :: [String] -> Value
+packLines = String . T.pack . unlines
+
+geradeweg_1 :: Value
+geradeweg_1 = packLines $
     [ ".....    "
     , ".211."
     , "..2..  "
@@ -29,7 +35,8 @@ geradeweg_1 = pack . unlines $
     , "....."
     ]
 
-geradeweg_1_sol = pack . unlines $
+geradeweg_1_sol :: Value
+geradeweg_1_sol = packLines $
     [ "┌┐┌─┐"
     , "││└┐│  "
     , "│└─┘│"
@@ -37,32 +44,32 @@ geradeweg_1_sol = pack . unlines $
     , "  .└┘ "
     ]
 
-tightfit_1 :: Text
-tightfit_1 = pack . unlines $
+tightfit_1 :: Value
+tightfit_1 = packLines $
     [ "3/\\.-"
     , "-\\.\\4"
     , "-.\\/-"
     , " 35-"
     ]
 
-tightfit_1_sol :: Text
-tightfit_1_sol = pack . unlines $
+tightfit_1_sol :: Value
+tightfit_1_sol = packLines $
     [ "2/1 4\\5  3"
     , "  4\\5  3  2\\1 "
     , "   3  1\\2 5/4"
     ]
 
-tightfit_sol_broken :: Text
-tightfit_sol_broken = pack "2/1 4 /5"
+tightfit_sol_broken :: Value
+tightfit_sol_broken = packLine "2/1 4 /5"
 
-tightfit_sol_broken_2 :: Text
-tightfit_sol_broken_2 = pack "2/x 4 3/5"
+tightfit_sol_broken_2 :: Value
+tightfit_sol_broken_2 = packLine "2/x 4 3/5"
 
-slalom_sol_broken :: Text
-slalom_sol_broken = pack "//\\ /\\x5 "
+slalom_sol_broken :: Value
+slalom_sol_broken = packLine "//\\ /\\x5 "
 
-kpyramid_1 :: Text
-kpyramid_1 = pack . unlines $
+kpyramid_1 :: Value
+kpyramid_1 = packLines $
     [ "G     3"
     , "G    . ."
     , "G   . . ."
@@ -70,8 +77,8 @@ kpyramid_1 = pack . unlines $
     , "G 1*.*.o.*6"
     ]
 
-kpyramid_broken_1 :: Text
-kpyramid_broken_1 = pack . unlines $
+kpyramid_broken_1 :: Value
+kpyramid_broken_1 = packLines $
     [ "  G     3"
     , "  G    . 22"
     , "  H   . aa ."
@@ -79,8 +86,8 @@ kpyramid_broken_1 = pack . unlines $
     , "  G 1*.*.o.*6"
     ]
 
-kpyramid_broken_2 :: Text
-kpyramid_broken_2 = pack . unlines $
+kpyramid_broken_2 :: Value
+kpyramid_broken_2 = packLines $
     [ "G     3"
     , "G    . 22"
     , "H   . aa ."
@@ -88,8 +95,8 @@ kpyramid_broken_2 = pack . unlines $
     , "G 1*.*.o.*6"
     ]
 
-kpyramid_broken_3 :: Text
-kpyramid_broken_3 = pack . unlines $
+kpyramid_broken_3 :: Value
+kpyramid_broken_3 = packLines $
     [ "G     3"
     , "G    . ."
     , "G   . . ."
@@ -101,16 +108,23 @@ justShow :: Show a => Maybe a -> Bool
 justShow Nothing = False
 justShow (Just x) = show x `deepseq` True
 
-testParse :: Show a => (Value -> Parser a) -> Text -> Assertion
-testParse p t = (justShow . parseMaybe p . String $ t) @? "bad parse"
+eitherShow :: Show a => Either e a -> Bool
+eitherShow (Left _) = False
+eitherShow (Right x) = show x `deepseq` True
 
-testNonparse :: Show a => (Value -> Parser a) -> Text -> Assertion
-testNonparse p t = (not . justShow . parseMaybe p . String $ t)
+testParse :: Show a => (Value -> Parser a) -> Value -> Assertion
+testParse p t = eitherShow res @? "bad parse: " ++ err
+  where
+    res = parseEither p t
+    err = either id (const "no error") res
+
+testNonparse :: Show a => (Value -> Parser a) -> Value -> Assertion
+testNonparse p t = (not . justShow . parseMaybe p $ t)
                    @? "parsed but shouldn't"
 
 testBreakSlalom :: Bool
 testBreakSlalom =
-    case parseMaybe (snd slalom') (String slalom_sol_broken) of
+    case parseMaybe (snd slalom') slalom_sol_broken of
         Nothing -> True
         Just s  -> let d = drawSlalomDiags s
                        svg = renderDia SVG (SVGOptions (Width 100) Nothing) d
