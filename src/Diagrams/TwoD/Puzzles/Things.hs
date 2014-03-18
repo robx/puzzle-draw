@@ -44,6 +44,7 @@ thermo vs@(v:_) = (bulb `atop` line) # col # translate (r2 (0.5, 0.5))
           line = strokeLocLine (fromVertices vs) # lw 0.55 # lineCap LineCapSquare
           col = lc gr . fc gr
           gr = blend 0.6 white black
+thermo [] = error "invalid empty thermometer"
 
 drawThermos :: Renderable (Path R2) b => [Thermometer] -> QDiagram b R2 Any
 drawThermos = mconcat . map (thermo . map p2i)
