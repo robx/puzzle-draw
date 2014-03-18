@@ -1,8 +1,12 @@
 module Data.Puzzles.Pyramid where
 
 import Data.Char (digitToInt)
-import Text.ParserCombinators.Parsec
+import Text.ParserCombinators.Parsec hiding ((<|>), many)
 import Control.Monad (liftM2, mplus)
+import Data.Yaml hiding (Parser)
+import qualified Data.Yaml as Yaml
+import qualified Data.Text as T
+import Control.Applicative
 
 data Row = R { entries :: [Maybe Int]
              , shaded  :: Bool
@@ -12,14 +16,6 @@ newtype Pyramid = Pyr {unPyr :: [Row]}
 
 psize :: Pyramid -> Int
 psize (Pyr rows) = length rows
-
-ex1 :: [String]
-ex1 = [ "G     ."
-      , "W    . ."
-      , "W   . 7 3"
-      , "G  . 1 . ."
-      , "G 1 . . . 3"
-      ]
 
 mergepyramids :: Pyramid -> Pyramid -> Pyramid
 mergepyramids (Pyr rs) (Pyr qs)
@@ -52,16 +48,6 @@ pclue :: GenParser Char st (Maybe Int)
 pclue = fmap (Just . digitToInt) digit
         <|> (char '.' >> return Nothing)
 
-readrow :: String -> Row
-readrow cs = r
-    where Right r = parse prow "(unknown)" cs
-
-readPyramid :: [String] -> Pyramid
-readPyramid = Pyr . map readrow
-
-readPlainPyramid :: [String] -> Pyramid
-readPlainPyramid = readPyramid . map ('W':)
-
 showClues :: [Maybe Int] -> String
 showClues = map showClue
     where showClue = maybe '.' (head . show)
@@ -73,21 +59,15 @@ instance Show Row where
 instance Show Pyramid where
     show = unlines . map show . unPyr
 
-ex2 :: [String]
-ex2 = [ "G     2"
-      , "G    . ."
-      , "G   .o. ."
-      , "W  .*. 2o."
-      , "G .*.*. .*."
-      ]
-
 data KropkiDot = None | Black | White
     deriving Show
+
 data KropkiRow = KR { entriesk :: [Maybe Int]
                     , shadedk  :: Bool
                     , dotsk    :: [KropkiDot]
                     }
     deriving Show
+
 newtype RowKropkiPyramid = KP {unKP :: [KropkiRow]}
     deriving Show
 
@@ -111,9 +91,14 @@ pkropki = (char '*' >> return Black)
           <|> (char 'o' >> return White)
           <|> (char ' ' >> return None)
 
-readkropkirow :: String -> KropkiRow
-readkropkirow cs = r
-    where Right r = parse pkropkirow "(unknown)" cs
+toParser :: GenParser a () b -> [a] -> Yaml.Parser b
+toParser p v = case parse p "(unknown)" v of Left e  -> fail (show e)
+                                             Right x -> pure x
 
-readKropkiPyramid :: [String] -> RowKropkiPyramid
-readKropkiPyramid = KP . map readkropkirow
+instance FromJSON Pyramid where
+    parseJSON (String t) = Pyr <$> (mapM (toParser prow . T.unpack) $ T.lines t)
+    parseJSON _          = empty
+
+instance FromJSON RowKropkiPyramid where
+    parseJSON (String t) = KP <$> (mapM (toParser pkropkirow . T.unpack) $ T.lines t)
+    parseJSON _          = empty

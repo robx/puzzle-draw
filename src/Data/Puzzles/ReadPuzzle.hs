@@ -129,18 +129,17 @@ thermosudoku (RP p s) = PD <$>
     (readThermos . readCharGrid <$> fromJSON p) <*>
     (readIntGrid <$> fromJSON s)
 
+pyramid' :: ParsePuzzle Pyr.Pyramid Pyr.Pyramid
+pyramid' = (parseJSON, parseJSON)
+
 pyramid :: ReadPuzzle Pyramid
-pyramid (RP p s) = PD <$>
-    (Pyr.readPyramid . lines <$> fromJSON p) <*>
-    (Pyr.readPlainPyramid . lines <$> fromJSON s)
+pyramid = toRead pyramid'
 
 kpyramid' :: ParsePuzzle Pyr.RowKropkiPyramid Pyr.Pyramid
-kpyramid' = fromRead kpyramid
+kpyramid' = (parseJSON, parseJSON)
 
 kpyramid :: ReadPuzzle RowKropkiPyramid
-kpyramid (RP p s) = PD <$>
-    (Pyr.readKropkiPyramid . lines <$> fromJSON p) <*>
-    (Pyr.readPlainPyramid . lines <$> fromJSON s)
+kpyramid = toRead kpyramid'
 
 slither :: ReadPuzzle SlitherLink
 slither (RP p s) = PD <$>
