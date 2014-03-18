@@ -12,8 +12,8 @@ module Data.Puzzles.ReadPuzzle (
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass,
 
-    geradeweg'
-    ) where
+    geradeweg', tightfitskyscrapers'
+  ) where
 
 import Control.Applicative
 import Control.Monad
@@ -156,6 +156,11 @@ liarslither :: ReadPuzzle LiarSlitherLink
 liarslither (RP p s) = PD <$>
     (readIntGrid <$> fromJSON p) <*>
     (unLSol <$> fromJSON s)
+
+tightfitskyscrapers' :: ParsePuzzle
+                        (OutsideClues (Maybe Int), SGrid (Tightfit ()))
+                        (SGrid (Tightfit Int))
+tightfitskyscrapers' = fromRead tightfitskyscrapers
 
 tightfitskyscrapers :: ReadPuzzle TightfitSkyscrapers
 tightfitskyscrapers (RP p s) = PD <$>
