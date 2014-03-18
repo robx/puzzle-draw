@@ -8,6 +8,8 @@ data MasyuPearl = MWhite | MBlack
 type MasyuClue = Clue MasyuPearl
 
 data CompassC = CC (Maybe Int) (Maybe Int) (Maybe Int) (Maybe Int)
+    deriving Show
+
 type CompassClue = Clue CompassC
 
 type IntClue = Clue Int
