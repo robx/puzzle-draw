@@ -74,6 +74,7 @@ borders g = [ E p V | p <- vborders ] ++ [ E p H | p <- hborders ]
 
 -- | Clues along the outside of a square grid.
 data OutsideClues a = OC { left :: [a], right :: [a], bottom :: [a], top :: [a] }
+    deriving Show
 
 outsideclues (OC l r b t) = mapMaybe liftMaybe . concat $
                              [ zipWith (\ y c -> ((-1, y), c)) [0..h-1] l
