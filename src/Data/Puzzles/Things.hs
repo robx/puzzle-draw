@@ -31,3 +31,6 @@ type Loop = [Edge]
 --   and successive entries should be neighbours (diagonal neighbours
 --   are fine).
 type Thermometer = [Coord]
+
+data SlalomDiag = SlalomForward | SlalomBackward
+    deriving Show

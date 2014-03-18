@@ -31,5 +31,5 @@ type Wordsearch = PuzzleDef
     (CharClueGrid, [MarkedWord])
 type CurveData = PuzzleDef (SGrid (Maybe [Edge])) [Edge]
 type DoubleBack = PuzzleDef AreaGrid Loop
-type Slalom = PuzzleDef IntGrid CharGrid
+type Slalom = PuzzleDef IntGrid (SGrid SlalomDiag)
 type Compass = PuzzleDef (SGrid CompassClue) AreaGrid

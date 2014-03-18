@@ -212,13 +212,11 @@ doubleback (RP p s) = PD <$>
     (readAreaGrid <$> fromJSON p) <*>
     (readEdges' <$> fromJSON s)
 
-slalom' :: ParsePuzzle (SGrid (Clue Int)) (SGrid Char)
-slalom' = fromRead slalom
+slalom' :: ParsePuzzle (SGrid (Clue Int)) (SGrid SlalomDiag)
+slalom' = (parseClueGrid, \v -> rectToSGrid <$> parseJSON v)
 
 slalom :: ReadPuzzle Slalom
-slalom (RP p s) = PD <$>
-    (readIntGrid <$> fromJSON p) <*>
-    (readCharGrid <$> fromJSON s)
+slalom = toRead slalom'
 
 instance FromJSON CompassC where
     parseJSON v = comp . words <$> parseJSON v

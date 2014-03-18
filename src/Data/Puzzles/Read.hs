@@ -79,6 +79,11 @@ instance FromChar Blank where
     parseChar '.' = pure Blank
     parseChar _   = empty
 
+instance FromChar SlalomDiag where
+    parseChar '/'  = pure SlalomForward
+    parseChar '\\' = pure SlalomBackward
+    parseChar _    = empty
+
 instance (FromChar a, FromChar b) => FromChar (Either a b) where
     parseChar c = Left <$> parseChar c <|> Right <$> parseChar c
 

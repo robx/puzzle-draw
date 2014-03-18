@@ -68,11 +68,10 @@ drawSlalomGrid g = atVertices drawSlalomClue (clues g)
     where (w, h) = size g
 
 drawSlalomDiags :: (Backend b R2, Renderable (Path R2) b) =>
-                   SGrid Char -> Diagram b R2
+                   SGrid SlalomDiag -> Diagram b R2
 drawSlalomDiags = atCentres diag . clues . fmap Just
-    where diag '/'  = stroke ur # lw edgewidth
-          diag '\\' = stroke dr # lw edgewidth
-          diag _    = error "slalom solution with invalid character"
+    where diag SlalomForward  = stroke ur # lw edgewidth
+          diag SlalomBackward = stroke dr # lw edgewidth
 
 drawCrosses ::  (Backend b R2, Renderable (Path R2) b) =>
                  SGrid (Maybe a) -> Diagram b R2
