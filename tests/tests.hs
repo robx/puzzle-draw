@@ -21,16 +21,17 @@ geradeweg_1 = pack . unlines $
     , "....."
     ]
 
-geradeweg_1_sol =
-              [ "┌┐┌─┐"
-              , "││└┐│  "
-              , "│└─┘│"
-              , "└──┐│"
-              , "  .└┘ "
-              ]
+geradeweg_1_sol = pack . unlines $
+    [ "┌┐┌─┐"
+    , "││└┐│  "
+    , "│└─┘│"
+    , "└──┐│"
+    , "  .└┘ "
+    ]
+
+testParse p t = isJust (parseMaybe p (String t)) @? "parsing failed"
 
 unitTests = testGroup "Unit tests"
-    [ testCase "parse geradeweg" $
-        isJust (parseMaybe (fst geradeweg') (String geradeweg_1))
-        @? "parsing failed"
+    [ testCase "parse geradeweg" $ testParse (fst geradeweg') geradeweg_1
+    , testCase "parse geradeweg solution" $ testParse (snd geradeweg') geradeweg_1_sol
     ]
