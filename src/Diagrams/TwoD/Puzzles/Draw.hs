@@ -72,6 +72,7 @@ drawSlalomDiags :: (Backend b R2, Renderable (Path R2) b) =>
 drawSlalomDiags = atCentres diag . clues . fmap Just
     where diag '/'  = stroke ur # lw edgewidth
           diag '\\' = stroke dr # lw edgewidth
+          diag _    = error "slalom solution with invalid character"
 
 drawCrosses ::  (Backend b R2, Renderable (Path R2) b) =>
                  SGrid (Maybe a) -> Diagram b R2
