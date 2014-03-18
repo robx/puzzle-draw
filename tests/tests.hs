@@ -173,6 +173,18 @@ thermo_1 = packLines $
     , ".2..a."
     ]
 
+thermo_broken_1 :: Value
+thermo_broken_1 = packLines $
+    [ ".."
+    , "a."
+    ]
+
+thermo_broken_2 :: Value
+thermo_broken_2 = packLines $
+    [ "bb"
+    , "a."
+    ]
+
 justShow :: Show a => Maybe a -> Bool
 justShow Nothing = False
 justShow (Just x) = show x `deepseq` True
@@ -226,4 +238,6 @@ unitTests = testGroup "Unit tests"
     , testCase "don't parse borken compass" $ testNonparse (fst compass') compass_broken_4
     , testCase "don't parse borken compass" $ testNonparse (fst compass') compass_broken_5
     , testCase "parse thermo" $ testParse (fst thermosudoku') thermo_1
+--    , testCase "don't parse broken thermo" $ testNonparse (fst thermosudoku') thermo_broken_1
+--    , testCase "don't parse broken thermo" $ testNonparse (fst thermosudoku') thermo_broken_2
     ]
