@@ -113,6 +113,7 @@ instance (FromJSON a) => FromJSON (RefGrid a) where
     parseJSON (Object v) = merge <$>
                            (readCharGrid <$> (v .: "grid")) <*>
                            v .: "clues"
+    parseJSON _ = empty
 
 latintapa :: ReadPuzzle LatinTapa
 latintapa (RP p s) = PD <$>
@@ -174,6 +175,7 @@ instance FromJSON GridWords where
     parseJSON (Object v) = GW <$> ((,) <$>
                                    (readCharClueGrid <$> v .: "grid") <*>
                                    v .: "words")
+    parseJSON _ = empty
 
 wordloop :: ReadPuzzle Wordloop
 wordloop (RP p s) = PD <$>
