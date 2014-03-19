@@ -17,6 +17,7 @@ import Diagrams.Backend.SVG
 import Text.Blaze.Svg.Renderer.Text (renderSvg)
 import qualified Data.Text as T
 
+main :: IO ()
 main = defaultMain tests
 
 tests :: TestTree
@@ -230,6 +231,7 @@ testBreakSlalom =
                        svgt = renderSvg svg
                    in (show svgt) `deepseq` True
 
+unitTests :: TestTree
 unitTests = testGroup "Unit tests"
     [ testCase "parse geradeweg" $ testParse (fst geradeweg') geradeweg_1
     , testCase "parse geradeweg solution" $ testParse (snd geradeweg') geradeweg_1_sol
