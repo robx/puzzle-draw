@@ -203,7 +203,7 @@ newtype GridMarked = GM { unGM :: (CharClueGrid, [MarkedWord]) }
 instance FromJSON GridMarked where
     parseJSON (Object v) = GM <$> ((,) <$>
                                    (readCharClueGrid <$> v .: "grid") <*>
-                                   (v .: "words"))
+                                   (map unPMW <$> v .: "words"))
     parseJSON _          = mzero
 
 wordsearch :: ReadPuzzle Wordsearch
@@ -234,7 +234,7 @@ slalom = toRead slalom'
 
 compass :: ReadPuzzle Compass
 compass (RP p s) = PD <$>
-    (unRG <$> fromJSON p) <*>
+    (fmap (fmap unPCC) . unRG <$> fromJSON p) <*>
     (readAreaGrid <$> fromJSON s)
 
 compass' :: ParsePuzzle (SGrid (Clue CompassC)) CharGrid

@@ -7,12 +7,12 @@ type Clue a = Maybe a
 data MasyuPearl = MWhite | MBlack
 type MasyuClue = Clue MasyuPearl
 
+type IntClue = Clue Int
+
 data CompassC = CC (Maybe Int) (Maybe Int) (Maybe Int) (Maybe Int)
     deriving Show
 
 type CompassClue = Clue CompassC
-
-type IntClue = Clue Int
 
 -- | A cell that is optionally bisected by a diagonal
 --   (up-right or down-right).
