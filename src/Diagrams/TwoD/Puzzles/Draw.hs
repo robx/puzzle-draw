@@ -25,6 +25,10 @@ drawIntClues :: (Backend b R2, Renderable (Path R2) b) =>
                 SGrid (Clue Int) -> Diagram b R2
 drawIntClues = atCentres drawInt . clues
 
+drawInts :: (Backend b R2, Renderable (Path R2) b) =>
+            SGrid Int -> Diagram b R2
+drawInts = atCentres drawInt . values
+
 drawIntGrid :: (Backend b R2, Renderable (Path R2) b) =>
                SGrid (Clue Int) -> Diagram b R2
 drawIntGrid = drawIntClues <> grid . size
