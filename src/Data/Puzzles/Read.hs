@@ -226,10 +226,10 @@ parseThermos (Grid s m) = catMaybes <$> mapM parseThermo (Map.keys m)
     test f p q = maybe False (f (m' Map.! p)) (Map.lookup q m')
 
 parseThermoGrid :: ThermoRect -> Parser (SGrid Int, [Thermometer])
-parseThermoGrid (Rect w h ls) = (,) (Grid shape ints) <$>
-                                (parseThermos $ Grid shape alphas)
+parseThermoGrid (Rect w h ls) = (,) (Grid s ints) <$>
+                                (parseThermos $ Grid s alphas)
   where
-    shape = Square w h
+    s = Square w h
     (ints, alphas) = partitionEithers . snd . partitionEithers $
                      listListToMap ls
 
