@@ -182,7 +182,6 @@ readEdges s = horiz ++ vert
 readEdges' :: String -> [Edge]
 readEdges' s = nub . sort . concatMap edges . cells $ g
     where g = readCharGrid s
-          (w, h) = size g
           isV c = c `elem` "│└┘"
           isH c = c `elem` "─└┌"
           edges p = [ E p V | isV (g ! p) ] ++ [ E p H | isH (g ! p) ]

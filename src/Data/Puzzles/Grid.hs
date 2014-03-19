@@ -89,5 +89,5 @@ outsideclues (OC l r b t) = mapMaybe liftMaybe . concat $
   where
     w = length b
     h = length l
-    liftMaybe (p, Just x) = Just (p, x)
-    liftMaybe (p, Nothing) = Nothing
+    liftMaybe (p, Just x)  = Just (p, x)
+    liftMaybe (_, Nothing) = Nothing
