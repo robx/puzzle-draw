@@ -10,6 +10,7 @@ class Show (Cell a) => GridShape a where
     size :: a -> GridSize a
     cells :: a -> [Cell a]
     vertices :: a -> [Vertex a]
+    neighbours :: a -> Cell a -> [Cell a]
 
 data Square = Square Int Int
     deriving Show
@@ -19,18 +20,14 @@ instance GridShape Square where
     type Cell Square     = (Int, Int)
     type Vertex Square   = (Int, Int)
 
-    size (Square w h)     = (w, h)
-    cells (Square w h)    = [(x, y) | x <- [0..w-1], y <- [0..h-1]]
-    vertices (Square w h) = [(x, y) | x <- [0..w], y <- [0..h]]
-
---data Dir = V | H
---type EdgeI = (VertexI, Dir)
---size (SquareGrid w h) = (w, h)
-
---cellPos :: SquareGrid -> CellI -> P2
---vertexPos :: SquareGrid -> VertexI -> P2
-
---Ord CellI, VertexI?
-
---Edge = (CellI, CellI)? (VertexI, VertexI)?
---DualEdge = (CellI, CellI)?
+    size (Square w h)       = (w, h)
+    cells (Square w h)      = [(x, y) | x <- [0..w-1], y <- [0..h-1]]
+    vertices (Square w h)   = [(x, y) | x <- [0..w], y <- [0..h]]
+    neighbours (Square w h) c = filter inBounds . map (add c) $ deltas
+      where
+        inBounds (x, y) = x >= 0 && x < w && y >= 0 && y < h
+        deltas = [ (dx, dy)
+                 | dx <- [-1..1], dy <- [-1..1]
+                 , dx /= 0 || dy /= 0
+                 ]
+        add (x, y) (x', y') = (x + x', y + y')
