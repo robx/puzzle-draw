@@ -113,12 +113,6 @@ rectToSGrid (Rect w h ls) = Grid (Square w h) (listListToMap ls)
 rectToClueGrid :: Rect (Either Blank a) -> SGrid (Clue a)
 rectToClueGrid = fmap (either (const Nothing) Just) . rectToSGrid
 
-charToMasyuClue :: Char -> MasyuClue
-charToMasyuClue '*' = Just MBlack
-charToMasyuClue 'o' = Just MWhite
-charToMasyuClue c
-    | c == ' ' || c == '.'  = Nothing
-
 type CharGrid = SGrid Char
 type MasyuGrid = SGrid MasyuClue
 type AreaGrid = CharGrid
@@ -143,7 +137,6 @@ readBoolGrid = fmap (`elem` ['x', 'X']) . readCharGrid
 readIntGrid = fmap charToIntClue . readCharGrid
 readStrGrid = fromListList . map words . lines
 readWideIntGrid = fmap strToIntClue . readStrGrid
-readMasyuGrid = fmap charToMasyuClue . readCharGrid
 parseClueGrid v = rectToClueGrid <$> parseJSON v
 
 readXGrid = fmap f . readCharGrid
