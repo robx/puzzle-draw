@@ -29,6 +29,14 @@ instance FromChar Int where
         | isDigit c  = digitToInt <$> parseChar c
         | otherwise  = empty
 
+newtype Alpha = Alpha { unAlpha :: Char }
+    deriving (Show, Ord, Eq)
+
+instance FromChar Alpha where
+    parseChar c
+        | isAlpha c  = Alpha <$> parseChar c
+        | otherwise  = empty
+
 data Rect a = Rect !Int !Int [[a]]
 
 instance Functor Rect where
