@@ -12,7 +12,6 @@ import Data.Maybe (catMaybes)
 import Data.Yaml
 import qualified Data.Text as T
 import Control.Applicative
-import Control.Monad
 import qualified Data.Map as Map
 import Control.Arrow
 

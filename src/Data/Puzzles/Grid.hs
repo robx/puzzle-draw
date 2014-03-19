@@ -4,7 +4,6 @@ module Data.Puzzles.Grid where
 
 import Data.Maybe
 import qualified Data.Map as Map
-import Text.Read
 
 import Data.Puzzles.GridShape hiding (size, cells)
 import qualified Data.Puzzles.GridShape as GS
