@@ -52,8 +52,14 @@ grid :: (Backend b R2, Renderable (Path R2) b) =>
         Size -> Diagram b R2
 grid = grid' id
 
+bgdashing :: (Semigroup a, HasStyle a) =>
+             [Double] -> Double -> Colour Double -> a -> a
 bgdashing ds offs c x = x # dashing ds offs <> x # lc c
+
+dashes :: [Double]
 dashes = [5 / 40, 3 / 40]
+
+dashoffset :: Double
 dashoffset = 2.5 / 40
 
 -- | Draw a square grid with dashed grid lines. The gaps
@@ -111,6 +117,7 @@ drawAreaGrid :: (Backend b R2, Renderable (Path R2) b, Eq a) =>
                   SGrid a -> Diagram b R2
 drawAreaGrid = drawEdges . borders <> grid . size
 
+fillBG :: (Backend b R2, Renderable (Path R2) b) => Colour Double -> Diagram b R2
 fillBG c = square 1 # fc c
 
 shadeGrid :: (Backend b R2, Renderable (Path R2) b) =>
