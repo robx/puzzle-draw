@@ -28,7 +28,6 @@ import qualified Data.Map as Map
 import qualified Data.Traversable as Traversable
 import Data.Char (isAlpha)
 import qualified Data.Text as T
-import Text.Read (readMaybe)
 
 import Data.Puzzles.Grid
 import qualified Data.Puzzles.Pyramid as Pyr
@@ -199,12 +198,6 @@ wordloop (RP p s) = PD <$>
     (unGW <$> fromJSON p) <*>
     (readCharClueGrid <$> fromJSON s)
 
-instance FromJSON MarkedWord where
-    parseJSON v = MW <$>
-                  ((,) <$> ((!!0) <$> x) <*> ((!!1) <$> x)) <*>
-                  ((,) <$> ((!!2) <$> x) <*> ((!!3) <$> x))
-        where x = map read . words <$> parseJSON v :: Parser [Int]
-
 newtype GridMarked = GM { unGM :: (CharClueGrid, [MarkedWord]) }
 
 instance FromJSON GridMarked where
@@ -238,17 +231,6 @@ slalom' = (parseClueGrid, \v -> rectToSGrid <$> parseJSON v)
 
 slalom :: ReadPuzzle Slalom
 slalom = toRead slalom'
-
-instance FromString Int where
-    parseString s = maybe empty pure $ readMaybe s
-
-instance FromJSON CompassC where
-    parseJSON (String t) = comp . map T.unpack . T.words $ t
-        where c "." = pure Nothing
-              c x   = Just <$> parseString x
-              comp [n, e, s, w] = CC <$> c n <*> c e <*> c s <*> c w
-              comp _            = empty
-    parseJSON _          = empty
 
 compass :: ReadPuzzle Compass
 compass (RP p s) = PD <$>

@@ -271,3 +271,20 @@ instance FromChar a => FromString (Tightfit a) where
 
 parseTightIntGrid :: Value -> Parser (SGrid (Tightfit Int))
 parseTightIntGrid v = rectToSGrid . unSpaced <$> parseJSON v
+
+instance FromJSON MarkedWord where
+    parseJSON v = MW <$>
+                  ((,) <$> ((!!0) <$> x) <*> ((!!1) <$> x)) <*>
+                  ((,) <$> ((!!2) <$> x) <*> ((!!3) <$> x))
+        where x = map read . words <$> parseJSON v :: Parser [Int]
+
+instance FromString Int where
+    parseString s = maybe empty pure $ readMaybe s
+
+instance FromJSON CompassC where
+    parseJSON (String t) = comp . map T.unpack . T.words $ t
+        where c "." = pure Nothing
+              c x   = Just <$> parseString x
+              comp [n, e, s, w] = CC <$> c n <*> c e <*> c s <*> c w
+              comp _            = empty
+    parseJSON _          = empty
