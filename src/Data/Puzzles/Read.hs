@@ -201,6 +201,11 @@ parseEdges v = do
     Grid _ m <- rectToSGrid . fmap unHalfDirs <$> parseJSON v
     return [ E p d | (p, ds) <- Map.toList m, d <- ds ]
 
+partitionEithers :: Ord k => Map.Map k (Either a b) -> (Map.Map k a, Map.Map k b)
+partitionEithers = Map.foldrWithKey insertEither (Map.empty, Map.empty)
+  where
+    insertEither k = either (first . Map.insert k) (second . Map.insert k)
+
 readThermos :: CharGrid -> (IntGrid, [Thermometer])
 readThermos cg = (ig, thermos)
     where ig = fmap charToIntClue cg
