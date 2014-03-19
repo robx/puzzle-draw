@@ -65,6 +65,7 @@ instance FromString a => FromJSON (SpacedRect a) where
         p = sequence . map (mapM (parseString . T.unpack)) $ ls
     parseJSON _          = empty
 
+charToIntClue :: Char -> Maybe Int
 charToIntClue c
     | isDigit c  = Just $ digitToInt c
     | otherwise  = Nothing
@@ -72,6 +73,7 @@ charToIntClue c
 strToIntClue :: String -> IntClue
 strToIntClue = readMaybe
 
+charToCharClue :: Char -> Maybe Char
 charToCharClue c
     | c `elem` [' ', '.', '-']  = Nothing
     | otherwise                 = Just c
@@ -120,25 +122,36 @@ type ShadedGrid = SGrid Bool
 type CharClueGrid = SGrid (Maybe Char)
 type IntGrid = SGrid (Clue Int)
 
+readCharGridUnfilled :: String -> SGrid Char
 readCharGridUnfilled = fromListList . lines
 
 -- | Read a grid of characters, filling short lines
 -- to form a rectangle.
+readCharGrid :: String -> SGrid Char
 readCharGrid g = fromListList filled
   where
     ls = lines g
     w = maximum . map length $ ls
     filled = map (take w . (++ (repeat ' '))) ls
 
+readAreaGrid :: String -> SGrid Char
 readAreaGrid = readCharGrid
 
+readCharClueGrid :: String -> SGrid (Clue Char)
 readCharClueGrid = fmap charToCharClue . readCharGrid
+readBoolGrid :: String -> SGrid Bool
 readBoolGrid = fmap (`elem` ['x', 'X']) . readCharGrid
+readIntGrid :: String -> SGrid (Clue Int)
 readIntGrid = fmap charToIntClue . readCharGrid
+readStrGrid :: String -> SGrid String
 readStrGrid = fromListList . map words . lines
+readWideIntGrid :: String -> SGrid (Maybe Int)
 readWideIntGrid = fmap strToIntClue . readStrGrid
+
+parseClueGrid :: FromChar a => Value -> Parser (SGrid (Clue a))
 parseClueGrid v = rectToClueGrid <$> parseJSON v
 
+readXGrid :: String -> SGrid (Maybe ())
 readXGrid = fmap f . readCharGrid
     where f 'X' = Just ()
           f _   = Nothing
