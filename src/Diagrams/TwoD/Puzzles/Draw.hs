@@ -50,7 +50,7 @@ drawCompassGrid :: (Backend b R2, Renderable (Path R2) b) =>
 drawCompassGrid = drawCompassClues <> grid . size
 
 sudokugrid :: (Backend b R2, Renderable (Path R2) b) =>
-              SGrid (Clue Int) -> Diagram b R2
+              SGrid a -> Diagram b R2
 sudokugrid = drawEdges . sudokubordersg  <> grid . size
 
 drawWordsClues :: (Backend b R2, Renderable (Path R2) b) =>
