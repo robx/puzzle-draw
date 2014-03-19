@@ -45,7 +45,11 @@ inBounds :: (GridShape s, Eq (Cell s)) => Grid s a -> Cell s -> Bool
 inBounds g c = c `elem` cells g
 
 clues :: GridShape s => Grid s (Maybe a) -> [(Cell s, a)]
-clues (Grid _ m) = [ (k, v) | (k, Just v) <- Map.toList m ]
+clues g = [ (k, v) | (k, Just v) <- values g ]
+
+values :: GridShape s => Grid s a -> [(Cell s, a)]
+values (Grid _ m) = Map.toList m
+
 
 neighbours :: Grid Square a -> Cell Square -> [Cell Square]
 neighbours g p = filter (inBounds g) . map (add p) $ deltas
