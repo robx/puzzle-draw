@@ -179,12 +179,12 @@ liarslither (RP p s) = PD <$>
 tightfitskyscrapers' :: ParsePuzzle
                         (OutsideClues (Maybe Int), SGrid (Tightfit ()))
                         (SGrid (Tightfit Int))
-tightfitskyscrapers' = (fst $ fromRead tightfitskyscrapers, parseTightIntGrid)
+tightfitskyscrapers' = (tighttemp, parseTightIntGrid)
+  where
+    tighttemp v = readTightOutside <$> parseJSON v
 
 tightfitskyscrapers :: ReadPuzzle TightfitSkyscrapers
-tightfitskyscrapers (RP p s) = PD <$>
-    (readTightOutside <$> fromJSON p) <*>
-    (readTightIntGrid <$> fromJSON s)
+tightfitskyscrapers = toRead tightfitskyscrapers'
 
 newtype GridWords = GW { unGW :: (CharClueGrid, [String]) }
 
