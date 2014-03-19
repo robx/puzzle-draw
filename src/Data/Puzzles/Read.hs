@@ -14,6 +14,7 @@ import qualified Data.Text as T
 import Control.Applicative
 import Control.Monad
 import qualified Data.Map as Map
+import Control.Arrow
 
 class FromChar a where
     parseChar :: Char -> Parser a
@@ -100,12 +101,15 @@ instance FromChar a => FromChar (Maybe a) where
 
 type MasyuRect = Rect (Either Blank MasyuPearl)
 
-rectToSGrid :: Rect a -> SGrid a
-rectToSGrid (Rect w h ls) = Grid (Square w h) m
+listListToMap :: [[a]] -> Map.Map (Cell Square) a
+listListToMap ls = Map.fromList . concat
+                 . zipWith (\y -> zipWith (\x -> (,) (x, y)) [0..]) [h-1,h-2..]
+                 $ ls
   where
-    m =  Map.fromList . concat
-        . zipWith (\y -> zipWith (\x -> (,) (x, y)) [0..]) [h-1,h-2..]
-        $ ls
+    h = length ls
+
+rectToSGrid :: Rect a -> SGrid a
+rectToSGrid (Rect w h ls) = Grid (Square w h) (listListToMap ls)
 
 rectToClueGrid :: Rect (Either Blank a) -> SGrid (Clue a)
 rectToClueGrid = fmap (either (const Nothing) Just) . rectToSGrid
