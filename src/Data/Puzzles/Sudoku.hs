@@ -3,8 +3,8 @@ module Data.Puzzles.Sudoku where
 import Data.Puzzles.Grid
 
 msqrt :: Integral a => a -> Maybe a
-msqrt x = if r ^ 2 == x then Just r else Nothing
-    where r = round . sqrt . fromIntegral $ x
+msqrt x = if r ^ (2 :: Int) == x then Just r else Nothing
+    where r = round . (sqrt :: Double -> Double) . fromIntegral $ x
 
 mhalf :: Integral a => a -> Maybe a
 mhalf x = if even x then Just (x `div` 2) else Nothing
