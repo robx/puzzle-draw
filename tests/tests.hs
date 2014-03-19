@@ -58,6 +58,23 @@ tightfit_1 = packLines $
     , " 35-"
     ]
 
+tightfit_broken_1 :: Value
+tightfit_broken_1 = packLines $
+    [ " ---"
+    , "3/5.-"
+    , "-x.\\4"
+    , "-.\\/-"
+    , " 35-"
+    ]
+
+tightfit_broken_2 :: Value
+tightfit_broken_2 = packLines $
+    [ "3/\\.-"
+    , "-\\.\\4"
+    , "-.\\/-"
+    , " 35-"
+    ]
+
 tightfit_1_sol :: Value
 tightfit_1_sol = packLines $
     [ "2/1 4\\5  3"
@@ -218,6 +235,8 @@ unitTests = testGroup "Unit tests"
     , testCase "parse geradeweg solution" $ testParse (snd geradeweg') geradeweg_1_sol
     , testCase "parse tightfit" $ testParse (fst tightfitskyscrapers') tightfit_1
     , testCase "parse tightfit solution" $ testParse (snd tightfitskyscrapers') tightfit_1_sol
+    --, testCase "don't parse broken tighfit" $ testNonparse (fst tightfitskyscrapers') tightfit_broken_1
+    --, testCase "don't parse broken tighfit" $ testNonparse (fst tightfitskyscrapers') tightfit_broken_2
     , testCase "don't parse broken tightfit solution" $
         testNonparse (snd tightfitskyscrapers') tightfit_sol_broken
     , testCase "don't parse broken tightfit solution" $
