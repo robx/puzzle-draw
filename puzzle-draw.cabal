@@ -92,3 +92,4 @@ test-suite test
                        diagrams-svg >= 1.0 && < 1.1,
                        bytestring >= 0.10 && < 0.11,
                        puzzle-draw
+  ghc-options:         -Wall
