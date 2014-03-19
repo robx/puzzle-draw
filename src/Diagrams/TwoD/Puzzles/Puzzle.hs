@@ -75,7 +75,7 @@ sudoku = liftA2 (,)
 thermosudoku :: (Backend b R2, Renderable (Path R2) b) =>
     RenderPuzzle b ThermoSudoku
 thermosudoku = liftA2 (,)
-    ((drawIntClues . fst <> sudokugrid . fst <> drawThermos . snd) . pzl)
+    ((drawInts . fst <> sudokugrid . fst <> drawThermos . snd) . pzl)
     (drawIntClues . sol <> sudokugrid . sol <> drawThermos . snd . pzl)
 
 pyramid :: (Backend b R2, Renderable (Path R2) b) =>

@@ -142,12 +142,10 @@ sudoku (RP p s) = PD <$>
     (readIntGrid <$> fromJSON s)
 
 thermosudoku :: ReadPuzzle ThermoSudoku
-thermosudoku (RP p s) = PD <$>
-    (readThermos . readCharGrid <$> fromJSON p) <*>
-    (readIntGrid <$> fromJSON s)
+thermosudoku = toRead thermosudoku'
 
-thermosudoku' :: ParsePuzzle (IntGrid, [Thermometer]) IntGrid
-thermosudoku' = fromRead thermosudoku
+thermosudoku' :: ParsePuzzle (SGrid Int, [Thermometer]) IntGrid
+thermosudoku' = ((parseThermoGrid =<<) . parseJSON, parseClueGrid)
 
 pyramid' :: ParsePuzzle Pyr.Pyramid Pyr.Pyramid
 pyramid' = (parseJSON, parseJSON)

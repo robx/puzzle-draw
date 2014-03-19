@@ -1,7 +1,7 @@
 module Data.Puzzles.Read where
 
-import Data.Puzzles.Grid
-import Data.Puzzles.GridShape (Square(..))
+import Data.Puzzles.Grid hiding (neighbours)
+import Data.Puzzles.GridShape (Square(..), Cell, neighbours)
 import Data.Puzzles.Things
 
 import Text.Read (readMaybe)
@@ -201,29 +201,46 @@ parseEdges v = do
     Grid _ m <- rectToSGrid . fmap unHalfDirs <$> parseJSON v
     return [ E p d | (p, ds) <- Map.toList m, d <- ds ]
 
+type ThermoRect = Rect (Either Blank (Either Int Alpha))
+
 partitionEithers :: Ord k => Map.Map k (Either a b) -> (Map.Map k a, Map.Map k b)
 partitionEithers = Map.foldrWithKey insertEither (Map.empty, Map.empty)
   where
     insertEither k = either (first . Map.insert k) (second . Map.insert k)
 
-readThermos :: CharGrid -> (IntGrid, [Thermometer])
-readThermos cg = (ig, thermos)
-    where ig = fmap charToIntClue cg
-          thermos = catMaybes [ thermo p | p <- cells cg ]
-          at p = cg ! p
-          isStart p = let c = at p in
-                      isAlpha c
-                      && (not
-                         . any (\q -> at q == pred c)
-                         . neighbours cg
-                         $ p)
-          thermo p | isStart p = Just (p : thermo' p)
-                   | otherwise = Nothing
-          thermo' p = p : ps ss
-              where ss = filter (\q -> at q == succ (at p)) (neighbours cg p)
-                    ps [s]  = thermo' s
-                    ps []   = []
-                    ps _    = error "invalid thermo"
+parseThermos :: SGrid Alpha -> Parser [Thermometer]
+parseThermos (Grid s m) = catMaybes <$> mapM parseThermo (Map.keys m)
+  where
+    m' = fmap unAlpha m
+    parseThermo :: Cell Square -> Parser (Maybe Thermometer)
+    parseThermo p | not (isIsolated p)  = empty
+                  | not (isStart p)     = pure Nothing
+                  | otherwise           = Just <$> parseThermo' p
+    parseThermo' :: Cell Square -> Parser Thermometer
+    parseThermo' p = do
+        q <- next p
+        maybe empty (fmap (p:) . parseThermo'') q
+    parseThermo'' :: Cell Square -> Parser Thermometer
+    parseThermo'' p = do
+        q <- next p
+        maybe (pure []) (fmap (p:) . parseThermo'') q
+    next :: Cell Square -> Parser (Maybe (Cell Square))
+    next p = case succs p of
+        []   -> pure Nothing
+        [q]  -> pure (Just q)
+        _    -> empty
+    succs      p = filter    (test ((==) . succ) p) . neighbours s $ p
+    isIsolated p = not . any (test (==)          p) . neighbours s $ p
+    isStart    p = not . any (test ((==) . pred) p) . neighbours s $ p
+    test f p q = maybe False (f (m' Map.! p)) (Map.lookup q m')
+
+parseThermoGrid :: ThermoRect -> Parser (SGrid Int, [Thermometer])
+parseThermoGrid (Rect w h ls) = (,) (Grid shape ints) <$>
+                                (parseThermos $ Grid shape alphas)
+  where
+    shape = Square w h
+    (ints, alphas) = partitionEithers . snd . partitionEithers $
+                     listListToMap ls
 
 readTightOutside :: String -> (OutsideClues (Maybe Int), SGrid (Tightfit ()))
 readTightOutside s = (OC l r b t, gt)
