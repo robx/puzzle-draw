@@ -259,6 +259,7 @@ readTightOutside s = (OC l r b t, gt)
           readTight '.' = Single ()
           readTight '/' = UR () ()
           readTight '\\' = DR () ()
+          readTight _ = error "this needs to be handled with a parser"
           gt = fromListList [ [ readTight (g ! (x, y)) | x <- [1..w'-2] ]
                             | y <- [h'-2,h'-3..1]
                             ]
