@@ -52,7 +52,7 @@ geradeweg_1_sol = packLines $
 
 tightfit_1 :: Value
 tightfit_1 = packLines $
-    [ " ---"
+    [ " --- "
     , "3/\\.-"
     , "-\\.\\4"
     , "-.\\/-"
@@ -61,9 +61,9 @@ tightfit_1 = packLines $
 
 tightfit_broken_1 :: Value
 tightfit_broken_1 = packLines $
-    [ " ---"
-    , "3/5.-"
-    , "-x.\\4"
+    [ " --- "
+    , "3/\\.-"
+    , "-\\x\\4"
     , "-.\\/-"
     , " 35-"
     ]
@@ -71,7 +71,7 @@ tightfit_broken_1 = packLines $
 tightfit_broken_2 :: Value
 tightfit_broken_2 = packLines $
     [ "3/\\.-"
-    , "-\\.\\4"
+    , "-\\x\\4"
     , "-.\\/-"
     , " 35-"
     ]
