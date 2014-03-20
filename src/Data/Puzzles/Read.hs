@@ -104,19 +104,6 @@ instance FromString a => FromJSON (SpacedRect a) where
         p = sequence . map (mapM (parseString . T.unpack)) $ ls
     parseJSON _          = empty
 
-charToIntClue :: Char -> Maybe Int
-charToIntClue c
-    | isDigit c  = Just $ digitToInt c
-    | otherwise  = Nothing
-
-strToIntClue :: String -> IntClue
-strToIntClue = readMaybe
-
-charToCharClue :: Char -> Maybe Char
-charToCharClue c
-    | c `elem` [' ', '.', '-']  = Nothing
-    | otherwise                 = Just c
-
 instance FromChar MasyuPearl where
     parseChar '*' = pure MBlack
     parseChar 'o' = pure MWhite
@@ -176,24 +163,6 @@ type ShadedGrid = SGrid Bool
 type CharClueGrid = SGrid (Maybe Char)
 type IntGrid = SGrid (Clue Int)
 
-readCharGridUnfilled :: String -> SGrid Char
-readCharGridUnfilled = fromListList . lines
-
--- | Read a grid of characters, filling short lines
--- to form a rectangle.
-readCharGrid :: String -> SGrid Char
-readCharGrid g = fromListList filled
-  where
-    ls = lines g
-    w = maximum . map length $ ls
-    filled = map (take w . (++ (repeat ' '))) ls
-
-readAreaGrid :: String -> SGrid Char
-readAreaGrid = readCharGrid
-
-readCharClueGrid :: String -> SGrid (Clue Char)
-readCharClueGrid = fmap charToCharClue . readCharGrid
-
 newtype Shaded = Shaded { unShaded :: Bool }
 
 instance FromChar Shaded where
@@ -203,13 +172,6 @@ instance FromChar Shaded where
 
 parseShadedGrid :: Value -> Parser (SGrid Bool)
 parseShadedGrid v = rectToSGrid . fmap unShaded <$> parseJSON v
-
-readIntGrid :: String -> SGrid (Clue Int)
-readIntGrid = fmap charToIntClue . readCharGrid
-readStrGrid :: String -> SGrid String
-readStrGrid = fromListList . map words . lines
-readWideIntGrid :: String -> SGrid (Maybe Int)
-readWideIntGrid = fmap strToIntClue . readStrGrid
 
 parseGrid :: FromChar a => Value -> Parser (SGrid a)
 parseGrid v = rectToSGrid <$> parseJSON v
