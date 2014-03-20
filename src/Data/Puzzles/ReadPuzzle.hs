@@ -158,22 +158,24 @@ kpyramid' = (parseJSON, parseJSON)
 kpyramid :: ReadPuzzle RowKropkiPyramid
 kpyramid = toRead kpyramid'
 
+slither' :: ParsePuzzle (SGrid (Clue Int)) Loop
+slither' = (parseClueGrid, parseEdges)
+
 slither :: ReadPuzzle SlitherLink
-slither (RP p s) = PD <$>
-    (readIntGrid <$> fromJSON p) <*>
-    (readEdges' <$> fromJSON s)
+slither = toRead slither'
 
 newtype LSol = LSol { unLSol :: (Loop, SGrid (Maybe ())) }
 instance FromJSON LSol where
     parseJSON (Object v) = LSol <$> ((,) <$>
-                           (readEdges' <$> v .: "loop") <*>
+                           (parseEdges =<< v .: "loop") <*>
                            (readXGrid <$> v .: "liars"))
     parseJSON _          = mzero
 
+liarslither' :: ParsePuzzle (SGrid (Clue Int)) (Loop, SGrid (Maybe ()))
+liarslither' = (parseClueGrid, (unLSol <$>) . parseJSON)
+
 liarslither :: ReadPuzzle LiarSlitherLink
-liarslither (RP p s) = PD <$>
-    (readIntGrid <$> fromJSON p) <*>
-    (unLSol <$> fromJSON s)
+liarslither = toRead liarslither'
 
 tightfitskyscrapers' :: ParsePuzzle
                         (OutsideClues (Maybe Int), SGrid (Tightfit ()))
@@ -222,7 +224,7 @@ curvedata (RP p s) = PD <$>
 doubleback :: ReadPuzzle DoubleBack
 doubleback (RP p s) = PD <$>
     (readAreaGrid <$> fromJSON p) <*>
-    (readEdges' <$> fromJSON s)
+    parse parseEdges s
 
 slalom' :: ParsePuzzle (SGrid (Clue Int)) (SGrid SlalomDiag)
 slalom' = (parseClueGrid, \v -> rectToSGrid <$> parseJSON v)

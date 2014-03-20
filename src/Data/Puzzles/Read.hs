@@ -6,7 +6,6 @@ import Data.Puzzles.Things
 
 import Text.Read (readMaybe)
 import Data.Char (digitToInt, isAlpha, isDigit)
-import Data.List (nub, sort)
 import Data.Maybe (catMaybes)
 
 import Data.Yaml
@@ -226,19 +225,6 @@ readEdges s = horiz ++ vert
                                , isVert (x, y)
                                ]
 
--- parses a string like
---  ┌┐┌─┐
---  ││└┐│
---  │└─┘│
---  └──┐│
---     └┘
-readEdges' :: String -> [Edge]
-readEdges' s = nub . sort . concatMap edges . cells $ g
-    where g = readCharGrid s
-          isV c = c `elem` "│└┘"
-          isH c = c `elem` "─└┌"
-          edges p = [ E p V | isV (g ! p) ] ++ [ E p H | isH (g ! p) ]
-
 data HalfDirs = HalfDirs {unHalfDirs :: [Dir]}
 
 instance FromChar HalfDirs where
@@ -247,6 +233,12 @@ instance FromChar HalfDirs where
                 | c `elem` "─└┌"  = pure . HalfDirs $ [H]
                 | otherwise       = pure . HalfDirs $ []
 
+-- parses a string like
+--  ┌┐┌─┐
+--  ││└┐│
+--  │└─┘│
+--  └──┐│
+--     └┘
 parseEdges :: Value -> Parser [Edge]
 parseEdges v = do
     Grid _ m <- rectToSGrid . fmap unHalfDirs <$> parseJSON v
