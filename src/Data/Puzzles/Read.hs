@@ -135,6 +135,11 @@ instance FromChar Blank where
     parseChar '-' = pure Blank
     parseChar _   = empty
 
+instance FromString Blank where
+    parseString "." = pure Blank
+    parseString "-" = pure Blank
+    parseString _   = empty
+
 instance FromChar SlalomDiag where
     parseChar '/'  = pure SlalomForward
     parseChar '\\' = pure SlalomBackward
@@ -142,6 +147,9 @@ instance FromChar SlalomDiag where
 
 instance (FromChar a, FromChar b) => FromChar (Either a b) where
     parseChar c = Left <$> parseChar c <|> Right <$> parseChar c
+
+instance (FromString a, FromString b) => FromString (Either a b) where
+    parseString c = Left <$> parseString c <|> Right <$> parseString c
 
 instance FromChar a => FromChar (Maybe a) where
     parseChar = optional . parseChar
