@@ -130,15 +130,17 @@ instance FromJSON a => FromJSON (RefGrid a) where
             Just m' -> return $ Grid s m'
     parseJSON _ = empty
 
+latintapa' :: ParsePuzzle (SGrid (Clue [String])) (SGrid (Maybe Char))
+latintapa' = ((unRG <$>) . parseJSON, parseClueGrid)
+
 latintapa :: ReadPuzzle LatinTapa
-latintapa (RP p s) = PD <$>
-    (unRG <$> fromJSON p) <*>
-    (readCharClueGrid <$> fromJSON s)
+latintapa = toRead latintapa'
+
+sudoku' :: ParsePuzzle IntGrid IntGrid
+sudoku' = (parseClueGrid, parseClueGrid)
 
 sudoku :: ReadPuzzle Sudoku
-sudoku (RP p s) = PD <$>
-    (readIntGrid <$> fromJSON p) <*>
-    (readIntGrid <$> fromJSON s)
+sudoku = toRead sudoku'
 
 thermosudoku :: ReadPuzzle ThermoSudoku
 thermosudoku = toRead thermosudoku'
