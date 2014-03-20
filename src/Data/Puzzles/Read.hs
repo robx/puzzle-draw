@@ -193,8 +193,20 @@ readAreaGrid = readCharGrid
 
 readCharClueGrid :: String -> SGrid (Clue Char)
 readCharClueGrid = fmap charToCharClue . readCharGrid
+
 readBoolGrid :: String -> SGrid Bool
 readBoolGrid = fmap (`elem` ['x', 'X']) . readCharGrid
+
+newtype Shaded = Shaded { unShaded :: Bool }
+
+instance FromChar Shaded where
+    parseChar 'x'  = pure . Shaded $ True
+    parseChar 'X'  = pure . Shaded $ True
+    parseChar _    = pure . Shaded $ False
+
+parseShadedGrid :: Value -> Parser (SGrid Bool)
+parseShadedGrid v = rectToSGrid . fmap unShaded <$> parseJSON v
+
 readIntGrid :: String -> SGrid (Clue Int)
 readIntGrid = fmap charToIntClue . readCharGrid
 readStrGrid :: String -> SGrid String
