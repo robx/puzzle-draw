@@ -225,7 +225,7 @@ testNonparse p t = (not . justShow . parseMaybe p $ t)
 
 testBreakSlalom :: Bool
 testBreakSlalom =
-    case parseMaybe (snd slalom') slalom_sol_broken of
+    case parseMaybe (snd slalom) slalom_sol_broken of
         Nothing -> True
         Just s  -> let d = drawSlalomDiags s
                        svg = renderDia SVG (SVGOptions (Width 100) Nothing) d
@@ -235,7 +235,7 @@ testBreakSlalom =
 test_tightfit_1 :: Bool
 test_tightfit_1 = either (const False) test_both res
   where
-    res = parseEither (fst tightfitskyscrapers') tightfit_1
+    res = parseEither (fst tightfitskyscrapers) tightfit_1
     test_both (o, g) = test_size g && test_clues o
     test_size g = Grid.size g == (3, 3)
     test_clues (Grid.OC l r b t) = l == [Nothing, Nothing, Just 3] &&
@@ -245,34 +245,34 @@ test_tightfit_1 = either (const False) test_both res
 
 unitTests :: TestTree
 unitTests = testGroup "Unit tests"
-    [ testCase "parse geradeweg" $ testParse (fst geradeweg') geradeweg_1
-    , testCase "parse geradeweg solution" $ testParse (snd geradeweg') geradeweg_1_sol
-    , testCase "parse tightfit" $ testParse (fst tightfitskyscrapers') tightfit_1
+    [ testCase "parse geradeweg" $ testParse (fst geradeweg) geradeweg_1
+    , testCase "parse geradeweg solution" $ testParse (snd geradeweg) geradeweg_1_sol
+    , testCase "parse tightfit" $ testParse (fst tightfitskyscrapers) tightfit_1
     , testCase "parse tightfit, correct size" $ test_tightfit_1 @? "error in puzzle"
-    , testCase "parse tightfit solution" $ testParse (snd tightfitskyscrapers') tightfit_1_sol
-    , testCase "don't parse broken tighfit" $ testNonparse (fst tightfitskyscrapers') tightfit_broken_1
-    , testCase "don't parse broken tighfit" $ testNonparse (fst tightfitskyscrapers') tightfit_broken_2
+    , testCase "parse tightfit solution" $ testParse (snd tightfitskyscrapers) tightfit_1_sol
+    , testCase "don't parse broken tighfit" $ testNonparse (fst tightfitskyscrapers) tightfit_broken_1
+    , testCase "don't parse broken tighfit" $ testNonparse (fst tightfitskyscrapers) tightfit_broken_2
     , testCase "don't parse broken tightfit solution" $
-        testNonparse (snd tightfitskyscrapers') tightfit_sol_broken
+        testNonparse (snd tightfitskyscrapers) tightfit_sol_broken
     , testCase "don't parse broken tightfit solution" $
-        testNonparse (snd tightfitskyscrapers') tightfit_sol_broken_2
+        testNonparse (snd tightfitskyscrapers) tightfit_sol_broken_2
     , testCase "parse digit" $ (parseMaybe parseChar '5' :: Maybe Int) @=? Just 5
     , testCase "don't parse hex chars" $ (parseMaybe parseChar 'a' :: Maybe Int) @=? Nothing
     , testCase "don't break on non-digits" $ (parseMaybe parseChar ' ' :: Maybe Int) @=? Nothing
-    , testCase "don't parse invalid slalom solution" $ testNonparse (snd slalom') slalom_sol_broken
+    , testCase "don't parse invalid slalom solution" $ testNonparse (snd slalom) slalom_sol_broken
     , testCase "don't break rendering invalid slalom solution"
          $ testBreakSlalom @? "just testing against errors"
-    , testCase "parse kpyramid" $ testParse (fst kpyramid') kpyramid_1
-    , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid') kpyramid_broken_1
-    , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid') kpyramid_broken_2
-    , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid') kpyramid_broken_3
-    , testCase "parse compass" $ testParse (fst compass') compass_1
-    , testCase "don't parse borken compass" $ testNonparse (fst compass') compass_broken_1
-    , testCase "don't parse borken compass" $ testNonparse (fst compass') compass_broken_2
-    , testCase "don't parse borken compass" $ testNonparse (fst compass') compass_broken_3
-    , testCase "don't parse borken compass" $ testNonparse (fst compass') compass_broken_4
-    , testCase "don't parse borken compass" $ testNonparse (fst compass') compass_broken_5
-    , testCase "parse thermo" $ testParse (fst thermosudoku') thermo_1
-    , testCase "don't parse broken thermo" $ testNonparse (fst thermosudoku') thermo_broken_1
-    , testCase "don't parse broken thermo" $ testNonparse (fst thermosudoku') thermo_broken_2
+    , testCase "parse kpyramid" $ testParse (fst kpyramid) kpyramid_1
+    , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid) kpyramid_broken_1
+    , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid) kpyramid_broken_2
+    , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid) kpyramid_broken_3
+    , testCase "parse compass" $ testParse (fst compass) compass_1
+    , testCase "don't parse borken compass" $ testNonparse (fst compass) compass_broken_1
+    , testCase "don't parse borken compass" $ testNonparse (fst compass) compass_broken_2
+    , testCase "don't parse borken compass" $ testNonparse (fst compass) compass_broken_3
+    , testCase "don't parse borken compass" $ testNonparse (fst compass) compass_broken_4
+    , testCase "don't parse borken compass" $ testNonparse (fst compass) compass_broken_5
+    , testCase "parse thermo" $ testParse (fst thermosudoku) thermo_1
+    , testCase "don't parse broken thermo" $ testNonparse (fst thermosudoku) thermo_broken_1
+    , testCase "don't parse broken thermo" $ testNonparse (fst thermosudoku) thermo_broken_2
     ]

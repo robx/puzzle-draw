@@ -4,22 +4,17 @@ module Data.Puzzles.ReadPuzzle (
     TypedPuzzle(..),
     puzzleType,
     dropType,
-    RawPuzzle,
-    ReadPuzzle,
+    RawPuzzle(..),
+    ParsePuzzle,
 
     lits, litsplus, geradeweg, fillomino, masyu, nurikabe, latintapa,
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass,
-
-    geradeweg', tightfitskyscrapers', slalom', kpyramid', compass',
-    thermosudoku'
   ) where
 
 import Control.Applicative
 import Control.Monad
-import Data.Aeson
-import Data.Aeson.Types (parse)
 
 import Data.Yaml
 import qualified Data.HashMap.Strict as HM
@@ -32,7 +27,6 @@ import Data.Puzzles.Grid
 import qualified Data.Puzzles.Pyramid as Pyr
 import Data.Puzzles.Read
 import Data.Puzzles.Things
-import Data.Puzzles.PuzzleTypes
 
 data TypedPuzzle = TP String Value Value
     deriving Show
@@ -53,47 +47,27 @@ data RawPuzzle = RP Value Value
 dropType :: TypedPuzzle -> RawPuzzle
 dropType (TP _ p s) = RP p s
 
-type ReadPuzzle a = RawPuzzle -> Result a
-
 -- | A pair of parsers for a puzzle type.
 -- First parses the puzzle, second the solution.
 type ParsePuzzle a b = (Value -> Parser a, Value -> Parser b)
 
-toRead :: ParsePuzzle a b -> ReadPuzzle (PuzzleDef a b)
-toRead (pp, ps) (RP p s) = PD <$> parse pp p <*> parse ps s
+lits :: ParsePuzzle AreaGrid ShadedGrid
+lits = (parseGrid, parseShadedGrid)
 
-lits' :: ParsePuzzle AreaGrid ShadedGrid
-lits' = (parseGrid, parseShadedGrid)
-
-lits :: ReadPuzzle LITS
-lits = toRead lits'
-
-litsplus :: ReadPuzzle LITS
+litsplus :: ParsePuzzle AreaGrid ShadedGrid
 litsplus = lits
 
-geradeweg' :: ParsePuzzle (SGrid (Clue Int)) Loop
-geradeweg' = (parseClueGrid, parseEdges)
+geradeweg :: ParsePuzzle (SGrid (Clue Int)) Loop
+geradeweg = (parseClueGrid, parseEdges)
 
-geradeweg :: ReadPuzzle Geradeweg
-geradeweg = toRead geradeweg'
+fillomino :: ParsePuzzle IntGrid IntGrid
+fillomino = (parseClueGrid, parseClueGrid)
 
-fillomino' :: ParsePuzzle IntGrid IntGrid
-fillomino' = (parseClueGrid, parseClueGrid)
+masyu :: ParsePuzzle (SGrid (Clue MasyuPearl)) Loop
+masyu = (parseClueGrid, parseEdges)
 
-fillomino :: ReadPuzzle Fillomino
-fillomino = toRead fillomino'
-
-masyu' :: ParsePuzzle (SGrid (Clue MasyuPearl)) Loop
-masyu' = (parseClueGrid, parseEdges)
-
-masyu :: ReadPuzzle Masyu
-masyu = toRead masyu'
-
-nurikabe' :: ParsePuzzle IntGrid ShadedGrid
-nurikabe' = (parseSpacedClueGrid, parseShadedGrid)
-
-nurikabe :: ReadPuzzle Nurikabe
-nurikabe = toRead nurikabe'
+nurikabe :: ParsePuzzle IntGrid ShadedGrid
+nurikabe = (parseSpacedClueGrid, parseShadedGrid)
 
 newtype RefGrid a = RefGrid { unRG :: SGrid a }
 
@@ -120,41 +94,23 @@ instance FromJSON a => FromJSON (RefGrid a) where
             Just m' -> return $ Grid s m'
     parseJSON _ = empty
 
-latintapa' :: ParsePuzzle (SGrid (Clue [String])) (SGrid (Maybe Char))
-latintapa' = ((unRG <$>) . parseJSON, parseClueGrid)
+latintapa :: ParsePuzzle (SGrid (Clue [String])) (SGrid (Maybe Char))
+latintapa = ((unRG <$>) . parseJSON, parseClueGrid)
 
-latintapa :: ReadPuzzle LatinTapa
-latintapa = toRead latintapa'
+sudoku :: ParsePuzzle IntGrid IntGrid
+sudoku = (parseClueGrid, parseClueGrid)
 
-sudoku' :: ParsePuzzle IntGrid IntGrid
-sudoku' = (parseClueGrid, parseClueGrid)
+thermosudoku :: ParsePuzzle (SGrid Int, [Thermometer]) IntGrid
+thermosudoku = ((parseThermoGrid =<<) . parseJSON, parseClueGrid)
 
-sudoku :: ReadPuzzle Sudoku
-sudoku = toRead sudoku'
+pyramid :: ParsePuzzle Pyr.Pyramid Pyr.Pyramid
+pyramid = (parseJSON, parseJSON)
 
-thermosudoku :: ReadPuzzle ThermoSudoku
-thermosudoku = toRead thermosudoku'
+kpyramid :: ParsePuzzle Pyr.RowKropkiPyramid Pyr.Pyramid
+kpyramid = (parseJSON, parseJSON)
 
-thermosudoku' :: ParsePuzzle (SGrid Int, [Thermometer]) IntGrid
-thermosudoku' = ((parseThermoGrid =<<) . parseJSON, parseClueGrid)
-
-pyramid' :: ParsePuzzle Pyr.Pyramid Pyr.Pyramid
-pyramid' = (parseJSON, parseJSON)
-
-pyramid :: ReadPuzzle Pyramid
-pyramid = toRead pyramid'
-
-kpyramid' :: ParsePuzzle Pyr.RowKropkiPyramid Pyr.Pyramid
-kpyramid' = (parseJSON, parseJSON)
-
-kpyramid :: ReadPuzzle RowKropkiPyramid
-kpyramid = toRead kpyramid'
-
-slither' :: ParsePuzzle (SGrid (Clue Int)) Loop
-slither' = (parseClueGrid, parseEdges)
-
-slither :: ReadPuzzle SlitherLink
-slither = toRead slither'
+slither :: ParsePuzzle (SGrid (Clue Int)) Loop
+slither = (parseClueGrid, parseEdges)
 
 newtype LSol = LSol { unLSol :: (Loop, SGrid Bool) }
 instance FromJSON LSol where
@@ -163,19 +119,13 @@ instance FromJSON LSol where
                            (parseShadedGrid =<< v .: "liars"))
     parseJSON _          = mzero
 
-liarslither' :: ParsePuzzle (SGrid (Clue Int)) (Loop, SGrid Bool)
-liarslither' = (parseClueGrid, (unLSol <$>) . parseJSON)
+liarslither :: ParsePuzzle (SGrid (Clue Int)) (Loop, SGrid Bool)
+liarslither = (parseClueGrid, (unLSol <$>) . parseJSON)
 
-liarslither :: ReadPuzzle LiarSlitherLink
-liarslither = toRead liarslither'
-
-tightfitskyscrapers' :: ParsePuzzle
-                        (OutsideClues (Maybe Int), SGrid (Tightfit ()))
-                        (SGrid (Tightfit Int))
-tightfitskyscrapers' = (parseTightOutside, parseTightIntGrid)
-
-tightfitskyscrapers :: ReadPuzzle TightfitSkyscrapers
-tightfitskyscrapers = toRead tightfitskyscrapers'
+tightfitskyscrapers :: ParsePuzzle
+                       (OutsideClues (Maybe Int), SGrid (Tightfit ()))
+                       (SGrid (Tightfit Int))
+tightfitskyscrapers = (parseTightOutside, parseTightIntGrid)
 
 newtype GridWords = GW { unGW :: (CharClueGrid, [String]) }
 
@@ -185,11 +135,8 @@ instance FromJSON GridWords where
                                    v .: "words")
     parseJSON _ = empty
 
-wordloop' :: ParsePuzzle (CharClueGrid, [String]) CharClueGrid
-wordloop' = ((unGW <$>) . parseJSON, parseClueGrid)
-
-wordloop :: ReadPuzzle Wordloop
-wordloop = toRead wordloop'
+wordloop :: ParsePuzzle (CharClueGrid, [String]) CharClueGrid
+wordloop = ((unGW <$>) . parseJSON, parseClueGrid)
 
 newtype GridMarked = GM { unGM :: (CharClueGrid, [MarkedWord]) }
 
@@ -199,36 +146,22 @@ instance FromJSON GridMarked where
                                    (map unPMW <$> v .: "words"))
     parseJSON _          = mzero
 
-wordsearch' :: ParsePuzzle (CharClueGrid, [String]) (CharClueGrid, [MarkedWord])
-wordsearch' = ((unGW <$>) . parseJSON, (unGM <$>) . parseJSON)
-
-wordsearch :: ReadPuzzle Wordsearch
-wordsearch = toRead wordsearch'
+wordsearch :: ParsePuzzle (CharClueGrid, [String]) (CharClueGrid, [MarkedWord])
+wordsearch = ((unGW <$>) . parseJSON, (unGM <$>) . parseJSON)
 
 newtype Curve = Curve { unCurve :: [Edge] }
 
 instance FromJSON Curve where
     parseJSON v = Curve <$> parsePlainEdges v
 
-curvedata' :: ParsePuzzle (SGrid (Clue [Edge])) [Edge]
-curvedata' = ((fmap (fmap unCurve) . unRG <$>) . parseJSON, parsePlainEdges)
-curvedata :: ReadPuzzle CurveData
-curvedata = toRead curvedata'
+curvedata :: ParsePuzzle (SGrid (Clue [Edge])) [Edge]
+curvedata = ((fmap (fmap unCurve) . unRG <$>) . parseJSON, parsePlainEdges)
 
-doubleback' :: ParsePuzzle AreaGrid Loop
-doubleback' = (parseGrid, parseEdges)
+doubleback :: ParsePuzzle AreaGrid Loop
+doubleback = (parseGrid, parseEdges)
 
-doubleback :: ReadPuzzle DoubleBack
-doubleback = toRead doubleback'
+slalom :: ParsePuzzle (SGrid (Clue Int)) (SGrid SlalomDiag)
+slalom = (parseClueGrid, \v -> rectToSGrid <$> parseJSON v)
 
-slalom' :: ParsePuzzle (SGrid (Clue Int)) (SGrid SlalomDiag)
-slalom' = (parseClueGrid, \v -> rectToSGrid <$> parseJSON v)
-
-slalom :: ReadPuzzle Slalom
-slalom = toRead slalom'
-
-compass' :: ParsePuzzle (SGrid (Clue CompassC)) CharGrid
-compass' = ((fmap (fmap unPCC) . unRG <$>) . parseJSON, parseGrid)
-
-compass :: ReadPuzzle Compass
-compass = toRead compass'
+compass :: ParsePuzzle (SGrid (Clue CompassC)) CharGrid
+compass = ((fmap (fmap unPCC) . unRG <$>) . parseJSON, parseGrid)

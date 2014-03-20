@@ -5,21 +5,25 @@ module Diagrams.TwoD.Puzzles.PuzzleDraw (
     ) where
 
 import Data.Puzzles.ReadPuzzle (
-        TypedPuzzle, puzzleType, dropType, ReadPuzzle, RawPuzzle
+        TypedPuzzle, puzzleType, dropType, RawPuzzle(..),
+        ParsePuzzle
     )
+import Data.Puzzles.PuzzleTypes (PuzzleDef(..))
 import Diagrams.TwoD.Puzzles.Puzzle (RenderPuzzle)
 import qualified Data.Puzzles.ReadPuzzle as R
 import qualified Diagrams.TwoD.Puzzles.Puzzle as D
+import Diagrams.Prelude
+import Data.Yaml (Parser)
 
-import Diagrams.Prelude hiding (Result)
-import Data.Aeson (Result(..))
-
-rd :: ReadPuzzle a -> RenderPuzzle b a ->
-      RawPuzzle -> Result (Diagram b R2, Diagram b R2)
-rd r d x = d <$> r x
+rd :: ParsePuzzle p q -> RenderPuzzle b (PuzzleDef p q) ->
+      RawPuzzle -> Parser (Diagram b R2, Diagram b R2)
+rd (pp, ps) d (RP p s) = do
+    p' <- pp p
+    s' <- ps s
+    return . d $ PD p' s'
 
 rdtype :: (Backend b R2, Renderable (Path R2) b) =>
-          String -> RawPuzzle -> Result (Diagram b R2, Diagram b R2)
+          String -> RawPuzzle -> Parser (Diagram b R2, Diagram b R2)
 rdtype "lits"                 = rd R.lits                D.lits
 rdtype "litsplus"             = rd R.litsplus            D.litsplus
 rdtype "geradeweg"            = rd R.geradeweg           D.geradeweg
@@ -40,8 +44,8 @@ rdtype "curvedata"            = rd R.curvedata           D.curvedata
 rdtype "doubleback"           = rd R.doubleback          D.doubleback
 rdtype "slalom"               = rd R.slalom              D.slalom
 rdtype "compass"              = rd R.compass             D.compass
-rdtype t                      = const . Error $ "unknown puzzle type: " ++ t
+rdtype t                      = fail $ "unknown puzzle type: " ++ t
 
 drawPuzzle :: (Backend b R2, Renderable (Path R2) b) =>
-              TypedPuzzle -> Result (Diagram b R2, Diagram b R2)
+              TypedPuzzle -> Parser (Diagram b R2, Diagram b R2)
 drawPuzzle p = rdtype (puzzleType p) (dropType p)
