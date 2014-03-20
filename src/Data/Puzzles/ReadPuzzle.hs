@@ -197,10 +197,11 @@ instance FromJSON GridWords where
                                    v .: "words")
     parseJSON _ = empty
 
+wordloop' :: ParsePuzzle (CharClueGrid, [String]) CharClueGrid
+wordloop' = ((unGW <$>) . parseJSON, parseClueGrid)
+
 wordloop :: ReadPuzzle Wordloop
-wordloop (RP p s) = PD <$>
-    (unGW <$> fromJSON p) <*>
-    (readCharClueGrid <$> fromJSON s)
+wordloop = toRead wordloop'
 
 newtype GridMarked = GM { unGM :: (CharClueGrid, [MarkedWord]) }
 
