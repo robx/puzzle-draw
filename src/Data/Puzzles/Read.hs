@@ -295,11 +295,17 @@ parseTightIntGrid v = rectToSGrid . unSpaced <$> parseJSON v
 
 newtype PMarkedWord = PMW {unPMW :: MarkedWord}
 
+parseNWords :: Int -> String -> Parser [String]
+parseNWords n s | length ws == n  = pure ws
+                | otherwise       = empty
+  where
+    ws = words s
+
 instance FromJSON PMarkedWord where
     parseJSON v = PMW <$> (MW <$>
                   ((,) <$> ((!!0) <$> x) <*> ((!!1) <$> x)) <*>
                   ((,) <$> ((!!2) <$> x) <*> ((!!3) <$> x)))
-        where x = map read . words <$> parseJSON v :: Parser [Int]
+        where x = parseJSON v >>= parseNWords 4 >>= mapM parseString
 
 instance FromString Int where
     parseString s = maybe empty pure $ readMaybe s
