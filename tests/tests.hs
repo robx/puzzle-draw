@@ -233,17 +233,22 @@ testBreakSlalom =
                    in (show svgt) `deepseq` True
 
 test_tightfit_1 :: Bool
-test_tightfit_1 = either (const False) test_size res
+test_tightfit_1 = either (const False) test_both res
   where
     res = parseEither (fst tightfitskyscrapers') tightfit_1
-    test_size (_, g) = Grid.size g == (3, 3)
+    test_both (o, g) = test_size g && test_clues o
+    test_size g = Grid.size g == (3, 3)
+    test_clues (Grid.OC l r b t) = l == [Nothing, Nothing, Just 3] &&
+                                   r == [Nothing, Just 4, Nothing] &&
+                                   b == [Just 3, Just 5, Nothing] &&
+                                   t == [Nothing, Nothing, Nothing]
 
 unitTests :: TestTree
 unitTests = testGroup "Unit tests"
     [ testCase "parse geradeweg" $ testParse (fst geradeweg') geradeweg_1
     , testCase "parse geradeweg solution" $ testParse (snd geradeweg') geradeweg_1_sol
     , testCase "parse tightfit" $ testParse (fst tightfitskyscrapers') tightfit_1
-    , testCase "parse tightfit, correct size" $ test_tightfit_1 @? "wrong size"
+    , testCase "parse tightfit, correct size" $ test_tightfit_1 @? "error in puzzle"
     , testCase "parse tightfit solution" $ testParse (snd tightfitskyscrapers') tightfit_1_sol
     , testCase "don't parse broken tighfit" $ testNonparse (fst tightfitskyscrapers') tightfit_broken_1
     , testCase "don't parse broken tighfit" $ testNonparse (fst tightfitskyscrapers') tightfit_broken_2
