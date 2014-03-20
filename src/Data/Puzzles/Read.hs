@@ -194,9 +194,6 @@ readAreaGrid = readCharGrid
 readCharClueGrid :: String -> SGrid (Clue Char)
 readCharClueGrid = fmap charToCharClue . readCharGrid
 
-readBoolGrid :: String -> SGrid Bool
-readBoolGrid = fmap (`elem` ['x', 'X']) . readCharGrid
-
 newtype Shaded = Shaded { unShaded :: Bool }
 
 instance FromChar Shaded where
@@ -222,11 +219,6 @@ parseClueGrid v = rectToClueGrid <$> parseJSON v
 
 parseSpacedClueGrid :: FromString a => Value -> Parser (SGrid (Clue a))
 parseSpacedClueGrid v = rectToClueGrid . unSpaced <$> parseJSON v
-
-readXGrid :: String -> SGrid (Maybe ())
-readXGrid = fmap f . readCharGrid
-    where f 'X' = Just ()
-          f _   = Nothing
 
 -- parses a string like
 --  o-o-o
