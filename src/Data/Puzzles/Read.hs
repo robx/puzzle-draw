@@ -79,10 +79,10 @@ data BorderedRect a b = BorderedRect !Int !Int [[a]] (Border b)
 instance (FromChar a, FromChar b) => FromJSON (BorderedRect a b) where
     parseJSON v = do
         Rect w h ls <- parseJSON v
-        let b = Border (map head . middle h $ ls)
-                       (map last . middle h $ ls)
-                       (middle w . head $ ls)
+        let b = Border (reverse . map head . middle h $ ls)
+                       (reverse . map last . middle h $ ls)
                        (middle w . last $ ls)
+                       (middle w . head $ ls)
             ls' = map (middle w) . middle h $ ls
         mapM_ ((parseChar :: Char -> Parser Space) . flip ($) ls)
               [head . head, head . last, last . head, last . last]
