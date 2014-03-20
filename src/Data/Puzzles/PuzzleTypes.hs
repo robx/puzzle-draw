@@ -21,7 +21,7 @@ type ThermoSudoku = PuzzleDef (SGrid Int, [Thermometer]) IntGrid
 type Pyramid = PuzzleDef Pyr.Pyramid Pyr.Pyramid
 type RowKropkiPyramid = PuzzleDef Pyr.RowKropkiPyramid Pyr.Pyramid
 type SlitherLink = PuzzleDef IntGrid Loop
-type LiarSlitherLink = PuzzleDef IntGrid (Loop, SGrid (Maybe ()))
+type LiarSlitherLink = PuzzleDef IntGrid (Loop, SGrid Bool)
 type TightfitSkyscrapers = PuzzleDef
     (OutsideClues (Maybe Int), SGrid (Tightfit ()))
     (SGrid (Tightfit Int))

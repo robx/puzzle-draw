@@ -78,5 +78,7 @@ drawSlalomDiags = atCentres diag . clues . fmap Just
           diag SlalomBackward = stroke dr # lw edgewidth
 
 drawCrosses ::  (Backend b R2, Renderable (Path R2) b) =>
-                 SGrid (Maybe a) -> Diagram b R2
-drawCrosses = atCentres (const drawCross) . clues
+                 SGrid Bool -> Diagram b R2
+drawCrosses = atCentres (if' drawCross mempty) . values
+  where
+    if' a b x = if x then a else b

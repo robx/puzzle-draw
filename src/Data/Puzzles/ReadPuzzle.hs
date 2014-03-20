@@ -156,14 +156,14 @@ slither' = (parseClueGrid, parseEdges)
 slither :: ReadPuzzle SlitherLink
 slither = toRead slither'
 
-newtype LSol = LSol { unLSol :: (Loop, SGrid (Maybe ())) }
+newtype LSol = LSol { unLSol :: (Loop, SGrid Bool) }
 instance FromJSON LSol where
     parseJSON (Object v) = LSol <$> ((,) <$>
                            (parseEdges =<< v .: "loop") <*>
-                           (readXGrid <$> v .: "liars"))
+                           (parseShadedGrid =<< v .: "liars"))
     parseJSON _          = mzero
 
-liarslither' :: ParsePuzzle (SGrid (Clue Int)) (Loop, SGrid (Maybe ()))
+liarslither' :: ParsePuzzle (SGrid (Clue Int)) (Loop, SGrid Bool)
 liarslither' = (parseClueGrid, (unLSol <$>) . parseJSON)
 
 liarslither :: ReadPuzzle LiarSlitherLink
