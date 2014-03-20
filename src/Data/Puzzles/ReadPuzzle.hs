@@ -206,10 +206,11 @@ instance FromJSON GridMarked where
                                    (map unPMW <$> v .: "words"))
     parseJSON _          = mzero
 
+wordsearch' :: ParsePuzzle (CharClueGrid, [String]) (CharClueGrid, [MarkedWord])
+wordsearch' = ((unGW <$>) . parseJSON, (unGM <$>) . parseJSON)
+
 wordsearch :: ReadPuzzle Wordsearch
-wordsearch (RP p s) = PD <$>
-    (unGW <$> fromJSON p) <*>
-    (unGM <$> fromJSON s)
+wordsearch = toRead wordsearch'
 
 newtype Curve = Curve { unCurve :: [Edge] }
 
