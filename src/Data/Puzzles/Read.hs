@@ -37,7 +37,9 @@ instance FromChar Alpha where
         | isAlpha c  = Alpha <$> parseChar c
         | otherwise  = empty
 
+-- | A rectangle. Each row has length `w`.
 data Rect a = Rect !Int !Int [[a]]
+    deriving Show
 
 instance Functor Rect where
     fmap f (Rect w h ls) = Rect w h (map (map f) ls)
