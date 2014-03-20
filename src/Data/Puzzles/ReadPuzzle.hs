@@ -63,9 +63,6 @@ type ParsePuzzle a b = (Value -> Parser a, Value -> Parser b)
 toRead :: ParsePuzzle a b -> ReadPuzzle (PuzzleDef a b)
 toRead (pp, ps) (RP p s) = PD <$> parse pp p <*> parse ps s
 
--- | Almost-inverse of toRead.
--- We actually need to supply a valid solution to successfully
--- parse a valid puzzle without solution, we hope "." will do.
 fromRead :: ReadPuzzle (PuzzleDef a b) -> ParsePuzzle a b
 fromRead r = (p, s)
   where
@@ -75,10 +72,11 @@ fromRead r = (p, s)
     s v = case r (RP vempty v) of Success (PD _ s') -> pure s'
                                   Error _           -> empty
 
+lits' :: ParsePuzzle AreaGrid ShadedGrid
+lits' = (parseGrid, parseShadedGrid)
+
 lits :: ReadPuzzle LITS
-lits (RP p s) = PD <$>
-    (readAreaGrid <$> fromJSON p) <*>
-    (readBoolGrid <$> fromJSON s)
+lits = toRead lits'
 
 litsplus :: ReadPuzzle LITS
 litsplus = lits
@@ -227,10 +225,11 @@ curvedata (RP p s) = PD <$>
     (fmap (fmap unCurve) . unRG <$> fromJSON p) <*>
     (readEdges <$> fromJSON s)
 
+doubleback' :: ParsePuzzle AreaGrid Loop
+doubleback' = (parseGrid, parseEdges)
+
 doubleback :: ReadPuzzle DoubleBack
-doubleback (RP p s) = PD <$>
-    (readAreaGrid <$> fromJSON p) <*>
-    parse parseEdges s
+doubleback = toRead doubleback'
 
 slalom' :: ParsePuzzle (SGrid (Clue Int)) (SGrid SlalomDiag)
 slalom' = (parseClueGrid, \v -> rectToSGrid <$> parseJSON v)
@@ -238,10 +237,8 @@ slalom' = (parseClueGrid, \v -> rectToSGrid <$> parseJSON v)
 slalom :: ReadPuzzle Slalom
 slalom = toRead slalom'
 
-compass :: ReadPuzzle Compass
-compass (RP p s) = PD <$>
-    (fmap (fmap unPCC) . unRG <$> fromJSON p) <*>
-    (readAreaGrid <$> fromJSON s)
-
 compass' :: ParsePuzzle (SGrid (Clue CompassC)) CharGrid
-compass' = fromRead compass
+compass' = ((fmap (fmap unPCC) . unRG <$>) . parseJSON, parseGrid)
+
+compass :: ReadPuzzle Compass
+compass = toRead compass'
