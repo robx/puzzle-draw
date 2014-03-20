@@ -197,6 +197,9 @@ readWideIntGrid = fmap strToIntClue . readStrGrid
 parseClueGrid :: FromChar a => Value -> Parser (SGrid (Clue a))
 parseClueGrid v = rectToClueGrid <$> parseJSON v
 
+parseSpacedClueGrid :: FromString a => Value -> Parser (SGrid (Clue a))
+parseSpacedClueGrid v = rectToClueGrid . unSpaced <$> parseJSON v
+
 readXGrid :: String -> SGrid (Maybe ())
 readXGrid = fmap f . readCharGrid
     where f 'X' = Just ()
