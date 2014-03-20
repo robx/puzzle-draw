@@ -133,6 +133,7 @@ data Blank = Blank
 
 instance FromChar Blank where
     parseChar '.' = pure Blank
+    parseChar '-' = pure Blank
     parseChar _   = empty
 
 instance FromChar SlalomDiag where
