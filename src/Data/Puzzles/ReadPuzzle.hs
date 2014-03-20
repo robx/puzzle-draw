@@ -101,10 +101,11 @@ masyu' = (parseClueGrid, parseEdges)
 masyu :: ReadPuzzle Masyu
 masyu = toRead masyu'
 
+nurikabe' :: ParsePuzzle IntGrid ShadedGrid
+nurikabe' = (parseSpacedClueGrid, parseShadedGrid)
+
 nurikabe :: ReadPuzzle Nurikabe
-nurikabe (RP p s) = PD <$>
-    (readWideIntGrid <$> fromJSON p) <*>
-    (readBoolGrid <$> fromJSON s)
+nurikabe = toRead nurikabe'
 
 newtype RefGrid a = RefGrid { unRG :: SGrid a }
 
