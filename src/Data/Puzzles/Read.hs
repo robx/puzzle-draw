@@ -88,7 +88,7 @@ instance (FromChar a, FromChar b) => FromJSON (BorderedRect a b) where
               [head . head, head . last, last . head, last . last]
         lsparsed <- sequence . map (mapM parseChar) $ ls'
         bparsed  <- sequenceA . fmap parseChar $ b
-        return $ BorderedRect (w-1) (h-1) lsparsed bparsed
+        return $ BorderedRect (w-2) (h-2) lsparsed bparsed
       where
         middle len = take (len - 2) . drop 1
 
