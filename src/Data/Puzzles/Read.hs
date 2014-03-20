@@ -226,10 +226,12 @@ parseSpacedClueGrid v = rectToClueGrid . unSpaced <$> parseJSON v
 --  o-o o
 --    | |
 --    o-o
-readEdges :: String -> [Edge]
-readEdges s = horiz ++ vert
-    where g = readCharGrid s
-          (w, h) = size g
+parsePlainEdges :: Value -> Parser [Edge]
+parsePlainEdges v = readEdges <$> parseGrid v
+
+readEdges :: SGrid Char -> [Edge]
+readEdges g = horiz ++ vert
+    where (w, h) = size g
           w' = w `div` 2
           h' = h `div` 2
           isHoriz (x, y) = g ! (2 * x + 1, 2 * y) == '-'

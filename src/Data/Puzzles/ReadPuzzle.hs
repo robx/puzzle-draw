@@ -208,12 +208,12 @@ wordsearch = toRead wordsearch'
 newtype Curve = Curve { unCurve :: [Edge] }
 
 instance FromJSON Curve where
-    parseJSON v = Curve <$> (readEdges <$> parseJSON v)
+    parseJSON v = Curve <$> parsePlainEdges v
 
+curvedata' :: ParsePuzzle (SGrid (Clue [Edge])) [Edge]
+curvedata' = ((fmap (fmap unCurve) . unRG <$>) . parseJSON, parsePlainEdges)
 curvedata :: ReadPuzzle CurveData
-curvedata (RP p s) = PD <$>
-    (fmap (fmap unCurve) . unRG <$> fromJSON p) <*>
-    (readEdges <$> fromJSON s)
+curvedata = toRead curvedata'
 
 doubleback' :: ParsePuzzle AreaGrid Loop
 doubleback' = (parseGrid, parseEdges)
