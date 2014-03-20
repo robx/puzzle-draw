@@ -214,6 +214,9 @@ readStrGrid = fromListList . map words . lines
 readWideIntGrid :: String -> SGrid (Maybe Int)
 readWideIntGrid = fmap strToIntClue . readStrGrid
 
+parseGrid :: FromChar a => Value -> Parser (SGrid a)
+parseGrid v = rectToSGrid <$> parseJSON v
+
 parseClueGrid :: FromChar a => Value -> Parser (SGrid (Clue a))
 parseClueGrid v = rectToClueGrid <$> parseJSON v
 
