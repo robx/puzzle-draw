@@ -27,7 +27,6 @@ import Data.Hashable
 import qualified Data.Map as Map
 import qualified Data.Traversable as Traversable
 import Data.Char (isAlpha)
-import qualified Data.Text as T
 
 import Data.Puzzles.Grid
 import qualified Data.Puzzles.Pyramid as Pyr
@@ -62,15 +61,6 @@ type ParsePuzzle a b = (Value -> Parser a, Value -> Parser b)
 
 toRead :: ParsePuzzle a b -> ReadPuzzle (PuzzleDef a b)
 toRead (pp, ps) (RP p s) = PD <$> parse pp p <*> parse ps s
-
-fromRead :: ReadPuzzle (PuzzleDef a b) -> ParsePuzzle a b
-fromRead r = (p, s)
-  where
-    vempty = String (T.pack ".")
-    p v = case r (RP v vempty) of Success (PD p' _) -> pure p'
-                                  Error _           -> empty
-    s v = case r (RP vempty v) of Success (PD _ s') -> pure s'
-                                  Error _           -> empty
 
 lits' :: ParsePuzzle AreaGrid ShadedGrid
 lits' = (parseGrid, parseShadedGrid)
