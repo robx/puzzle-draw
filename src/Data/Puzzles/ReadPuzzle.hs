@@ -89,10 +89,11 @@ geradeweg' = (parseClueGrid, parseEdges)
 geradeweg :: ReadPuzzle Geradeweg
 geradeweg = toRead geradeweg'
 
+fillomino' :: ParsePuzzle IntGrid IntGrid
+fillomino' = (parseClueGrid, parseClueGrid)
+
 fillomino :: ReadPuzzle Fillomino
-fillomino (RP p s) = PD <$>
-    (readIntGrid <$> fromJSON p) <*>
-    (readIntGrid <$> fromJSON s)
+fillomino = toRead fillomino'
 
 masyu' :: ParsePuzzle (SGrid (Clue MasyuPearl)) Loop
 masyu' = (parseClueGrid, parseEdges)
