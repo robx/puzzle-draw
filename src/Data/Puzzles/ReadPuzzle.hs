@@ -178,9 +178,7 @@ liarslither (RP p s) = PD <$>
 tightfitskyscrapers' :: ParsePuzzle
                         (OutsideClues (Maybe Int), SGrid (Tightfit ()))
                         (SGrid (Tightfit Int))
-tightfitskyscrapers' = (tighttemp, parseTightIntGrid)
-  where
-    tighttemp v = readTightOutside <$> parseJSON v
+tightfitskyscrapers' = (parseTightOutside, parseTightIntGrid)
 
 tightfitskyscrapers :: ReadPuzzle TightfitSkyscrapers
 tightfitskyscrapers = toRead tightfitskyscrapers'

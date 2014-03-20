@@ -292,23 +292,22 @@ parseThermoGrid (Rect w h ls) = (,) (Grid s ints) <$>
     (ints, alphas) = partitionEithers . snd . partitionEithers $
                      listListToMap ls
 
-readTightOutside :: String -> (OutsideClues (Maybe Int), SGrid (Tightfit ()))
-readTightOutside s = (OC l r b t, gt)
-    where g = readCharGrid s
-          (w', h') = size g
-          w = w' - 2
-          h = h' - 2
-          l = map charToIntClue [ g ! (0, y+1) | y <- [0..h-1] ]
-          r = map charToIntClue [ g ! (w'-1, y+1) | y <- [0..h-1] ]
-          b = map charToIntClue [ g ! (x+1, 0) | x <- [0..w-1] ]
-          t = map charToIntClue [ g ! (x+1, h'-1) | x <- [0..w-1] ]
-          readTight '.' = Single ()
-          readTight '/' = UR () ()
-          readTight '\\' = DR () ()
-          readTight _ = error "this needs to be handled with a parser"
-          gt = fromListList [ [ readTight (g ! (x, y)) | x <- [1..w'-2] ]
-                            | y <- [h'-2,h'-3..1]
-                            ]
+newtype Tight = Tight { unTight :: Tightfit () }
+
+instance FromChar Tight where
+    parseChar '.'  = pure . Tight $ Single ()
+    parseChar '/'  = pure . Tight $ UR () ()
+    parseChar '\\' = pure . Tight $ DR () ()
+    parseChar _    = empty
+
+parseTightOutside :: Value -> Parser (OutsideClues (Maybe Int),
+                                      SGrid (Tightfit ()))
+parseTightOutside v = do
+    BorderedRect w h ls b <- parseJSON v
+        :: Parser (BorderedRect Tight (Either Blank Int))
+    return (outside . fmap (either (const Nothing) Just) $ b,
+            fmap unTight . rectToSGrid $ Rect w h ls)
+  where outside (Border l r b t) = OC l r b t
 
 instance FromChar a => FromString (Tightfit a) where
     parseString [c]           = Single <$> parseChar c
