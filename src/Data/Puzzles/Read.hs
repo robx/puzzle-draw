@@ -14,6 +14,9 @@ import qualified Data.Text as T
 import Control.Applicative
 import qualified Data.Map as Map
 import Control.Arrow
+import Data.Traversable hiding (mapM, sequence)
+import Data.Foldable (Foldable, fold)
+import Data.Monoid ((<>))
 
 class FromChar a where
     parseChar :: Char -> Parser a
@@ -54,6 +57,41 @@ instance FromChar a => FromJSON (Rect a) where
         filled = sequence . map (mapM parseChar) $ filledc
     parseJSON _          = empty
 
+data Border a = Border [a] [a] [a] [a]
+    deriving Show
+
+-- | This instance might be a lie.
+instance Foldable Border where
+    fold (Border l r b t) = fold l <> fold r <> fold b <> fold t
+
+instance Traversable Border where
+    sequenceA (Border l r b t) = Border <$> sequenceA l
+                                        <*> sequenceA r
+                                        <*> sequenceA b
+                                        <*> sequenceA t
+
+instance Functor Border where
+    f `fmap` (Border l r b t) = Border (f <$> l) (f <$> r) (f <$> b) (f <$> t)
+
+data BorderedRect a b = BorderedRect !Int !Int [[a]] (Border b)
+    deriving Show
+
+instance (FromChar a, FromChar b) => FromJSON (BorderedRect a b) where
+    parseJSON v = do
+        Rect w h ls <- parseJSON v
+        let b = Border (map head . middle h $ ls)
+                       (map last . middle h $ ls)
+                       (middle w . head $ ls)
+                       (middle w . last $ ls)
+            ls' = map (middle w) . middle h $ ls
+        mapM_ ((parseChar :: Char -> Parser Space) . flip ($) ls)
+              [head . head, head . last, last . head, last . last]
+        lsparsed <- sequence . map (mapM parseChar) $ ls'
+        bparsed  <- sequenceA . fmap parseChar $ b
+        return $ BorderedRect (w-1) (h-1) lsparsed bparsed
+      where
+        middle len = take (len - 2) . drop 1
+
 newtype SpacedRect a = SpacedRect { unSpaced :: Rect a }
 
 instance FromString a => FromJSON (SpacedRect a) where
@@ -83,6 +121,12 @@ charToCharClue c
 instance FromChar MasyuPearl where
     parseChar '*' = pure MBlack
     parseChar 'o' = pure MWhite
+    parseChar _   = empty
+
+data Space = Space
+
+instance FromChar Space where
+    parseChar ' ' = pure Space
     parseChar _   = empty
 
 data Blank = Blank
