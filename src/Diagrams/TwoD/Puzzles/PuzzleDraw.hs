@@ -14,12 +14,12 @@ import qualified Diagrams.TwoD.Puzzles.Puzzle as D
 import Diagrams.Prelude
 import Data.Yaml (Parser)
 
-rd :: ParsePuzzle p q -> RenderPuzzle b (p, q) ->
+rd :: ParsePuzzle p q -> RenderPuzzle b p q ->
       RawPuzzle -> Parser (Diagram b R2, Diagram b R2)
-rd (pp, ps) d (RP p s) = do
+rd (pp, ps) (dp, ds) (RP p s) = do
     p' <- pp p
     s' <- ps s
-    return . d $ (p', s')
+    return (dp p', ds (p', s'))
 
 rdtype :: (Backend b R2, Renderable (Path R2) b) =>
           String -> RawPuzzle -> Parser (Diagram b R2, Diagram b R2)
