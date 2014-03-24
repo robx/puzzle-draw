@@ -7,6 +7,7 @@ import qualified Data.Map as Map
 
 import Data.Puzzles.GridShape hiding (size, cells)
 import qualified Data.Puzzles.GridShape as GS
+import Data.Puzzles.Things
 
 data Grid s a where
     Grid :: { shape :: s
@@ -15,8 +16,12 @@ data Grid s a where
 deriving instance (Show a, Show s, GridShape s) => Show (Grid s a)
 
 type SGrid = Grid Square
-type Coord = Cell Square
-type Size = GridSize Square
+
+type CharGrid = SGrid Char
+type AreaGrid = CharGrid
+type ShadedGrid = SGrid Bool
+type CharClueGrid = SGrid (Maybe Char)
+type IntGrid = SGrid (Clue Int)
 
 (!) :: (GridShape s, Ord (Cell s)) => Grid s a -> Cell s -> a
 (!) (Grid _ m) = (m Map.!)
@@ -57,12 +62,6 @@ neighbours g p = filter (inBounds g) . map (add p) $ deltas
                    , dx /= 0 || dy /= 0
                    ]
           add (x, y) (x', y') = (x + x', y + y')
-
-data Dir = V | H
-    deriving (Eq, Ord, Show)
-
-data Edge = E (Cell Square) Dir
-    deriving (Show, Eq, Ord)
 
 -- | The inner edges of a grid that separate unequal cells.
 borders :: Eq a => Grid Square a -> [Edge]

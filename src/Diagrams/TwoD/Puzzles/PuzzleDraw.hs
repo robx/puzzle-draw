@@ -4,23 +4,22 @@ module Diagrams.TwoD.Puzzles.PuzzleDraw (
     drawPuzzle
     ) where
 
-import Data.Puzzles.ReadPuzzle (
+import Data.Puzzles.Read (
         TypedPuzzle, puzzleType, dropType, RawPuzzle(..),
         ParsePuzzle
     )
-import Data.Puzzles.PuzzleTypes (PuzzleDef(..))
 import Diagrams.TwoD.Puzzles.Puzzle (RenderPuzzle)
-import qualified Data.Puzzles.ReadPuzzle as R
+import qualified Data.Puzzles.Read as R
 import qualified Diagrams.TwoD.Puzzles.Puzzle as D
 import Diagrams.Prelude
 import Data.Yaml (Parser)
 
-rd :: ParsePuzzle p q -> RenderPuzzle b (PuzzleDef p q) ->
+rd :: ParsePuzzle p q -> RenderPuzzle b (p, q) ->
       RawPuzzle -> Parser (Diagram b R2, Diagram b R2)
 rd (pp, ps) d (RP p s) = do
     p' <- pp p
     s' <- ps s
-    return . d $ PD p' s'
+    return . d $ (p', s')
 
 rdtype :: (Backend b R2, Renderable (Path R2) b) =>
           String -> RawPuzzle -> Parser (Diagram b R2, Diagram b R2)

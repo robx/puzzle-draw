@@ -31,3 +31,13 @@ instance GridShape Square where
                  , dx /= 0 || dy /= 0
                  ]
         add (x, y) (x', y') = (x + x', y + y')
+
+
+data Dir = V | H
+    deriving (Eq, Ord, Show)
+
+data Edge = E (Cell Square) Dir
+    deriving (Show, Eq, Ord)
+
+type Coord = Cell Square
+type Size = GridSize Square

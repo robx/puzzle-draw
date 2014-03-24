@@ -7,8 +7,7 @@ import Data.Maybe (fromJust)
 
 import Control.DeepSeq
 
-import Data.Puzzles.ReadPuzzle
-import Data.Puzzles.Read (parseChar)
+import Data.Puzzles.Read
 import qualified Data.Puzzles.Grid as Grid
 
 import Diagrams.TwoD.Puzzles.Draw

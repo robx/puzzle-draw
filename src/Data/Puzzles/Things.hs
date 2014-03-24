@@ -1,6 +1,6 @@
 module Data.Puzzles.Things where
 
-import Data.Puzzles.Grid
+import Data.Puzzles.GridShape (Coord, Edge)
 
 type Clue a = Maybe a
 

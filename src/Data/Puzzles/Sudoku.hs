@@ -1,6 +1,7 @@
 module Data.Puzzles.Sudoku where
 
 import Data.Puzzles.Grid
+import Data.Puzzles.GridShape hiding (size)
 
 msqrt :: Integral a => a -> Maybe a
 msqrt x = if r ^ (2 :: Int) == x then Just r else Nothing

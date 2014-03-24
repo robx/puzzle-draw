@@ -6,7 +6,7 @@ import Diagrams.Prelude
 import Diagrams.TwoD.Offset
 
 import Data.Puzzles.Things
-import Data.Puzzles.Grid
+import Data.Puzzles.GridShape
 
 import Diagrams.TwoD.Puzzles.Lib
 import Diagrams.TwoD.Puzzles.Widths

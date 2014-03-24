@@ -7,6 +7,7 @@ import Data.Char (isUpper)
 import Diagrams.Prelude
 
 import Data.Puzzles.Grid
+import Data.Puzzles.GridShape hiding (size, cells)
 
 import Diagrams.TwoD.Puzzles.Lib
 import Diagrams.TwoD.Puzzles.Widths
