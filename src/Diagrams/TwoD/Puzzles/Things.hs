@@ -14,8 +14,10 @@ import Diagrams.TwoD.Puzzles.Grid
 
 pearl :: (Renderable (Path R2) b, Backend b R2) =>
          MasyuPearl -> Diagram b R2
-pearl MWhite = circle 0.35 # lw 0.05
-pearl MBlack = pearl MWhite # fc black
+pearl m = circle 0.35 # lw 0.05 # fc (c m)
+  where
+    c MWhite = white
+    c MBlack = black
 
 ur :: Path R2
 ur = fromVertices [p2 (-1/2,-1/2), p2 (1/2,1/2)]
