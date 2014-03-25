@@ -10,7 +10,7 @@ module Data.Puzzles.Read (
     lits, litsplus, geradeweg, fillomino, masyu, nurikabe, latintapa,
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
-    curvedata, doubleback, slalom, compass,
+    curvedata, doubleback, slalom, compass, boxof2or3,
 
     parseChar, -- for tests
   ) where
@@ -496,3 +496,6 @@ slalom = (parseClueGrid, \v -> rectToSGrid <$> parseJSON v)
 
 compass :: ParsePuzzle (SGrid (Clue CompassC)) CharGrid
 compass = ((fmap (fmap unPCC) . unRG <$>) . parseJSON, parseGrid)
+
+boxof2or3 :: ParsePuzzle (SGrid MasyuPearl, [Edge]) ()
+boxof2or3 = (parseNodeEdges, error "boxof2or3 parsing not implemented")
