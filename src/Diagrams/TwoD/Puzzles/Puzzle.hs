@@ -9,7 +9,7 @@ module Diagrams.TwoD.Puzzles.Puzzle (
     lits, litsplus, geradeweg, fillomino, masyu, nurikabe, latintapa,
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
-    curvedata, doubleback, slalom, compass
+    curvedata, doubleback, slalom, compass, boxof2or3,
     ) where
 
 import Diagrams.Prelude hiding (Loop)
@@ -163,6 +163,12 @@ compass :: (Backend b R2, Renderable (Path R2) b) =>
 compass = (,)
     drawCompassGrid
     (drawCompassClues . fst <> drawAreaGridGray . snd)
+
+boxof2or3 :: (Backend b R2, Renderable (Path R2) b) =>
+             RenderPuzzle b (SGrid MasyuPearl, [Edge]) ()
+boxof2or3 = (,)
+    (atCentres pearl . values . fst <> drawDualEdges . snd)
+    (error "boxof2or3 solution not implemented")
 
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
