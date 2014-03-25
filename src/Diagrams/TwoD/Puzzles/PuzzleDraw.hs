@@ -48,4 +48,5 @@ handle f _ "curvedata"            = f R.curvedata           D.curvedata
 handle f _ "doubleback"           = f R.doubleback          D.doubleback
 handle f _ "slalom"               = f R.slalom              D.slalom
 handle f _ "compass"              = f R.compass             D.compass
+handle f _ "boxof2or3"            = f R.boxof2or3           D.boxof2or3
 handle _ e t                      = e $ "unknown puzzle type: " ++ t
