@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts, RankNTypes #-}
 
 module Diagrams.TwoD.Puzzles.PuzzleDraw (
     drawPuzzle
@@ -12,39 +12,47 @@ import Diagrams.TwoD.Puzzles.Puzzle (RenderPuzzle)
 import qualified Data.Puzzles.Read as R
 import qualified Diagrams.TwoD.Puzzles.Puzzle as D
 import Diagrams.Prelude
-import Data.Yaml (Parser)
+import Data.Yaml (Parser, Value)
 
-rd :: ParsePuzzle p q -> RenderPuzzle b p q ->
-      RawPuzzle -> Parser (Diagram b R2, Diagram b R2)
-rd (pp, ps) (dp, ds) (RP p s) = do
+type PuzzleHandler b a = forall p q. ParsePuzzle p q -> RenderPuzzle b p q -> a
+
+--puzzle :: PuzzleHandler b (Value -> Parser (Diagram b R2))
+--puzzle (pp, _) (dp, _) p = do
+--    p' <- pp p
+--    return $ dp p'
+
+puzzleSol :: PuzzleHandler b ((Value, Value) -> Parser (Diagram b R2, Diagram b R2))
+puzzleSol (pp, ps) (dp, ds) (p, s) = do
     p' <- pp p
     s' <- ps s
     return (dp p', ds (p', s'))
 
-rdtype :: (Backend b R2, Renderable (Path R2) b) =>
-          String -> RawPuzzle -> Parser (Diagram b R2, Diagram b R2)
-rdtype "lits"                 = rd R.lits                D.lits
-rdtype "litsplus"             = rd R.litsplus            D.litsplus
-rdtype "geradeweg"            = rd R.geradeweg           D.geradeweg
-rdtype "fillomino"            = rd R.fillomino           D.fillomino
-rdtype "masyu"                = rd R.masyu               D.masyu
-rdtype "nurikabe"             = rd R.nurikabe            D.nurikabe
-rdtype "latintapa"            = rd R.latintapa           D.latintapa
-rdtype "sudoku"               = rd R.sudoku              D.sudoku
-rdtype "thermosudoku"         = rd R.thermosudoku        D.thermosudoku
-rdtype "pyramid"              = rd R.pyramid             D.pyramid
-rdtype "rowkropkipyramid"     = rd R.kpyramid            D.kpyramid
-rdtype "slitherlink"          = rd R.slither             D.slither
-rdtype "slitherlinkliar"      = rd R.liarslither         D.liarslither
-rdtype "skyscrapers-tightfit" = rd R.tightfitskyscrapers D.tightfitskyscrapers
-rdtype "wordloop"             = rd R.wordloop            D.wordloop
-rdtype "wordsearch"           = rd R.wordsearch          D.wordsearch
-rdtype "curvedata"            = rd R.curvedata           D.curvedata
-rdtype "doubleback"           = rd R.doubleback          D.doubleback
-rdtype "slalom"               = rd R.slalom              D.slalom
-rdtype "compass"              = rd R.compass             D.compass
-rdtype t                      = fail $ "unknown puzzle type: " ++ t
+join :: (Backend b R2, Renderable (Path R2) b) =>
+        PuzzleHandler b a -> (String -> a) -> String -> a
+join f _ "lits"                 = f R.lits                D.lits
+join f _ "litsplus"             = f R.litsplus            D.litsplus
+join f _ "geradeweg"            = f R.geradeweg           D.geradeweg
+join f _ "fillomino"            = f R.fillomino           D.fillomino
+join f _ "masyu"                = f R.masyu               D.masyu
+join f _ "nurikabe"             = f R.nurikabe            D.nurikabe
+join f _ "latintapa"            = f R.latintapa           D.latintapa
+join f _ "sudoku"               = f R.sudoku              D.sudoku
+join f _ "thermosudoku"         = f R.thermosudoku        D.thermosudoku
+join f _ "pyramid"              = f R.pyramid             D.pyramid
+join f _ "rowkropkipyramid"     = f R.kpyramid            D.kpyramid
+join f _ "slitherlink"          = f R.slither             D.slither
+join f _ "slitherlinkliar"      = f R.liarslither         D.liarslither
+join f _ "skyscrapers-tightfit" = f R.tightfitskyscrapers D.tightfitskyscrapers
+join f _ "wordloop"             = f R.wordloop            D.wordloop
+join f _ "wordsearch"           = f R.wordsearch          D.wordsearch
+join f _ "curvedata"            = f R.curvedata           D.curvedata
+join f _ "doubleback"           = f R.doubleback          D.doubleback
+join f _ "slalom"               = f R.slalom              D.slalom
+join f _ "compass"              = f R.compass             D.compass
+join _ e t                      = e $ "unknown puzzle type: " ++ t
 
 drawPuzzle :: (Backend b R2, Renderable (Path R2) b) =>
               TypedPuzzle -> Parser (Diagram b R2, Diagram b R2)
-drawPuzzle p = rdtype (puzzleType p) (dropType p)
+drawPuzzle p = join puzzleSol fail (puzzleType p) (pv, sv)
+  where
+    (RP pv sv) = dropType p
