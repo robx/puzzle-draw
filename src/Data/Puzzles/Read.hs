@@ -224,6 +224,28 @@ readEdges g = horiz ++ vert
 parseGridChars :: FromChar a => SGrid Char -> Parser (SGrid a)
 parseGridChars = traverse parseChar
 
+-- | Parse a grid of edges with values at the nodes.
+--
+-- E.g. o-*-*-o
+--      | |
+--      *-o
+-- to a grid of masyu pearls and some edges.
+parseNodeEdges :: FromChar a =>
+                  Value -> Parser (SGrid a, [Edge])
+parseNodeEdges v = (,) <$>
+                   (parseGridChars =<< halveGrid =<< parseGrid v) <*>
+                   parsePlainEdges v
+  where
+    halveGrid (Grid (Square w h) m)
+        | odd w && odd h = pure $ Grid s' m'
+        | otherwise      = empty
+      where
+        s' = Square ((w + 1) `div` 2) ((h + 1) `div` 2)
+        m' = Map.mapKeys (both (`div` 2))
+           . Map.filterWithKey (const . (uncurry (&&) . both even))
+           $ m
+        both f (x, y) = (f x, f y)
+
 data HalfDirs = HalfDirs {unHalfDirs :: [Dir]}
 
 instance FromChar HalfDirs where
