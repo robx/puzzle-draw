@@ -4,6 +4,9 @@ module Data.Puzzles.Grid where
 
 import Data.Maybe
 import qualified Data.Map as Map
+import Data.Foldable (Foldable, fold)
+import Data.Traversable (Traversable, traverse)
+import Control.Applicative ((<$>))
 
 import Data.Puzzles.GridShape hiding (size, cells)
 import qualified Data.Puzzles.GridShape as GS
@@ -28,6 +31,12 @@ type IntGrid = SGrid (Clue Int)
 
 instance Functor (Grid s) where
     fmap f (Grid s m) = Grid s (fmap f m)
+
+instance Foldable (Grid s) where
+    fold (Grid _ m) = fold m
+
+instance Traversable (Grid s) where
+    traverse f (Grid s m) = Grid s <$> (traverse f m)
 
 fromListList :: [[a]] -> Grid Square a
 fromListList g = Grid s m
