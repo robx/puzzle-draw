@@ -2,9 +2,6 @@
 
 module Data.Puzzles.Read (
     TypedPuzzle(..),
-    puzzleType,
-    dropType,
-    RawPuzzle(..),
     ParsePuzzle,
 
     lits, litsplus, geradeweg, fillomino, masyu, nurikabe, latintapa,
@@ -359,24 +356,15 @@ instance FromJSON PCompassC where
               comp _            = empty
     parseJSON _          = empty
 
-data TypedPuzzle = TP String Value Value
+data TypedPuzzle = TP String Value (Maybe Value)
     deriving Show
-
-puzzleType :: TypedPuzzle -> String
-puzzleType (TP t _ _) = t
 
 instance FromJSON TypedPuzzle where
-    parseJSON (Object v) = TP              <$>
-                           v .: "type"     <*>
-                           v .: "puzzle"   <*>
-                           v .: "solution"
+    parseJSON (Object v) = TP               <$>
+                           v .: "type"      <*>
+                           v .: "puzzle"    <*>
+                           v .:? "solution"
     parseJSON _          = mzero
-
-data RawPuzzle = RP Value Value
-    deriving Show
-
-dropType :: TypedPuzzle -> RawPuzzle
-dropType (TP _ p s) = RP p s
 
 -- | A pair of parsers for a puzzle type.
 -- First parses the puzzle, second the solution.
