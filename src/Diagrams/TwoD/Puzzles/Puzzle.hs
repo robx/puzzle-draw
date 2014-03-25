@@ -25,7 +25,6 @@ import Data.Puzzles.GridShape (Edge)
 import Data.Puzzles.Things
 import qualified Data.Puzzles.Pyramid as Pyr
 
-type PuzzleSol b = (Diagram b R2, Diagram b R2)
 type RenderPuzzle b p s = (p -> Diagram b R2, (p, s) -> Diagram b R2)
 
 lits :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b AreaGrid ShadedGrid
@@ -170,14 +169,15 @@ boxof2or3 = (,)
     (atCentres pearl . values . fst <> drawDualEdges . snd)
     (error "boxof2or3 solution not implemented")
 
+type PuzzleSol b = (Diagram b R2, Maybe (Diagram b R2))
+
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
--- | Combine a puzzle renderer with its input to optionally
---   render the puzzle, its solution, or a side-by-side
+-- | Optionally render the puzzle, its solution, or a side-by-side
 --   example with puzzle and solution.
 draw :: (Backend b R2, Renderable (Path R2) b) =>
-        PuzzleSol b -> OutputChoice -> Diagram b R2
-draw (p, s) o = d o # bg white
-    where d DrawPuzzle   = p
-          d DrawSolution = s
-          d DrawExample  = p ||| strutX 2.0 ||| s
+        PuzzleSol b -> OutputChoice -> Maybe (Diagram b R2)
+draw (p, ms) = fmap (bg white) . d
+    where d DrawPuzzle   = Just p
+          d DrawSolution = ms
+          d DrawExample  = ms >>= \s -> return $ p ||| strutX 2.0 ||| s
