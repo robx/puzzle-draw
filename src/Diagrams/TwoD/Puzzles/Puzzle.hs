@@ -172,6 +172,7 @@ boxof2or3 = (,)
 type PuzzleSol b = (Diagram b R2, Maybe (Diagram b R2))
 
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
+    deriving Show
 
 -- | Optionally render the puzzle, its solution, or a side-by-side
 --   example with puzzle and solution.
