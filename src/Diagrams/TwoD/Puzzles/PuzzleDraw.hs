@@ -3,6 +3,7 @@
 module Diagrams.TwoD.Puzzles.PuzzleDraw (
     drawPuzzle,
     drawPuzzleSol,
+    drawPuzzleMaybeSol,
     handle
     ) where
 
@@ -12,6 +13,7 @@ import qualified Data.Puzzles.Read as R
 import qualified Diagrams.TwoD.Puzzles.Puzzle as D
 import Diagrams.Prelude
 import Data.Yaml (Parser, Value)
+import Data.Traversable (traverse)
 
 type PuzzleHandler b a = forall p q. ParsePuzzle p q -> RenderPuzzle b p q -> a
 
@@ -25,6 +27,15 @@ drawPuzzleSol (pp, ps) (dp, ds) (p, s) = do
     p' <- pp p
     s' <- ps s
     return (dp p', ds (p', s'))
+
+drawPuzzleMaybeSol :: PuzzleHandler b ((Value, Maybe Value)
+                      -> Parser (Diagram b R2, Maybe (Diagram b R2)))
+drawPuzzleMaybeSol (pp, ps) (dp, ds) (p, s) = do
+    p' <- pp p
+    s' <- traverse ps $ s
+    let mps = case s' of Nothing  -> Nothing
+                         Just s'' -> Just (p', s'')
+    return (dp p', ds <$> mps)
 
 handle :: (Backend b R2, Renderable (Path R2) b) =>
         PuzzleHandler b a -> (String -> a) -> String -> a
