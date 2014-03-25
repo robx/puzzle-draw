@@ -19,6 +19,10 @@ pearl m = circle 0.35 # lw 0.05 # fc (c m)
     c MWhite = white
     c MBlack = black
 
+smallPearl :: (Renderable (Path R2) b, Backend b R2) =>
+              MasyuPearl -> Diagram b R2
+smallPearl = scale 0.4 . pearl
+
 ur :: Path R2
 ur = fromVertices [p2 (-1/2,-1/2), p2 (1/2,1/2)]
 
