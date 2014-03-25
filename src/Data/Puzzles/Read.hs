@@ -25,7 +25,7 @@ import Data.Hashable
 import Data.Maybe (catMaybes)
 import qualified Data.Map as Map
 import qualified Data.HashMap.Strict as HMap
-import Data.Traversable (sequence, sequenceA, Traversable)
+import Data.Traversable (traverse, sequence, sequenceA, Traversable)
 import Data.Foldable (Foldable, fold)
 import Data.Monoid ((<>))
 
@@ -220,6 +220,9 @@ readEdges g = horiz ++ vert
                                , y <- [0 .. h' - 1]
                                , isVert (x, y)
                                ]
+
+parseGridChars :: FromChar a => SGrid Char -> Parser (SGrid a)
+parseGridChars = traverse parseChar
 
 data HalfDirs = HalfDirs {unHalfDirs :: [Dir]}
 
