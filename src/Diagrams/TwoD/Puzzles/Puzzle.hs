@@ -166,8 +166,13 @@ compass = (,)
 boxof2or3 :: (Backend b R2, Renderable (Path R2) b) =>
              RenderPuzzle b (SGrid MasyuPearl, [Edge]) ()
 boxof2or3 = (,)
-    (atCentres pearl . values . fst <> drawDualEdges . snd)
+    (atCentres smallPearl . values . fst
+     <> phantom' . grid . size . fst
+     <> drawThinDualEdges . snd)
     (error "boxof2or3 solution not implemented")
+  where
+    phantom' :: (Backend b R2) => D R2 -> Diagram b R2
+    phantom' = phantom
 
 type PuzzleSol b = (Diagram b R2, Maybe (Diagram b R2))
 
