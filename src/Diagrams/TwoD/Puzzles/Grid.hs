@@ -108,11 +108,17 @@ dualEdge = translate (r2 (1/2, 1/2)) . edge
 edgeStyle :: HasStyle a => a -> a
 edgeStyle = lineCap LineCapSquare . lw edgewidth
 
+thinEdgeStyle :: HasStyle a => a -> a
+thinEdgeStyle = lineCap LineCapSquare . lw onepix
+
 drawEdges :: Renderable (Path R2) b => [Edge] -> Diagram b R2
 drawEdges = edgeStyle . stroke . mconcat . map edge
 
 drawDualEdges :: Renderable (Path R2) b => [Edge] -> Diagram b R2
 drawDualEdges = edgeStyle . stroke . mconcat . map dualEdge
+
+drawThinDualEdges :: Renderable (Path R2) b => [Edge] -> Diagram b R2
+drawThinDualEdges = thinEdgeStyle . stroke . mconcat . map dualEdge
 
 drawAreaGrid :: (Backend b R2, Renderable (Path R2) b, Eq a) =>
                   SGrid a -> Diagram b R2
