@@ -101,6 +101,15 @@ kpyramid_1 = packLines $
     , "G 1*.*.o.*6"
     ]
 
+kpyramid_1_sol :: Value
+kpyramid_1_sol = packLines $
+    [ "    3"
+    , "   8 5"
+    , "  1 9 4"
+    , " 3 2 7 3"
+    , "1 2 4 3 6"
+    ]
+
 kpyramid_broken_1 :: Value
 kpyramid_broken_1 = packLines $
     [ "  G     3"
@@ -262,6 +271,7 @@ unitTests = testGroup "Unit tests"
     , testCase "don't break rendering invalid slalom solution"
          $ testBreakSlalom @? "just testing against errors"
     , testCase "parse kpyramid" $ testParse (fst kpyramid) kpyramid_1
+    , testCase "parse kpyramid sol" $ testParse (snd kpyramid) kpyramid_1_sol
     , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid) kpyramid_broken_1
     , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid) kpyramid_broken_2
     , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid) kpyramid_broken_3
