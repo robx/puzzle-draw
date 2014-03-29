@@ -209,6 +209,22 @@ test_thermo_1 = either (const []) snd res
   where
     res = parseEither (fst thermosudoku) thermo_1
 
+-- two neighbouring a's, should be fine
+thermo_2 :: Value
+thermo_2 = packLines $
+    [ "....2."
+    , "..c5.1"
+    , ".b..6."
+    , "a..c.."
+    , "a...b."
+    , ".bc.a."
+    ]
+
+test_thermo_2 :: [Thermometer]
+test_thermo_2 = either (const []) snd res
+  where
+    res = parseEither (fst thermosudoku) thermo_2
+
 thermo_broken_1 :: Value
 thermo_broken_1 = packLines $
     [ ".."
@@ -297,8 +313,12 @@ unitTests = testGroup "Unit tests"
     , testCase "don't parse borken compass" $ testNonparse (fst compass) compass_broken_4
     , testCase "don't parse borken compass" $ testNonparse (fst compass) compass_broken_5
     , testCase "parse thermo" $ testParse (fst thermosudoku) thermo_1
+    , testCase "parse thermo" $ testParse (fst thermosudoku) thermo_2
     , testCase "parse thermo, thermometers" $ sort test_thermo_1 @?= [ [(0, 4), (1, 5), (2, 4), (1, 3)]
                                                                      , [(4, 0), (3, 1), (4, 2), (5, 1)] ]
+    , testCase "parse thermo, thermometers" $ sort test_thermo_2 @?= [ [(0, 1), (1, 0), (2, 0)]
+                                                                     , [(0, 2), (1, 3), (2, 4)]
+                                                                     , [(4, 0), (4, 1), (3, 2)] ]
     , testCase "don't parse broken thermo" $ testNonparse (fst thermosudoku) thermo_broken_1
     , testCase "don't parse broken thermo" $ testNonparse (fst thermosudoku) thermo_broken_2
     ]

@@ -26,6 +26,7 @@ import qualified Data.HashMap.Strict as HMap
 import Data.Traversable (traverse, sequence, sequenceA, Traversable)
 import Data.Foldable (Foldable, fold)
 import Data.Monoid ((<>))
+import Data.List (intersect)
 
 import Data.Char (digitToInt, isAlpha, isDigit)
 import Text.Read (readMaybe)
@@ -275,13 +276,13 @@ parseThermos (Grid s m) = catMaybes <$> mapM parseThermo (Map.keys m)
   where
     m' = fmap unAlpha m
     parseThermo :: Cell Square -> Parser (Maybe Thermometer)
-    parseThermo p | not (isIsolated p)  = empty
-                  | not (isStart p)     = pure Nothing
-                  | otherwise           = Just <$> parseThermo' p
+    parseThermo p | not (isStart p)           = pure Nothing
+                  | not (isAlmostIsolated p)  = fail $ show p ++ " not almost isolated"
+                  | otherwise                 = Just <$> parseThermo' p
     parseThermo' :: Cell Square -> Parser Thermometer
     parseThermo' p = do
         q <- next p
-        maybe empty (fmap (p:) . parseThermo'') q
+        maybe (fail "no succ for thermo bulb") (fmap (p:) . parseThermo'') q
     parseThermo'' :: Cell Square -> Parser Thermometer
     parseThermo'' p = do
         q <- next p
@@ -290,11 +291,14 @@ parseThermos (Grid s m) = catMaybes <$> mapM parseThermo (Map.keys m)
     next p = case succs p of
         []   -> pure Nothing
         [q]  -> pure (Just q)
-        _    -> empty
+        _    -> fail "multiple successors"
     succs      p = filter    (test ((==) . succ) p) . neighbours s $ p
-    isIsolated p = not . any (test (==)          p) . neighbours s $ p
     isStart    p = not . any (test ((==) . pred) p) . neighbours s $ p
     test f p q = maybe False (f (m' Map.! p)) (Map.lookup q m')
+    isAlmostIsolated p = all disjointSucc . neighbours s $ p
+      where
+        disjointSucc q = null $ intersect (succs p) (succs' q)
+        succs' q = maybe [] (const $ succs q) (Map.lookup q m')
 
 parseThermoGrid :: ThermoRect -> Parser (SGrid Int, [Thermometer])
 parseThermoGrid (Rect w h ls) = (,) (Grid s ints) <$>
