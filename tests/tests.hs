@@ -4,9 +4,11 @@ import Test.Tasty.HUnit
 import Data.Yaml
 import qualified Data.ByteString.Char8 as B
 import Data.Maybe (fromJust)
+import Data.List (sort)
 
 import Control.DeepSeq
 
+import Data.Puzzles.Things (Thermometer)
 import Data.Puzzles.Read
 import qualified Data.Puzzles.Grid as Grid
 import Data.Puzzles.Pyramid (PyramidSol(..))
@@ -202,6 +204,11 @@ thermo_1 = packLines $
     , ".2..a."
     ]
 
+test_thermo_1 :: [Thermometer]
+test_thermo_1 = either (const []) snd res
+  where
+    res = parseEither (fst thermosudoku) thermo_1
+
 thermo_broken_1 :: Value
 thermo_broken_1 = packLines $
     [ ".."
@@ -290,6 +297,8 @@ unitTests = testGroup "Unit tests"
     , testCase "don't parse borken compass" $ testNonparse (fst compass) compass_broken_4
     , testCase "don't parse borken compass" $ testNonparse (fst compass) compass_broken_5
     , testCase "parse thermo" $ testParse (fst thermosudoku) thermo_1
+    , testCase "parse thermo, thermometers" $ sort test_thermo_1 @?= [ [(0, 4), (1, 5), (2, 4), (1, 3)]
+                                                                     , [(4, 0), (3, 1), (4, 2), (5, 1)] ]
     , testCase "don't parse broken thermo" $ testNonparse (fst thermosudoku) thermo_broken_1
     , testCase "don't parse broken thermo" $ testNonparse (fst thermosudoku) thermo_broken_2
     ]
