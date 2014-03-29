@@ -422,10 +422,10 @@ sudoku = (parseClueGrid, parseClueGrid)
 thermosudoku :: ParsePuzzle (SGrid Int, [Thermometer]) IntGrid
 thermosudoku = ((parseThermoGrid =<<) . parseJSON, parseClueGrid)
 
-pyramid :: ParsePuzzle Pyr.Pyramid Pyr.Pyramid
+pyramid :: ParsePuzzle Pyr.Pyramid Pyr.PyramidSol
 pyramid = (parseJSON, parseJSON)
 
-kpyramid :: ParsePuzzle Pyr.RowKropkiPyramid Pyr.Pyramid
+kpyramid :: ParsePuzzle Pyr.RowKropkiPyramid Pyr.PyramidSol
 kpyramid = (parseJSON, parseJSON)
 
 slither :: ParsePuzzle (SGrid (Clue Int)) Loop

@@ -14,27 +14,34 @@ data Row = R { entries :: [Maybe Int]
 
 newtype Pyramid = Pyr {unPyr :: [Row]}
 
+newtype PyramidSol = PyramidSol [[Int]]
+    deriving Show
+
 psize :: Pyramid -> Int
 psize (Pyr rows) = length rows
 
-mergepyramids :: Pyramid -> Pyramid -> Pyramid
-mergepyramids (Pyr rs) (Pyr qs)
+mergepyramids :: Pyramid -> PyramidSol -> Pyramid
+mergepyramids (Pyr rs) (PyramidSol qs)
     | length rs /= length qs  = error "can't merge differently sized pyramids"
     | otherwise               = Pyr (zipWith mergerow rs qs)
-    where mergerow (R es s) (R es' s') = R (zipWith mplus es es') (s || s')
+    where mergerow (R es s) es' = R (zipWith mplus es (map Just es')) s
 
-mergekpyramids :: RowKropkiPyramid -> Pyramid -> RowKropkiPyramid
-mergekpyramids (KP rs) (Pyr qs)
+mergekpyramids :: RowKropkiPyramid -> PyramidSol -> RowKropkiPyramid
+mergekpyramids (KP rs) (PyramidSol qs)
     | length rs /= length qs  = error "can't merge differently sized pyramids"
     | otherwise               = KP (zipWith mergerow rs qs)
-    where mergerow (KR es s ds) (R es' s') =
-              KR (zipWith mplus es es') (s || s') ds
+    where mergerow (KR es s ds) es' =
+              KR (zipWith mplus es (map Just es')) s ds
 
 prow :: GenParser Char st Row
 prow = do s <- pshaded
           spaces
           es <- pclues
           return (R es s)
+
+pplainrow :: GenParser Char st [Int]
+pplainrow = do spaces
+               many $ fmap digitToInt digit
 
 pshaded :: GenParser Char st Bool
 pshaded = (char 'G' >> return True) <|> (char 'W' >> return False)
@@ -101,4 +108,9 @@ instance FromJSON Pyramid where
 
 instance FromJSON RowKropkiPyramid where
     parseJSON (String t) = KP <$> (mapM (toParser pkropkirow . T.unpack) $ T.lines t)
+    parseJSON _          = empty
+
+instance FromJSON PyramidSol where
+    parseJSON (String t) = PyramidSol <$>
+                           (mapM (toParser pplainrow . T.unpack) $ T.lines t)
     parseJSON _          = empty

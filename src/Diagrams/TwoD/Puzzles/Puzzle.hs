@@ -83,7 +83,7 @@ thermosudoku = (,)
     (drawIntClues . snd <> sudokugrid . snd <> drawThermos . snd . fst)
 
 pyramid :: (Backend b R2, Renderable (Path R2) b) =>
-    RenderPuzzle b Pyr.Pyramid Pyr.Pyramid
+    RenderPuzzle b Pyr.Pyramid Pyr.PyramidSol
 pyramid = (,)
     DPyr.pyramid
     (DPyr.pyramid . merge)
@@ -91,7 +91,7 @@ pyramid = (,)
     merge (p, q) = Pyr.mergepyramids p q
 
 kpyramid :: (Backend b R2, Renderable (Path R2) b) =>
-    RenderPuzzle b Pyr.RowKropkiPyramid Pyr.Pyramid
+    RenderPuzzle b Pyr.RowKropkiPyramid Pyr.PyramidSol
 kpyramid = (,)
     DPyr.kpyramid
     (DPyr.kpyramid . merge)
