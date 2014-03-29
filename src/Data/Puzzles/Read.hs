@@ -285,7 +285,7 @@ parseThermos (Grid s m) = catMaybes <$> mapM parseThermo (Map.keys m)
     parseThermo'' :: Cell Square -> Parser Thermometer
     parseThermo'' p = do
         q <- next p
-        maybe (pure []) (fmap (p:) . parseThermo'') q
+        maybe (pure [p]) (fmap (p:) . parseThermo'') q
     next :: Cell Square -> Parser (Maybe (Cell Square))
     next p = case succs p of
         []   -> pure Nothing
