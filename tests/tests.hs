@@ -9,6 +9,7 @@ import Control.DeepSeq
 
 import Data.Puzzles.Read
 import qualified Data.Puzzles.Grid as Grid
+import Data.Puzzles.Pyramid (PyramidSol(..))
 
 import Diagrams.TwoD.Puzzles.Draw
 import Diagrams.Prelude
@@ -251,6 +252,12 @@ test_tightfit_1 = either (const False) test_both res
                                    b == [Just 3, Just 5, Nothing] &&
                                    t == [Nothing, Nothing, Nothing]
 
+test_pyramid_sol :: Bool
+test_pyramid_sol = either (const False) test_content res
+  where
+    res = parseEither (snd kpyramid) kpyramid_1_sol
+    test_content (PyramidSol rs) = rs == [[3], [8,5], [1,9,4], [3,2,7,3], [1,2,4,3,6]]
+
 unitTests :: TestTree
 unitTests = testGroup "Unit tests"
     [ testCase "parse geradeweg" $ testParse (fst geradeweg) geradeweg_1
@@ -272,6 +279,7 @@ unitTests = testGroup "Unit tests"
          $ testBreakSlalom @? "just testing against errors"
     , testCase "parse kpyramid" $ testParse (fst kpyramid) kpyramid_1
     , testCase "parse kpyramid sol" $ testParse (snd kpyramid) kpyramid_1_sol
+    , testCase "parse kpyramid sol properly" $ test_pyramid_sol @? "wrong solution"
     , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid) kpyramid_broken_1
     , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid) kpyramid_broken_2
     , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid) kpyramid_broken_3
