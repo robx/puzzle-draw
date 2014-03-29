@@ -10,6 +10,7 @@ module Diagrams.TwoD.Puzzles.Puzzle (
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
+    afternoonskyscrapers, countnumbers,
     ) where
 
 import Diagrams.Prelude hiding (Loop)
@@ -173,6 +174,18 @@ boxof2or3 = (,)
   where
     phantom' :: (Backend b R2) => D R2 -> Diagram b R2
     phantom' = phantom
+
+afternoonskyscrapers :: (Backend b R2, Renderable (Path R2) b) =>
+                        RenderPuzzle b (SGrid Shade) IntGrid
+afternoonskyscrapers = (,)
+    (grid . size <> atCentres drawShade . values)
+    (drawIntGrid . snd <> atCentres drawShade . values . fst)
+
+countnumbers :: (Backend b R2, Renderable (Path R2) b) =>
+                        RenderPuzzle b AreaGrid IntGrid
+countnumbers = (,)
+    drawAreaGrid
+    (drawIntGrid . snd <> drawAreaGrid . fst)
 
 type PuzzleSol b = (Diagram b R2, Maybe (Diagram b R2))
 

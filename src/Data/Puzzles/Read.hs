@@ -8,6 +8,7 @@ module Data.Puzzles.Read (
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
+    afternoonskyscrapers, countnumbers,
 
     parseChar, -- for tests
   ) where
@@ -487,3 +488,29 @@ compass = ((fmap (fmap unPCC) . unRG <$>) . parseJSON, parseGrid)
 
 boxof2or3 :: ParsePuzzle (SGrid MasyuPearl, [Edge]) ()
 boxof2or3 = (parseNodeEdges, error "boxof2or3 parsing not implemented")
+
+parseAfternoonGrid :: Value -> Parser (SGrid Shade)
+parseAfternoonGrid v = do
+    (Grid s _ , es) <- parseNodeEdges v :: Parser (SGrid Char, [Edge])
+    let (m, b) = splitBorder s $ toMap es
+    guard $ Map.null b
+    return $ Grid (shrink s) m
+  where
+    shrink (Square w h) = Square (w-1) (h-1)
+    toShade V = Shade False True
+    toShade H = Shade True  False
+    merge (Shade a b) (Shade c d)
+        | a && c || b && d  = error "shading collision"
+        | otherwise         = Shade (a || c) (b || d)
+    toMap es = Map.fromListWith
+        merge
+        [(p, toShade d) | E p d <- es]
+    splitBorder (Square w h) = Map.partitionWithKey
+        (\(x, y) _ -> x < w - 1 && y < h - 1)
+
+afternoonskyscrapers :: ParsePuzzle (SGrid Shade) IntGrid
+afternoonskyscrapers = (parseAfternoonGrid, parseGrid)
+
+-- this should be changed to support clue numbers
+countnumbers :: ParsePuzzle AreaGrid IntGrid
+countnumbers = (parseGrid, parseGrid)

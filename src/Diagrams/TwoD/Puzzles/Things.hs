@@ -106,3 +106,12 @@ drawWords ws = spread (-1.0 *^ unitY)
 --   For example, a Curve Data clue.
 drawCurve :: Renderable (Path R2) b => [Edge] -> Diagram b R2
 drawCurve = lw onepix . fit 0.6 . centerXY . mconcat . map (stroke . edge)
+
+drawShade :: Renderable (Path R2) b => Shade -> Diagram b R2
+drawShade (Shade s w) = (if s then south else mempty) <>
+                        (if w then west else mempty)
+  where
+    shape = translate (r2 (-1/2, -1/2)) . fromVertices . map p2 $
+        [ (0, 0), (1/4, 1/4), (1, 1/4), (1, 0), (0, 0) ]
+    south = strokeLocLoop shape # lw 0 # fc gray
+    west = reflectAbout (p2 (0, 0)) (r2 (1, 1)) south

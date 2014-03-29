@@ -36,3 +36,6 @@ type Thermometer = [Coord]
 
 data SlalomDiag = SlalomForward | SlalomBackward
     deriving Show
+
+data Shade = Shade Bool Bool
+    deriving Show
