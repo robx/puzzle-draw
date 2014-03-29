@@ -40,8 +40,7 @@ prow = do s <- pshaded
           return (R es s)
 
 pplainrow :: GenParser Char st [Int]
-pplainrow = do spaces
-               many $ fmap digitToInt digit
+pplainrow = many (spaces >> fmap digitToInt digit)
 
 pshaded :: GenParser Char st Bool
 pshaded = (char 'G' >> return True) <|> (char 'W' >> return False)
