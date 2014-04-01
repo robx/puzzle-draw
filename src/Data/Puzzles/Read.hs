@@ -51,7 +51,7 @@ class FromString a where
 instance FromChar Int where
     parseChar c
         | isDigit c  = digitToInt <$> parseChar c
-        | otherwise  = empty
+        | otherwise  = fail $ "expected a digit, got '" ++ [c] ++ "'"
 
 newtype Alpha = Alpha { unAlpha :: Char }
     deriving (Show, Ord, Eq)
