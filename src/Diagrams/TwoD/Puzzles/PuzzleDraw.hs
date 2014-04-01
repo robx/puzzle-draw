@@ -34,14 +34,14 @@ drawPuzzle' (pp, _) (dp, _) (p, _) = do
 drawSolution' :: PuzzleHandler b ((Value, Maybe Value) -> Parser (Diagram b R2))
 drawSolution' (pp, ps) (_, ds) (p, ms) = do
     p' <- pp p
-    s' <- ps $ fromJust ms
+    s' <- maybe (fail "no solution provided") ps ms
     return $ ds (p', s')
 
 drawExample' :: (Backend b R2, Renderable (Path R2) b) =>
                 PuzzleHandler b ((Value, Maybe Value) -> Parser (Diagram b R2))
 drawExample' (pp, ps) (dp, ds) (p, ms) = do
     p' <- pp p
-    s' <- ps $ fromJust ms
+    s' <- maybe (fail "no solution provided") ps ms
     return . fromJust $ D.draw (dp p', Just $ ds (p', s')) DrawExample
 
 drawPuzzleSol :: PuzzleHandler b ((Value, Value) -> Parser (Diagram b R2, Diagram b R2))
