@@ -52,7 +52,7 @@ library
                        Diagrams.TwoD.Puzzles.Draw
                        Diagrams.TwoD.Puzzles.Grid
                        Diagrams.TwoD.Puzzles.Lib
-                       Diagrams.TwoD.Puzzles.Things
+                       Diagrams.TwoD.Puzzles.Elements
                        Diagrams.TwoD.Puzzles.Widths
                        Diagrams.TwoD.Puzzles.Pyramid
                        Diagrams.TwoD.Puzzles.Puzzle

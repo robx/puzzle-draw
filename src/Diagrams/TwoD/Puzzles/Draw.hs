@@ -12,7 +12,7 @@ import Data.Puzzles.Sudoku
 import Diagrams.TwoD.Puzzles.Lib
 import Diagrams.TwoD.Puzzles.Grid
 import Diagrams.TwoD.Puzzles.Widths
-import Diagrams.TwoD.Puzzles.Things
+import Diagrams.TwoD.Puzzles.Elements
 
 drawFillo :: (Backend b R2, Renderable (Path R2) b) =>
              SGrid (Clue Int) -> Diagram b R2

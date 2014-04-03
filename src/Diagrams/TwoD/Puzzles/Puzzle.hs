@@ -18,7 +18,7 @@ import Diagrams.Prelude hiding (Loop)
 import Diagrams.TwoD.Puzzles.Draw
 import Diagrams.TwoD.Puzzles.Grid
 import qualified Diagrams.TwoD.Puzzles.Pyramid as DPyr
-import Diagrams.TwoD.Puzzles.Things
+import Diagrams.TwoD.Puzzles.Elements
 import Diagrams.TwoD.Puzzles.Lib
 
 import Data.Puzzles.Grid

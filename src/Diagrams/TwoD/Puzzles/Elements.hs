@@ -1,6 +1,11 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Diagrams.TwoD.Puzzles.Things where
+-- | Module: Diagrams.TwoD.Puzzles.Elements
+--
+-- Tools to draw individual puzzle components. In particular
+-- contents and decorations for individual cells.
+
+module Diagrams.TwoD.Puzzles.Elements where
 
 import Diagrams.Prelude
 import Diagrams.TwoD.Offset
@@ -23,18 +28,23 @@ smallPearl :: (Renderable (Path R2) b, Backend b R2) =>
               MasyuPearl -> Diagram b R2
 smallPearl = scale 0.4 . pearl
 
+-- | The up-right diagonal of a centered unit square.
 ur :: Path R2
 ur = fromVertices [p2 (-1/2,-1/2), p2 (1/2,1/2)]
 
+-- | The down-right diagonal of a centered unit square.
 dr :: Path R2
 dr = fromVertices [p2 (1/2,-1/2), p2 (-1/2,1/2)]
 
+-- | Both diagonals of a centered unit square.
 cross :: Path R2
 cross = ur <> dr
 
+-- | Draw a cross.
 drawCross :: Renderable (Path R2) b => Diagram b R2
 drawCross = stroke cross # scale 0.8 # lw edgewidth
 
+-- | Draw a Compass clue.
 drawCompassClue :: (Renderable (Path R2) b, Backend b R2) =>
                    CompassC -> Diagram b R2
 drawCompassClue (CC n e s w) = texts <> stroke cross # lw onepix
@@ -44,17 +54,24 @@ drawCompassClue (CC n e s w) = texts <> stroke cross # lw onepix
                   [(0,f), (f,0), (0,-f), (-f,0)]
           f = 3/10
 
+-- | Draw a thermometer, given by a list of bottom-left corners
+-- of square cells.
 thermo :: Renderable (Path R2) b => [P2] -> QDiagram b R2 Any
 thermo vs@(v:_) = (bulb `atop` line) # col # translate (r2 (0.5, 0.5))
     where bulb = circle 0.4 # moveTo v
-          line = strokeLocLine (fromVertices vs) # lw 0.55 # lineCap LineCapSquare
+          line = strokeLocLine (fromVertices vs)
+                 # lw 0.55 # lineCap LineCapSquare
           col = lc gr . fc gr
           gr = blend 0.6 white black
 thermo [] = error "invalid empty thermometer"
 
+-- | Draw a list of thermometers, given as lists of @(Int, Int)@ cell
+-- coordinates.
 drawThermos :: Renderable (Path R2) b => [Thermometer] -> QDiagram b R2 Any
 drawThermos = mconcat . map (thermo . map p2i)
 
+-- | @drawTight d t@ draws the tight-fit value @t@, using @d@ to
+-- draw the components.
 drawTight :: (Renderable (Path R2) b, Backend b R2) =>
              (a -> Diagram b R2) -> Tightfit a -> Diagram b R2
 drawTight d (Single x) = d x
@@ -69,33 +86,41 @@ drawTight d (DR x y) = stroke dr # lw onepix
     where t = 1/5
           s = 2/3
 
+-- | Stack the given words, left-justified.
 stackWords :: (Backend b R2, Renderable (Path R2) b) => [String] -> QDiagram b R2 Any
 stackWords = vcat' with {_sep = 0.1} . scale 0.8 . map (alignL . text')
 
+-- | Mark a word in a grid of letters.
 drawMarkedWord :: (Renderable (Path R2) b) => MarkedWord -> QDiagram b R2 Any
 drawMarkedWord (MW s e) = lw onepix . stroke $ expandTrail' with {_expandCap = LineCapRound} 0.4 t
     where t = fromVertices [p2i s, p2i e] # translate (r2 (1/2,1/2))
 
+-- | Apply 'drawMarkedWord' to a list of words.
 drawMarkedWords :: (Renderable (Path R2) b) => [MarkedWord] -> QDiagram b R2 Any
 drawMarkedWords = mconcat . map drawMarkedWord
 
+-- | Draw a slalom clue.
 drawSlalomClue :: (Show a, Renderable (Path R2) b, Backend b R2) =>
                   a -> Diagram b R2
 drawSlalomClue x = text' (show x) # scale 0.75
                    <> circle 0.4 # fc white # lw onepix
 
+-- | Draw text. Shouldn't be more than two characters or so to fit a cell.
 drawText :: (Backend b R2, Renderable (Path R2) b) => String -> QDiagram b R2 Any
 drawText = text'
 
+-- | Draw an @Int@.
 drawInt :: (Renderable (Path R2) b, Backend b R2) =>
            Int -> Diagram b R2
 drawInt s = drawText (show s)
 
+-- | Draw a character.
 drawChar :: (Renderable (Path R2) b, Backend b R2) =>
             Char -> Diagram b R2
 drawChar c = drawText [c]
 
--- | Stack a list of words into a unit square.
+-- | Stack a list of words into a unit square. Scaled such that at least
+-- three words will fit.
 drawWords :: (Renderable (Path R2) b, Backend b R2) =>
              [String] -> Diagram b R2
 drawWords ws = spread (-1.0 *^ unitY)
@@ -107,6 +132,7 @@ drawWords ws = spread (-1.0 *^ unitY)
 drawCurve :: Renderable (Path R2) b => [Edge] -> Diagram b R2
 drawCurve = lw onepix . fit 0.6 . centerXY . mconcat . map (stroke . edge)
 
+-- | Draw a shadow in the style of Afternoon Skyscrapers.
 drawShade :: Renderable (Path R2) b => Shade -> Diagram b R2
 drawShade (Shade s w) = (if s then south else mempty) <>
                         (if w then west else mempty)
