@@ -1,18 +1,18 @@
 {-# LANGUAGE FlexibleContexts          #-}
 {-# LANGUAGE TypeFamilies              #-}
 
-module Diagrams.TwoD.Puzzles.Draw where
+module Puzzles.Diagrams.PuzzleGrids where
 
 import Diagrams.Prelude
 
-import Data.Puzzles.Grid
-import Data.Puzzles.Things
-import Data.Puzzles.Sudoku
+import Puzzles.Data.Grid
+import Puzzles.Data.Elements
+import Puzzles.Data.Sudoku
 
-import Diagrams.TwoD.Puzzles.Lib
-import Diagrams.TwoD.Puzzles.Grid
-import Diagrams.TwoD.Puzzles.Widths
-import Diagrams.TwoD.Puzzles.Elements
+import Puzzles.Diagrams.Lib
+import Puzzles.Diagrams.Grid
+import Puzzles.Diagrams.Widths
+import Puzzles.Diagrams.Elements
 
 drawFillo :: (Backend b R2, Renderable (Path R2) b) =>
              SGrid (Clue Int) -> Diagram b R2

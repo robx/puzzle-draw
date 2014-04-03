@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts, RankNTypes #-}
 
-module Diagrams.TwoD.Puzzles.PuzzleDraw (
+module Puzzles.Compose (
     drawPuzzle,
     drawPuzzleSol,
     drawPuzzleMaybeSol,
@@ -8,13 +8,13 @@ module Diagrams.TwoD.Puzzles.PuzzleDraw (
     drawSolution',
     drawExample',
     handle
-    ) where
+  ) where
 
 import Data.Maybe
-import Data.Puzzles.Read (ParsePuzzle)
-import Diagrams.TwoD.Puzzles.Puzzle (RenderPuzzle, OutputChoice(..))
-import qualified Data.Puzzles.Read as R
-import qualified Diagrams.TwoD.Puzzles.Puzzle as D
+import Puzzles.Parse.Puzzle
+import Puzzles.Diagrams.Draw
+import qualified Puzzles.Parse.PuzzleTypes as R
+import qualified Puzzles.Diagrams.PuzzleTypes as D
 import Diagrams.Prelude
 import Data.Yaml (Parser, Value)
 import Data.Traversable (traverse)
@@ -42,7 +42,7 @@ drawExample' :: (Backend b R2, Renderable (Path R2) b) =>
 drawExample' (pp, ps) (dp, ds) (p, ms) = do
     p' <- pp p
     s' <- maybe (fail "no solution provided") ps ms
-    return . fromJust $ D.draw (dp p', Just $ ds (p', s')) DrawExample
+    return . fromJust $ draw (dp p', Just $ ds (p', s')) DrawExample
 
 drawPuzzleSol :: PuzzleHandler b ((Value, Value) -> Parser (Diagram b R2, Diagram b R2))
 drawPuzzleSol (pp, ps) (dp, ds) (p, s) = do

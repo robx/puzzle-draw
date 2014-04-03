@@ -1,4 +1,4 @@
-module Data.Puzzles.Pyramid where
+module Puzzles.Data.Pyramid where
 
 import Data.Char (digitToInt)
 import Text.ParserCombinators.Parsec hiding ((<|>), many)

@@ -43,20 +43,23 @@ cabal-version:       >=1.8
 
 library
   -- Modules exported by the library.
-  exposed-modules:     Data.Puzzles.Grid
-                       Data.Puzzles.GridShape
-                       Data.Puzzles.Read
-                       Data.Puzzles.Things
-                       Data.Puzzles.Pyramid
-                       Data.Puzzles.Sudoku
-                       Diagrams.TwoD.Puzzles.Draw
-                       Diagrams.TwoD.Puzzles.Grid
-                       Diagrams.TwoD.Puzzles.Lib
-                       Diagrams.TwoD.Puzzles.Elements
-                       Diagrams.TwoD.Puzzles.Widths
-                       Diagrams.TwoD.Puzzles.Pyramid
-                       Diagrams.TwoD.Puzzles.Puzzle
-                       Diagrams.TwoD.Puzzles.PuzzleDraw
+  exposed-modules:     Puzzles.Data.Grid
+                       Puzzles.Data.GridShape
+                       Puzzles.Data.Elements
+                       Puzzles.Data.Pyramid
+                       Puzzles.Data.Sudoku
+                       Puzzles.Parse.Util
+                       Puzzles.Parse.Puzzle
+                       Puzzles.Parse.PuzzleTypes
+                       Puzzles.Compose
+                       Puzzles.Diagrams.Grid
+                       Puzzles.Diagrams.Lib
+                       Puzzles.Diagrams.Elements
+                       Puzzles.Diagrams.Widths
+                       Puzzles.Diagrams.Pyramid
+                       Puzzles.Diagrams.PuzzleGrids
+                       Puzzles.Diagrams.PuzzleTypes
+                       Puzzles.Diagrams.Draw
   
   -- Modules included in this library but not exported.
   -- other-modules:       

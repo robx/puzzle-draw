@@ -8,12 +8,13 @@ import Data.List (sort)
 
 import Control.DeepSeq
 
-import Data.Puzzles.Things (Thermometer)
-import Data.Puzzles.Read
-import qualified Data.Puzzles.Grid as Grid
-import Data.Puzzles.Pyramid (PyramidSol(..))
+import Puzzles.Data.Elements (Thermometer)
+import Puzzles.Parse.Util (parseChar)
+import Puzzles.Parse.PuzzleTypes
+import qualified Puzzles.Data.Grid as Grid
+import Puzzles.Data.Pyramid (PyramidSol(..))
 
-import Diagrams.TwoD.Puzzles.Draw
+import Puzzles.Diagrams.PuzzleGrids
 import Diagrams.Prelude
 import Diagrams.Backend.SVG
 

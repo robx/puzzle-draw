@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts, TypeFamilies #-}
 
-module Diagrams.TwoD.Puzzles.Lib where
+module Puzzles.Diagrams.Lib where
 
 import Diagrams.Prelude
 

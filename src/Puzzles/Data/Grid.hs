@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts, GADTs, StandaloneDeriving #-}
 
-module Data.Puzzles.Grid where
+module Puzzles.Data.Grid where
 
 import Data.Maybe
 import qualified Data.Map as Map
@@ -8,9 +8,9 @@ import Data.Foldable (Foldable, fold)
 import Data.Traversable (Traversable, traverse)
 import Control.Applicative ((<$>))
 
-import Data.Puzzles.GridShape hiding (size, cells)
-import qualified Data.Puzzles.GridShape as GS
-import Data.Puzzles.Things
+import Puzzles.Data.GridShape hiding (size, cells)
+import qualified Puzzles.Data.GridShape as GS
+import Puzzles.Data.Elements
 
 data Grid s a where
     Grid :: { shape :: s

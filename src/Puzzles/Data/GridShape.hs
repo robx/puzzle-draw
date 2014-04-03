@@ -1,6 +1,6 @@
 {-# LANGUAGE TypeFamilies, FlexibleContexts #-}
 
-module Data.Puzzles.GridShape where
+module Puzzles.Data.GridShape where
 
 class Show (Cell a) => GridShape a where
     type GridSize a :: *

@@ -5,17 +5,17 @@
 -- Tools to draw individual puzzle components. In particular
 -- contents and decorations for individual cells.
 
-module Diagrams.TwoD.Puzzles.Elements where
+module Puzzles.Diagrams.Elements where
 
 import Diagrams.Prelude
 import Diagrams.TwoD.Offset
 
-import Data.Puzzles.Things
-import Data.Puzzles.GridShape
+import Puzzles.Data.Elements
+import Puzzles.Data.GridShape
 
-import Diagrams.TwoD.Puzzles.Lib
-import Diagrams.TwoD.Puzzles.Widths
-import Diagrams.TwoD.Puzzles.Grid
+import Puzzles.Diagrams.Lib
+import Puzzles.Diagrams.Widths
+import Puzzles.Diagrams.Grid
 
 pearl :: (Renderable (Path R2) b, Backend b R2) =>
          MasyuPearl -> Diagram b R2

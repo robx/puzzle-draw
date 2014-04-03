@@ -1,32 +1,26 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Diagrams.TwoD.Puzzles.Puzzle (
-    PuzzleSol,
-    RenderPuzzle,
-    OutputChoice(..),
-    draw,
-    
+module Puzzles.Diagrams.PuzzleTypes (
     lits, litsplus, geradeweg, fillomino, masyu, nurikabe, latintapa,
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, countnumbers,
-    ) where
+  ) where
 
 import Diagrams.Prelude hiding (Loop)
 
-import Diagrams.TwoD.Puzzles.Draw
-import Diagrams.TwoD.Puzzles.Grid
-import qualified Diagrams.TwoD.Puzzles.Pyramid as DPyr
-import Diagrams.TwoD.Puzzles.Elements
-import Diagrams.TwoD.Puzzles.Lib
+import Puzzles.Diagrams.PuzzleGrids
+import Puzzles.Diagrams.Draw
+import Puzzles.Diagrams.Grid
+import qualified Puzzles.Diagrams.Pyramid as DPyr
+import Puzzles.Diagrams.Elements
+import Puzzles.Diagrams.Lib
 
-import Data.Puzzles.Grid
-import Data.Puzzles.GridShape (Edge)
-import Data.Puzzles.Things
-import qualified Data.Puzzles.Pyramid as Pyr
-
-type RenderPuzzle b p s = (p -> Diagram b R2, (p, s) -> Diagram b R2)
+import Puzzles.Data.Grid
+import Puzzles.Data.GridShape (Edge)
+import Puzzles.Data.Elements
+import qualified Puzzles.Data.Pyramid as Pyr
 
 lits :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b AreaGrid ShadedGrid
 lits = (,)
@@ -183,17 +177,3 @@ countnumbers :: (Backend b R2, Renderable (Path R2) b) =>
 countnumbers = (,)
     drawAreaGrid
     (drawIntGrid . snd <> drawAreaGrid . fst)
-
-type PuzzleSol b = (Diagram b R2, Maybe (Diagram b R2))
-
-data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
-    deriving Show
-
--- | Optionally render the puzzle, its solution, or a side-by-side
---   example with puzzle and solution.
-draw :: (Backend b R2, Renderable (Path R2) b) =>
-        PuzzleSol b -> OutputChoice -> Maybe (Diagram b R2)
-draw (p, ms) = fmap (bg white) . d
-    where d DrawPuzzle   = Just p
-          d DrawSolution = ms
-          d DrawExample  = ms >>= \s -> return $ p ||| strutX 2.0 ||| s
