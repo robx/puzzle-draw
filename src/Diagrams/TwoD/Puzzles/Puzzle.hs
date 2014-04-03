@@ -171,9 +171,6 @@ boxof2or3 = (,)
      <> phantom' . grid . size . fst
      <> drawThinDualEdges . snd)
     (error "boxof2or3 solution not implemented")
-  where
-    phantom' :: (Backend b R2) => D R2 -> Diagram b R2
-    phantom' = phantom
 
 afternoonskyscrapers :: (Backend b R2, Renderable (Path R2) b) =>
                         RenderPuzzle b (SGrid Shade) IntGrid

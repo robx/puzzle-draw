@@ -67,9 +67,12 @@ text' :: (Renderable (Path R2) b, Backend b R2) => String -> Diagram b R2
 text' t = stroke (textSVG' $ TextOpts t bit INSIDE_H KERN False 1 1)
           # lw 0 # fc black # scale 0.8
 -- text' t = text t # fontSize 0.8 # font "Helvetica" # translate (r2 (0.04, -0.07))
-          <> phantom (textrect t :: D R2)
+--          <> phantom' (textrect t)
 textrect :: (Renderable (Path R2) b, Backend b R2) => String -> Diagram b R2
 textrect t = rect (fromIntegral (length t) * 0.4) 0.7 # lc red
 text'' :: (Renderable (Path R2) b, Backend b R2) => String -> Diagram b R2
 text'' t = text' t `atop` textrect t
 
+-- | Variant of `phantom` that forces the argument backend type.
+phantom' :: (Backend b R2) => D R2 -> Diagram b R2
+phantom' = phantom

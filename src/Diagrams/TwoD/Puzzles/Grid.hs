@@ -19,7 +19,7 @@ dot = circle 0.05 # fc black # smash
 -- | Draw a Slither Link style grid of dots of the specified size.
 slithergrid :: (Backend b R2, Renderable (Path R2) b) =>
                Size -> Diagram b R2
-slithergrid s@(x, y) = dots <> phantom (frame s)
+slithergrid s@(x, y) = dots <> phantom' (frame s)
     where dots = hcatsep . replicate (x + 1) . vcatsep . replicate (y + 1) $ dot
 
 -- | The inner grid lines of a square grid of the specified size.
@@ -46,7 +46,7 @@ grid' :: (Backend b R2, Renderable (Path R2) b) =>
 grid' gridstyle s =
     outframe s
     <> stroke (gridlines s) # lw gridwidth # gridstyle
-    <> phantom (frame s)
+    <> phantom' (frame s)
 
 -- | Draw a square grid with default grid line style.
 grid :: (Backend b R2, Renderable (Path R2) b) =>
@@ -90,7 +90,7 @@ atVertices dc = mconcat . map (\ (p, c) -> dc c # translatep p)
 atVertices' :: (Transformable a, V a ~ R2) => SGrid a -> [a]
 atVertices' g = [ (g ! c) # translatep c | c <- cells g ]
 
-frame :: Size -> D R2
+frame :: (Backend b R2, Renderable (Path R2) b) => Size -> Diagram b R2
 frame (w, h) = stroke . translate (r2 (-bw, -bw)) . alignBL
                $ rect (fromIntegral w + 2 * bw) (fromIntegral h + 2 * bw)
   where
