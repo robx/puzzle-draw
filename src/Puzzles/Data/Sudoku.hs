@@ -1,4 +1,7 @@
-module Puzzles.Data.Sudoku where
+module Puzzles.Data.Sudoku (
+    sudokuborders,
+    sudokubordersg
+  ) where
 
 import Puzzles.Data.Grid
 import Puzzles.Data.GridShape hiding (size)
@@ -10,6 +13,8 @@ msqrt x = if r ^ (2 :: Int) == x then Just r else Nothing
 mhalf :: Integral a => a -> Maybe a
 mhalf x = if even x then Just (x `div` 2) else Nothing
 
+-- | Determine the internal borders of a standard sudoku of the
+--   given size.
 sudokuborders :: Int -> [Edge]
 sudokuborders s =
     case msqrt s of
@@ -22,6 +27,8 @@ sudokuborders s =
           rectborders h = [ E (h, y) V | y <- [0..2*h-1] ]
                           ++ [ E (x, 2*y) H | x <- [0..2*h-1], y <- [1..h-1] ]
 
+-- | Determine the internal borders of a standard sudoku of the
+--   on the given grid.
 sudokubordersg :: SGrid a -> [Edge]
 sudokubordersg g = sudokuborders s
    where (w, h) = size g
