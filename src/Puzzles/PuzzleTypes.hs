@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts, RankNTypes #-}
 
 -- |
--- Helpers to string together parser and renderer by puzzle type.
+-- List of specific puzzle types.
 
 module Puzzles.PuzzleTypes (
     PuzzleType(..),
