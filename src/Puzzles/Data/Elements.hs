@@ -1,9 +1,7 @@
+-- | Types for a variety of puzzle elements.
 module Puzzles.Data.Elements where
 
 import Puzzles.Data.GridShape (Coord, Edge)
-
--- |
--- Types for a variety of puzzle elements.
 
 type Clue a = Maybe a
 

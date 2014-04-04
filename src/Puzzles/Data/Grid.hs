@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleContexts, GADTs, StandaloneDeriving #-}
 
+-- | Puzzle grids.
 module Puzzles.Data.Grid where
 
 import Data.Maybe
