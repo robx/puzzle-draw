@@ -13,10 +13,16 @@ name:                puzzle-draw
 version:             0.1.0.0
 
 -- A short (one-line) description of the package.
-synopsis:            Creating graphics for logic puzzles
+synopsis:            Creating graphics for pencil puzzles.
 
 -- A longer description of the package.
--- description:         
+description:         puzzle-draw is a library for drawing pencil puzzles
+                     using Diagrams. It aims to provide a utility layer
+                     on top of Diagrams to help with drawing arbitrary
+                     puzzles, as well as supporting several specific
+                     puzzle types directly. In addition, it includes
+                     functionality for parsing puzzle data from a
+                     YAML file format.
 
 -- The license under which the package is released.
 license:             MIT
@@ -29,7 +35,7 @@ author:              Robert Vollmert
 
 -- An email address to which users can send suggestions, bug reports, and 
 -- patches.
-maintainer:          rob@krikkit.org
+maintainer:          rfvollmert@gmail.com
 
 -- A copyright notice.
 -- copyright:           
