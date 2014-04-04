@@ -2,6 +2,10 @@
 
 module Puzzles.Data.GridShape where
 
+-- |
+-- Grid shapes.
+
+-- | The geometry of a grid.
 class Show (Cell a) => GridShape a where
     type GridSize a :: *
     type Cell     a :: *
@@ -12,7 +16,11 @@ class Show (Cell a) => GridShape a where
     vertices :: a -> [Vertex a]
     neighbours :: a -> Cell a -> [Cell a]
 
-data Square = Square Int Int
+-- | A standard square grid, with cells and vertices
+--   indexed by pairs of integers in mathematical coordinates.
+--   The bottom-left corner is vertex (0, 0), the bottom-left
+--   cell is cell (0, 0).
+data Square = Square !Int !Int
     deriving Show
 
 instance GridShape Square where
@@ -32,10 +40,12 @@ instance GridShape Square where
                  ]
         add (x, y) (x', y') = (x + x', y + y')
 
-
+-- | Edge direction in a square grid, vertical or horizontal.
 data Dir = V | H
     deriving (Eq, Ord, Show)
 
+-- | An edge in a square grid, going up or right from the given cell
+--   centre.
 data Edge = E (Cell Square) Dir
     deriving (Show, Eq, Ord)
 
