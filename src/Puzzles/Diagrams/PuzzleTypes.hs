@@ -83,7 +83,7 @@ pyramid = (,)
     DPyr.pyramid
     (DPyr.pyramid . merge)
   where
-    merge (p, q) = Pyr.mergepyramids p q
+    merge (p, q) = Pyr.mergepyramidsol p q
 
 kpyramid :: (Backend b R2, Renderable (Path R2) b) =>
     RenderPuzzle b Pyr.RowKropkiPyramid Pyr.PyramidSol
@@ -91,7 +91,7 @@ kpyramid = (,)
     DPyr.kpyramid
     (DPyr.kpyramid . merge)
   where
-    merge (p, q) = Pyr.mergekpyramids p q
+    merge (p, q) = Pyr.mergekpyramidsol p q
 
 slither :: (Backend b R2, Renderable (Path R2) b) =>
            RenderPuzzle b IntGrid Loop

@@ -1,4 +1,15 @@
-module Puzzles.Data.Pyramid where
+-- | Data types and parsing for pyramid puzzles.
+module Puzzles.Data.Pyramid (
+    Row(..),
+    Pyramid(..),
+    PyramidSol(..),
+    KropkiRow(..),
+    RowKropkiPyramid(..),
+    mergepyramidsol,
+    mergekpyramidsol,
+    plainpyramid,
+    psize
+  ) where
 
 import Data.Char (digitToInt)
 import Text.ParserCombinators.Parsec hiding ((<|>), many)
@@ -19,17 +30,20 @@ newtype Pyramid = Pyr {unPyr :: [Row]}
 newtype PyramidSol = PyramidSol [[Int]]
     deriving Show
 
+-- | The size (number of rows) of a pyramid.
 psize :: Pyramid -> Int
 psize (Pyr rows) = length rows
 
-mergepyramids :: Pyramid -> PyramidSol -> Pyramid
-mergepyramids (Pyr rs) (PyramidSol qs)
+-- | Merge a solution into a pyramid.
+mergepyramidsol :: Pyramid -> PyramidSol -> Pyramid
+mergepyramidsol (Pyr rs) (PyramidSol qs)
     | length rs /= length qs  = error "can't merge differently sized pyramids"
     | otherwise               = Pyr (zipWith mergerow rs qs)
     where mergerow (R es s) es' = R (zipWith mplus es (map Just es')) s
 
-mergekpyramids :: RowKropkiPyramid -> PyramidSol -> RowKropkiPyramid
-mergekpyramids (KP rs) (PyramidSol qs)
+-- | Merge a solution into a kropki pyramid.
+mergekpyramidsol :: RowKropkiPyramid -> PyramidSol -> RowKropkiPyramid
+mergekpyramidsol (KP rs) (PyramidSol qs)
     | length rs /= length qs  = error "can't merge differently sized pyramids"
     | otherwise               = KP (zipWith mergerow rs qs)
     where mergerow (KR es s ds) es' =
@@ -76,6 +90,7 @@ data KropkiRow = KR { entriesk :: [Maybe Int]
 newtype RowKropkiPyramid = KP {unKP :: [KropkiRow]}
     deriving Show
 
+-- | Forget the kropki dots.
 plainpyramid :: RowKropkiPyramid -> Pyramid
 plainpyramid (KP rows) = Pyr (map r rows)
     where r x = R (entriesk x) (shadedk x)
