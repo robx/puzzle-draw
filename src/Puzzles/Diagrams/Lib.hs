@@ -47,8 +47,8 @@ interleave (x:xs) ys = x : interleave ys xs
 spread :: (Backend b R2) => R2 -> [Diagram b R2] -> Diagram b R2
 spread v things = cat v . interleave (repeat (strut vgap)) $ things
     where ds = map (diameter v) things
-          gap = (magnitude v - sum ds) / fromIntegral (length things + 1)
-          vgap = (gap / magnitude v) *^ v
+          gap' = (magnitude v - sum ds) / fromIntegral (length things + 1)
+          vgap = (gap' / magnitude v) *^ v
 
 dmid ::  (Enveloped a, V a ~ R2) => a -> Double
 dmid a = (dtop + dbot) / 2 - dbot

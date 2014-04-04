@@ -62,14 +62,14 @@ drawTightGrid :: (Backend b R2, Renderable (Path R2) b) =>
                  (t -> Diagram b R2) -> SGrid (Tightfit t) -> Diagram b R2
 drawTightGrid d g = atCentres (drawTight d) (values g)
                     <> grid (size g)
-                    <> phantom' (frame (sx + 2, sy + 2) # translate (r2 (-1,-1)))
+                    <> phantom' (border (sx + 2, sy + 2) # translate (r2 (-1,-1)))
     where (sx, sy) = size g
 
 drawSlalomGrid :: (Backend b R2, Renderable (Path R2) b) =>
                   SGrid (Clue Int) -> Diagram b R2
 drawSlalomGrid g = atVertices drawSlalomClue (clues g)
                    <> grid (w-1, h-1)
-                   <> phantom' (frame (size g)) # translate (r2 (-1/2,-1/2))
+                   <> phantom' (border (size g)) # translate (r2 (-1/2,-1/2))
     where (w, h) = size g
 
 drawSlalomDiags :: (Backend b R2, Renderable (Path R2) b) =>

@@ -8,7 +8,7 @@ import Puzzles.Data.Elements
 import Puzzles.Data.Pyramid
 import Puzzles.Diagrams.Lib
 import Puzzles.Diagrams.Widths
-import Puzzles.Diagrams.Grid (frame)
+import Puzzles.Diagrams.Grid (border)
 
 pgray :: Colour Double
 pgray = blend 0.6 white black
@@ -27,7 +27,7 @@ row :: (Backend b R2, Renderable (Path R2) b) => Row -> Diagram b R2
 row (R cs s) = centerX . hcat . map (cellc s) $ cs
 
 pyramid :: (Backend b R2, Renderable (Path R2) b) => Pyramid -> Diagram b R2
-pyramid p = phantom' (frame (s, s)) <> (alignBL . vcat . map row . unPyr $ p)
+pyramid p = phantom' (border (s, s)) <> (alignBL . vcat . map row . unPyr $ p)
     where s = psize p
 
 kropki :: (Backend b R2, Renderable (Path R2) b) => KropkiDot -> Diagram b R2
@@ -45,5 +45,5 @@ krow (KR cs s ks) = ccat dots <> ccat clues
           dots = interleave (map phantom' clues') (map kropki ks)
 
 kpyramid :: (Backend b R2, Renderable (Path R2) b) => RowKropkiPyramid -> Diagram b R2
-kpyramid p = phantom' (frame (s, s)) <> (alignBL . vcat . map krow . unKP $ p)
+kpyramid p = phantom' (border (s, s)) <> (alignBL . vcat . map krow . unKP $ p)
     where s = psize (plainpyramid p)
