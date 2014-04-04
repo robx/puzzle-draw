@@ -12,12 +12,14 @@ import Puzzles.Data.GridShape hiding (size, cells)
 import qualified Puzzles.Data.GridShape as GS
 import Puzzles.Data.Elements
 
+-- | A generic grid, with the given shape and contents.
 data Grid s a where
     Grid :: { shape :: s
             , contents :: Map.Map (Cell s) a} -> Grid s a
 
 deriving instance (Show a, Show s, GridShape s) => Show (Grid s a)
 
+-- | Standard square grid.
 type SGrid = Grid Square
 
 type CharGrid = SGrid Char
@@ -26,6 +28,7 @@ type ShadedGrid = SGrid Bool
 type CharClueGrid = SGrid (Maybe Char)
 type IntGrid = SGrid (Clue Int)
 
+-- | Lookup a grid value at a given cell. Unsafe.
 (!) :: (GridShape s, Ord (Cell s)) => Grid s a -> Cell s -> a
 (!) (Grid _ m) = (m Map.!)
 
@@ -38,6 +41,8 @@ instance Foldable (Grid s) where
 instance Traversable (Grid s) where
     traverse f (Grid s m) = Grid s <$> (traverse f m)
 
+-- | Initialize a square grid from a list of lists. The grid
+--   might be incomplete if some rows are shorter.
 fromListList :: [[a]] -> Grid Square a
 fromListList g = Grid s m
   where
@@ -57,12 +62,14 @@ cells = GS.cells . shape
 inBounds :: (GridShape s, Eq (Cell s)) => Grid s a -> Cell s -> Bool
 inBounds g c = c `elem` cells g
 
+-- | For a grid with value type @Maybe a@, return an association
+--   list of cells and @Just@ values.
 clues :: GridShape s => Grid s (Maybe a) -> [(Cell s, a)]
 clues g = [ (k, v) | (k, Just v) <- values g ]
 
+-- | Association list of cells and values.
 values :: GridShape s => Grid s a -> [(Cell s, a)]
 values (Grid _ m) = Map.toList m
-
 
 neighbours :: Grid Square a -> Cell Square -> [Cell Square]
 neighbours g p = filter (inBounds g) . map (add p) $ deltas
@@ -87,6 +94,7 @@ borders g = [ E p V | p <- vborders ] ++ [ E p H | p <- hborders ]
 data OutsideClues a = OC { left :: [a], right :: [a], bottom :: [a], top :: [a] }
     deriving Show
 
+-- | Convert outside clues to association list mapping coordinate to value.
 outsideclues :: OutsideClues (Maybe a) -> [((Int, Int), a)]
 outsideclues (OC l r b t) = mapMaybe liftMaybe . concat $
                              [ zipWith (\ y c -> ((-1, y), c)) [0..h-1] l

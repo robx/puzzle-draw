@@ -2,6 +2,9 @@ module Puzzles.Data.Elements where
 
 import Puzzles.Data.GridShape (Coord, Edge)
 
+-- |
+-- Types for a variety of puzzle elements.
+
 type Clue a = Maybe a
 
 data MasyuPearl = MWhite | MBlack
@@ -9,6 +12,8 @@ type MasyuClue = Clue MasyuPearl
 
 type IntClue = Clue Int
 
+-- | A Compass clue, specifiying optional numbers in the
+--   four cardinal directions.
 data CompassC = CC (Maybe Int) (Maybe Int) (Maybe Int) (Maybe Int)
     deriving Show
 
@@ -24,8 +29,11 @@ instance Show a => Show (Tightfit a) where
               show' (UR x y)   = show x ++ "/" ++ show y
               show' (DR x y)   = show x ++ "\\" ++ show y
 
+-- | A marked word in a letter grid, by its start and end
+--   coordinates.
 data MarkedWord = MW { mwstart :: Coord, mwend :: Coord }
 
+-- | A loop of edges.
 type Loop = [Edge]
 
 -- | A thermometer, as a list of coordinates from bulb to end.
@@ -34,8 +42,12 @@ type Loop = [Edge]
 --   are fine).
 type Thermometer = [Coord]
 
+-- | A forward or backward diagonal as occurring in the solution
+--   of a slalom puzzle.
 data SlalomDiag = SlalomForward | SlalomBackward
     deriving Show
 
+-- | Shadow along from the western and southern side, as used for
+--   afternoon skyscrapers.
 data Shade = Shade Bool Bool
     deriving Show

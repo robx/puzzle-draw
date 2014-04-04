@@ -10,6 +10,7 @@ module Puzzles.PuzzleTypes (
 
 import Data.Tuple (swap)
 
+-- | The list of specific puzzle types we can handle.
 data PuzzleType = LITS
                 | LITSPlus
                 | Geradeweg
@@ -61,5 +62,6 @@ typeNames = [ (LITS, "lits")
             , (CountNumbers, "countnumbers")
             ]
 
+-- | Look up a puzzle type by name.
 lookupType :: String -> Maybe PuzzleType
 lookupType t = lookup t (map swap typeNames)
