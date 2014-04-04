@@ -86,7 +86,7 @@ library
                        text >= 1.1 && < 1.2,
                        SVGFonts >= 1.4 && < 1.5
   hs-source-dirs:      src
-  ghc-options:         -Wall -Werror
+  ghc-options:         -Wall
 
 test-suite test
   type:                exitcode-stdio-1.0
