@@ -52,6 +52,7 @@ library
                        Puzzles.Parse.Puzzle
                        Puzzles.Parse.PuzzleTypes
                        Puzzles.Compose
+                       Puzzles.PuzzleTypes
                        Puzzles.Diagrams.Grid
                        Puzzles.Diagrams.Lib
                        Puzzles.Diagrams.Elements
