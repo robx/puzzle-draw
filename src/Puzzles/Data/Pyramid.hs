@@ -8,6 +8,8 @@ import qualified Data.Yaml as Yaml
 import qualified Data.Text as T
 import Control.Applicative
 
+import Puzzles.Data.Elements
+
 data Row = R { entries :: [Maybe Int]
              , shaded  :: Bool
              }
@@ -64,9 +66,6 @@ instance Show Row where
 
 instance Show Pyramid where
     show = unlines . map show . unPyr
-
-data KropkiDot = None | Black | White
-    deriving Show
 
 data KropkiRow = KR { entriesk :: [Maybe Int]
                     , shadedk  :: Bool

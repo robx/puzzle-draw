@@ -4,6 +4,7 @@ module Puzzles.Diagrams.Pyramid where
 
 import Diagrams.Prelude
 
+import Puzzles.Data.Elements
 import Puzzles.Data.Pyramid
 import Puzzles.Diagrams.Lib
 import Puzzles.Diagrams.Widths

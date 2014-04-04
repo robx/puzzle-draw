@@ -51,3 +51,6 @@ data SlalomDiag = SlalomForward | SlalomBackward
 --   afternoon skyscrapers.
 data Shade = Shade Bool Bool
     deriving Show
+
+data KropkiDot = None | Black | White
+    deriving Show
