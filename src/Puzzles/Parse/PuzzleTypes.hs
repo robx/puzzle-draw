@@ -17,7 +17,7 @@ import Data.Yaml
 
 import Puzzles.Parse.Util
 import Puzzles.Parse.Puzzle
-import Puzzles.Data.Grid hiding (neighbours)
+import Puzzles.Data.Grid
 import Puzzles.Data.GridShape hiding (size)
 import qualified Puzzles.Data.Pyramid as Pyr
 import Puzzles.Data.Elements

@@ -71,14 +71,6 @@ clues g = [ (k, v) | (k, Just v) <- values g ]
 values :: GridShape s => Grid s a -> [(Cell s, a)]
 values (Grid _ m) = Map.toList m
 
-neighbours :: Grid Square a -> Cell Square -> [Cell Square]
-neighbours g p = filter (inBounds g) . map (add p) $ deltas
-    where deltas = [ (dx, dy)
-                   | dx <- [-1..1], dy <- [-1..1]
-                   , dx /= 0 || dy /= 0
-                   ]
-          add (x, y) (x', y') = (x + x', y + y')
-
 -- | The inner edges of a grid that separate unequal cells.
 borders :: Eq a => Grid Square a -> [Edge]
 borders g = [ E p V | p <- vborders ] ++ [ E p H | p <- hborders ]

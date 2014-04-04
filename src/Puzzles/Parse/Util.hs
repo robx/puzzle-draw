@@ -23,7 +23,7 @@ import qualified Data.Text as T
 
 import Data.Yaml
 
-import Puzzles.Data.Grid hiding (neighbours)
+import Puzzles.Data.Grid
 import Puzzles.Data.GridShape hiding (size)
 import Puzzles.Data.Elements
 
