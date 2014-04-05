@@ -10,7 +10,7 @@ several specific puzzle types directly. In addition, it includes
 functionality for parsing puzzle data from a YAML file format.
 
 See [puzzle-draw-cmdline][cmdline] for a command line tool that
-use this.
+uses this.
 
 Examples
 --------
