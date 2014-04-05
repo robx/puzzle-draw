@@ -7,13 +7,13 @@ import Control.Applicative
 
 import Puzzles.PuzzleTypes
 
-data TypedPuzzle = TP PuzzleType Value (Maybe Value)
+data TypedPuzzle = TP (Maybe String) Value (Maybe Value)
     deriving Show
 
 instance FromJSON TypedPuzzle where
     parseJSON (Object v) = TP <$>
-                           (v .: "type" >>= parseType) <*>
-                           v .: "puzzle" <*>
+                           v .:? "type" <*>
+                           v .:  "puzzle" <*>
                            v .:? "solution"
     parseJSON _          = empty
 
