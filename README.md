@@ -55,3 +55,4 @@ that are supported currently.
 [cmdline]: http://github.com/robx/puzzle-draw-cmdline
 [liarslither]: http://maybepuzzles.wordpress.com/types/liar-slither-link/
 [twentyfour]: http://maybepuzzles.wordpress.com/2014/03/29/puzzle-set-24-hour-marathon/
+[diagrams]: http://projects.haskell.org/diagrams/
