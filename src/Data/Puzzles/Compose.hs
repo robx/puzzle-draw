@@ -3,7 +3,7 @@
 -- |
 -- Helpers to string together parser and renderer by puzzle type.
 
-module Puzzles.Compose (
+module Data.Puzzles.Compose (
     PuzzleHandler,
     handle,
     -- * Handlers
@@ -20,12 +20,12 @@ import Diagrams.Prelude
 import Data.Yaml (Parser, Value)
 import Data.Traversable (traverse)
 
-import Puzzles.Parse.Puzzle
-import Puzzles.Diagrams.Draw
-import Puzzles.PuzzleTypes
+import Text.Puzzles.Puzzle
+import Diagrams.Puzzles.Draw
+import Data.Puzzles.PuzzleTypes
 
-import qualified Puzzles.Parse.PuzzleTypes as R
-import qualified Puzzles.Diagrams.PuzzleTypes as D
+import qualified Text.Puzzles.PuzzleTypes as R
+import qualified Diagrams.Puzzles.PuzzleTypes as D
 
 -- | A function to compose an arbitrary matching pair of parser and renderer.
 --   In @PuzzleHandler b a@, @b@ is the rendering backend type, while @a@ is

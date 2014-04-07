@@ -1,11 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Puzzles.Parse.Puzzle where
+module Text.Puzzles.Puzzle where
 
 import Data.Yaml
 import Control.Applicative
 
-import Puzzles.PuzzleTypes
+import Data.Puzzles.PuzzleTypes
 
 data TypedPuzzle = TP (Maybe String) Value (Maybe Value)
     deriving Show

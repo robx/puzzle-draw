@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Puzzles.Parse.Util where
+module Text.Puzzles.Util where
 
 import Prelude hiding (sequence)
 
@@ -23,9 +23,9 @@ import qualified Data.Text as T
 
 import Data.Yaml
 
-import Puzzles.Data.Grid
-import Puzzles.Data.GridShape hiding (size)
-import Puzzles.Data.Elements
+import Data.Puzzles.Grid
+import Data.Puzzles.GridShape hiding (size)
+import Data.Puzzles.Elements
 
 class FromChar a where
     parseChar :: Char -> Parser a

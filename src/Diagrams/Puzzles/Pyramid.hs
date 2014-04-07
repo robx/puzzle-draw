@@ -1,14 +1,14 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Puzzles.Diagrams.Pyramid where
+module Diagrams.Puzzles.Pyramid where
 
 import Diagrams.Prelude
 
-import Puzzles.Data.Elements
-import Puzzles.Data.Pyramid
-import Puzzles.Diagrams.Lib
-import Puzzles.Diagrams.Widths
-import Puzzles.Diagrams.Grid (border)
+import Data.Puzzles.Elements
+import Data.Puzzles.Pyramid
+import Diagrams.Puzzles.Lib
+import Diagrams.Puzzles.Widths
+import Diagrams.Puzzles.Grid (border)
 
 pgray :: Colour Double
 pgray = blend 0.6 white black

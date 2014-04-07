@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Puzzles.Diagrams.PuzzleTypes (
+module Diagrams.Puzzles.PuzzleTypes (
     lits, litsplus, geradeweg, fillomino, masyu, nurikabe, latintapa,
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
@@ -10,17 +10,17 @@ module Puzzles.Diagrams.PuzzleTypes (
 
 import Diagrams.Prelude hiding (Loop)
 
-import Puzzles.Diagrams.PuzzleGrids
-import Puzzles.Diagrams.Draw
-import Puzzles.Diagrams.Grid
-import qualified Puzzles.Diagrams.Pyramid as DPyr
-import Puzzles.Diagrams.Elements
-import Puzzles.Diagrams.Lib
+import Diagrams.Puzzles.PuzzleGrids
+import Diagrams.Puzzles.Draw
+import Diagrams.Puzzles.Grid
+import qualified Diagrams.Puzzles.Pyramid as DPyr
+import Diagrams.Puzzles.Elements
+import Diagrams.Puzzles.Lib
 
-import Puzzles.Data.Grid
-import Puzzles.Data.GridShape (Edge)
-import Puzzles.Data.Elements
-import qualified Puzzles.Data.Pyramid as Pyr
+import Data.Puzzles.Grid
+import Data.Puzzles.GridShape (Edge)
+import Data.Puzzles.Elements
+import qualified Data.Puzzles.Pyramid as Pyr
 
 lits :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b AreaGrid ShadedGrid
 lits = (,)

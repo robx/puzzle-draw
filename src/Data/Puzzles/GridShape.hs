@@ -1,7 +1,7 @@
 {-# LANGUAGE TypeFamilies, FlexibleContexts #-}
 
 -- | Grid shapes.
-module Puzzles.Data.GridShape where
+module Data.Puzzles.GridShape where
 
 -- | The geometry of a grid.
 class Show (Cell a) => GridShape a where

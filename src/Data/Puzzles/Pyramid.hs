@@ -1,5 +1,5 @@
 -- | Data types and parsing for pyramid puzzles.
-module Puzzles.Data.Pyramid (
+module Data.Puzzles.Pyramid (
     Row(..),
     Pyramid(..),
     PyramidSol(..),
@@ -19,7 +19,7 @@ import qualified Data.Yaml as Yaml
 import qualified Data.Text as T
 import Control.Applicative
 
-import Puzzles.Data.Elements
+import Data.Puzzles.Elements
 
 data Row = R { entries :: [Maybe Int]
              , shaded  :: Bool

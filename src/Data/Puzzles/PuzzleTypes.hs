@@ -3,7 +3,7 @@
 -- |
 -- List of specific puzzle types.
 
-module Puzzles.PuzzleTypes (
+module Data.Puzzles.PuzzleTypes (
     PuzzleType(..),
     lookupType,
   ) where

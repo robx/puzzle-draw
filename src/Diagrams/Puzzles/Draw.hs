@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Puzzles.Diagrams.Draw (
+module Diagrams.Puzzles.Draw (
     PuzzleSol,
     RenderPuzzle,
     OutputChoice(..),

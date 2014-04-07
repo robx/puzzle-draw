@@ -1,16 +1,16 @@
 {-# LANGUAGE FlexibleContexts, TypeFamilies #-}
 
-module Puzzles.Diagrams.Grid where
+module Diagrams.Puzzles.Grid where
 
 import Data.Char (isUpper)
 
 import Diagrams.Prelude
 
-import Puzzles.Data.Grid
-import Puzzles.Data.GridShape hiding (size, cells)
+import Data.Puzzles.Grid
+import Data.Puzzles.GridShape hiding (size, cells)
 
-import Puzzles.Diagrams.Lib
-import Puzzles.Diagrams.Widths
+import Diagrams.Puzzles.Lib
+import Diagrams.Puzzles.Widths
 
 -- | Draw a small black dot with no envelope.
 dot :: (Renderable (Path R2) b, Backend b R2) => Diagram b R2

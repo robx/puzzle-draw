@@ -1,10 +1,10 @@
-module Puzzles.Data.Sudoku (
+module Data.Puzzles.Sudoku (
     sudokuborders,
     sudokubordersg
   ) where
 
-import Puzzles.Data.Grid
-import Puzzles.Data.GridShape hiding (size)
+import Data.Puzzles.Grid
+import Data.Puzzles.GridShape hiding (size)
 
 msqrt :: Integral a => a -> Maybe a
 msqrt x = if r ^ (2 :: Int) == x then Just r else Nothing

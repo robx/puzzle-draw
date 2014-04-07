@@ -1,4 +1,4 @@
-module Puzzles.Diagrams.Widths where
+module Diagrams.Puzzles.Widths where
 
 gridres :: Int
 gridres = 40

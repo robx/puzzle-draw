@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Puzzles.Parse.PuzzleTypes (
+module Text.Puzzles.PuzzleTypes (
     lits, litsplus, geradeweg, fillomino, masyu, nurikabe, latintapa,
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
@@ -15,12 +15,12 @@ import Control.Monad hiding (sequence)
 
 import Data.Yaml
 
-import Puzzles.Parse.Util
-import Puzzles.Parse.Puzzle
-import Puzzles.Data.Grid
-import Puzzles.Data.GridShape hiding (size)
-import qualified Puzzles.Data.Pyramid as Pyr
-import Puzzles.Data.Elements
+import Text.Puzzles.Util
+import Text.Puzzles.Puzzle
+import Data.Puzzles.Grid
+import Data.Puzzles.GridShape hiding (size)
+import qualified Data.Puzzles.Pyramid as Pyr
+import Data.Puzzles.Elements
 
 lits :: ParsePuzzle AreaGrid ShadedGrid
 lits = (parseGrid, parseShadedGrid)

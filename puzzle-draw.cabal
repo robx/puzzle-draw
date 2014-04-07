@@ -52,24 +52,24 @@ Source-repository head
 
 library
   -- Modules exported by the library.
-  exposed-modules:     Puzzles.Data.Grid
-                       Puzzles.Data.GridShape
-                       Puzzles.Data.Elements
-                       Puzzles.Data.Pyramid
-                       Puzzles.Data.Sudoku
-                       Puzzles.Parse.Util
-                       Puzzles.Parse.Puzzle
-                       Puzzles.Parse.PuzzleTypes
-                       Puzzles.Compose
-                       Puzzles.PuzzleTypes
-                       Puzzles.Diagrams.Grid
-                       Puzzles.Diagrams.Lib
-                       Puzzles.Diagrams.Elements
-                       Puzzles.Diagrams.Widths
-                       Puzzles.Diagrams.Pyramid
-                       Puzzles.Diagrams.PuzzleGrids
-                       Puzzles.Diagrams.PuzzleTypes
-                       Puzzles.Diagrams.Draw
+  exposed-modules:     Data.Puzzles.Grid
+                       Data.Puzzles.GridShape
+                       Data.Puzzles.Elements
+                       Data.Puzzles.Pyramid
+                       Data.Puzzles.Sudoku
+                       Data.Puzzles.Compose
+                       Data.Puzzles.PuzzleTypes
+                       Text.Puzzles.Util
+                       Text.Puzzles.Puzzle
+                       Text.Puzzles.PuzzleTypes
+                       Diagrams.Puzzles.Grid
+                       Diagrams.Puzzles.Lib
+                       Diagrams.Puzzles.Elements
+                       Diagrams.Puzzles.Widths
+                       Diagrams.Puzzles.Pyramid
+                       Diagrams.Puzzles.PuzzleGrids
+                       Diagrams.Puzzles.PuzzleTypes
+                       Diagrams.Puzzles.Draw
   
   -- Modules included in this library but not exported.
   -- other-modules:       
