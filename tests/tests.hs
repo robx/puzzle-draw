@@ -6,6 +6,7 @@ import Data.List (sort)
 
 import Control.DeepSeq
 
+import Text.Puzzles.Puzzle
 import Data.Puzzles.Elements (Thermometer)
 import Text.Puzzles.Util (parseChar)
 import Text.Puzzles.PuzzleTypes
@@ -25,27 +26,70 @@ main :: IO ()
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "Tests" [unitTests]
+tests = testGroup "Tests"
+    [ parseUtilTests, parseTests, parseDataTests, renderTests ]
+
+testParsePzl, testParseSol, testNonparsePzl, testNonparseSol ::
+    (Show a, Show b) => String -> ParsePuzzle a b -> Value -> TestTree
+testParsePzl name parser yaml =
+    testCase ("parse " ++ name) $ testParse (fst parser) yaml
+testParseSol name parser yaml =
+    testCase ("parse " ++ name ++ " (sol)") $ testParse (snd parser) yaml
+testNonparsePzl name parser yaml =
+    testCase ("don't parse broken " ++ name) $ testNonparse (fst parser) yaml
+testNonparseSol name parser yaml =
+    testCase ("don't parse broken " ++ name ++ " (sol)") $
+        testNonparse (snd parser) yaml
+
+parseUtilTests :: TestTree
+parseUtilTests = testGroup "Parsing infrastructure tests (parseChar)"
+    [ testCase "parse digit" $
+        (parseMaybe parseChar '5' :: Maybe Int) @=? Just 5
+    , testCase "don't parse hex chars" $
+        (parseMaybe parseChar 'a' :: Maybe Int) @=? Nothing
+    , testCase "don't break on non-digits" $
+        (parseMaybe parseChar ' ' :: Maybe Int) @=? Nothing
+    ]
+
+parseTests :: TestTree
+parseTests = testGroup "Parsing tests (full puzzles, no details)"
+    [ testParsePzl "geradeweg" geradeweg geradeweg_1
+    , testParseSol "geradeweg" geradeweg geradeweg_1_sol
+    , testParsePzl "tightfit"  tightfitskyscrapers tightfit_1
+    , testParseSol "tightfit"  tightfitskyscrapers tightfit_1_sol
+    , testNonparsePzl "tightfit" tightfitskyscrapers tightfit_broken_1
+    , testNonparsePzl "tightfit" tightfitskyscrapers tightfit_broken_2
+    , testNonparseSol "tightfit" tightfitskyscrapers tightfit_sol_broken
+    , testNonparseSol "tightfit" tightfitskyscrapers tightfit_sol_broken_2
+    , testNonparseSol "slalom" slalom slalom_sol_broken
+    , testParsePzl "kpyramid" kpyramid kpyramid_1
+    , testParseSol "kpyramid" kpyramid kpyramid_1_sol
+    , testNonparsePzl "kpyramid" kpyramid kpyramid_broken_1
+    , testNonparsePzl "kpyramid" kpyramid kpyramid_broken_2
+    , testNonparsePzl "kpyramid" kpyramid kpyramid_broken_3
+    , testParsePzl "compass" compass compass_1
+    , testNonparsePzl "compass" compass compass_broken_1
+    , testNonparsePzl "compass" compass compass_broken_2
+    , testNonparsePzl "compass" compass compass_broken_3
+    , testNonparsePzl "compass" compass compass_broken_4
+    , testNonparsePzl "compass" compass compass_broken_5
+    , testParsePzl "thermosudoku" thermosudoku thermo_1
+    , testParsePzl "thermosudoku" thermosudoku thermo_2
+    , testNonparsePzl "thermosudoku" thermosudoku thermo_broken_1
+    , testNonparsePzl "thermosudoku" thermosudoku thermo_broken_2
+    ]
 
 test_thermo_1 :: [Thermometer]
-test_thermo_1 = either (const []) snd res
-  where
-    res = parseEither (fst thermosudoku) thermo_1
+test_thermo_1 = either (const []) snd $
+                parseEither (fst thermosudoku) thermo_1
 
 -- two neighbouring a's, should be fine
 test_thermo_2 :: [Thermometer]
-test_thermo_2 = either (const []) snd res
-  where
-    res = parseEither (fst thermosudoku) thermo_2
+test_thermo_2 = either (const []) snd $
+                parseEither (fst thermosudoku) thermo_2
 
-testBreakSlalom :: Bool
-testBreakSlalom =
-    case parseMaybe (snd slalom) slalom_sol_broken of
-        Nothing -> True
-        Just s  -> let d = drawSlalomDiags s
-                       svg = renderDia SVG (SVGOptions (Width 100) Nothing) d
-                       svgt = renderSvg svg
-                   in (show svgt) `deepseq` True
+testThermo :: [Thermometer] -> [Thermometer] -> Assertion
+testThermo t expect = sort t @?= expect
 
 test_tightfit_1 :: Bool
 test_tightfit_1 = either (const False) test_both res
@@ -62,46 +106,35 @@ test_pyramid_sol :: Bool
 test_pyramid_sol = either (const False) test_content res
   where
     res = parseEither (snd kpyramid) kpyramid_1_sol
-    test_content (PyramidSol rs) = rs == [[3], [8,5], [1,9,4], [3,2,7,3], [1,2,4,3,6]]
+    test_content (PyramidSol rs) =
+        rs == [[3], [8,5], [1,9,4], [3,2,7,3], [1,2,4,3,6]]
 
-unitTests :: TestTree
-unitTests = testGroup "Unit tests"
-    [ testCase "parse geradeweg" $ testParse (fst geradeweg) geradeweg_1
-    , testCase "parse geradeweg solution" $ testParse (snd geradeweg) geradeweg_1_sol
-    , testCase "parse tightfit" $ testParse (fst tightfitskyscrapers) tightfit_1
-    , testCase "parse tightfit, correct size" $ test_tightfit_1 @? "error in puzzle"
-    , testCase "parse tightfit solution" $ testParse (snd tightfitskyscrapers) tightfit_1_sol
-    , testCase "don't parse broken tighfit" $ testNonparse (fst tightfitskyscrapers) tightfit_broken_1
-    , testCase "don't parse broken tighfit" $ testNonparse (fst tightfitskyscrapers) tightfit_broken_2
-    , testCase "don't parse broken tightfit solution" $
-        testNonparse (snd tightfitskyscrapers) tightfit_sol_broken
-    , testCase "don't parse broken tightfit solution" $
-        testNonparse (snd tightfitskyscrapers) tightfit_sol_broken_2
-    , testCase "parse digit" $ (parseMaybe parseChar '5' :: Maybe Int) @=? Just 5
-    , testCase "don't parse hex chars" $ (parseMaybe parseChar 'a' :: Maybe Int) @=? Nothing
-    , testCase "don't break on non-digits" $ (parseMaybe parseChar ' ' :: Maybe Int) @=? Nothing
-    , testCase "don't parse invalid slalom solution" $ testNonparse (snd slalom) slalom_sol_broken
-    , testCase "don't break rendering invalid slalom solution"
-         $ testBreakSlalom @? "just testing against errors"
-    , testCase "parse kpyramid" $ testParse (fst kpyramid) kpyramid_1
-    , testCase "parse kpyramid sol" $ testParse (snd kpyramid) kpyramid_1_sol
+parseDataTests :: TestTree
+parseDataTests = testGroup "Parsing tests (full puzzles, result checks)"
+    [ testCase "parse tightfit, correct size" $ test_tightfit_1 @? "error in puzzle"
     , testCase "parse kpyramid sol properly" $ test_pyramid_sol @? "wrong solution"
-    , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid) kpyramid_broken_1
-    , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid) kpyramid_broken_2
-    , testCase "don't parse broken kpyramid" $ testNonparse (fst kpyramid) kpyramid_broken_3
-    , testCase "parse compass" $ testParse (fst compass) compass_1
-    , testCase "don't parse borken compass" $ testNonparse (fst compass) compass_broken_1
-    , testCase "don't parse borken compass" $ testNonparse (fst compass) compass_broken_2
-    , testCase "don't parse borken compass" $ testNonparse (fst compass) compass_broken_3
-    , testCase "don't parse borken compass" $ testNonparse (fst compass) compass_broken_4
-    , testCase "don't parse borken compass" $ testNonparse (fst compass) compass_broken_5
-    , testCase "parse thermo" $ testParse (fst thermosudoku) thermo_1
-    , testCase "parse thermo" $ testParse (fst thermosudoku) thermo_2
-    , testCase "parse thermo, thermometers" $ sort test_thermo_1 @?= [ [(0, 4), (1, 5), (2, 4), (1, 3)]
-                                                                     , [(4, 0), (3, 1), (4, 2), (5, 1)] ]
-    , testCase "parse thermo, thermometers" $ sort test_thermo_2 @?= [ [(0, 1), (1, 0), (2, 0)]
-                                                                     , [(0, 2), (1, 3), (2, 4)]
-                                                                     , [(4, 0), (4, 1), (3, 2)] ]
-    , testCase "don't parse broken thermo" $ testNonparse (fst thermosudoku) thermo_broken_1
-    , testCase "don't parse broken thermo" $ testNonparse (fst thermosudoku) thermo_broken_2
+    , testCase "parse thermos" $ testThermo test_thermo_1
+                                            [ [(0, 4), (1, 5), (2, 4), (1, 3)]
+                                            , [(4, 0), (3, 1), (4, 2), (5, 1)] ]
+    , testCase "parse thermos" $ testThermo test_thermo_2
+                                            [ [(0, 1), (1, 0), (2, 0)]
+                                            , [(0, 2), (1, 3), (2, 4)]
+                                            , [(4, 0), (4, 1), (3, 2)] ]
+    ]
+
+-- this used to cause a rendering crash, though it's
+-- caught by parsing by now
+testBreakSlalom :: Bool
+testBreakSlalom =
+    case parseMaybe (snd slalom) slalom_sol_broken of
+        Nothing -> True
+        Just s  -> let d = drawSlalomDiags s
+                       svg = renderDia SVG (SVGOptions (Width 100) Nothing) d
+                       svgt = renderSvg svg
+                   in (show svgt) `deepseq` True
+
+renderTests :: TestTree
+renderTests = testGroup "Rendering tests"
+    [ testCase "don't break rendering invalid slalom solution"
+         $ testBreakSlalom @? "just testing against errors"
     ]
