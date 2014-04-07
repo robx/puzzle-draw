@@ -3,10 +3,14 @@ module Data where
 import qualified Data.Text as T
 import Data.Yaml
 import Data.Maybe (fromJust)
-import qualified Data.ByteString.Char8 as B
+import qualified Data.ByteString as B
+import Data.Text.Encoding (encodeUtf8)
+
+packStr :: String -> B.ByteString
+packStr = encodeUtf8 . T.pack
 
 decodeLines :: [String] -> Value
-decodeLines = fromJust . decode . B.pack . unlines
+decodeLines = fromJust . decode . packStr . unlines
 
 packLine :: String -> Value
 packLine = String . T.pack
