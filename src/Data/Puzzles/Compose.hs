@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts, RankNTypes #-}
+{-# LANGUAGE MultiParamTypeClasses, FlexibleContexts, RankNTypes #-}
 
 -- |
 -- Helpers to string together parser and renderer by puzzle type.

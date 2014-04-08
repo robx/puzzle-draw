@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiParamTypeClasses     #-}
 {-# LANGUAGE FlexibleContexts          #-}
 {-# LANGUAGE TypeFamilies              #-}
 

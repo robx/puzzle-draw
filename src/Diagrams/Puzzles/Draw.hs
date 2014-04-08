@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE MultiParamTypeClasses, FlexibleContexts #-}
 
 module Diagrams.Puzzles.Draw (
     PuzzleSol,

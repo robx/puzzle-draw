@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts, TypeFamilies #-}
+{-# LANGUAGE MultiParamTypeClasses, FlexibleContexts, TypeFamilies #-}
 
 module Diagrams.Puzzles.Grid where
 

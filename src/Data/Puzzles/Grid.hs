@@ -1,4 +1,5 @@
-{-# LANGUAGE FlexibleContexts, GADTs, StandaloneDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses, FlexibleContexts,
+             GADTs, StandaloneDeriving #-}
 
 -- | Puzzle grids.
 module Data.Puzzles.Grid where

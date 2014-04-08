@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE MultiParamTypeClasses, FlexibleContexts #-}
 
 -- | Module: Diagrams.TwoD.Puzzles.Elements
 --
