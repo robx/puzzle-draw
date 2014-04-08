@@ -129,12 +129,10 @@ data Blank = Blank
 
 instance FromChar Blank where
     parseChar '.' = pure Blank
-    parseChar '-' = pure Blank
     parseChar _   = empty
 
 instance FromString Blank where
     parseString "." = pure Blank
-    parseString "-" = pure Blank
     parseString _   = empty
 
 instance FromChar SlalomDiag where
