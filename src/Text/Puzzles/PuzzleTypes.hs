@@ -123,5 +123,5 @@ countnumbers :: ParsePuzzle AreaGrid IntGrid
 countnumbers = (parseGrid, parseGrid)
 
 tapa :: ParsePuzzle (SGrid TapaClue) ShadedGrid
-tapa = (\v -> unRG <$> parseJSON v,
+tapa = (\v -> fmap unParseTapaClue . unRG <$> parseJSON v,
         parseShadedGrid)

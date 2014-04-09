@@ -397,7 +397,9 @@ parseAfternoonGrid v = do
     splitBorder (Square w h) = Map.partitionWithKey
         (\(x, y) _ -> x < w - 1 && y < h - 1)
 
-instance FromJSON TapaClue where
+newtype ParseTapaClue = ParseTapaClue { unParseTapaClue :: TapaClue }
+
+instance FromJSON ParseTapaClue where
     parseJSON v = do xs <- parseJSON v
                      guard $ length xs > 0 && length xs <= 4
-                     return $ TapaClue xs
+                     return . ParseTapaClue . TapaClue $ xs
