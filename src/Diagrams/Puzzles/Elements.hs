@@ -154,7 +154,7 @@ drawTapaClue (TapaClue xs)  = fit 0.8
   where
     p n = centerXY (p' n)
     p' 2 = p2 (-1/4, 1/4) ~~ p2 (1/4, -1/4)
-    p' 3 = reflectX . rotate (1/6 @@ turn) $ triangle 0.8
-    p' 4 = reflectX . rotate (3/8 @@ turn) $ square 0.7
+    p' 3 = reflectX . rotateBy (1/6) $ triangle 0.8
+    p' 4 = reflectX . rotateBy (3/8) $ square 0.7
     p' 1 = error "singleton clues handled separately"
     p' _ = error "invalid tapa clue"
