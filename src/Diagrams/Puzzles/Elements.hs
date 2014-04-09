@@ -142,6 +142,8 @@ drawShade (Shade s w) = (if s then south else mempty) <>
     south = strokeLocLoop shape # lw 0 # fc gray
     west = reflectAbout (p2 (0, 0)) (r2 (1, 1)) south
 
+-- | Draws the digits of a tapa clue, ordered
+--   left to right, top to bottom.
 drawTapaClue :: (Backend b R2, Renderable (Path R2) b) =>
                 TapaClue -> Diagram b R2
 drawTapaClue (TapaClue [x]) = drawInt x
@@ -153,6 +155,6 @@ drawTapaClue (TapaClue xs)  = fit 0.8
     p n = centerXY (p' n)
     p' 2 = p2 (-1/4, 1/4) ~~ p2 (1/4, -1/4)
     p' 3 = reflectX . rotate (1/6 @@ turn) $ triangle 0.8
-    p' 4 = rotate (1/8 @@ turn) $ square 0.7
+    p' 4 = reflectX . rotate (3/8 @@ turn) $ square 0.7
     p' 1 = error "singleton clues handled separately"
     p' _ = error "invalid tapa clue"
