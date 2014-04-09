@@ -6,7 +6,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
-    afternoonskyscrapers, countnumbers,
+    afternoonskyscrapers, countnumbers, tapa,
   ) where
 
 import Diagrams.Prelude hiding (Loop)
@@ -178,3 +178,11 @@ countnumbers :: (Backend b R2, Renderable (Path R2) b) =>
 countnumbers = (,)
     drawAreaGrid
     (drawIntGrid . snd <> drawAreaGrid . fst)
+
+tapa :: (Backend b R2, Renderable (Path R2) b) =>
+        RenderPuzzle b (SGrid TapaClue) ShadedGrid
+tapa = (,)
+    tapaGrid
+    (tapaGrid . fst <> drawShadedGrid . snd)
+  where
+    tapaGrid = atCentres drawTapaClue . values <> grid . size

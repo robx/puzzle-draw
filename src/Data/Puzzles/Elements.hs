@@ -52,3 +52,6 @@ data Shade = Shade Bool Bool
 
 data KropkiDot = None | Black | White
     deriving Show
+
+newtype TapaClue = TapaClue [Int]
+    deriving Show

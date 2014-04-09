@@ -5,7 +5,7 @@ module Text.Puzzles.PuzzleTypes (
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
-    afternoonskyscrapers, countnumbers,
+    afternoonskyscrapers, countnumbers, tapa,
   ) where
 
 import Prelude hiding (sequence)
@@ -121,3 +121,7 @@ afternoonskyscrapers = (parseAfternoonGrid, parseGrid)
 -- this should be changed to support clue numbers
 countnumbers :: ParsePuzzle AreaGrid IntGrid
 countnumbers = (parseGrid, parseGrid)
+
+tapa :: ParsePuzzle (SGrid TapaClue) ShadedGrid
+tapa = (\v -> unRG <$> parseJSON v,
+        parseShadedGrid)
