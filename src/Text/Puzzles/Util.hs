@@ -126,9 +126,15 @@ instance FromChar Space where
     parseChar _   = empty
 
 data Blank = Blank
+data Blank' = Blank'
 
 instance FromChar Blank where
     parseChar '.' = pure Blank
+    parseChar _   = empty
+
+instance FromChar Blank' where
+    parseChar '.' = pure Blank'
+    parseChar '-' = pure Blank'
     parseChar _   = empty
 
 instance FromString Blank where
@@ -306,7 +312,7 @@ parseTightOutside :: Value -> Parser (OutsideClues (Maybe Int),
                                       SGrid (Tightfit ()))
 parseTightOutside v = do
     BorderedRect w h ls b <- parseJSON v
-        :: Parser (BorderedRect Tight (Either Blank Int))
+        :: Parser (BorderedRect Tight (Either Blank' Int))
     return (outside . fmap (either (const Nothing) Just) $ b,
             fmap unTight . rectToSGrid $ Rect w h ls)
   where outside (Border l r b t) = OC l r b t
