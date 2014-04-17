@@ -12,6 +12,7 @@ import Text.Puzzles.Util (parseChar)
 import Text.Puzzles.PuzzleTypes
 import qualified Data.Puzzles.Grid as Grid
 import Data.Puzzles.Pyramid (PyramidSol(..))
+import Data.Puzzles.Grid (multiOutsideClues, OutsideClues(..))
 
 import Diagrams.Puzzles.PuzzleGrids
 import Diagrams.Prelude
@@ -27,7 +28,7 @@ main = defaultMain tests
 
 tests :: TestTree
 tests = testGroup "Tests"
-    [ parseUtilTests, parseTests, parseDataTests, renderTests ]
+    [ parseUtilTests, parseTests, parseDataTests, renderTests, dataTests ]
 
 testParsePzl, testParseSol, testNonparsePzl, testNonparseSol ::
     (Show a, Show b) => String -> ParsePuzzle a b -> Value -> TestTree
@@ -137,4 +138,21 @@ renderTests :: TestTree
 renderTests = testGroup "Rendering tests"
     [ testCase "don't break rendering invalid slalom solution"
          $ testBreakSlalom @? "just testing against errors"
+    ]
+
+testMultiOutsideClues :: Assertion
+testMultiOutsideClues = multiOutsideClues (OC l r b t) `sorteq` res
+  where
+    sorteq xs ys = sort xs @?= sort ys
+    l = [[1, 2], [3]]
+    r = [[], [1, 0]]
+    b = [[0, 0, 1]]
+    t = [[1, -1]]
+    res = [ ((-1,0), 1), ((-2,0), 2), ((-1,1), 3),
+            ((1,1), 1), ((2,1), 0), ((0,-1), 0), ((0,-2), 0), ((0,-3), 1),
+            ((0,2), 1), ((0,3), -1) ] :: [((Int, Int), Int)]
+
+dataTests :: TestTree
+dataTests = testGroup "Generic tests for the Data modules"
+    [ testCase "multiOutsideClues" testMultiOutsideClues
     ]

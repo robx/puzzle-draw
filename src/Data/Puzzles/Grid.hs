@@ -9,6 +9,7 @@ import qualified Data.Map as Map
 import Data.Foldable (Foldable, fold)
 import Data.Traversable (Traversable, traverse)
 import Control.Applicative ((<$>))
+import Data.VectorSpace
 
 import Data.Puzzles.GridShape hiding (size, cells)
 import qualified Data.Puzzles.GridShape as GS
@@ -88,6 +89,9 @@ borders g = [ E p V | p <- vborders ] ++ [ E p H | p <- hborders ]
 data OutsideClues a = OC { left :: [a], right :: [a], bottom :: [a], top :: [a] }
     deriving Show
 
+instance Functor OutsideClues where
+    fmap f (OC l r b t) = OC (fmap f l) (fmap f r) (fmap f b) (fmap f t)
+
 -- | Convert outside clues to association list mapping coordinate to value.
 outsideClues :: OutsideClues (Maybe a) -> [((Int, Int), a)]
 outsideClues (OC l r b t) = mapMaybe liftMaybe . concat $
@@ -101,3 +105,10 @@ outsideClues (OC l r b t) = mapMaybe liftMaybe . concat $
     h = length l
     liftMaybe (p, Just x)  = Just (p, x)
     liftMaybe (_, Nothing) = Nothing
+
+multiOutsideClues :: OutsideClues [a] -> [((Int, Int), a)]
+multiOutsideClues = concatMap distrib . outsideClues . fmap Just . dired
+  where
+    dired (OC l r b t) = OC (z (-1,0) l) (z (1,0) r) (z (0,-1) b) (z (0,1) t)
+    z x ys = zip (repeat x) ys
+    distrib (o, (d, xs)) = zip [o ^+^ i *^ d | i <- [0..]] xs
