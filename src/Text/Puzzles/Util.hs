@@ -9,7 +9,7 @@ import Control.Arrow
 import Control.Monad hiding (sequence)
 
 import Data.Hashable
-import Data.Maybe (catMaybes)
+import Data.Maybe (catMaybes, fromMaybe)
 import qualified Data.Map as Map
 import qualified Data.HashMap.Strict as HMap
 import Data.Traversable (traverse, sequence, sequenceA, Traversable)
@@ -245,6 +245,10 @@ instance FromChar HalfDirs where
                 | c `elem` "─└┌"  = pure . HalfDirs $ [H]
                 | otherwise       = pure . HalfDirs $ []
 
+instance FromChar JapVal where
+    parseChar c | c `elem` ['x', 'X']  = pure JapBlack
+    parseChar c = JapInt <$> parseChar c
+
 -- parses a string like
 --  ┌┐┌─┐
 --  ││└┐│
@@ -403,3 +407,11 @@ instance FromJSON ParseTapaClue where
     parseJSON v = do xs <- parseJSON v
                      guard $ length xs > 0 && length xs <= 4
                      return . ParseTapaClue . TapaClue $ xs
+
+parseMultiOutsideClues :: FromJSON a => Value -> Parser (OutsideClues [a])
+parseMultiOutsideClues (Object v) = rev <$> raw
+  where
+    raw = OC <$> v `ml` "left" <*> v `ml` "right" <*> v `ml` "bottom" <*> v `ml` "top"
+    v' `ml` k = fromMaybe [] <$> v' .:? k
+    rev (OC l r b t) = OC (reverse . map reverse $ l) (reverse r) b (map reverse t)
+parseMultiOutsideClues _ = empty

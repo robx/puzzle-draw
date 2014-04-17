@@ -6,10 +6,11 @@ module Diagrams.Puzzles.PuzzleTypes (
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
-    afternoonskyscrapers, countnumbers, tapa,
+    afternoonskyscrapers, countnumbers, tapa, japanesesums,
+    coral,
   ) where
 
-import Diagrams.Prelude hiding (Loop)
+import Diagrams.Prelude hiding (Loop, coral)
 
 import Diagrams.Puzzles.PuzzleGrids
 import Diagrams.Puzzles.Draw
@@ -186,3 +187,19 @@ tapa = (,)
     (tapaGrid . fst <> drawShadedGrid . snd)
   where
     tapaGrid = atCentres drawTapaClue . values <> grid . size
+
+japanesesums :: (Backend b R2, Renderable (Path R2) b) =>
+                RenderPuzzle b (OutsideClues [Int]) (SGrid JapVal)
+japanesesums = (,)
+    outsideIntGrid
+    (japcells . snd <> outsideIntGrid . fst)
+  where
+    japcells = atCentres japcell . values
+    japcell JapBlack = fillBG gray
+    japcell (JapInt x) = drawInt x
+
+coral :: (Backend b R2, Renderable (Path R2) b) =>
+                RenderPuzzle b (OutsideClues [Int]) ShadedGrid
+coral = (,)
+    outsideIntGrid
+    (drawShadedGrid . snd <> outsideIntGrid . fst)

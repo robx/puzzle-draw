@@ -8,7 +8,7 @@ import Control.DeepSeq
 
 import Text.Puzzles.Puzzle
 import Data.Puzzles.Elements (Thermometer)
-import Text.Puzzles.Util (parseChar)
+import Text.Puzzles.Util (parseChar, parseMultiOutsideClues)
 import Text.Puzzles.PuzzleTypes
 import qualified Data.Puzzles.Grid as Grid
 import Data.Puzzles.Pyramid (PyramidSol(..))
@@ -110,6 +110,13 @@ test_pyramid_sol = either (const False) test_content res
     test_content (PyramidSol rs) =
         rs == [[3], [8,5], [1,9,4], [3,2,7,3], [1,2,4,3,6]]
 
+test_multioutside :: Assertion
+test_multioutside = Right oc @=? res
+  where
+    res = parseEither parseMultiOutsideClues multioutside
+    oc = OC [[3], [1, 2]] [[1, 0], []] [[0, 0, 1]] [[1, -1]]
+         :: OutsideClues [Int]
+
 parseDataTests :: TestTree
 parseDataTests = testGroup "Parsing tests (full puzzles, result checks)"
     [ testCase "parse tightfit, correct size" $ test_tightfit_1 @? "error in puzzle"
@@ -121,6 +128,7 @@ parseDataTests = testGroup "Parsing tests (full puzzles, result checks)"
                                             [ [(0, 1), (1, 0), (2, 0)]
                                             , [(0, 2), (1, 3), (2, 4)]
                                             , [(4, 0), (4, 1), (3, 2)] ]
+    , testCase "parse multioutsideclues" $ test_multioutside
     ]
 
 -- this used to cause a rendering crash, though it's

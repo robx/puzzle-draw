@@ -55,3 +55,6 @@ data KropkiDot = None | Black | White
 
 newtype TapaClue = TapaClue [Int]
     deriving Show
+
+data JapVal = JapBlack | JapInt Int
+    deriving Show

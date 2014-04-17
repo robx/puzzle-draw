@@ -61,6 +61,8 @@ handle f BoxOf2Or3            = f R.boxof2or3           D.boxof2or3
 handle f AfternoonSkyscrapers = f R.afternoonskyscrapers D.afternoonskyscrapers
 handle f CountNumbers         = f R.countnumbers        D.countnumbers
 handle f Tapa                 = f R.tapa                D.tapa
+handle f JapaneseSums         = f R.japanesesums        D.japanesesums
+handle f Coral                = f R.coral               D.coral
 
 -- | Handler that parses a puzzle from a YAML value, and renders.
 drawPuzzle :: PuzzleHandler b (Value -> Parser (Diagram b R2))

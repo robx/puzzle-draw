@@ -5,7 +5,7 @@ module Text.Puzzles.PuzzleTypes (
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
-    afternoonskyscrapers, countnumbers, tapa,
+    afternoonskyscrapers, countnumbers, tapa, japanesesums, coral,
   ) where
 
 import Prelude hiding (sequence)
@@ -125,3 +125,9 @@ countnumbers = (parseGrid, parseGrid)
 tapa :: ParsePuzzle (SGrid TapaClue) ShadedGrid
 tapa = (\v -> fmap unParseTapaClue . unRG <$> parseJSON v,
         parseShadedGrid)
+
+japanesesums :: ParsePuzzle (OutsideClues [Int]) (SGrid JapVal)
+japanesesums = (parseMultiOutsideClues, parseGrid)
+
+coral :: ParsePuzzle (OutsideClues [Int]) ShadedGrid
+coral = (parseMultiOutsideClues, parseShadedGrid)

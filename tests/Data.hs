@@ -208,3 +208,17 @@ thermo_broken_2 = packLines $
     [ "bb"
     , "a."
     ]
+
+multioutside :: Value
+multioutside = decodeLines $
+    [ "left:"
+    , "  - [2, 1]"
+    , "  - [3]"
+    , "right:"
+    , "  - []"
+    , "  - [1, 0]"
+    , "bottom:"
+    , "  - [0, 0, 1]"
+    , "top:"
+    , "  - [-1, 1]"
+    ]

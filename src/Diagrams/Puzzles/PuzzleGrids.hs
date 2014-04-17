@@ -84,3 +84,8 @@ drawCrosses ::  (Backend b R2, Renderable (Path R2) b) =>
 drawCrosses = atCentres (if' drawCross mempty) . values
   where
     if' a b x = if x then a else b
+
+outsideIntGrid :: (Backend b R2, Renderable (Path R2) b) =>
+                  OutsideClues [Int] -> Diagram b R2
+outsideIntGrid = atCentres drawInt . multiOutsideClues
+                 <> grid . outsideSize

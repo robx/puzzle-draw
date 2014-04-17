@@ -35,6 +35,8 @@ data PuzzleType = LITS
                 | AfternoonSkyscrapers
                 | CountNumbers
                 | Tapa
+                | JapaneseSums
+                | Coral
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -62,6 +64,8 @@ typeNames = [ (LITS, "lits")
             , (AfternoonSkyscrapers, "afternoonskyscrapers")
             , (CountNumbers, "countnumbers")
             , (Tapa, "tapa")
+            , (JapaneseSums, "japanesesums")
+            , (Coral, "coral")
             ]
 
 -- | Look up a puzzle type by name.
