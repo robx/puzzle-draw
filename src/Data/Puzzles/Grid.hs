@@ -89,8 +89,8 @@ data OutsideClues a = OC { left :: [a], right :: [a], bottom :: [a], top :: [a] 
     deriving Show
 
 -- | Convert outside clues to association list mapping coordinate to value.
-outsideclues :: OutsideClues (Maybe a) -> [((Int, Int), a)]
-outsideclues (OC l r b t) = mapMaybe liftMaybe . concat $
+outsideClues :: OutsideClues (Maybe a) -> [((Int, Int), a)]
+outsideClues (OC l r b t) = mapMaybe liftMaybe . concat $
                              [ zipWith (\ y c -> ((-1, y), c)) [0..h-1] l
                              , zipWith (\ y c -> (( w, y), c)) [0..h-1] r
                              , zipWith (\ x c -> (( x,-1), c)) [0..w-1] b

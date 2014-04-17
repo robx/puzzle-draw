@@ -112,9 +112,9 @@ tightfitskyscrapers :: (Backend b R2, Renderable (Path R2) b) =>
                        RenderPuzzle b (OutsideClues (Maybe Int), SGrid (Tightfit ()))
                                       (SGrid (Tightfit Int))
 tightfitskyscrapers = (,)
-    (atCentres drawInt . outsideclues . fst
+    (atCentres drawInt . outsideClues . fst
      <> drawTightGrid (const mempty) . snd)
-    (atCentres drawInt . outsideclues . fst . fst
+    (atCentres drawInt . outsideClues . fst . fst
      <> drawTightGrid drawInt . snd)
 
 wordgrid :: (Backend b R2, Renderable (Path R2) b) =>
