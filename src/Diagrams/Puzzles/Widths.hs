@@ -3,6 +3,9 @@ module Diagrams.Puzzles.Widths where
 gridres :: Int
 gridres = 40
 
+gridresd :: Double
+gridresd = fromIntegral gridres
+
 onepix :: Double
 onepix = 1 / fromIntegral gridres
 
@@ -18,4 +21,4 @@ framewidthfactor = 4
 
 edgewidth, borderwidth :: Double
 edgewidth = 3 * onepix
-borderwidth = 1 / 4 + onepix / 2
+borderwidth = 1 / 2
