@@ -76,7 +76,7 @@ dashedgrid = grid' $ bgdashing dashes dashoffset white'
 --   of cells given by coordinates.
 atCentres :: (Transformable a, Monoid a, V a ~ R2) =>
              (t -> a) -> [(Coord, t)] -> a
-atCentres dc = translate (r2 (0.5, 0.5)) . atVertices dc
+atCentres dc = translate (r2 (1/2, 1/2)) . atVertices dc
 
 atCentres' :: (Transformable a, V a ~ R2) => SGrid a -> [a]
 atCentres' = translate (r2 (1/2, 1/2)) . atVertices'
