@@ -7,7 +7,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, countnumbers, tapa, japanesesums,
-    coral,
+    coral, maximallengths
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -203,3 +203,12 @@ coral :: (Backend b R2, Renderable (Path R2) b) =>
 coral = (,)
     outsideIntGrid
     (drawShadedGrid . snd <> outsideIntGrid . fst)
+
+maximallengths :: (Backend b R2, Renderable (Path R2) b) =>
+                  RenderPuzzle b (OutsideClues (Maybe Int)) Loop
+maximallengths = (,)
+    g
+    (solstyle . drawDualEdges . snd <> g . fst)
+  where
+    g = atCentres drawInt . outsideClues
+        <> grid . outsideSize

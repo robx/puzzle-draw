@@ -6,6 +6,7 @@ module Text.Puzzles.PuzzleTypes (
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, countnumbers, tapa, japanesesums, coral,
+    maximallengths,
   ) where
 
 import Prelude hiding (sequence)
@@ -131,3 +132,7 @@ japanesesums = (parseMultiOutsideClues, parseGrid)
 
 coral :: ParsePuzzle (OutsideClues [Int]) ShadedGrid
 coral = (parseMultiOutsideClues, parseShadedGrid)
+
+maximallengths :: ParsePuzzle (OutsideClues (Maybe Int)) Loop
+maximallengths = (\v -> fmap blankToMaybe <$> parseCharOutside v,
+                  parseEdges)
