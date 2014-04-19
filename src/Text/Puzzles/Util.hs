@@ -168,8 +168,11 @@ listListToMap ls = Map.fromList . concat
 rectToSGrid :: Rect a -> SGrid a
 rectToSGrid (Rect w h ls) = Grid (Square w h) (listListToMap ls)
 
+blankToMaybe :: Either Blank a -> Maybe a
+blankToMaybe = either (const Nothing) Just
+
 rectToClueGrid :: Rect (Either Blank a) -> SGrid (Clue a)
-rectToClueGrid = fmap (either (const Nothing) Just) . rectToSGrid
+rectToClueGrid = fmap blankToMaybe . rectToSGrid
 
 newtype Shaded = Shaded { unShaded :: Bool }
 
