@@ -36,6 +36,9 @@ instance FromChar Char where
 class FromString a where
     parseString :: String -> Parser a
 
+parseLine :: FromChar a => String -> Parser [a]
+parseLine = mapM parseChar
+
 instance FromChar Int where
     parseChar c
         | isDigit c  = digitToInt <$> parseChar c
@@ -408,10 +411,23 @@ instance FromJSON ParseTapaClue where
                      guard $ length xs > 0 && length xs <= 4
                      return . ParseTapaClue . TapaClue $ xs
 
+reorientOutside :: OutsideClues a -> OutsideClues a
+reorientOutside (OC l r b t) = OC (reverse l) (reverse r) b t
+
+parseCharOutside :: FromChar a => Value -> Parser (OutsideClues a)
+parseCharOutside (Object v) = reorientOutside <$>
+                              (OC <$>
+                               pfield "left" <*> pfield "right" <*>
+                               pfield "bottom" <*> pfield "top" )
+  where
+    pfield f = parseLine . fromMaybe [] =<< v .:? f
+parseCharOutside _          = empty
+
 parseMultiOutsideClues :: FromJSON a => Value -> Parser (OutsideClues [a])
 parseMultiOutsideClues (Object v) = rev <$> raw
   where
     raw = OC <$> v `ml` "left" <*> v `ml` "right" <*> v `ml` "bottom" <*> v `ml` "top"
     v' `ml` k = fromMaybe [] <$> v' .:? k
-    rev (OC l r b t) = OC (reverse . map reverse $ l) (reverse r) b (map reverse t)
+    rev (OC l r b t) = reorientOutside $
+                       OC (map reverse l) r b (map reverse t)
 parseMultiOutsideClues _ = empty
