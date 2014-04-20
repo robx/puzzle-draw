@@ -158,3 +158,12 @@ drawTapaClue (TapaClue xs)  = fit 0.8
     p' 4 = reflectX . rotateBy (3/8) $ square 0.7
     p' 1 = error "singleton clues handled separately"
     p' _ = error "invalid tapa clue"
+
+drawPrimeDiag :: (Backend b R2, Renderable (Path R2) b) =>
+                 PrimeDiag -> Diagram b R2
+drawPrimeDiag (PrimeDiag d) = stroke p # lw (3 * onepix) # lc (blend 0.5 gray white)
+  where
+    p = case d of (False, False) -> mempty
+                  (True,  False) -> ur
+                  (False, True)  -> dr
+                  (True,  True)  -> ur <> dr

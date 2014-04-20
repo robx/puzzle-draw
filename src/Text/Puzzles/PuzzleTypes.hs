@@ -6,7 +6,7 @@ module Text.Puzzles.PuzzleTypes (
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, countnumbers, tapa, japanesesums, coral,
-    maximallengths,
+    maximallengths, primeplace
   ) where
 
 import Prelude hiding (sequence)
@@ -136,3 +136,6 @@ coral = (parseMultiOutsideClues, parseShadedGrid)
 maximallengths :: ParsePuzzle (OutsideClues (Maybe Int)) Loop
 maximallengths = (\v -> fmap blankToMaybe <$> parseCharOutside v,
                   parseEdges)
+
+primeplace :: ParsePuzzle (SGrid PrimeDiag) (SGrid Int)
+primeplace = (parseIrregGrid, parseIrregGrid)

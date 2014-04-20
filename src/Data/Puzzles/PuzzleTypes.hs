@@ -38,6 +38,7 @@ data PuzzleType = LITS
                 | JapaneseSums
                 | Coral
                 | MaximalLengths
+                | PrimePlace
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -68,6 +69,7 @@ typeNames = [ (LITS, "lits")
             , (JapaneseSums, "japanesesums")
             , (Coral, "coral")
             , (MaximalLengths, "maximallengths")
+            , (PrimePlace, "primeplace")
             ]
 
 -- | Look up a puzzle type by name.

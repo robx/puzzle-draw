@@ -7,7 +7,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, countnumbers, tapa, japanesesums,
-    coral, maximallengths
+    coral, maximallengths, primeplace
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -199,7 +199,7 @@ japanesesums = (,)
     japcell (JapInt x) = drawInt x
 
 coral :: (Backend b R2, Renderable (Path R2) b) =>
-                RenderPuzzle b (OutsideClues [Int]) ShadedGrid
+          RenderPuzzle b (OutsideClues [Int]) ShadedGrid
 coral = (,)
     outsideIntGrid
     (drawShadedGrid . snd <> outsideIntGrid . fst)
@@ -212,3 +212,11 @@ maximallengths = (,)
   where
     g = atCentres drawInt . outsideClues
         <> grid . outsideSize
+
+primeplace :: (Backend b R2, Renderable (Path R2) b) =>
+              RenderPuzzle b (SGrid PrimeDiag) (SGrid Int)
+primeplace = (,)
+    g
+    (atCentres drawInt . values . snd <> g . fst)
+  where
+    g = irregularGrid <> atCentres drawPrimeDiag . values

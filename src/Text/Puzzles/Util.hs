@@ -449,3 +449,10 @@ parseMultiOutsideClues (Object v) = rev <$> raw
     rev (OC l r b t) = reorientOutside $
                        OC (map reverse l) r b (map reverse t)
 parseMultiOutsideClues _ = empty
+
+instance FromChar PrimeDiag where
+    parseChar '.'  = pure $ PrimeDiag (False, False)
+    parseChar '/'  = pure $ PrimeDiag (True,  False)
+    parseChar '\\' = pure $ PrimeDiag (False, True)
+    parseChar 'X'  = pure $ PrimeDiag (True,  True)
+    parseChar _    = empty

@@ -64,6 +64,7 @@ handle f Tapa                 = f R.tapa                D.tapa
 handle f JapaneseSums         = f R.japanesesums        D.japanesesums
 handle f Coral                = f R.coral               D.coral
 handle f MaximalLengths       = f R.maximallengths      D.maximallengths
+handle f PrimePlace           = f R.primeplace          D.primeplace
 
 -- | Handler that parses a puzzle from a YAML value, and renders.
 drawPuzzle :: PuzzleHandler b (Value -> Parser (Diagram b R2))
