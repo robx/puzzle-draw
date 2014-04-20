@@ -57,3 +57,12 @@ data Edge = E (Cell Square) Dir
 
 type Coord = Cell Square
 type Size = GridSize Square
+
+-- | Oriented edge direction in a square grid.
+data Dir' = U | D | L | R
+    deriving (Eq, Ord, Show)
+
+-- | An oriented edge in a square grid.
+--   @a@ should be @Cell Square@ or @Vertex Square@.
+data Edge' a = E' a Dir'
+    deriving (Eq, Ord, Show)
