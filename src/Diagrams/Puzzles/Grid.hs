@@ -84,6 +84,13 @@ irregularGridPaths (Grid _ m) = (toPath outer, toPath inner)
     (outer, inner) = edges (M.keysSet m) (flip M.member m)
     toPath = mconcat . map edgePath
 
+irregularGrid :: (Backend b R2, Renderable (Path R2) b) =>
+                 SGrid a -> Diagram b R2
+irregularGrid g = stroke outer # lw (3 * gridwidth) # lineCap LineCapSquare <>
+                  stroke inner # lw gridwidth
+  where
+    (outer, inner) = irregularGridPaths g
+
 -- | In a square grid, use the first argument to draw things at the centres
 --   of cells given by coordinates.
 atCentres :: (Transformable a, Monoid a, V a ~ R2) =>
