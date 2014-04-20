@@ -44,6 +44,9 @@ instance Foldable (Grid s) where
 instance Traversable (Grid s) where
     traverse f (Grid s m) = Grid s <$> (traverse f m)
 
+filterG :: (a -> Bool) -> (Grid s a) -> (Grid s a)
+filterG p (Grid s m) = Grid s (Map.filter p m)
+
 -- | Initialize a square grid from a list of lists. The grid
 --   might be incomplete if some rows are shorter.
 fromListList :: [[a]] -> Grid Square a
