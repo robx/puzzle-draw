@@ -3,6 +3,7 @@
 module Diagrams.Puzzles.Grid where
 
 import Data.Char (isUpper)
+import qualified Data.Map as M
 
 import Diagrams.Prelude
 
@@ -70,6 +71,18 @@ dashedgrid :: (Backend b R2, Renderable (Path R2) b) =>
 dashedgrid = grid' $ bgdashing dashes dashoffset white'
   where
     white' = blend 0.95 white black
+
+edgePath :: Edge' (Vertex Square) -> Path R2
+edgePath (E' v R) = p2i v ~~ p2i (v ^+^ (1,0))
+edgePath (E' v L) = p2i v ~~ p2i (v ^+^ (-1,0))
+edgePath (E' v U) = p2i v ~~ p2i (v ^+^ (0,1))
+edgePath (E' v D) = p2i v ~~ p2i (v ^+^ (0,-1))
+
+irregularGridPaths :: SGrid a -> (Path R2, Path R2)
+irregularGridPaths (Grid _ m) = (toPath outer, toPath inner)
+  where
+    (outer, inner) = edges (M.keysSet m) (flip M.member m)
+    toPath = mconcat . map edgePath
 
 -- | In a square grid, use the first argument to draw things at the centres
 --   of cells given by coordinates.
