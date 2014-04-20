@@ -130,6 +130,7 @@ instance FromChar Space where
 
 data Blank = Blank
 data Blank' = Blank'
+data Empty = Empty
 
 instance FromChar Blank where
     parseChar '.' = pure Blank
@@ -138,6 +139,10 @@ instance FromChar Blank where
 instance FromChar Blank' where
     parseChar '.' = pure Blank'
     parseChar '-' = pure Blank'
+    parseChar _   = empty
+
+instance FromChar Empty where
+    parseChar ' ' = pure Empty
     parseChar _   = empty
 
 instance FromString Blank where
@@ -174,6 +179,13 @@ blankToMaybe = either (const Nothing) Just
 rectToClueGrid :: Rect (Either Blank a) -> SGrid (Clue a)
 rectToClueGrid = fmap blankToMaybe . rectToSGrid
 
+rectToIrregGrid :: Rect (Either Empty a) -> SGrid a
+rectToIrregGrid = fmap fromRight . filterG isRight . rectToSGrid
+  where
+    isRight = either (const False) (const True)
+    fromRight (Right r) = r
+    fromRight _         = error "no way"
+
 newtype Shaded = Shaded { unShaded :: Bool }
 
 instance FromChar Shaded where
@@ -189,6 +201,9 @@ parseGrid v = rectToSGrid <$> parseJSON v
 
 parseClueGrid :: FromChar a => Value -> Parser (SGrid (Clue a))
 parseClueGrid v = rectToClueGrid <$> parseJSON v
+
+parseIrregGrid :: FromChar a => Value -> Parser (SGrid a)
+parseIrregGrid v = rectToIrregGrid <$> parseJSON v
 
 parseSpacedClueGrid :: FromString a => Value -> Parser (SGrid (Clue a))
 parseSpacedClueGrid v = rectToClueGrid . unSpaced <$> parseJSON v
