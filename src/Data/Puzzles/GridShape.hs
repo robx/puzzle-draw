@@ -12,7 +12,8 @@ class Show (Cell a) => GridShape a where
     size :: a -> GridSize a
     cells :: a -> [Cell a]
     vertices :: a -> [Vertex a]
-    neighbours :: a -> Cell a -> [Cell a]
+    vertexNeighbours :: a -> Cell a -> [Cell a]
+    edgeNeighbours :: a -> Cell a -> [Cell a]
 
 -- | A standard square grid, with cells and vertices
 --   indexed by pairs of integers in mathematical coordinates.
@@ -20,6 +21,12 @@ class Show (Cell a) => GridShape a where
 --   cell is cell (0, 0).
 data Square = Square !Int !Int
     deriving Show
+
+squareNeighbours :: [(Int, Int)] -> Square -> (Cell Square) -> [Cell Square]
+squareNeighbours deltas (Square w h) c = filter inBounds . map (add c) $ deltas
+  where
+    inBounds (x, y) = x >= 0 && x < w && y >= 0 && y < h
+    add (x, y) (x', y') = (x + x', y + y')
 
 instance GridShape Square where
     type GridSize Square = (Int, Int)
@@ -29,14 +36,15 @@ instance GridShape Square where
     size (Square w h)       = (w, h)
     cells (Square w h)      = [(x, y) | x <- [0..w-1], y <- [0..h-1]]
     vertices (Square w h)   = [(x, y) | x <- [0..w], y <- [0..h]]
-    neighbours (Square w h) c = filter inBounds . map (add c) $ deltas
-      where
-        inBounds (x, y) = x >= 0 && x < w && y >= 0 && y < h
-        deltas = [ (dx, dy)
-                 | dx <- [-1..1], dy <- [-1..1]
-                 , dx /= 0 || dy /= 0
-                 ]
-        add (x, y) (x', y') = (x + x', y + y')
+    vertexNeighbours = squareNeighbours [ (dx, dy)
+                                        | dx <- [-1..1], dy <- [-1..1]
+                                        , dx /= 0 || dy /= 0
+                                        ]
+    edgeNeighbours = squareNeighbours [ (dx, dy)
+                                      | dx <- [-1..1], dy <- [-1..1]
+                                      , dx /= 0 || dy /= 0
+                                      , dx == 0 || dy == 0
+                                      ]
 
 -- | Edge direction in a square grid, vertical or horizontal.
 data Dir = V | H

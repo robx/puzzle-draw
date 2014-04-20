@@ -294,10 +294,10 @@ parseThermos (Grid s m) = catMaybes <$> mapM parseThermo (Map.keys m)
         []   -> pure Nothing
         [q]  -> pure (Just q)
         _    -> fail "multiple successors"
-    succs      p = filter    (test ((==) . succ) p) . neighbours s $ p
-    isStart    p = not . any (test ((==) . pred) p) . neighbours s $ p
+    succs      p = filter    (test ((==) . succ) p) . vertexNeighbours s $ p
+    isStart    p = not . any (test ((==) . pred) p) . vertexNeighbours s $ p
     test f p q = maybe False (f (m' Map.! p)) (Map.lookup q m')
-    isAlmostIsolated p = all disjointSucc . neighbours s $ p
+    isAlmostIsolated p = all disjointSucc . vertexNeighbours s $ p
       where
         disjointSucc q = null $ intersect (succs p) (succs' q)
         succs' q = maybe [] (const $ succs q) (Map.lookup q m')
