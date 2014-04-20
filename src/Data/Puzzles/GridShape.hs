@@ -3,6 +3,11 @@
 -- | Grid shapes.
 module Data.Puzzles.GridShape where
 
+import Data.Foldable (Foldable)
+import qualified Data.Foldable as F
+import Data.List (partition)
+import Data.VectorSpace ((^+^))
+
 -- | The geometry of a grid.
 class Show (Cell a) => GridShape a where
     type GridSize a :: *
@@ -66,3 +71,30 @@ data Dir' = U | D | L | R
 --   @a@ should be @Cell Square@ or @Vertex Square@.
 data Edge' a = E' a Dir'
     deriving (Eq, Ord, Show)
+
+-- | The edge between two neighbouring cells, with the first cell
+--   on the left.
+orientedEdge :: (Cell Square) -> (Cell Square) -> (Edge' (Vertex Square))
+orientedEdge (x,y) (x',y')
+    | x' == x && y' == y+1  = E' (x,y+1) R
+    | x' == x && y' == y-1  = E' (x+1,y) L
+    | x' == x+1 && y' == y  = E' (x+1,y+1) D
+    | x' == x-1 && y' == y  = E' (x,y) U
+    | otherwise             = error $ "not neighbours: " ++
+                                      show (x,y) ++ " " ++  show (x',y')
+
+-- | @edges@ computes the outer and inner edges of a set of cells.
+--   The set is given via fold and membership predicate, the result
+--   is a pair @(outer, inner)@ of lists of edges, where the outer
+--   edges are oriented such that the outside is to the left.
+edges :: Foldable f =>
+           f (Cell Square) -> (Cell Square -> Bool) ->
+           ([Edge' (Vertex Square)], [Edge' (Vertex Square)])
+edges cs isc = F.foldr f ([], []) cs
+  where
+    f c (outer, inner) = (newout ++ outer, newin ++ inner)
+      where
+        nbrs = [ c ^+^ d | d <- [(-1,0), (0,1), (1,0), (0,-1)] ]
+        (ni, no) = partition isc nbrs
+        newout = map (orientedEdge c) no
+        newin = map (orientedEdge c) . filter ((>=) c) $ ni
