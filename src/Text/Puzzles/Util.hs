@@ -251,6 +251,38 @@ readEdges g = horiz ++ vert
 parseGridChars :: FromChar a => SGrid Char -> Parser (SGrid a)
 parseGridChars = traverse parseChar
 
+-- | Parse a grid with edges and values at nodes and in cells.
+--
+-- E.g. o-*-*-o
+--      |1|2 3
+--      *-o
+-- to a grid of masyu pearls, a grid of integers, and some edges.
+parseEdgeGrid :: (FromChar a, FromChar b) =>
+                 Value -> Parser (SGrid a, SGrid b, [Edge])
+parseEdgeGrid v = uncurry (,,) <$>
+                  parseBoth <*>
+                  parsePlainEdges v
+  where
+    parseBoth = do
+        g <- parseGrid v
+        (gn, gc) <- halveGrid g
+        gn' <- parseGridChars gn
+        gc' <- parseGridChars gc
+        return (gn', gc')
+    both f (x, y) = (f x, f y)
+    halveGrid (Grid (Square w h) m)
+        | odd w && odd h = pure $ (Grid snode mnode, Grid scell mcell)
+        | otherwise      = empty
+      where
+        w' = (w + 1) `div` 2
+        h' = (h + 1) `div` 2
+        snode = Square w' h'
+        scell = Square (w' - 1) (h' - 1)
+        (mnode, mcell) =
+            both (Map.mapKeys (both (`div` 2))) .
+            Map.partitionWithKey (const . uncurry (&&) . both even) $
+            m
+
 -- | Parse a grid of edges with values at the nodes.
 --
 -- E.g. o-*-*-o
@@ -259,19 +291,17 @@ parseGridChars = traverse parseChar
 -- to a grid of masyu pearls and some edges.
 parseNodeEdges :: FromChar a =>
                   Value -> Parser (SGrid a, [Edge])
-parseNodeEdges v = (,) <$>
-                   (parseGridChars =<< halveGrid =<< parseGrid v) <*>
-                   parsePlainEdges v
+parseNodeEdges v = proj13 <$> parseEdgeGrid v
   where
-    halveGrid (Grid (Square w h) m)
-        | odd w && odd h = pure $ Grid s' m'
-        | otherwise      = empty
-      where
-        s' = Square ((w + 1) `div` 2) ((h + 1) `div` 2)
-        m' = Map.mapKeys (both (`div` 2))
-           . Map.filterWithKey (const . (uncurry (&&) . both even))
-           $ m
-        both f (x, y) = (f x, f y)
+    proj13 :: (SGrid a, SGrid Empty, [Edge]) -> (SGrid a, [Edge])
+    proj13 (x,_,z) = (x,z)
+
+parseCellEdges :: FromChar a =>
+                  Value -> Parser (SGrid a, [Edge])
+parseCellEdges v = proj23 <$> parseEdgeGrid v
+  where
+    proj23 :: (SGrid PlainNode, SGrid a, [Edge]) -> (SGrid a, [Edge])
+    proj23 (_,y,z) = (y,z)
 
 data HalfDirs = HalfDirs {unHalfDirs :: [Dir]}
 
