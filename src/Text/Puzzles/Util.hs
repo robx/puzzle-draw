@@ -182,8 +182,14 @@ rectToSGrid (Rect w h ls) = Grid (Square w h) (listListToMap ls)
 blankToMaybe :: Either Blank a -> Maybe a
 blankToMaybe = either (const Nothing) Just
 
+blankToMaybe' :: Either Blank' a -> Maybe a
+blankToMaybe' = either (const Nothing) Just
+
 rectToClueGrid :: Rect (Either Blank a) -> SGrid (Clue a)
 rectToClueGrid = fmap blankToMaybe . rectToSGrid
+
+rectToClueGrid' :: Rect (Either Blank' a) -> SGrid (Clue a)
+rectToClueGrid' = fmap blankToMaybe' . rectToSGrid
 
 rectToIrregGrid :: Rect (Either Empty a) -> SGrid a
 rectToIrregGrid = fmap fromRight . filterG isRight . rectToSGrid
@@ -207,6 +213,9 @@ parseGrid v = rectToSGrid <$> parseJSON v
 
 parseClueGrid :: FromChar a => Value -> Parser (SGrid (Clue a))
 parseClueGrid v = rectToClueGrid <$> parseJSON v
+
+parseClueGrid' :: FromChar a => Value -> Parser (SGrid (Clue a))
+parseClueGrid' v = rectToClueGrid' <$> parseJSON v
 
 parseIrregGrid :: FromChar a => Value -> Parser (SGrid a)
 parseIrregGrid v = rectToIrregGrid <$> parseJSON v
