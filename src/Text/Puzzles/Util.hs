@@ -117,11 +117,6 @@ instance FromString a => FromJSON (SpacedRect a) where
         p = sequence . map (mapM (parseString . T.unpack)) $ ls
     parseJSON _          = empty
 
-instance FromChar MasyuPearl where
-    parseChar '*' = pure MBlack
-    parseChar 'o' = pure MWhite
-    parseChar _   = empty
-
 data Space = Space
 
 instance FromChar Space where
@@ -148,6 +143,11 @@ instance FromChar Empty where
 instance FromString Blank where
     parseString "." = pure Blank
     parseString _   = empty
+
+instance FromChar MasyuPearl where
+    parseChar '*' = pure MBlack
+    parseChar 'o' = pure MWhite
+    parseChar _   = empty
 
 instance FromChar SlalomDiag where
     parseChar '/'  = pure SlalomForward
