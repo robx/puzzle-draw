@@ -35,6 +35,11 @@ gridlines (w, h) = fence' w h <> mirror (fence' h w)
   where
     fence' n l = fence (map fromIntegral [1..n-1]) (fromIntegral l)
 
+fullgridlines :: Size -> Path R2
+fullgridlines (w, h) = fence' w h <> mirror (fence' h w)
+  where
+    fence' n l = fence (map fromIntegral [0..n]) (fromIntegral l)
+
 -- | Draw a frame around the outside of a rectangle.
 outframe :: Renderable (Path R2) b => Size -> Diagram b R2
 outframe (w, h) = strokePointLoop r # lw fw
@@ -57,6 +62,11 @@ grid' gridstyle s =
 grid :: (Backend b R2, Renderable (Path R2) b) =>
         Size -> Diagram b R2
 grid = grid' id
+
+-- | Draw a square grid with thin frame.
+plaingrid :: (Backend b R2, Renderable (Path R2) b) =>
+             Size -> Diagram b R2
+plaingrid s = stroke (fullgridlines s) # lw gridwidth
 
 bgdashing :: (Semigroup a, HasStyle a) =>
              [Double] -> Double -> Colour Double -> a -> a
