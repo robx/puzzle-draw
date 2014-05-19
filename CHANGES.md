@@ -1,3 +1,9 @@
+0.1.0.3: 20140519
+-----------------
+
+* add new puzzle types: Maximal Lengths, Prime Place, Magic Labyrinth
+
+
 0.1.0.2: 20140419
 -----------------
 
