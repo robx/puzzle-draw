@@ -38,6 +38,9 @@ r2i = r2 . (fromIntegral *** fromIntegral)
 p2i :: (Int, Int) -> P2
 p2i = p2 . (fromIntegral *** fromIntegral)
 
+mirror :: (Transformable t, V t ~ R2) => t -> t
+mirror = reflectAbout (p2 (0, 0)) (r2 (1, 1))
+
 -- | Interleave two lists.
 interleave :: [a] -> [a] -> [a]
 interleave [] _ = []
