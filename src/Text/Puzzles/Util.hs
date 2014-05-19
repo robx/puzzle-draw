@@ -144,6 +144,12 @@ instance FromString Blank where
     parseString "." = pure Blank
     parseString _   = empty
 
+data PlainNode = PlainNode
+
+instance FromChar PlainNode where
+    parseChar 'o' = pure PlainNode
+    parseChar _   = empty
+
 instance FromChar MasyuPearl where
     parseChar '*' = pure MBlack
     parseChar 'o' = pure MWhite
