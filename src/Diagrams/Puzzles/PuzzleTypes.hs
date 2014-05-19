@@ -7,7 +7,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, countnumbers, tapa, japanesesums,
-    coral, maximallengths, primeplace
+    coral, maximallengths, primeplace, labyrinth
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -220,3 +220,11 @@ primeplace = (,)
     (atCentres drawInt . values . snd <> g . fst)
   where
     g = irregularGrid <> atCentres drawPrimeDiag . values
+
+labyrinth :: (Backend b R2, Renderable (Path R2) b) =>
+             RenderPuzzle b (SGrid (Clue Int), [Edge]) (SGrid (Clue Int))
+labyrinth = (,)
+    (atCentres drawInt . clues . fst <> g)
+    (atCentres drawInt . clues . snd <> g . fst)
+  where
+    g = drawEdges . snd <> plaingrid . size . fst
