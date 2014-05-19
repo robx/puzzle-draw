@@ -23,12 +23,17 @@ slithergrid :: (Backend b R2, Renderable (Path R2) b) =>
 slithergrid (x, y) =
     hcatsep . replicate (x + 1) . vcatsep . replicate (y + 1) $ dot
 
+fence :: [Double] -> Double -> Path R2
+fence xs h = decoratePath xspath (repeat v)
+  where
+    xspath = fromVertices [ p2 (x, 0) | x <- xs ]
+    v = alignB (vrule h)
+
 -- | The inner grid lines of a square grid of the specified size.
 gridlines :: Size -> Path R2
-gridlines (w, h) = (decoratePath xaxis . repeat . alignB . vrule . fromIntegral $ h)
-            <> (decoratePath yaxis . repeat . alignL . hrule . fromIntegral $ w)
-    where xaxis = fromVertices [ p2 (fromIntegral x, 0) | x <- [1..w-1] ]
-          yaxis = fromVertices [ p2 (0, fromIntegral y) | y <- [1..h-1] ]
+gridlines (w, h) = fence' w h <> mirror (fence' h w)
+  where
+    fence' n l = fence (map fromIntegral [1..n-1]) (fromIntegral l)
 
 -- | Draw a frame around the outside of a rectangle.
 outframe :: Renderable (Path R2) b => Size -> Diagram b R2
