@@ -199,10 +199,10 @@ japanesesums = (,)
     japcell (JapInt x) = drawInt x
 
 coral :: (Backend b R2, Renderable (Path R2) b) =>
-          RenderPuzzle b (OutsideClues [Int]) ShadedGrid
+          RenderPuzzle b (OutsideClues [String]) ShadedGrid
 coral = (,)
-    outsideIntGrid
-    (drawShadedGrid . snd <> outsideIntGrid . fst)
+    outsideGrid
+    (drawShadedGrid . snd <> outsideGrid . fst)
 
 maximallengths :: (Backend b R2, Renderable (Path R2) b) =>
                   RenderPuzzle b (OutsideClues (Maybe Int)) Loop

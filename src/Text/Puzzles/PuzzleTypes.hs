@@ -130,7 +130,7 @@ tapa = (\v -> fmap unParseTapaClue . unRG <$> parseJSON v,
 japanesesums :: ParsePuzzle (OutsideClues [Int]) (SGrid JapVal)
 japanesesums = (parseMultiOutsideClues, parseGrid)
 
-coral :: ParsePuzzle (OutsideClues [Int]) ShadedGrid
+coral :: ParsePuzzle (OutsideClues [String]) ShadedGrid
 coral = (parseMultiOutsideClues, parseShadedGrid)
 
 maximallengths :: ParsePuzzle (OutsideClues (Maybe Int)) Loop
