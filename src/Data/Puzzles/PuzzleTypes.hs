@@ -40,6 +40,7 @@ data PuzzleType = LITS
                 | MaximalLengths
                 | PrimePlace
                 | Labyrinth
+                | Bahnhof
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -72,6 +73,7 @@ typeNames = [ (LITS, "lits")
             , (MaximalLengths, "maximallengths")
             , (PrimePlace, "primeplace")
             , (Labyrinth, "magiclabyrinth")
+            , (Bahnhof, "bahnhof")
             ]
 
 -- | Look up a puzzle type by name.
