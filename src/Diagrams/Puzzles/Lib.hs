@@ -84,7 +84,7 @@ fit f a = scale (f / m) a
 -- into a square of size @1@.
 text' :: (Renderable (Path R2) b, Backend b R2) => String -> Diagram b R2
 text' t = stroke (textSVG' $ TextOpts t bit INSIDE_H KERN False 1 1)
-          # lw 0 # fc black # scale 0.8
+          # lwG 0 # fc black # scale 0.8
 
 -- text' t = text t # fontSize 0.8 # font "Helvetica" # translate (r2 (0.04, -0.07))
 --          <> phantom' (textrect t)

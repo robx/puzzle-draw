@@ -1,5 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Diagrams.Puzzles.PuzzleTypes (
     lits, litsplus, geradeweg, fillomino, masyu, nurikabe, latintapa,
@@ -32,7 +33,7 @@ lits = (,)
 litsplus :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b AreaGrid ShadedGrid
 litsplus = lits
 
-solstyle :: HasStyle a => a -> a
+solstyle :: (HasStyle a, V a ~ R2) => a -> a
 solstyle = lc (blend 0.8 black white)
 
 geradeweg :: (Backend b R2, Renderable (Path R2) b) => RenderPuzzle b IntGrid Loop

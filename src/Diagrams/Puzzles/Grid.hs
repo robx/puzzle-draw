@@ -42,7 +42,7 @@ fullgridlines (w, h) = fence' w h <> mirror (fence' h w)
 
 -- | Draw a frame around the outside of a rectangle.
 outframe :: Renderable (Path R2) b => Size -> Diagram b R2
-outframe (w, h) = strokePointLoop r # lw fw
+outframe (w, h) = strokePointLoop r # lwG fw
     where wd = fromIntegral w
           hd = fromIntegral h
           strokePointLoop = strokeLocTrail . mapLoc (wrapLoop . closeLine)
@@ -56,7 +56,7 @@ grid' :: (Backend b R2, Renderable (Path R2) b) =>
          (Diagram b R2 -> Diagram b R2) -> Size -> Diagram b R2
 grid' gridstyle s =
     outframe s
-    <> stroke (gridlines s) # lw gridwidth # gridstyle
+    <> stroke (gridlines s) # lwG gridwidth # gridstyle
 
 -- | Draw a square grid with default grid line style.
 grid :: (Backend b R2, Renderable (Path R2) b) =>
@@ -66,11 +66,11 @@ grid = grid' id
 -- | Draw a square grid with thin frame.
 plaingrid :: (Backend b R2, Renderable (Path R2) b) =>
              Size -> Diagram b R2
-plaingrid s = stroke (fullgridlines s) # lw gridwidth
+plaingrid s = stroke (fullgridlines s) # lwG gridwidth
 
-bgdashing :: (Semigroup a, HasStyle a) =>
+bgdashingG :: (Semigroup a, HasStyle a, V a ~ R2) =>
              [Double] -> Double -> Colour Double -> a -> a
-bgdashing ds offs c x = x # dashing ds offs <> x # lc c
+bgdashingG ds offs c x = x # dashingG ds offs <> x # lc c
 
 dashes :: [Double]
 dashes = [5 / 40, 3 / 40]
@@ -83,7 +83,7 @@ dashoffset = 2.5 / 40
 --   tools.
 dashedgrid :: (Backend b R2, Renderable (Path R2) b) =>
               Size -> Diagram b R2
-dashedgrid = grid' $ bgdashing dashes dashoffset white'
+dashedgrid = grid' $ bgdashingG dashes dashoffset white'
   where
     white' = blend 0.95 white black
 
@@ -101,8 +101,8 @@ irregularGridPaths (Grid _ m) = (toPath outer, toPath inner)
 
 irregularGrid :: (Backend b R2, Renderable (Path R2) b) =>
                  SGrid a -> Diagram b R2
-irregularGrid g = stroke outer # lw (3 * gridwidth) # lineCap LineCapSquare <>
-                  stroke inner # lw gridwidth
+irregularGrid g = stroke outer # lwG (3 * gridwidth) # lineCap LineCapSquare <>
+                  stroke inner # lwG gridwidth
   where
     (outer, inner) = irregularGridPaths g
 
@@ -133,11 +133,11 @@ edge (E c d) = rule d # translate (r2i c)
 dualEdge :: Edge -> Path R2
 dualEdge = translate (r2 (1/2, 1/2)) . edge
 
-edgeStyle :: HasStyle a => a -> a
-edgeStyle = lineCap LineCapSquare . lw edgewidth
+edgeStyle :: (HasStyle a, V a ~ R2) => a -> a
+edgeStyle = lineCap LineCapSquare . lwG edgewidth
 
-thinEdgeStyle :: HasStyle a => a -> a
-thinEdgeStyle = lineCap LineCapSquare . lw onepix
+thinEdgeStyle :: (HasStyle a, V a ~ R2) => a -> a
+thinEdgeStyle = lineCap LineCapSquare . lwG onepix
 
 drawEdges :: Renderable (Path R2) b => [Edge] -> Diagram b R2
 drawEdges = edgeStyle . stroke . mconcat . map edge

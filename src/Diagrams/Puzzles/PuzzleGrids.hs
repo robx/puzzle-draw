@@ -75,8 +75,8 @@ drawSlalomGrid g = atVertices drawSlalomClue (clues g)
 drawSlalomDiags :: (Backend b R2, Renderable (Path R2) b) =>
                    SGrid SlalomDiag -> Diagram b R2
 drawSlalomDiags = atCentres diag . clues . fmap Just
-    where diag SlalomForward  = stroke ur # lw edgewidth
-          diag SlalomBackward = stroke dr # lw edgewidth
+    where diag SlalomForward  = stroke ur # lwG edgewidth
+          diag SlalomBackward = stroke dr # lwG edgewidth
 
 drawCrosses ::  (Backend b R2, Renderable (Path R2) b) =>
                  SGrid Bool -> Diagram b R2
