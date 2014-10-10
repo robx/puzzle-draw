@@ -35,6 +35,7 @@ library
                        Text.Puzzles.Util
                        Text.Puzzles.Puzzle
                        Text.Puzzles.PuzzleTypes
+                       Diagrams.Puzzles.DSL
                        Diagrams.Puzzles.Grid
                        Diagrams.Puzzles.Lib
                        Diagrams.Puzzles.Elements
@@ -53,13 +54,37 @@ library
                        hashable >= 1.2,
                        text >= 1.1,
                        SVGFonts >= 1.4,
-                       vector-space >= 0.8
-
+                       vector-space >= 0.8,
+                       mtl >= 2.1,
+                       optparse-applicative >= 0.7,
+                       filepath >= 1.3
+  if flag(cairo)
+    cpp-options: "-DCAIRO"
+    build-depends:     diagrams-cairo >= 1.1
+  else
+    build-depends:     diagrams-svg >= 1.1
   hs-source-dirs:      src
   ghc-options:         -Wall
 
 executable drawpuzzle
   main-is:          drawpuzzle.hs
+  hs-source-dirs:   src/tools
+  build-depends:       base >= 4.2,
+                       puzzle-draw,
+                       diagrams-lib >= 1.2,
+                       yaml >= 0.8.4,
+                       optparse-applicative >= 0.7,
+                       aeson >= 0.7,
+                       filepath >= 1.3
+  if flag(cairo)
+    cpp-options: "-DCAIRO"
+    build-depends:     diagrams-cairo >= 1.1
+  else
+    build-depends:     diagrams-svg >= 1.1
+  ghc-options:         -Wall
+
+executable missing-labyrinth
+  main-is:          missing-labyrinth.hs
   hs-source-dirs:   src/tools
   build-depends:       base >= 4.2,
                        puzzle-draw,
