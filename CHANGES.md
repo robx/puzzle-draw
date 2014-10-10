@@ -1,3 +1,7 @@
+* merge puzzle-draw-cmdline
+* update for diagrams 1.2 and ghc 7.8
+* add new puzzle type: Bahnhof
+
 0.1.0.3: 20140519
 -----------------
 
