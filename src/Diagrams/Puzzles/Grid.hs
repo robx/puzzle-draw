@@ -172,3 +172,37 @@ drawAreaGridGray = drawAreaGrid <> shadeGrid . fmap cols
   where
     cols c | isUpper c  = Just (blend 0.1 black white)
            | otherwise  = Nothing
+
+-- Place a list of diagrams along a ray, with steps of size
+-- @f@.
+distrib :: (Transformable c, Monoid c, V c ~ R2) =>
+           R2 -> (Int, Int) -> Double -> [c] -> c
+distrib base dir f xs =
+    translate (0.75 *^ dir' ^+^ base) . mconcat $
+        zipWith (\i d -> translate (fromIntegral i *^ dir') d) [(0 :: Int)..] xs
+  where
+    dir' = f *^ r2i dir
+
+outsideGen :: (Transformable c, Monoid c, V c ~ R2) =>
+              (OutsideClue [c] -> R2) -> Double -> [OutsideClue [c]] -> c
+outsideGen tobase f ocs = mconcat . map placeOC $ ocs
+  where
+    placeOC o = distrib (tobase o) (ocDir o) f (ocValue o)
+
+outsideCells :: (Transformable c, Monoid c, V c ~ R2) =>
+                Double -> [OutsideClue [c]] -> c
+outsideCells f ocs = outsideGen base f ocs
+  where
+    base (OClue (bx, by) (dx, dy) _)
+        | dx /= 0   = r2 (fromIntegral bx, fromIntegral by + 1/2)
+        | dy /= 0   = r2 (fromIntegral bx + 1/2, fromIntegral by)
+        | otherwise = error "invalid outside clue"
+
+outsideVertices :: (Transformable c, Monoid c, V c ~ R2) =>
+                   Double -> [OutsideClue [c]] -> c
+outsideVertices f ocs = outsideGen base f ocs
+  where
+    base (OClue (bx, by) (dx, dy) _)
+        | dx /= 0   = r2 (fromIntegral bx, fromIntegral by)
+        | dy /= 0   = r2 (fromIntegral bx, fromIntegral by)
+        | otherwise = error "invalid outside clue"

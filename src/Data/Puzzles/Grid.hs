@@ -95,19 +95,39 @@ data OutsideClues a = OC { left :: [a], right :: [a], bottom :: [a], top :: [a] 
 instance Functor OutsideClues where
     fmap f (OC l r b t) = OC (fmap f l) (fmap f r) (fmap f b) (fmap f t)
 
+-- FIXME
 outsideSize :: OutsideClues a -> (Int, Int)
 outsideSize (OC l _ _ t) = (length t, length l)
 
--- | Convert outside clues to association list mapping coordinate to value.
-outsideClues :: OutsideClues (Maybe a) -> [((Int, Int), a)]
-outsideClues o@(OC l r b t) = mapMaybe liftMaybe . concat $
-                             [ zipWith (\ y c -> ((-1, y), c)) [0..h-1] l
-                             , zipWith (\ y c -> (( w, y), c)) [0..h-1] r
-                             , zipWith (\ x c -> (( x,-1), c)) [0..w-1] b
-                             , zipWith (\ x c -> (( x, h), c)) [0..w-1] t
-                             ]
+data OutsideClue a = OClue
+    { ocBase  :: (Int, Int)
+    , ocDir   :: (Int, Int)
+    , ocValue :: a
+    }
+
+instance Functor OutsideClue where
+    fmap f (OClue b d x) = OClue b d (f x)
+
+outsideClueList :: OutsideClues a -> [OutsideClue a]
+outsideClueList o@(OC l r b t) =
+    concat
+       [ zipWith (\ y c -> OClue (0,y)   (-1, 0) c) [0..h-1] l
+       , zipWith (\ y c -> OClue (w-1,y) ( 1, 0) c) [0..h-1] r
+       , zipWith (\ x c -> OClue (x,0)   ( 0,-1) c) [0..w-1] b
+       , zipWith (\ x c -> OClue (x,h-1) ( 0, 1) c) [0..w-1] t
+       ]
   where
     (w, h) = outsideSize o
+
+-- | Convert outside clues to association list mapping coordinate to value.
+outsideClues :: OutsideClues (Maybe a) -> [((Int, Int), a)]
+outsideClues = mapMaybe liftMaybe . map toCell . outsideClueList
+  where
+    -- FIXME: ugly magic with mixed cell/vertex coordinates
+    toCell (OClue (bx, by) (dx, dy) v)
+        | dx /= 0   = ((((2*bx + dx - 1) `div` 2, by)), v)
+        | dy /= 0   = ((bx, ((2*by + dy - 1) `div` 2)), v)
+        | otherwise = error "non-zero outside clue direction"
     liftMaybe (p, Just x)  = Just (p, x)
     liftMaybe (_, Nothing) = Nothing
 
