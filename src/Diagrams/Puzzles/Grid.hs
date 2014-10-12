@@ -153,7 +153,7 @@ drawAreaGrid :: (Backend b R2, Renderable (Path R2) b, Eq a) =>
 drawAreaGrid = drawEdges . borders <> grid . size
 
 fillBG :: (Backend b R2, Renderable (Path R2) b) => Colour Double -> Diagram b R2
-fillBG c = square 1 # fc c
+fillBG c = square 1 # lwG 0 # fc c
 
 shadeGrid :: (Backend b R2, Renderable (Path R2) b) =>
               SGrid (Maybe (Colour Double)) -> Diagram b R2
