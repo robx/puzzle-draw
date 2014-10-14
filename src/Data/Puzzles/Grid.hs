@@ -124,11 +124,7 @@ outsideClueList o@(OC l r b t) =
 outsideClues :: OutsideClues (Maybe a) -> [((Int, Int), a)]
 outsideClues = mapMaybe liftMaybe . map toCell . outsideClueList
   where
-    -- FIXME: ugly magic with mixed cell/vertex coordinates
-    toCell (OClue (bx, by) (dx, dy) v)
-        | dx /= 0   = ((((2*bx + dx - 1) `div` 2, by)), v)
-        | dy /= 0   = ((bx, ((2*by + dy - 1) `div` 2)), v)
-        | otherwise = error "non-zero outside clue direction"
+    toCell (OClue (bx, by) (dx, dy) v) = ((bx + dx, by + dy), v)
     liftMaybe (p, Just x)  = Just (p, x)
     liftMaybe (_, Nothing) = Nothing
 
