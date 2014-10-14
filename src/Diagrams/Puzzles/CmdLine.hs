@@ -25,6 +25,7 @@ import Data.Puzzles.PuzzleTypes
 
 import System.Exit
 
+import Control.Monad (unless)
 import qualified Data.Yaml as Y
 
 data RenderOpts = RenderOpts { _file :: FilePath, _w :: Double }
