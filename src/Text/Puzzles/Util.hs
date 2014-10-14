@@ -2,17 +2,17 @@
 
 module Text.Puzzles.Util where
 
-import Prelude hiding (sequence)
+import Prelude hiding (mapM)
 
 import Control.Applicative
 import Control.Arrow
-import Control.Monad hiding (sequence)
+import Control.Monad hiding (mapM)
 
 import Data.Hashable
 import Data.Maybe (catMaybes, fromMaybe)
 import qualified Data.Map as Map
 import qualified Data.HashMap.Strict as HMap
-import Data.Traversable (traverse, sequence, sequenceA, Traversable)
+import Data.Traversable (traverse, sequenceA, mapM, Traversable)
 import Data.Foldable (Foldable, foldMap)
 import Data.Monoid ((<>))
 import Data.List (intersect)
@@ -66,7 +66,7 @@ instance FromChar a => FromJSON (Rect a) where
         w = maximum . map T.length $ ls
         h = length ls
         filledc = map (T.unpack . T.justifyLeft w ' ') ls
-        filled = sequence . map (mapM parseChar) $ filledc
+        filled = mapM (mapM parseChar) $ filledc
     parseJSON _          = empty
 
 data Border a = Border [a] [a] [a] [a]
@@ -99,8 +99,8 @@ instance (FromChar a, FromChar b) => FromJSON (BorderedRect a b) where
             ls' = map (middle w) . middle h $ ls
         mapM_ ((parseChar :: Char -> Parser Space) . flip ($) ls)
               [head . head, head . last, last . head, last . last]
-        lsparsed <- sequence . map (mapM parseChar) $ ls'
-        bparsed  <- sequenceA . fmap parseChar $ b
+        lsparsed <- mapM (mapM parseChar) $ ls'
+        bparsed  <- mapM parseChar $ b
         return $ BorderedRect (w-2) (h-2) lsparsed bparsed
       where
         middle len = take (len - 2) . drop 1
@@ -115,7 +115,7 @@ instance FromString a => FromJSON (SpacedRect a) where
         w = maximum . map length $ ls
         wmin = minimum . map length $ ls
         h = length ls
-        p = sequence . map (mapM (parseString . T.unpack)) $ ls
+        p = mapM (mapM (parseString . T.unpack)) $ ls
     parseJSON _          = empty
 
 data Space = Space
@@ -437,7 +437,7 @@ hashmaptomap :: (Eq a, Hashable a, Ord a) => HMap.HashMap a b -> Map.Map a b
 hashmaptomap = Map.fromList . HMap.toList
 
 compose :: (Ord a, Ord b) => Map.Map a b -> Map.Map b c -> Maybe (Map.Map a c)
-compose m1 m2 = sequence . Map.map (flip Map.lookup m2) $ m1
+compose m1 m2 = mapM (`Map.lookup` m2) $ m1
 
 instance FromJSON a => FromJSON (RefGrid a) where
     parseJSON (Object v) = RefGrid <$> do

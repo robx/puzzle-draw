@@ -9,10 +9,8 @@ module Text.Puzzles.PuzzleTypes (
     maximallengths, primeplace, labyrinth, bahnhof
   ) where
 
-import Prelude hiding (sequence)
-
 import Control.Applicative
-import Control.Monad hiding (sequence)
+import Control.Monad
 
 import Data.Yaml
 
