@@ -95,9 +95,10 @@ data OutsideClues a = OC { left :: [a], right :: [a], bottom :: [a], top :: [a] 
 instance Functor OutsideClues where
     fmap f (OC l r b t) = OC (fmap f l) (fmap f r) (fmap f b) (fmap f t)
 
--- FIXME
 outsideSize :: OutsideClues a -> (Int, Int)
-outsideSize (OC l _ _ t) = (length t, length l)
+outsideSize (OC l r b t) = ( max (length t) (length b)
+                           , max (length l) (length r)
+                           )
 
 data OutsideClue a = OClue
     { ocBase  :: (Int, Int)
