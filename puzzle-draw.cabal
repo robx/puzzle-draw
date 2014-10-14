@@ -44,6 +44,7 @@ library
                        Diagrams.Puzzles.PuzzleGrids
                        Diagrams.Puzzles.PuzzleTypes
                        Diagrams.Puzzles.Draw
+                       Diagrams.Puzzles.CmdLine
   build-depends:       base >= 4.2,
                        diagrams-lib >= 1.2,
                        parsec >= 3.1,

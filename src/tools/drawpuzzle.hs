@@ -1,19 +1,14 @@
-{-# LANGUAGE FlexibleContexts, CPP #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Main where
 
 import Diagrams.Prelude hiding (value, option, (<>), Result)
 
-#ifdef CAIRO
-import Diagrams.Backend.Cairo (B, renderCairo)
-#else
-import Diagrams.Backend.SVG (B, renderSVG)
-#endif
+import Diagrams.Puzzles.CmdLine
 
 import Text.Puzzles.Puzzle
 import Data.Puzzles.Compose
 import Diagrams.Puzzles.Draw
-import Data.Puzzles.PuzzleTypes
 
 import Options.Applicative
 import Control.Monad
@@ -22,7 +17,6 @@ import Data.List (intercalate)
 
 import System.FilePath
 import System.Environment (getProgName)
-import System.Exit
 
 import qualified Data.Yaml as Y
 
@@ -69,8 +63,6 @@ outputSuffix DrawPuzzle = ""
 outputSuffix DrawSolution = "-sol"
 outputSuffix DrawExample = ""
 
-data RenderOpts = RenderOpts { _file :: FilePath, _w :: Double }
-
 toRenderOpts :: OutputChoice -> Double -> PuzzleOpts -> RenderOpts
 toRenderOpts oc w opts = RenderOpts out w'
   where
@@ -80,17 +72,6 @@ toRenderOpts oc w opts = RenderOpts out w'
     w' = toOutputWidth u w
     base = takeBaseName (_input opts)
     out = addExtension (base ++ outputSuffix oc) f
-
-renderB :: FilePath -> SizeSpec2D -> Diagram B R2 -> IO ()
-renderB =
-#ifdef CAIRO
-    renderCairo
-#else
-    renderSVG
-#endif
-
-renderToFile :: RenderOpts -> Diagram B R2 -> IO ()
-renderToFile ropts = renderB (_file ropts) (Width $ _w ropts)
 
 renderPuzzle :: PuzzleOpts -> (OutputChoice -> Maybe (Diagram B R2)) ->
                 (OutputChoice, Bool) -> IO ()
@@ -128,39 +109,11 @@ checkOutput opts
     req x = (x, True)
     opt x = (x, False)
 
-formats :: [String]
-#ifdef CAIRO
-formats = ["png", "svg", "ps", "pdf"]
-#else
-formats = ["svg"]
-#endif
-
-checkFormat :: PuzzleOpts -> IO ()
-checkFormat opts = if f `elem` formats
-                     then return ()
-                     else exitErr $ "unknown format: " ++ f
-  where
-    f = _format opts
-
-checkType :: Maybe String -> IO PuzzleType
-checkType mt = do
-    t <- maybe errno return mt
-    maybe (errunk t) return (lookupType t)
-  where
-    errno    = exitErr $ "no puzzle type given"
-    errunk t = exitErr $ "unknown puzzle type: " ++ t
-
-readPuzzle :: FilePath -> IO (Either Y.ParseException TypedPuzzle)
-readPuzzle = Y.decodeFileEither
-
-exitErr :: String -> IO a
-exitErr e = putStrLn e >> exitFailure
-
 main :: IO ()
 main = do
     opts <- defaultOpts puzzleOpts
     ocs <- checkOutput opts
-    checkFormat opts
+    checkFormat (_format opts)
     mp <- readPuzzle (_input opts)
     TP mt pv msv <- case mp of Left  e -> exitErr $
                                           "parse failure: " ++ show e
