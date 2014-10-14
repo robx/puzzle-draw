@@ -30,7 +30,7 @@ import qualified Text.Puzzles.Util as Puzzle
 import qualified Data.Puzzles.Grid as Puzzle
 import Data.Puzzles.Grid (size, clues)
 import Diagrams.Puzzles.Elements (drawChar, drawText)
-import Diagrams.Puzzles.Grid (atVertices, atCentres, dashedgrid,
+import Diagrams.Puzzles.Grid (atCentres, dashedgrid,
                               outsideCells, outsideVertices)
 import qualified Diagrams.Puzzles.Grid as Puzzle
 
