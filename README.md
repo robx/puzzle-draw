@@ -3,14 +3,11 @@
 puzzle-draw
 ===========
 
-puzzle-draw is a library for drawing pencil puzzles using 
-[Diagrams][diagrams]. It aims to provide a utility layer on top of 
-Diagrams to help with drawing arbitrary puzzles, as well as supporting 
-several specific puzzle types directly. In addition, it includes 
-functionality for parsing puzzle data from a YAML file format.
-
-See [puzzle-draw-cmdline][cmdline] for a command line tool that
-uses this.
+puzzle-draw is a library and command-line tool for drawing pencil
+puzzles using [Diagrams][diagrams]. It aims to provide a utility layer
+on top of Diagrams to help with drawing arbitrary puzzles, as well as
+supporting several specific puzzle types directly. In addition, it
+includes functionality for parsing puzzle data from a YAML file format.
 
 Examples
 --------
