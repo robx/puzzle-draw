@@ -141,7 +141,8 @@ curvedata :: (Backend b R2, Renderable (Path R2) b) =>
 curvedata = (,)
     cd
     ((solstyle . drawDualEdges . snd) <> cd . fst)
-    where cd = (atCentres drawCurve . clues <> grid . size)
+  where
+    cd = atCentres drawCurve . clues <> grid . size
 
 doubleback :: (Backend b R2, Renderable (Path R2) b) =>
               RenderPuzzle b AreaGrid Loop

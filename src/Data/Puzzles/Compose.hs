@@ -90,7 +90,7 @@ drawPuzzleMaybeSol :: PuzzleHandler b ((Value, Maybe Value)
                       -> Parser (Diagram b R2, Maybe (Diagram b R2)))
 drawPuzzleMaybeSol (pp, ps) (dp, ds) (p, s) = do
     p' <- pp p
-    s' <- traverse ps $ s
+    s' <- traverse ps s
     let mps = case s' of Nothing  -> Nothing
                          Just s'' -> Just (p', s'')
     return (dp p', ds <$> mps)

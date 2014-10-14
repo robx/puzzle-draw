@@ -96,7 +96,7 @@ edgePath (E' v D) = p2i v ~~ p2i (v ^+^ (0,-1))
 irregularGridPaths :: SGrid a -> (Path R2, Path R2)
 irregularGridPaths (Grid _ m) = (toPath outer, toPath inner)
   where
-    (outer, inner) = edges (M.keysSet m) (flip M.member m)
+    (outer, inner) = edges (M.keysSet m) (`M.member` m)
     toPath = mconcat . map edgePath
 
 irregularGrid :: (Backend b R2, Renderable (Path R2) b) =>
@@ -191,7 +191,7 @@ outsideGen tobase f ocs = mconcat . map placeOC $ ocs
 
 outsideCells :: (Transformable c, Monoid c, V c ~ R2) =>
                 Double -> [OutsideClue [c]] -> c
-outsideCells f ocs = outsideGen base f ocs
+outsideCells = outsideGen base
   where
     base (OClue (bx, by) (dx, dy) _)
         | dx /= 0   = r2 (fromIntegral bx - 1, fromIntegral by - 1/2)
@@ -200,7 +200,7 @@ outsideCells f ocs = outsideGen base f ocs
 
 outsideVertices :: (Transformable c, Monoid c, V c ~ R2) =>
                    Double -> [OutsideClue [c]] -> c
-outsideVertices f ocs = outsideGen base f ocs
+outsideVertices = outsideGen base
   where
     base (OClue (bx, by) (dx, dy) _)
         | dx /= 0   = r2 (fromIntegral bx, fromIntegral by)

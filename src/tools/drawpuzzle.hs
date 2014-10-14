@@ -77,9 +77,8 @@ renderPuzzle :: PuzzleOpts -> (OutputChoice -> Maybe (Diagram B R2)) ->
                 (OutputChoice, Bool) -> IO ()
 renderPuzzle opts r (oc, req) = do
     let x = r oc
-    if req && isNothing x
-        then exitErr ("failed to render (no solution?): " ++ show oc)
-        else return ()
+    when (req && isNothing x) $
+        exitErr ("failed to render (no solution?): " ++ show oc)
     when (isJust x) $ do
         let Just x' = x
             ropts = toRenderOpts oc (diagramWidth x') opts

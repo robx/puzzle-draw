@@ -27,7 +27,7 @@ class Show (Cell a) => GridShape a where
 data Square = Square !Int !Int
     deriving Show
 
-squareNeighbours :: [(Int, Int)] -> Square -> (Cell Square) -> [Cell Square]
+squareNeighbours :: [(Int, Int)] -> Square -> Cell Square -> [Cell Square]
 squareNeighbours deltas (Square w h) c = filter inBounds . map (add c) $ deltas
   where
     inBounds (x, y) = x >= 0 && x < w && y >= 0 && y < h
@@ -74,7 +74,7 @@ data Edge' a = E' a Dir'
 
 -- | The edge between two neighbouring cells, with the first cell
 --   on the left.
-orientedEdge :: (Cell Square) -> (Cell Square) -> (Edge' (Vertex Square))
+orientedEdge :: Cell Square -> Cell Square -> Edge' (Vertex Square)
 orientedEdge (x,y) (x',y')
     | x' == x && y' == y+1  = E' (x,y+1) R
     | x' == x && y' == y-1  = E' (x+1,y) L
@@ -97,4 +97,4 @@ edges cs isc = F.foldr f ([], []) cs
         nbrs = [ c ^+^ d | d <- [(-1,0), (0,1), (1,0), (0,-1)] ]
         (ni, no) = partition isc nbrs
         newout = map (orientedEdge c) no
-        newin = map (orientedEdge c) . filter ((>=) c) $ ni
+        newin = map (orientedEdge c) . filter (c >=) $ ni

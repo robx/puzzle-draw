@@ -66,7 +66,7 @@ instance FromChar a => FromJSON (Rect a) where
         w = maximum . map T.length $ ls
         h = length ls
         filledc = map (T.unpack . T.justifyLeft w ' ') ls
-        filled = mapM (mapM parseChar) $ filledc
+        filled = mapM (mapM parseChar) filledc
     parseJSON _          = empty
 
 data Border a = Border [a] [a] [a] [a]
@@ -99,8 +99,8 @@ instance (FromChar a, FromChar b) => FromJSON (BorderedRect a b) where
             ls' = map (middle w) . middle h $ ls
         mapM_ ((parseChar :: Char -> Parser Space) . flip ($) ls)
               [head . head, head . last, last . head, last . last]
-        lsparsed <- mapM (mapM parseChar) $ ls'
-        bparsed  <- mapM parseChar $ b
+        lsparsed <- mapM (mapM parseChar) ls'
+        bparsed  <- mapM parseChar b
         return $ BorderedRect (w-2) (h-2) lsparsed bparsed
       where
         middle len = take (len - 2) . drop 1
@@ -115,7 +115,7 @@ instance FromString a => FromJSON (SpacedRect a) where
         w = maximum . map length $ ls
         wmin = minimum . map length $ ls
         h = length ls
-        p = mapM (mapM (parseString . T.unpack)) $ ls
+        p = mapM (mapM (parseString . T.unpack)) ls
     parseJSON _          = empty
 
 data Space = Space
@@ -272,7 +272,7 @@ parseEdgeGrid v = uncurry (,,) <$>
         return (gn', gc')
     both f (x, y) = (f x, f y)
     halveGrid (Grid (Square w h) m)
-        | odd w && odd h = pure $ (Grid snode mnode, Grid scell mcell)
+        | odd w && odd h = pure (Grid snode mnode, Grid scell mcell)
         | otherwise      = empty
       where
         w' = (w + 1) `div` 2
@@ -364,8 +364,8 @@ parseThermos (Grid s m) = catMaybes <$> mapM parseThermo (Map.keys m)
         succs' q = maybe [] (const $ succs q) (Map.lookup q m')
 
 parseThermoGrid :: ThermoRect -> Parser (SGrid Int, [Thermometer])
-parseThermoGrid (Rect w h ls) = (,) (Grid s ints) <$>
-                                (parseThermos $ Grid s alphas)
+parseThermoGrid (Rect w h ls) = (,) (Grid s ints)
+                              <$> parseThermos (Grid s alphas)
   where
     s = Square w h
     (ints, alphas) = partitionEithers . snd . partitionEithers $
@@ -390,8 +390,8 @@ parseTightOutside v = do
 
 instance FromChar a => FromString (Tightfit a) where
     parseString [c]           = Single <$> parseChar c
-    parseString (c: '/':d:[]) = UR <$> parseChar c <*> parseChar d
-    parseString (c:'\\':d:[]) = DR <$> parseChar c <*> parseChar d
+    parseString [c, '/',d]    = UR <$> parseChar c <*> parseChar d
+    parseString [c,'\\',d]    = DR <$> parseChar c <*> parseChar d
     parseString _             = empty
 
 parseTightIntGrid :: Value -> Parser (SGrid (Tightfit Int))
@@ -437,7 +437,7 @@ hashmaptomap :: (Eq a, Hashable a, Ord a) => HMap.HashMap a b -> Map.Map a b
 hashmaptomap = Map.fromList . HMap.toList
 
 compose :: (Ord a, Ord b) => Map.Map a b -> Map.Map b c -> Maybe (Map.Map a c)
-compose m1 m2 = mapM (`Map.lookup` m2) $ m1
+compose m1 m2 = mapM (`Map.lookup` m2) m1
 
 instance FromJSON a => FromJSON (RefGrid a) where
     parseJSON (Object v) = RefGrid <$> do

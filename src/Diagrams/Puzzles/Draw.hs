@@ -52,7 +52,7 @@ toOutputWidth u w = case u of Pixels -> fromIntegral wpix
 alignPixel :: (Backend b R2, Renderable (Path R2) b) => Diagram b R2 -> Diagram b R2
 alignPixel = scale (1/gridresd) . align' . scale gridresd
   where
-    align' d = maybe id grow (getCorners $ boundingBox d) $ d
+    align' d = maybe id grow (getCorners $ boundingBox d) d
     grow (bl, tr) = mappend $ phantoml (nudge bl False) (nudge tr True)
     nudge p dir = let (px, py) = unp2 p in p2 (nudge' px dir, nudge' py dir)
     nudge' x True  = fromIntegral (ceiling (x - 0.5) :: Int) + 0.5

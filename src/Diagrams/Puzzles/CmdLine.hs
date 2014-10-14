@@ -48,16 +48,15 @@ formats = ["svg"]
 #endif
 
 checkFormat :: String -> IO ()
-checkFormat f = if f `elem` formats
-                    then return ()
-                    else exitErr $ "unknown format: " ++ f
+checkFormat f = unless (f `elem` formats) $
+                    exitErr $ "unknown format: " ++ f
 
 checkType :: Maybe String -> IO PuzzleType
 checkType mt = do
     t <- maybe errno return mt
     maybe (errunk t) return (lookupType t)
   where
-    errno    = exitErr $ "no puzzle type given"
+    errno    = exitErr "no puzzle type given"
     errunk t = exitErr $ "unknown puzzle type: " ++ t
 
 readPuzzle :: FilePath -> IO (Either Y.ParseException TypedPuzzle)

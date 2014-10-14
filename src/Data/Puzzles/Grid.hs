@@ -42,9 +42,9 @@ instance Foldable (Grid s) where
     foldMap f (Grid _ m) = foldMap f m
 
 instance Traversable (Grid s) where
-    traverse f (Grid s m) = Grid s <$> (traverse f m)
+    traverse f (Grid s m) = Grid s <$> traverse f m
 
-filterG :: (a -> Bool) -> (Grid s a) -> (Grid s a)
+filterG :: (a -> Bool) -> Grid s a -> Grid s a
 filterG p (Grid s m) = Grid s (Map.filter p m)
 
 -- | Initialize a square grid from a list of lists. The grid
@@ -122,7 +122,7 @@ outsideClueList o@(OC l r b t) =
 
 -- | Convert outside clues to association list mapping coordinate to value.
 outsideClues :: OutsideClues (Maybe a) -> [((Int, Int), a)]
-outsideClues = mapMaybe liftMaybe . map toCell . outsideClueList
+outsideClues = mapMaybe (liftMaybe . toCell) . outsideClueList
   where
     toCell (OClue (bx, by) (dx, dy) v) = ((bx + dx, by + dy), v)
     liftMaybe (p, Just x)  = Just (p, x)

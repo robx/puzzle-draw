@@ -116,14 +116,14 @@ toParser p v = case parse p "(unknown)" v of Left e  -> fail (show e)
                                              Right x -> pure x
 
 instance FromJSON Pyramid where
-    parseJSON (String t) = Pyr <$> (mapM (toParser prow . T.unpack) $ T.lines t)
+    parseJSON (String t) = Pyr <$> mapM (toParser prow . T.unpack) (T.lines t)
     parseJSON _          = empty
 
 instance FromJSON RowKropkiPyramid where
-    parseJSON (String t) = KP <$> (mapM (toParser pkropkirow . T.unpack) $ T.lines t)
+    parseJSON (String t) = KP <$> mapM (toParser pkropkirow . T.unpack) (T.lines t)
     parseJSON _          = empty
 
 instance FromJSON PyramidSol where
     parseJSON (String t) = PyramidSol <$>
-                           (mapM (toParser pplainrow . T.unpack) $ T.lines t)
+                             mapM (toParser pplainrow . T.unpack) (T.lines t)
     parseJSON _          = empty
