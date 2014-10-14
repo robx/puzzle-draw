@@ -6,7 +6,7 @@ module Data.Puzzles.Grid where
 
 import Data.Maybe
 import qualified Data.Map as Map
-import Data.Foldable (Foldable, fold)
+import Data.Foldable (Foldable, foldMap)
 import Data.Traversable (Traversable, traverse)
 import Control.Applicative ((<$>))
 import Data.VectorSpace
@@ -39,7 +39,7 @@ instance Functor (Grid s) where
     fmap f (Grid s m) = Grid s (fmap f m)
 
 instance Foldable (Grid s) where
-    fold (Grid _ m) = fold m
+    foldMap f (Grid _ m) = foldMap f m
 
 instance Traversable (Grid s) where
     traverse f (Grid s m) = Grid s <$> (traverse f m)

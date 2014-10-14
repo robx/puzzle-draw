@@ -13,7 +13,7 @@ import Data.Maybe (catMaybes, fromMaybe)
 import qualified Data.Map as Map
 import qualified Data.HashMap.Strict as HMap
 import Data.Traversable (traverse, sequence, sequenceA, Traversable)
-import Data.Foldable (Foldable, fold)
+import Data.Foldable (Foldable, foldMap)
 import Data.Monoid ((<>))
 import Data.List (intersect)
 
@@ -74,7 +74,8 @@ data Border a = Border [a] [a] [a] [a]
 
 -- | This instance might be a lie.
 instance Foldable Border where
-    fold (Border l r b t) = fold l <> fold r <> fold b <> fold t
+    foldMap f (Border l r b t) = foldMap f l <> foldMap f r
+                              <> foldMap f b <> foldMap f t
 
 instance Traversable Border where
     sequenceA (Border l r b t) = Border <$> sequenceA l
