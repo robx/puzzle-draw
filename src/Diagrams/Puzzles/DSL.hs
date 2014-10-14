@@ -3,8 +3,10 @@ module Diagrams.Puzzles.DSL (
     , mainWith
     , mainWithNamed
     , readData
+    , parseAreaGrid
     , parseCharGrid
     , parseOutsideClues
+    , drawAreaGrid
     , drawGrid
     , dashed
     , drawOutsideClues'
@@ -28,6 +30,7 @@ import qualified Data.Puzzles.Grid as Puzzle
 import Data.Puzzles.Grid (size, clues)
 import Diagrams.Puzzles.Elements (drawChar, drawText)
 import Diagrams.Puzzles.Grid (atVertices, atCentres, dashedgrid, outsideVertices)
+import qualified Diagrams.Puzzles.Grid as Puzzle
 
 import Diagrams.Puzzles.Draw (
     diagramWidth, toOutputWidth, Unit(..), draw, OutputChoice(..))
@@ -35,6 +38,8 @@ import Diagrams.Puzzles.CmdLine
 
 type Grid = Puzzle.CharClueGrid
 type OutsideClues = Puzzle.OutsideClues [String]
+
+type AreaGrid = Puzzle.CharGrid
 
 data GridStyle = GridDashed
 
@@ -99,6 +104,9 @@ parse fs p = do
 parseCharGrid :: Path -> P Grid
 parseCharGrid p = parse p Puzzle.parseClueGrid
 
+parseAreaGrid :: Path -> P AreaGrid
+parseAreaGrid p = parse p Puzzle.parseGrid
+
 parseOutsideClues :: Path -> P OutsideClues
 parseOutsideClues p = do
     Puzzle.OC l r b t <- parse p Puzzle.parseMultiOutsideClues
@@ -109,6 +117,9 @@ parseOutsideClues p = do
 drawGrid :: GridStyle -> Grid -> Diagram
 drawGrid GridDashed g = dashedgrid (size g)
                       <> atCentres drawChar (clues g)
+
+drawAreaGrid :: AreaGrid -> Diagram
+drawAreaGrid = Puzzle.drawAreaGrid
 
 drawOutsideClues' :: OutsideClues -> Diagram
 drawOutsideClues' = outsideVertices 0.75 . map (fmap (map drawOne))
