@@ -194,8 +194,8 @@ outsideCells :: (Transformable c, Monoid c, V c ~ R2) =>
 outsideCells f ocs = outsideGen base f ocs
   where
     base (OClue (bx, by) (dx, dy) _)
-        | dx /= 0   = r2 (fromIntegral bx, fromIntegral by + 1/2)
-        | dy /= 0   = r2 (fromIntegral bx + 1/2, fromIntegral by)
+        | dx /= 0   = r2 (fromIntegral bx - 1, fromIntegral by - 1/2)
+        | dy /= 0   = r2 (fromIntegral bx - 1/2, fromIntegral by)
         | otherwise = error "invalid outside clue"
 
 outsideVertices :: (Transformable c, Monoid c, V c ~ R2) =>
