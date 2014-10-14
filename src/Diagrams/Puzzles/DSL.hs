@@ -9,6 +9,7 @@ module Diagrams.Puzzles.DSL (
     , drawAreaGrid
     , drawGrid
     , dashed
+    , drawOutsideClues
     , drawOutsideClues'
     , (<>)
     ) where
@@ -29,7 +30,8 @@ import qualified Text.Puzzles.Util as Puzzle
 import qualified Data.Puzzles.Grid as Puzzle
 import Data.Puzzles.Grid (size, clues)
 import Diagrams.Puzzles.Elements (drawChar, drawText)
-import Diagrams.Puzzles.Grid (atVertices, atCentres, dashedgrid, outsideVertices)
+import Diagrams.Puzzles.Grid (atVertices, atCentres, dashedgrid,
+                              outsideCells, outsideVertices)
 import qualified Diagrams.Puzzles.Grid as Puzzle
 
 import Diagrams.Puzzles.Draw (
@@ -124,5 +126,11 @@ drawAreaGrid = Puzzle.drawAreaGrid
 drawOutsideClues' :: OutsideClues -> Diagram
 drawOutsideClues' = outsideVertices 0.75 . map (fmap (map drawOne))
                                         . Puzzle.outsideClueList
+  where
+    drawOne = D.scale 0.8 . drawText
+
+drawOutsideClues :: OutsideClues -> Diagram
+drawOutsideClues = outsideCells 0.75 . map (fmap (map drawOne))
+                                     . Puzzle.outsideClueList
   where
     drawOne = D.scale 0.8 . drawText
