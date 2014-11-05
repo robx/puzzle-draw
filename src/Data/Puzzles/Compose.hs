@@ -70,6 +70,7 @@ handle f PrimePlace           = f R.primeplace          D.primeplace
 handle f Labyrinth            = f R.labyrinth           D.labyrinth
 handle f Bahnhof              = f R.bahnhof             D.bahnhof
 handle f BlackoutDominos      = f R.blackoutDominos     D.blackoutDominos
+handle f TwilightTapa         = f R.tapa                D.tapa
 
 -- | Handler that parses a puzzle from a YAML value, and renders.
 drawPuzzle :: PuzzleHandler b (Value -> Parser (Diagram b R2))
