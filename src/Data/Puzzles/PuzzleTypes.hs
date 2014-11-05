@@ -46,6 +46,7 @@ data PuzzleType = LITS
                 | TapaCave
                 | DominoPillen
                 | SlitherLinkMulti
+                | AngleLoop
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -84,6 +85,7 @@ typeNames = [ (LITS, "lits")
             , (TapaCave, "tapa-cave")
             , (DominoPillen, "domino-pillen")
             , (SlitherLinkMulti, "slitherlink-multi")
+            , (AngleLoop, "angleloop")
             ]
 
 -- | Look up a puzzle type by name.

@@ -10,7 +10,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, countnumbers, tapa, japanesesums,
     coral, maximallengths, primeplace, labyrinth, bahnhof,
-    blackoutDominos
+    blackoutDominos, angleLoop
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -245,3 +245,12 @@ blackoutDominos :: (Backend b R2, Renderable (Path R2) b) =>
 blackoutDominos = (,)
     (irregularGrid <> atCentres drawInt . clues)
     undefined
+
+angleLoop ::
+    (Backend b R2, Renderable (Path R2) b) =>
+    RenderPuzzle b (SGrid (Clue Int)) ()
+angleLoop = (,)
+    (atVertices drawAnglePoly . clues <> plaingrid . size')
+    undefined
+  where
+    size' g = let (w, h) = size g in (w-1, h-1)
