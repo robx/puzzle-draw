@@ -71,6 +71,9 @@ handle f Labyrinth            = f R.labyrinth           D.labyrinth
 handle f Bahnhof              = f R.bahnhof             D.bahnhof
 handle f BlackoutDominos      = f R.blackoutDominos     D.blackoutDominos
 handle f TwilightTapa         = f R.tapa                D.tapa
+handle f TapaCave             = f R.tapa                D.tapa
+handle f DominoPillen         = f R.fillomino           D.fillomino
+handle f SlitherLinkMulti     = f R.slither             D.slither
 
 -- | Handler that parses a puzzle from a YAML value, and renders.
 drawPuzzle :: PuzzleHandler b (Value -> Parser (Diagram b R2))
