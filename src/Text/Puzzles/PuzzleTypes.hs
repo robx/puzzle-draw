@@ -6,7 +6,7 @@ module Text.Puzzles.PuzzleTypes (
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, countnumbers, tapa, japanesesums, coral,
-    maximallengths, primeplace, labyrinth, bahnhof
+    maximallengths, primeplace, labyrinth, bahnhof, blackoutDominos
   ) where
 
 import Control.Applicative
@@ -143,3 +143,6 @@ labyrinth = (parseCellEdges, parseClueGrid')
 
 bahnhof :: ParsePuzzle (SGrid (Clue Char)) ()
 bahnhof = (parseClueGrid, error "bahnhof solution not implemented")
+
+blackoutDominos :: ParsePuzzle (SGrid (Clue Int)) ()
+blackoutDominos = (parseIrregGrid, error "blackout solution not implemented")
