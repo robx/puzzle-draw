@@ -17,7 +17,6 @@ module Diagrams.Puzzles.DSL (
 import qualified Diagrams.Prelude as D
 
 import qualified Data.Yaml as Y
-import qualified Data.Text as T
 
 import Control.Monad.Reader
 import Control.Monad.State
@@ -27,6 +26,7 @@ import Control.Applicative
 import System.Environment (getProgName)
 
 import qualified Text.Puzzles.Util as Puzzle
+import Text.Puzzles.Util (Path)
 import qualified Data.Puzzles.Grid as Puzzle
 import Data.Puzzles.Grid (size, clues)
 import Diagrams.Puzzles.Elements (drawChar, drawText)
@@ -83,22 +83,10 @@ readData = do
     case v of Left err    -> liftIO $ exitErr ("failed to parse: " ++ show err)
               Right value -> put value
 
-type Path = [String]
-
-field :: Path -> Y.Value -> Y.Parser Y.Value
-field = field' . map T.pack
-  where
-    field' [] v                = pure v
-    field' (f:fs) (Y.Object v) = v Y..: f >>= field' fs
-    field' _  _                = empty
-
-parseFrom :: Path -> (Y.Value -> Y.Parser b) -> Y.Value -> Y.Parser b
-parseFrom fs p v = field fs v >>= p
-
 parse :: Path -> (Y.Value -> Y.Parser a) -> P a
 parse fs p = do
     v <- get
-    let ex = Y.parseEither (parseFrom fs p) v
+    let ex = Y.parseEither (Puzzle.parseFrom fs p) v
     either (\err -> liftIO $ exitErr ("failed to parse: " ++ show err))
            return
            ex

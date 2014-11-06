@@ -27,6 +27,18 @@ import Data.Puzzles.Grid
 import Data.Puzzles.GridShape hiding (size)
 import Data.Puzzles.Elements
 
+type Path = [String]
+
+field :: Path -> Value -> Parser Value
+field = field' . map T.pack
+  where
+    field' [] v                = pure v
+    field' (f:fs) (Object v) = v .: f >>= field' fs
+    field' _  _                = empty
+
+parseFrom :: Path -> (Value -> Parser b) -> (Value -> Parser b)
+parseFrom fs p v = field fs v >>= p
+
 class FromChar a where
     parseChar :: Char -> Parser a
 
