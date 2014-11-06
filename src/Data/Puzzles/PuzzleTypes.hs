@@ -54,6 +54,8 @@ data PuzzleType = LITS
                 | Cave
                 | Numberlink
                 | Skyscrapers
+                | SkyscrapersStars
+                | SkyscrapersFrac
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -100,6 +102,8 @@ typeNames = [ (LITS, "lits")
             , (Cave, "cave")
             , (Numberlink, "numberlink")
             , (Skyscrapers, "skyscrapers")
+            , (SkyscrapersStars, "skyscrapers-doppelstern")
+            , (SkyscrapersFrac, "skyscrapers-fractional")
             ]
 
 -- | Look up a puzzle type by name.
