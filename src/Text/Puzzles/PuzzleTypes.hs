@@ -7,7 +7,7 @@ module Text.Puzzles.PuzzleTypes (
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, countnumbers, tapa, japanesesums, coral,
     maximallengths, primeplace, labyrinth, bahnhof, blackoutDominos,
-    angleloop,
+    angleloop, anglers
   ) where
 
 import Control.Applicative
@@ -150,3 +150,7 @@ blackoutDominos = (parseIrregGrid, error "blackout solution not implemented")
 
 angleloop :: ParsePuzzle (SGrid (Clue Int)) ()
 angleloop = (parseClueGrid, error "angleloop solution not implemented")
+
+anglers :: ParsePuzzle (OutsideClues (Maybe Int), SGrid (Maybe Fish)) ()
+anglers = ( parseOutsideGridMap blankToMaybe blankToMaybe'
+          , error "anglers solution not implemented")

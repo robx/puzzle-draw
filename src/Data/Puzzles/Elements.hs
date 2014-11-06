@@ -62,3 +62,4 @@ newtype TapaClue = TapaClue [Int]
 newtype PrimeDiag = PrimeDiag (Bool, Bool)
 
 data Black = Black
+data Fish = Fish

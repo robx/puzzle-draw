@@ -10,7 +10,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, countnumbers, tapa, japanesesums,
     coral, maximallengths, primeplace, labyrinth, bahnhof,
-    blackoutDominos, angleLoop
+    blackoutDominos, angleLoop, anglers
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -254,3 +254,12 @@ angleLoop = (,)
     undefined
   where
     size' g = let (w, h) = size g in (w-1, h-1)
+
+anglers ::
+    (Backend b R2, Renderable (Path R2) b) =>
+    RenderPuzzle b (OutsideClues (Clue Int), SGrid (Maybe Fish)) ()
+anglers = (,)
+    (atCentres drawInt . outsideClues . fst <>
+     atCentres drawFish . clues . snd <>
+     grid . size . snd)
+    undefined

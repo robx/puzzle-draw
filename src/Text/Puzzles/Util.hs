@@ -104,21 +104,25 @@ instance Functor Border where
 data BorderedRect a b = BorderedRect !Int !Int [[a]] (Border b)
     deriving Show
 
+parseBorderedRect :: (Char -> Parser a) -> (Char -> Parser b)
+                  -> Value -> Parser (BorderedRect a b)
+parseBorderedRect parseIn parseOut v = do
+    Rect w h ls <- parseJSON v
+    let b = Border (reverse . map head . middle h $ ls)
+                   (reverse . map last . middle h $ ls)
+                   (middle w . last $ ls)
+                   (middle w . head $ ls)
+        ls' = map (middle w) . middle h $ ls
+    mapM_ ((parseChar :: Char -> Parser Space) . flip ($) ls)
+          [head . head, head . last, last . head, last . last]
+    lsparsed <- mapM (mapM parseIn) ls'
+    bparsed  <- mapM parseOut b
+    return $ BorderedRect (w-2) (h-2) lsparsed bparsed
+  where
+    middle len = take (len - 2) . drop 1
+
 instance (FromChar a, FromChar b) => FromJSON (BorderedRect a b) where
-    parseJSON v = do
-        Rect w h ls <- parseJSON v
-        let b = Border (reverse . map head . middle h $ ls)
-                       (reverse . map last . middle h $ ls)
-                       (middle w . last $ ls)
-                       (middle w . head $ ls)
-            ls' = map (middle w) . middle h $ ls
-        mapM_ ((parseChar :: Char -> Parser Space) . flip ($) ls)
-              [head . head, head . last, last . head, last . last]
-        lsparsed <- mapM (mapM parseChar) ls'
-        bparsed  <- mapM parseChar b
-        return $ BorderedRect (w-2) (h-2) lsparsed bparsed
-      where
-        middle len = take (len - 2) . drop 1
+    parseJSON = parseBorderedRect parseChar parseChar
 
 newtype SpacedRect a = SpacedRect { unSpaced :: Rect a }
 
@@ -192,6 +196,10 @@ instance FromChar SlalomDiag where
 instance FromChar Black where
     parseChar 'X' = pure Black
     parseChar 'x' = pure Black
+    parseChar _   = empty
+
+instance FromChar Fish where
+    parseChar '*' = pure Fish
     parseChar _   = empty
 
 instance (FromChar a, FromChar b) => FromChar (Either a b) where
@@ -429,6 +437,21 @@ parseThermoGrid (Rect w h ls) = (,) (Grid s ints)
     (ints, alphas) = partitionEithers . snd . partitionEithers $
                      listListToMap ls
 
+parseOutsideGrid :: (Char -> Parser a)
+                 -> (Char -> Parser b)
+                 -> Value -> Parser (OutsideClues b, SGrid a)
+parseOutsideGrid parseIn parseOut v = do
+    BorderedRect w h ls b <- parseBorderedRect parseIn parseOut v
+    return (outside b, rectToSGrid $ Rect w h ls)
+  where outside (Border l r b t) = OC l r b t
+
+parseOutsideGridMap :: (FromChar a, FromChar b)
+                    => (a -> c) -> (b -> d)
+                    -> Value -> Parser (OutsideClues d, SGrid c)
+parseOutsideGridMap mapIn mapOut v = do
+    (o, g) <- parseOutsideGrid parseChar parseChar v
+    return (mapOut <$> o, mapIn <$> g)
+
 newtype Tight = Tight { unTight :: Tightfit () }
 
 instance FromChar Tight where
@@ -439,12 +462,10 @@ instance FromChar Tight where
 
 parseTightOutside :: Value -> Parser (OutsideClues (Maybe Int),
                                       SGrid (Tightfit ()))
-parseTightOutside v = do
-    BorderedRect w h ls b <- parseJSON v
-        :: Parser (BorderedRect Tight (Either Blank' Int))
-    return (outside . fmap (either (const Nothing) Just) $ b,
-            fmap unTight . rectToSGrid $ Rect w h ls)
-  where outside (Border l r b t) = OC l r b t
+parseTightOutside = parseOutsideGridMap unTight unBlank'
+  where
+    unBlank' :: Either Blank' Int -> Maybe Int
+    unBlank' = either (const Nothing) Just
 
 instance FromChar a => FromString (Tightfit a) where
     parseString [c]           = Single <$> parseChar c

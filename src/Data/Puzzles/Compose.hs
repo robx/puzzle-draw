@@ -75,6 +75,7 @@ handle f TapaCave             = f R.tapa                D.tapa
 handle f DominoPillen         = f R.fillomino           D.fillomino
 handle f SlitherLinkMulti     = f R.slither             D.slither
 handle f AngleLoop            = f R.angleloop           D.angleLoop
+handle f Anglers              = f R.anglers             D.anglers
 
 -- | Handler that parses a puzzle from a YAML value, and renders.
 drawPuzzle :: PuzzleHandler b (Value -> Parser (Diagram b R2))
