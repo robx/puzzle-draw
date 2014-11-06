@@ -9,7 +9,8 @@ module Diagrams.Puzzles.PuzzleTypes (
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, countnumbers, tapa, japanesesums,
-    coral, maximallengths, primeplace, labyrinth, bahnhof
+    coral, maximallengths, primeplace, labyrinth, bahnhof,
+    cave
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -238,3 +239,12 @@ bahnhof :: Backend' b =>
 bahnhof = (,)
     drawClueGrid
     undefined
+
+cave ::
+    (Backend b R2, Renderable (Path R2) b) =>
+    RenderPuzzle b (SGrid (Clue Int)) ShadedGrid
+cave = (,)
+    g
+    (drawShadedGrid . snd <> g . fst)
+  where
+    g = (gridDashing . plaingrid . size <> atCentres drawInt . clues)
