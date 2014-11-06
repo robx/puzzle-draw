@@ -51,6 +51,7 @@ data PuzzleType = LITS
                 | Dominos
                 | FillominoCheckered
                 | FillominoLoop
+                | Cave
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -94,6 +95,7 @@ typeNames = [ (LITS, "lits")
             , (Dominos, "dominos")
             , (FillominoCheckered, "fillomino-checkered")
             , (FillominoLoop, "fillomino-loop")
+            , (Cave, "cave")
             ]
 
 -- | Look up a puzzle type by name.

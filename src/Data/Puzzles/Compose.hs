@@ -79,6 +79,7 @@ handle f Anglers              = f R.anglers             D.anglers
 handle f Dominos              = f R.fillomino           D.fillomino
 handle f FillominoCheckered   = f R.fillomino           D.fillomino
 handle f FillominoLoop        = f R.fillomino           D.fillomino
+handle f Cave                 = f R.cave                D.cave
 
 -- | Handler that parses a puzzle from a YAML value, and renders.
 drawPuzzle :: PuzzleHandler b (Value -> Parser (Diagram b R2))
