@@ -149,6 +149,11 @@ instance FromChar Blank' where
     parseChar '-' = pure Blank'
     parseChar _   = empty
 
+instance FromJSON Blank' where
+    parseJSON (String ".") = pure Blank'
+    parseJSON (String "-") = pure Blank'
+    parseJSON _            = empty
+
 instance FromChar Empty where
     parseChar ' ' = pure Empty
     parseChar _   = empty
@@ -178,6 +183,12 @@ instance (FromChar a, FromChar b) => FromChar (Either a b) where
 
 instance (FromString a, FromString b) => FromString (Either a b) where
     parseString c = Left <$> parseString c <|> Right <$> parseString c
+
+newtype Either' a b = Either' { unEither' :: Either a b }
+
+instance (FromJSON a, FromJSON b) => FromJSON (Either' a b) where
+    parseJSON v = Either' <$>
+                      (Left <$> parseJSON v <|> Right <$> parseJSON v)
 
 instance FromChar a => FromChar (Maybe a) where
     parseChar = optional . parseChar
@@ -498,6 +509,15 @@ parseCharOutside (Object v) = reorientOutside <$>
   where
     pfield f = parseLine . fromMaybe [] =<< v .:? f
 parseCharOutside _          = empty
+
+parseOutside :: FromJSON a => Value -> Parser (OutsideClues a)
+parseOutside (Object v) = reorientOutside <$>
+                              (OC <$>
+                               pfield "left" <*> pfield "right" <*>
+                               pfield "bottom" <*> pfield "top" )
+  where
+    pfield f = pure . fromMaybe [] =<< v .:? f
+parseOutside _          = empty
 
 parseMultiOutsideClues :: FromJSON a => Value -> Parser (OutsideClues [a])
 parseMultiOutsideClues (Object v) = rev <$> raw
