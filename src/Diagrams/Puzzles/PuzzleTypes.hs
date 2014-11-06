@@ -10,7 +10,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, countnumbers, tapa, japanesesums,
     coral, maximallengths, primeplace, labyrinth, bahnhof,
-    blackoutDominos, angleLoop, anglers, cave
+    blackoutDominos, angleLoop, anglers, cave, skyscrapers
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -272,3 +272,13 @@ cave = (,)
     (drawShadedGrid . snd <> g . fst)
   where
     g = (gridDashing . plaingrid . size <> atCentres drawInt . clues)
+
+skyscrapers ::
+    (Backend b R2, Renderable (Path R2) b) =>
+    RenderPuzzle b (OutsideClues (Maybe Int)) IntGrid
+skyscrapers = (,)
+    g
+    (g . fst <> atCentres drawInt . clues . snd)
+  where
+    g = atCentres drawInt . outsideClues
+        <> grid . outsideSize

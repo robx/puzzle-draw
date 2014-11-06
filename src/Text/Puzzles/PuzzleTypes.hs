@@ -7,7 +7,7 @@ module Text.Puzzles.PuzzleTypes (
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, countnumbers, tapa, japanesesums, coral,
     maximallengths, primeplace, labyrinth, bahnhof, blackoutDominos,
-    angleloop, anglers, cave
+    angleloop, anglers, cave, skyscrapers
   ) where
 
 import Control.Applicative
@@ -157,3 +157,7 @@ anglers = ( parseOutsideGridMap blankToMaybe blankToMaybe'
 
 cave :: ParsePuzzle (SGrid (Clue Int)) ShadedGrid
 cave = (parseClueGrid, parseShadedGrid)
+
+skyscrapers :: ParsePuzzle (OutsideClues (Maybe Int)) IntGrid
+skyscrapers = (\v -> fmap blankToMaybe <$> parseCharOutside v,
+               parseClueGrid)
