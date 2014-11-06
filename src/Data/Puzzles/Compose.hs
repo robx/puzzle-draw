@@ -84,6 +84,7 @@ handle f Numberlink           = f R.nurikabe            D.nurikabe
 handle f Skyscrapers          = f R.skyscrapers         D.skyscrapers
 handle f SkyscrapersStars     = f R.skyscrapers         D.skyscrapers
 handle f SkyscrapersFrac      = f R.tightfitskyscrapers D.tightfitskyscrapers
+handle f TurningFences        = f R.slither             D.slither
 
 -- | Handler that parses a puzzle from a YAML value, and renders.
 drawPuzzle :: PuzzleHandler b (Value -> Parser (Diagram b R2))
