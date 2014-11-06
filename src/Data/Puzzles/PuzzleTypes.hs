@@ -58,6 +58,7 @@ data PuzzleType = LITS
                 | SkyscrapersFrac
                 | TurningFences
                 | Summon
+                | Baca
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -108,6 +109,7 @@ typeNames = [ (LITS, "lits")
             , (SkyscrapersFrac, "skyscrapers-fractional")
             , (TurningFences, "turning-fences")
             , (Summon, "summon")
+            , (Baca, "baca")
             ]
 
 -- | Look up a puzzle type by name.

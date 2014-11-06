@@ -7,7 +7,7 @@ module Text.Puzzles.PuzzleTypes (
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, countnumbers, tapa, japanesesums, coral,
     maximallengths, primeplace, labyrinth, bahnhof, blackoutDominos,
-    angleloop, anglers, cave, skyscrapers, summon
+    angleloop, anglers, cave, skyscrapers, summon, baca
   ) where
 
 import Control.Applicative
@@ -169,3 +169,24 @@ summon = ( \v -> (,) <$> parseFrom ["grid"] parseGrid v
          )
   where
     parseOut v = fmap (blankToMaybe' . unEither') <$> parseOutside v
+
+baca :: ParsePuzzle
+            (SGrid (Maybe Char), OutsideClues [Int], OutsideClues (Maybe Char))
+            ()
+baca = ( \v -> (,,) <$> parseFrom ["grid"] parseClueGrid v
+                    <*> parseFrom ["outside"] parseTopLeft v
+                    <*> parseFrom ["outside"] parseBottomRight v
+       , error "baca solution not implemented"
+       )
+  where
+    parseTopLeft (Object v) = do
+        l <- v .: "left"
+        t <- v .: "top"
+        return $ OC l [] [] t
+    parseTopLeft _ = empty
+    parseBottomRight (Object v) = do
+        b <- v .: "bottom"
+        r <- v .: "right"
+        oc <- OC [] <$> parseLine r <*> parseLine b <*> pure []
+        return $ fmap blankToMaybe' oc
+    parseBottomRight _ = empty
