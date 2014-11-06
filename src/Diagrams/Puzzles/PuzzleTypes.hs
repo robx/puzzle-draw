@@ -11,7 +11,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     afternoonskyscrapers, countnumbers, tapa, japanesesums,
     coral, maximallengths, primeplace, labyrinth, bahnhof,
     blackoutDominos, angleLoop, anglers, cave, skyscrapers,
-    summon, baca
+    summon, baca, buchstabensalat, doppelblock, sudokuDoppelblock
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -302,3 +302,27 @@ baca = (p, undefined)
     p (g,tl,br) = atCentres drawChar (clues g) <> grid (size g)
               <> atCentres (scale 0.8 . drawInt) (multiOutsideClues tl)
               <> atCentres (scale 0.8 . drawChar) (outsideClues br)
+
+buchstabensalat ::
+    (Backend b R2, Renderable (Path R2) b) =>
+    RenderPuzzle b (OutsideClues (Maybe Char)) (SGrid (Maybe Char))
+buchstabensalat = (p, p . fst <> atCentres drawChar . clues . snd)
+  where
+    p = atCentres (scale 0.8 . drawChar) . outsideClues
+        <> grid . outsideSize
+
+doppelblock ::
+    (Backend b R2, Renderable (Path R2) b) =>
+    RenderPuzzle b (OutsideClues (Maybe Int)) ()
+doppelblock = (,)
+    (atCentres (scale 0.8 . drawInt) . outsideClues <> grid . outsideSize)
+    undefined
+
+
+sudokuDoppelblock ::
+    (Backend b R2, Renderable (Path R2) b) =>
+    RenderPuzzle b (AreaGrid, OutsideClues (Maybe Int)) ()
+sudokuDoppelblock = (,)
+    (atCentres (scale 0.8 . drawInt) . outsideClues . snd
+     <> drawAreaGrid . fst)
+    undefined

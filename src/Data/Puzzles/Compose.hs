@@ -87,6 +87,9 @@ handle f SkyscrapersFrac      = f R.tightfitskyscrapers D.tightfitskyscrapers
 handle f TurningFences        = f R.slither             D.slither
 handle f Summon               = f R.summon              D.summon
 handle f Baca                 = f R.baca                D.baca
+handle f Buchstabensalat      = f R.buchstabensalat     D.buchstabensalat
+handle f Doppelblock          = f R.doppelblock         D.doppelblock
+handle f SudokuDoppelblock    = f R.sudokuDoppelblock   D.sudokuDoppelblock
 
 -- | Handler that parses a puzzle from a YAML value, and renders.
 drawPuzzle :: PuzzleHandler b (Value -> Parser (Diagram b R2))

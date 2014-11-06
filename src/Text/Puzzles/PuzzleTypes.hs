@@ -7,7 +7,8 @@ module Text.Puzzles.PuzzleTypes (
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, countnumbers, tapa, japanesesums, coral,
     maximallengths, primeplace, labyrinth, bahnhof, blackoutDominos,
-    angleloop, anglers, cave, skyscrapers, summon, baca
+    angleloop, anglers, cave, skyscrapers, summon, baca,
+    buchstabensalat, doppelblock, sudokuDoppelblock
   ) where
 
 import Control.Applicative
@@ -190,3 +191,24 @@ baca = ( \v -> (,,) <$> parseFrom ["grid"] parseClueGrid v
         oc <- OC [] <$> parseLine r <*> parseLine b <*> pure []
         return $ fmap blankToMaybe' oc
     parseBottomRight _ = empty
+
+buchstabensalat :: ParsePuzzle (OutsideClues (Maybe Char)) (SGrid (Maybe Char))
+buchstabensalat =
+    ( \v -> fmap blankToMaybe <$> parseCharOutside v
+    , parseClueGrid
+    )
+
+doppelblock :: ParsePuzzle (OutsideClues (Maybe Int)) ()
+doppelblock =
+    ( \v -> fmap (blankToMaybe' . unEither') <$> parseOutside v
+    , error "doppelblock solution not implemented"
+    )
+
+sudokuDoppelblock :: ParsePuzzle (AreaGrid, OutsideClues (Maybe Int)) ()
+sudokuDoppelblock =
+    ( \v -> (,) <$> parseFrom ["grid"] parseGrid v
+                <*> parseFrom ["outside"] parseOutInts v
+    , error "solution not implemented"
+    )
+  where
+    parseOutInts v = fmap (blankToMaybe' . unEither') <$> parseOutside v

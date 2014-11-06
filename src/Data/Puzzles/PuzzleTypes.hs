@@ -59,6 +59,9 @@ data PuzzleType = LITS
                 | TurningFences
                 | Summon
                 | Baca
+                | Buchstabensalat
+                | Doppelblock
+                | SudokuDoppelblock
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -110,6 +113,9 @@ typeNames = [ (LITS, "lits")
             , (TurningFences, "turning-fences")
             , (Summon, "summon")
             , (Baca, "baca")
+            , (Buchstabensalat, "buchstabensalat")
+            , (Doppelblock, "doppelblock")
+            , (SudokuDoppelblock, "sudoku-doppelblock")
             ]
 
 -- | Look up a puzzle type by name.
