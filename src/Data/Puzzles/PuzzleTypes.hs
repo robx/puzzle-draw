@@ -48,6 +48,9 @@ data PuzzleType = LITS
                 | SlitherLinkMulti
                 | AngleLoop
                 | Anglers
+                | Dominos
+                | FillominoCheckered
+                | FillominoLoop
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -88,6 +91,9 @@ typeNames = [ (LITS, "lits")
             , (SlitherLinkMulti, "slitherlink-multi")
             , (AngleLoop, "angleloop")
             , (Anglers, "anglers")
+            , (Dominos, "dominos")
+            , (FillominoCheckered, "fillomino-checkered")
+            , (FillominoLoop, "fillomino-loop")
             ]
 
 -- | Look up a puzzle type by name.
