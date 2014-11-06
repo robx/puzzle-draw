@@ -78,14 +78,17 @@ dashes = [5 / 40, 3 / 40]
 dashoffset :: Double
 dashoffset = 2.5 / 40
 
+gridDashing :: (Semigroup a, HasStyle a, V a ~ R2) => a -> a
+gridDashing = bgdashingG dashes dashoffset white'
+  where
+    white' = blend 0.95 white black
+
 -- | Draw a square grid with dashed grid lines. The gaps
 --   between dashes are off-white to aid in using filling
 --   tools.
 dashedgrid :: (Backend b R2, Renderable (Path R2) b) =>
               Size -> Diagram b R2
-dashedgrid = grid' $ bgdashingG dashes dashoffset white'
-  where
-    white' = blend 0.95 white black
+dashedgrid = grid' gridDashing
 
 edgePath :: Edge' (Vertex Square) -> Path R2
 edgePath (E' v R) = p2i v ~~ p2i (v ^+^ (1,0))
