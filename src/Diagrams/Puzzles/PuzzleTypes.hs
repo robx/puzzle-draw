@@ -241,14 +241,14 @@ bahnhof = (,)
     drawClueGrid
     undefined
 
-blackoutDominos :: (Backend b R2, Renderable (Path R2) b) =>
+blackoutDominos :: Backend' b =>
                    RenderPuzzle b (SGrid (Clue Int)) ()
 blackoutDominos = (,)
     (irregularGrid <> atCentres drawInt . clues)
     undefined
 
 angleLoop ::
-    (Backend b R2, Renderable (Path R2) b) =>
+    Backend' b =>
     RenderPuzzle b (SGrid (Clue Int)) ()
 angleLoop = (,)
     (atVertices drawAnglePoly . clues <> plaingrid . size')
@@ -257,7 +257,7 @@ angleLoop = (,)
     size' g = let (w, h) = size g in (w-1, h-1)
 
 anglers ::
-    (Backend b R2, Renderable (Path R2) b) =>
+    Backend' b =>
     RenderPuzzle b (OutsideClues (Clue Int), SGrid (Maybe Fish)) ()
 anglers = (,)
     (atCentres drawInt . outsideClues . fst <>
@@ -266,7 +266,7 @@ anglers = (,)
     undefined
 
 cave ::
-    (Backend b R2, Renderable (Path R2) b) =>
+    Backend' b =>
     RenderPuzzle b (SGrid (Clue Int)) ShadedGrid
 cave = (,)
     g
@@ -275,7 +275,7 @@ cave = (,)
     g = (gridDashing . plaingrid . size <> atCentres drawInt . clues)
 
 skyscrapers ::
-    (Backend b R2, Renderable (Path R2) b) =>
+    Backend' b =>
     RenderPuzzle b (OutsideClues (Maybe Int)) IntGrid
 skyscrapers = (,)
     g
@@ -285,7 +285,7 @@ skyscrapers = (,)
         <> grid . outsideSize
 
 summon ::
-    (Backend b R2, Renderable (Path R2) b) =>
+    Backend' b =>
     RenderPuzzle b (AreaGrid, OutsideClues (Maybe Int)) IntGrid
 summon = (,)
     p
@@ -295,7 +295,7 @@ summon = (,)
                 <> atCentres (scale 0.5 . drawInt) (outsideClues oc)
 
 baca ::
-    (Backend b R2, Renderable (Path R2) b) =>
+    Backend' b =>
     RenderPuzzle b (SGrid (Maybe Char), OutsideClues [Int], OutsideClues (Maybe Char)) ()
 baca = (p, undefined)
   where
@@ -304,7 +304,7 @@ baca = (p, undefined)
               <> atCentres (scale 0.8 . drawChar) (outsideClues br)
 
 buchstabensalat ::
-    (Backend b R2, Renderable (Path R2) b) =>
+    Backend' b =>
     RenderPuzzle b (OutsideClues (Maybe Char)) (SGrid (Maybe Char))
 buchstabensalat = (p, p . fst <> atCentres drawChar . clues . snd)
   where
@@ -312,7 +312,7 @@ buchstabensalat = (p, p . fst <> atCentres drawChar . clues . snd)
         <> grid . outsideSize
 
 doppelblock ::
-    (Backend b R2, Renderable (Path R2) b) =>
+    Backend' b =>
     RenderPuzzle b (OutsideClues (Maybe Int)) ()
 doppelblock = (,)
     (atCentres (scale 0.8 . drawInt) . outsideClues <> grid . outsideSize)
@@ -320,7 +320,7 @@ doppelblock = (,)
 
 
 sudokuDoppelblock ::
-    (Backend b R2, Renderable (Path R2) b) =>
+    Backend' b =>
     RenderPuzzle b (AreaGrid, OutsideClues (Maybe Int)) ()
 sudokuDoppelblock = (,)
     (atCentres (scale 0.8 . drawInt) . outsideClues . snd

@@ -171,7 +171,7 @@ drawPrimeDiag (PrimeDiag d) = stroke p # lwG (3 * onepix) # lc (blend 0.5 gray w
                   (False, True)  -> dr
                   (True,  True)  -> ur <> dr
 
-drawAnglePoly :: (Backend b R2, Renderable (Path R2) b) =>
+drawAnglePoly :: Backend' b =>
                  Int -> Diagram b R2
 drawAnglePoly 3 = stroke (triangle 0.3) # fc black
 drawAnglePoly 4 = stroke (square 0.25) # fc gray
