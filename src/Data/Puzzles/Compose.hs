@@ -1,4 +1,5 @@
 {-# LANGUAGE MultiParamTypeClasses, FlexibleContexts, RankNTypes #-}
+{-# LANGUAGE ConstraintKinds #-}
 
 -- |
 -- Helpers to string together parser and renderer by puzzle type.
@@ -22,6 +23,7 @@ import Data.Traversable (traverse)
 
 import Text.Puzzles.Puzzle
 import Diagrams.Puzzles.Draw
+import Diagrams.Puzzles.Lib
 import Data.Puzzles.PuzzleTypes
 
 import qualified Text.Puzzles.PuzzleTypes as R
@@ -35,7 +37,7 @@ type PuzzleHandler b a = forall p q.
 
 -- | @handle h t@ composes the parser and renderer for the puzzle
 --   type @t@ with the handler @h@.
-handle :: (Backend b R2, Renderable (Path R2) b) =>
+handle :: Backend' b =>
         PuzzleHandler b a -> PuzzleType -> a
 handle f LITS                 = f R.lits                D.lits
 handle f LITSPlus             = f R.litsplus            D.litsplus

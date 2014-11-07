@@ -1,4 +1,7 @@
-{-# LANGUAGE MultiParamTypeClasses, FlexibleContexts #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE ConstraintKinds #-}
 
 -- | Module: Diagrams.TwoD.Puzzles.Elements
 --
@@ -17,14 +20,14 @@ import Diagrams.Puzzles.Lib
 import Diagrams.Puzzles.Widths
 import Diagrams.Puzzles.Grid
 
-pearl :: (Renderable (Path R2) b, Backend b R2) =>
+pearl :: Backend' b =>
          MasyuPearl -> Diagram b R2
 pearl m = circle 0.35 # lwG 0.05 # fc (c m)
   where
     c MWhite = white
     c MBlack = black
 
-smallPearl :: (Renderable (Path R2) b, Backend b R2) =>
+smallPearl :: Backend' b =>
               MasyuPearl -> Diagram b R2
 smallPearl = scale 0.4 . pearl
 
@@ -41,11 +44,11 @@ cross :: Path R2
 cross = ur <> dr
 
 -- | Draw a cross.
-drawCross :: Renderable (Path R2) b => Diagram b R2
+drawCross :: Backend' b => Diagram b R2
 drawCross = stroke cross # scale 0.8 # lwG edgewidth
 
 -- | Draw a Compass clue.
-drawCompassClue :: (Renderable (Path R2) b, Backend b R2) =>
+drawCompassClue :: Backend' b =>
                    CompassC -> Diagram b R2
 drawCompassClue (CC n e s w) = texts <> stroke cross # lwG onepix
     where tx Nothing _ = mempty
@@ -72,7 +75,7 @@ drawThermos = mconcat . map (thermo . map p2i)
 
 -- | @drawTight d t@ draws the tight-fit value @t@, using @d@ to
 -- draw the components.
-drawTight :: (Renderable (Path R2) b, Backend b R2) =>
+drawTight :: Backend' b =>
              (a -> Diagram b R2) -> Tightfit a -> Diagram b R2
 drawTight d (Single x) = d x
 drawTight d (UR x y) = stroke ur # lwG onepix
@@ -87,7 +90,7 @@ drawTight d (DR x y) = stroke dr # lwG onepix
           s = 2/3
 
 -- | Stack the given words, left-justified.
-stackWords :: (Backend b R2, Renderable (Path R2) b) => [String] -> QDiagram b R2 Any
+stackWords :: Backend' b => [String] -> QDiagram b R2 Any
 stackWords = vcat' with {_sep = 0.1} . scale 0.8 . map (alignL . text')
 
 -- | Mark a word in a grid of letters.
@@ -100,28 +103,28 @@ drawMarkedWords :: (Renderable (Path R2) b) => [MarkedWord] -> QDiagram b R2 Any
 drawMarkedWords = mconcat . map drawMarkedWord
 
 -- | Draw a slalom clue.
-drawSlalomClue :: (Show a, Renderable (Path R2) b, Backend b R2) =>
+drawSlalomClue :: (Show a, Backend' b) =>
                   a -> Diagram b R2
 drawSlalomClue x = text' (show x) # scale 0.75
                    <> circle 0.4 # fc white # lwG onepix
 
 -- | Draw text. Shouldn't be more than two characters or so to fit a cell.
-drawText :: (Backend b R2, Renderable (Path R2) b) => String -> QDiagram b R2 Any
+drawText :: Backend' b => String -> QDiagram b R2 Any
 drawText = text'
 
 -- | Draw an @Int@.
-drawInt :: (Renderable (Path R2) b, Backend b R2) =>
+drawInt :: Backend' b =>
            Int -> Diagram b R2
 drawInt s = drawText (show s)
 
 -- | Draw a character.
-drawChar :: (Renderable (Path R2) b, Backend b R2) =>
+drawChar :: Backend' b =>
             Char -> Diagram b R2
 drawChar c = drawText [c]
 
 -- | Stack a list of words into a unit square. Scaled such that at least
 -- three words will fit.
-drawWords :: (Renderable (Path R2) b, Backend b R2) =>
+drawWords :: Backend' b =>
              [String] -> Diagram b R2
 drawWords ws = spread (-1.0 *^ unitY)
                       (map (centerXY . scale 0.4 . drawText) ws)
@@ -144,7 +147,7 @@ drawShade (Shade s w) = (if s then south else mempty) <>
 
 -- | Draws the digits of a tapa clue, ordered
 --   left to right, top to bottom.
-drawTapaClue :: (Backend b R2, Renderable (Path R2) b) =>
+drawTapaClue :: Backend' b =>
                 TapaClue -> Diagram b R2
 drawTapaClue (TapaClue [x]) = drawInt x
 drawTapaClue (TapaClue xs)  = fit 0.8
@@ -159,7 +162,7 @@ drawTapaClue (TapaClue xs)  = fit 0.8
     p' 1 = error "singleton clues handled separately"
     p' _ = error "invalid tapa clue"
 
-drawPrimeDiag :: (Backend b R2, Renderable (Path R2) b) =>
+drawPrimeDiag :: Backend' b =>
                  PrimeDiag -> Diagram b R2
 drawPrimeDiag (PrimeDiag d) = stroke p # lwG (3 * onepix) # lc (blend 0.5 gray white)
   where

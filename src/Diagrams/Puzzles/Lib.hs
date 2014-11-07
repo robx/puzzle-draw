@@ -1,15 +1,19 @@
 {-# LANGUAGE MultiParamTypeClasses, FlexibleContexts, TypeFamilies #-}
+{-# LANGUAGE ConstraintKinds #-}
 
 module Diagrams.Puzzles.Lib where
 
 import Diagrams.Prelude
+import Diagrams.TwoD.Text (Text)
 
 import Graphics.SVGFonts.ReadFont
-
 import Control.Arrow ((***))
 
+--type Backend' b = (Renderable (Path R2) b, Renderable Text b, Backend b R2)
+type Backend' b = (Renderable (Path R2) b, Backend b R2)
+
 -- | Vertical/horizontal stroked line of given length.
-vline, hline :: Renderable (Path R2) b => Double -> Diagram b R2
+vline, hline :: Backend' b => Double -> Diagram b R2
 vline n = strokeLine . fromVertices . map p2 $ [(0, 0), (0, n)]
 hline n = strokeLine . fromVertices . map p2 $ [(0, 0), (n, 0)]
 
