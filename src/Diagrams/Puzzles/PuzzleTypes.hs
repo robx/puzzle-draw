@@ -12,7 +12,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     coral, maximallengths, primeplace, labyrinth, bahnhof
   ) where
 
-import Diagrams.Prelude hiding (Loop, coral)
+import Diagrams.Prelude hiding (Loop, coral, size)
 
 import Diagrams.Puzzles.PuzzleGrids
 import Diagrams.Puzzles.Draw
@@ -35,7 +35,7 @@ lits = (,)
 litsplus :: Backend' b => RenderPuzzle b AreaGrid ShadedGrid
 litsplus = lits
 
-solstyle :: (HasStyle a, V a ~ R2) => a -> a
+solstyle :: (HasStyle a, InSpace V2 Double a) => a -> a
 solstyle = lc (blend 0.8 black white) . lwG (3 * onepix)
 
 geradeweg :: Backend' b => RenderPuzzle b IntGrid Loop
@@ -122,7 +122,7 @@ tightfitskyscrapers = (,)
      <> drawTightGrid drawInt . snd)
 
 wordgrid :: Backend' b =>
-            SGrid (Maybe Char) -> [String] -> Diagram b R2
+            SGrid (Maybe Char) -> [String] -> Diagram b
 wordgrid g ws = stackWords ws `besidesR` drawClueGrid g
 
 wordloop :: Backend' b =>

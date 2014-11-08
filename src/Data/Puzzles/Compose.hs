@@ -1,5 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses, FlexibleContexts, RankNTypes #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE TypeFamilies #-}
 
 -- |
 -- Helpers to string together parser and renderer by puzzle type.
@@ -71,7 +72,7 @@ handle f Labyrinth            = f R.labyrinth           D.labyrinth
 handle f Bahnhof              = f R.bahnhof             D.bahnhof
 
 -- | Handler that parses a puzzle from a YAML value, and renders.
-drawPuzzle :: PuzzleHandler b (Value -> Parser (Diagram b R2))
+drawPuzzle :: PuzzleHandler b (Value -> Parser (Diagram b))
 drawPuzzle (pp, _) (dp, _) p = do
     p' <- pp p
     return $ dp p'
@@ -79,7 +80,7 @@ drawPuzzle (pp, _) (dp, _) p = do
 -- | Handler that parses puzzle and solution from a pair of corresponding
 --   YAML values, and renders both individually.
 drawPuzzleSol :: PuzzleHandler b ((Value, Value)
-                 -> Parser (Diagram b R2, Diagram b R2))
+                 -> Parser (Diagram b, Diagram b))
 drawPuzzleSol (pp, ps) (dp, ds) (p, s) = do
     p' <- pp p
     s' <- ps s
@@ -89,7 +90,7 @@ drawPuzzleSol (pp, ps) (dp, ds) (p, s) = do
 --   corresponding YAML values, and renders both individually, optionally
 --   for the solution.
 drawPuzzleMaybeSol :: PuzzleHandler b ((Value, Maybe Value)
-                      -> Parser (Diagram b R2, Maybe (Diagram b R2)))
+                      -> Parser (Diagram b, Maybe (Diagram b)))
 drawPuzzleMaybeSol (pp, ps) (dp, ds) (p, s) = do
     p' <- pp p
     s' <- traverse ps s
@@ -99,7 +100,7 @@ drawPuzzleMaybeSol (pp, ps) (dp, ds) (p, s) = do
 
 -- | Variant of 'drawPuzzle' that accepts a pair of puzzle YAML value and
 --   optional solution YAML value.
-drawPuzzle' :: PuzzleHandler b ((Value, Maybe Value) -> Parser (Diagram b R2))
+drawPuzzle' :: PuzzleHandler b ((Value, Maybe Value) -> Parser (Diagram b))
 drawPuzzle' (pp, _) (dp, _) (p, _) = do
     p' <- pp p
     return $ dp p'
@@ -107,7 +108,7 @@ drawPuzzle' (pp, _) (dp, _) (p, _) = do
 -- | Handler that accepts a pair of puzzle YAML value and optional solution
 --   YAML value, and renders the solution, failing if the solution is not
 --   provided.
-drawSolution' :: PuzzleHandler b ((Value, Maybe Value) -> Parser (Diagram b R2))
+drawSolution' :: PuzzleHandler b ((Value, Maybe Value) -> Parser (Diagram b))
 drawSolution' (pp, ps) (_, ds) (p, ms) = do
     p' <- pp p
     s' <- maybe (fail "no solution provided") ps ms
@@ -115,7 +116,7 @@ drawSolution' (pp, ps) (_, ds) (p, ms) = do
 
 -- | Like 'drawSolution'', but renders puzzle and solution in example layout.
 drawExample' :: Backend' b =>
-                PuzzleHandler b ((Value, Maybe Value) -> Parser (Diagram b R2))
+                PuzzleHandler b ((Value, Maybe Value) -> Parser (Diagram b))
 drawExample' (pp, ps) (dp, ds) (p, ms) = do
     p' <- pp p
     s' <- maybe (fail "no solution provided") ps ms

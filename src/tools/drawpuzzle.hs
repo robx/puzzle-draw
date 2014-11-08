@@ -73,7 +73,7 @@ toRenderOpts oc w opts = RenderOpts out w'
     base = takeBaseName (_input opts)
     out = addExtension (base ++ outputSuffix oc) f
 
-renderPuzzle :: PuzzleOpts -> (OutputChoice -> Maybe (Diagram B R2)) ->
+renderPuzzle :: PuzzleOpts -> (OutputChoice -> Maybe (Diagram B)) ->
                 (OutputChoice, Bool) -> IO ()
 renderPuzzle opts r (oc, req) = do
     let x = r oc

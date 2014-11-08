@@ -1,5 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
 
 module Diagrams.Puzzles.Draw (
@@ -18,9 +19,9 @@ import Diagrams.BoundingBox
 import Diagrams.Puzzles.Lib
 import Diagrams.Puzzles.Widths
 
-type RenderPuzzle b p s = (p -> Diagram b R2, (p, s) -> Diagram b R2)
+type RenderPuzzle b p s = (p -> Diagram b, (p, s) -> Diagram b)
 
-type PuzzleSol b = (Diagram b R2, Maybe (Diagram b R2))
+type PuzzleSol b = (Diagram b, Maybe (Diagram b))
 
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
     deriving Show
@@ -28,7 +29,7 @@ data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 -- | Optionally render the puzzle, its solution, or a side-by-side
 --   example with puzzle and solution.
 draw :: Backend' b =>
-        PuzzleSol b -> OutputChoice -> Maybe (Diagram b R2)
+        PuzzleSol b -> OutputChoice -> Maybe (Diagram b)
 draw (p, ms) = fmap (bg white) . d
   where
     fixup = alignPixel . border borderwidth
@@ -41,7 +42,7 @@ data Unit = Pixels | Points
 cmtopoint :: Double -> Double
 cmtopoint = (* 28.3464567)
 
-diagramWidth :: Diagram b R2 -> Double
+diagramWidth :: Backend' b => Diagram b -> Double
 diagramWidth = fst . unr2 . boxExtents . boundingBox
 
 toOutputWidth :: Unit -> Double -> Double
@@ -51,7 +52,7 @@ toOutputWidth u w = case u of Pixels -> fromIntegral wpix
     wpix = round (gridresd * w) :: Int  -- grid square size 40px
     wpt = cmtopoint (0.8 * w)     -- grid square size 0.8cm
 
-alignPixel :: Backend' b => Diagram b R2 -> Diagram b R2
+alignPixel :: Backend' b => Diagram b -> Diagram b
 alignPixel = scale (1/gridresd) . align' . scale gridresd
   where
     align' d = maybe id grow (getCorners $ boundingBox d) d
@@ -62,6 +63,6 @@ alignPixel = scale (1/gridresd) . align' . scale gridresd
     phantoml p q = phantom' $ p ~~ q
 
 -- | Add a phantom border of the given width around a diagram.
-border :: Backend' b => Double -> Diagram b R2 -> Diagram b R2
+border :: Backend' b => Double -> Diagram b -> Diagram b
 border w = extrudeEnvelope (w *^ unitX) . extrudeEnvelope (-w *^ unitX)
          . extrudeEnvelope (w *^ unitY) . extrudeEnvelope (-w *^ unitY)

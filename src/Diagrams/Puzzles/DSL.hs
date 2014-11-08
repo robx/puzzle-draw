@@ -51,7 +51,7 @@ dashed = GridDashed
 (<>) :: D.Semigroup a => a -> a -> a
 (<>) = (D.<>)
 
-type Diagram = D.Diagram B D.R2
+type Diagram = D.Diagram B
 
 data Env = Env
     { baseName :: String }
