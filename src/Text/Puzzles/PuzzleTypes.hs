@@ -146,8 +146,11 @@ labyrinth = (parseCellEdges, parseClueGrid')
 bahnhof :: ParsePuzzle (SGrid (Clue Char)) ()
 bahnhof = (parseClueGrid, error "bahnhof solution not implemented")
 
-blackoutDominos :: ParsePuzzle (SGrid (Clue Int)) ()
-blackoutDominos = (parseIrregGrid, error "blackout solution not implemented")
+blackoutDominos :: ParsePuzzle (SGrid (Clue Int)) (SGrid (Clue Int), AreaGrid)
+blackoutDominos = (,)
+    parseIrregGrid
+    (\v -> (,) <$> parseFrom ["values"] parseIrregGrid v
+               <*> parseFrom ["dominos"] parseIrregGrid v)
 
 angleloop :: ParsePuzzle (SGrid (Clue Int)) VertexLoop
 angleloop = (parseClueGrid, parseCoordLoop)
