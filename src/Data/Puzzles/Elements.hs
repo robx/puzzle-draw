@@ -67,3 +67,4 @@ newtype PrimeDiag = PrimeDiag (Bool, Bool)
 
 data Black = Black
 data Fish = Fish
+data Star = Star

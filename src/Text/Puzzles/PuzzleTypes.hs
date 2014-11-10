@@ -8,7 +8,8 @@ module Text.Puzzles.PuzzleTypes (
     afternoonskyscrapers, countnumbers, tapa, japanesesums, coral,
     maximallengths, primeplace, labyrinth, bahnhof, blackoutDominos,
     angleloop, anglers, cave, skyscrapers, summon, baca,
-    buchstabensalat, doppelblock, sudokuDoppelblock, dominos
+    buchstabensalat, doppelblock, sudokuDoppelblock, dominos,
+    skyscrapersStars
   ) where
 
 import Control.Applicative
@@ -162,18 +163,22 @@ anglers = ( parseOutsideGridMap blankToMaybe blankToMaybe'
 cave :: ParsePuzzle (SGrid (Clue Int)) ShadedGrid
 cave = (parseClueGrid, parseShadedGrid)
 
+parseOut :: FromJSON a =>
+            Value -> Parser (OutsideClues (Maybe a))
+parseOut v = fmap (blankToMaybe' . unEither') <$> parseOutside v
+
 skyscrapers :: ParsePuzzle (OutsideClues (Maybe Int)) IntGrid
 skyscrapers = (parseOut, parseClueGrid)
-  where
-    parseOut v = fmap (blankToMaybe' . unEither') <$> parseOutside v
+
+skyscrapersStars :: ParsePuzzle (OutsideClues (Maybe Int))
+                                (SGrid (Either Int Star))
+skyscrapersStars = (parseOut, parseGrid)
 
 summon :: ParsePuzzle (AreaGrid, OutsideClues (Maybe Int)) IntGrid
 summon = ( \v -> (,) <$> parseFrom ["grid"] parseGrid v
                      <*> parseFrom ["outside"] parseOut v
          , parseClueGrid
          )
-  where
-    parseOut v = fmap (blankToMaybe' . unEither') <$> parseOutside v
 
 baca :: ParsePuzzle
             (SGrid (Maybe Char), OutsideClues [Int], OutsideClues (Maybe Char))

@@ -190,5 +190,9 @@ drawFish :: Backend' b =>
             Fish -> Diagram b R2
 drawFish Fish = stroke $ fish 0.65 (10 @@ deg)
 
+drawStar :: Backend' b =>
+            Star -> Diagram b R2
+drawStar Star = fc black . stroke . star (StarSkip 2) $ pentagon 0.3
+
 vertexLoop :: VertexLoop -> Located (Trail' Loop R2)
 vertexLoop = mapLoc closeLine . fromVertices . map p2i

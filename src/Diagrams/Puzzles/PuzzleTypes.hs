@@ -12,7 +12,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     coral, maximallengths, primeplace, labyrinth, bahnhof,
     blackoutDominos, angleLoop, anglers, cave, skyscrapers,
     summon, baca, buchstabensalat, doppelblock, sudokuDoppelblock,
-    dominos
+    dominos, skyscrapersStars
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -286,6 +286,16 @@ skyscrapers ::
 skyscrapers = (,)
     g
     (g . fst <> atCentres drawInt . clues . snd)
+  where
+    g = atCentres drawInt . outsideClues
+        <> grid . outsideSize
+
+skyscrapersStars ::
+    Backend' b =>
+    RenderPuzzle b (OutsideClues (Maybe Int)) (SGrid (Either Int Star))
+skyscrapersStars = (,)
+    g
+    (g . fst <> atCentres (either drawInt drawStar) . values . snd)
   where
     g = atCentres drawInt . outsideClues
         <> grid . outsideSize

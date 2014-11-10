@@ -204,6 +204,10 @@ instance FromChar Fish where
     parseChar '*' = pure Fish
     parseChar _   = empty
 
+instance FromChar Star where
+    parseChar '*' = pure Star
+    parseChar _   = empty
+
 instance (FromChar a, FromChar b) => FromChar (Either a b) where
     parseChar c = Left <$> parseChar c <|> Right <$> parseChar c
 
