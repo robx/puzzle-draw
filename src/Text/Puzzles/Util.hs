@@ -9,7 +9,9 @@ import Control.Arrow
 import Control.Monad hiding (mapM)
 
 import Data.Hashable
+import Data.List (sortBy)
 import Data.Maybe (catMaybes, fromMaybe)
+import Data.Ord (comparing)
 import qualified Data.Map as Map
 import qualified Data.HashMap.Strict as HMap
 import Data.Traversable (traverse, sequenceA, mapM, Traversable)
@@ -590,3 +592,9 @@ instance FromChar PrimeDiag where
     parseChar '\\' = pure $ PrimeDiag (False, True)
     parseChar 'X'  = pure $ PrimeDiag (True,  True)
     parseChar _    = empty
+
+parseCoordLoop :: Value -> Parser VertexLoop
+parseCoordLoop v = sortCoords <$> parseClueGrid v
+  where
+    sortCoords :: SGrid (Maybe Char) -> VertexLoop
+    sortCoords = map fst . sortBy (comparing snd) . clues
