@@ -163,8 +163,9 @@ cave :: ParsePuzzle (SGrid (Clue Int)) ShadedGrid
 cave = (parseClueGrid, parseShadedGrid)
 
 skyscrapers :: ParsePuzzle (OutsideClues (Maybe Int)) IntGrid
-skyscrapers = (\v -> fmap blankToMaybe <$> parseCharOutside v,
-               parseClueGrid)
+skyscrapers = (parseOut, parseClueGrid)
+  where
+    parseOut v = fmap (blankToMaybe' . unEither') <$> parseOutside v
 
 summon :: ParsePuzzle (AreaGrid, OutsideClues (Maybe Int)) IntGrid
 summon = ( \v -> (,) <$> parseFrom ["grid"] parseGrid v
