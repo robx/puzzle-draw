@@ -365,11 +365,15 @@ doppelblock = (,)
 
 sudokuDoppelblock ::
     Backend' b =>
-    RenderPuzzle b (AreaGrid, OutsideClues (Maybe Int)) ()
+    RenderPuzzle b (AreaGrid, OutsideClues (Maybe Int)) (SGrid (Either Black Int))
 sudokuDoppelblock = (,)
-    (atCentres (scale 0.8 . drawInt) . outsideClues . snd
-     <> drawAreaGrid . fst)
-    undefined
+    p
+    (p . fst <> atCentres drawVal . values . snd)
+  where
+    p = (atCentres (scale 0.8 . drawInt) . outsideClues . snd
+         <> drawAreaGrid . fst)
+    drawVal (Right c) = drawInt c
+    drawVal (Left _) = fillBG gray
 
 dominos ::
     Backend' b =>

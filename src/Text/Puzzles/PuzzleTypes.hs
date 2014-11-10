@@ -214,11 +214,12 @@ doppelblock =
     , parseGrid
     )
 
-sudokuDoppelblock :: ParsePuzzle (AreaGrid, OutsideClues (Maybe Int)) ()
+sudokuDoppelblock :: ParsePuzzle (AreaGrid, OutsideClues (Maybe Int))
+                                 (SGrid (Either Black Int))
 sudokuDoppelblock =
     ( \v -> (,) <$> parseFrom ["grid"] parseGrid v
                 <*> parseFrom ["outside"] parseOutInts v
-    , error "solution not implemented"
+    , parseGrid
     )
   where
     parseOutInts v = fmap (blankToMaybe' . unEither') <$> parseOutside v
