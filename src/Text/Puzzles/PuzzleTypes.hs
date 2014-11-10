@@ -30,8 +30,8 @@ litsplus = lits
 geradeweg :: ParsePuzzle (SGrid (Clue Int)) Loop
 geradeweg = (parseClueGrid, parseEdges)
 
-fillomino :: ParsePuzzle IntGrid IntGrid
-fillomino = (parseClueGrid, parseClueGrid)
+fillomino :: ParsePuzzle IntGrid (SGrid Int)
+fillomino = (parseClueGrid, parseGrid)
 
 masyu :: ParsePuzzle (SGrid (Clue MasyuPearl)) Loop
 masyu = (parseClueGrid, parseEdges)

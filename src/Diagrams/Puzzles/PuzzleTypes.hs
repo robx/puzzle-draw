@@ -44,10 +44,10 @@ geradeweg = (,)
      <> solstyle . drawDualEdges . snd
      <> grid . size . fst)
 
-fillomino :: Backend' b => RenderPuzzle b IntGrid IntGrid
+fillomino :: Backend' b => RenderPuzzle b IntGrid (SGrid Int)
 fillomino = (,)
     drawFillo
-    (drawFillo . snd)
+    (drawFillo . fmap Just . snd)
 
 masyu :: Backend' b =>
          RenderPuzzle b (SGrid (Clue MasyuPearl)) Loop
