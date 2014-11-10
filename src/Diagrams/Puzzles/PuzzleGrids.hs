@@ -16,10 +16,6 @@ import Diagrams.Puzzles.Grid
 import Diagrams.Puzzles.Widths
 import Diagrams.Puzzles.Elements
 
-drawFillo :: Backend' b =>
-             SGrid (Clue Int) -> Diagram b R2
-drawFillo = drawIntClues <> dashedgrid . size
-
 drawClueGrid :: Backend' b =>
                 SGrid (Clue Char) -> Diagram b R2
 drawClueGrid = atCentres drawChar . clues <> grid . size

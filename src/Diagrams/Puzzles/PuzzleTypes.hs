@@ -46,8 +46,8 @@ geradeweg = (,)
 
 fillomino :: Backend' b => RenderPuzzle b IntGrid (SGrid Int)
 fillomino = (,)
-    drawFillo
-    (drawFillo . fmap Just . snd)
+    (atCentres drawInt . clues <> dashedgrid . size)
+    ((atCentres drawInt . values <> drawEdges . borders <> dashedgrid . size) . snd)
 
 masyu :: Backend' b =>
          RenderPuzzle b (SGrid (Clue MasyuPearl)) Loop
