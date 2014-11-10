@@ -8,7 +8,7 @@ module Text.Puzzles.PuzzleTypes (
     afternoonskyscrapers, countnumbers, tapa, japanesesums, coral,
     maximallengths, primeplace, labyrinth, bahnhof, blackoutDominos,
     angleloop, anglers, cave, skyscrapers, summon, baca,
-    buchstabensalat, doppelblock, sudokuDoppelblock
+    buchstabensalat, doppelblock, sudokuDoppelblock, dominos
   ) where
 
 import Control.Applicative
@@ -215,3 +215,6 @@ sudokuDoppelblock =
     )
   where
     parseOutInts v = fmap (blankToMaybe' . unEither') <$> parseOutside v
+
+dominos :: ParsePuzzle (SGrid (Maybe Int)) AreaGrid
+dominos = (parseClueGrid, parseGrid)

@@ -11,7 +11,8 @@ module Diagrams.Puzzles.PuzzleTypes (
     afternoonskyscrapers, countnumbers, tapa, japanesesums,
     coral, maximallengths, primeplace, labyrinth, bahnhof,
     blackoutDominos, angleLoop, anglers, cave, skyscrapers,
-    summon, baca, buchstabensalat, doppelblock, sudokuDoppelblock
+    summon, baca, buchstabensalat, doppelblock, sudokuDoppelblock,
+    dominos
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -331,3 +332,10 @@ sudokuDoppelblock = (,)
     (atCentres (scale 0.8 . drawInt) . outsideClues . snd
      <> drawAreaGrid . fst)
     undefined
+
+dominos ::
+    Backend' b =>
+    RenderPuzzle b (SGrid (Clue Int)) AreaGrid
+dominos = (,)
+    (atCentres drawInt . clues <> grid . size)
+    (atCentres drawInt . clues . fst <> drawAreaGridGray . snd)
