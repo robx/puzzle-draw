@@ -20,6 +20,7 @@ import Diagrams.Puzzles.Grid
 import qualified Diagrams.Puzzles.Pyramid as DPyr
 import Diagrams.Puzzles.Elements
 import Diagrams.Puzzles.Lib
+import Diagrams.Puzzles.Widths
 
 import Data.Puzzles.Grid
 import Data.Puzzles.GridShape (Edge)
@@ -35,7 +36,7 @@ litsplus :: Backend' b => RenderPuzzle b AreaGrid ShadedGrid
 litsplus = lits
 
 solstyle :: (HasStyle a, V a ~ R2) => a -> a
-solstyle = lc (blend 0.8 black white)
+solstyle = lc (blend 0.8 black white) . lwG (3 * onepix)
 
 geradeweg :: Backend' b => RenderPuzzle b IntGrid Loop
 geradeweg = (,)
