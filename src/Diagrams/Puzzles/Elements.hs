@@ -13,7 +13,7 @@ module Diagrams.Puzzles.Elements where
 import Diagrams.Prelude
 import Diagrams.TwoD.Offset
 
-import Data.Puzzles.Elements
+import Data.Puzzles.Elements hiding (Loop)
 import Data.Puzzles.GridShape
 
 import Diagrams.Puzzles.Lib
@@ -189,3 +189,6 @@ fish off startAngle = fit 0.6 . centerXY $ half <> half # reflectY
 drawFish :: Backend' b =>
             Fish -> Diagram b R2
 drawFish Fish = stroke $ fish 0.65 (10 @@ deg)
+
+vertexLoop :: VertexLoop -> Located (Trail' Loop R2)
+vertexLoop = mapLoc closeLine . fromVertices . map p2i

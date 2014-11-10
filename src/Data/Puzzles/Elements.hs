@@ -36,6 +36,10 @@ data MarkedWord = MW { mwstart :: Coord, mwend :: Coord }
 -- | A loop of edges.
 type Loop = [Edge]
 
+-- | A loop consisting of straight segments of arbitrary
+-- angles between vertices.
+type VertexLoop = [Coord]
+
 -- | A thermometer, as a list of coordinates from bulb to end.
 --   There should be at least two entries, entries should be distinct,
 --   and successive entries should be neighbours (diagonal neighbours
