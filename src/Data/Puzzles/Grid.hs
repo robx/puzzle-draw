@@ -63,7 +63,7 @@ size :: GridShape s => Grid s a -> GridSize s
 size = GS.size . shape
 
 cells :: GridShape s => Grid s a -> [Cell s]
-cells = GS.cells . shape
+cells = Map.keys . contents
 
 inBounds :: (GridShape s, Eq (Cell s)) => Grid s a -> Cell s -> Bool
 inBounds g c = c `elem` cells g
