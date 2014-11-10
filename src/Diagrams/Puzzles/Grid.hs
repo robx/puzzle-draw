@@ -1,4 +1,5 @@
 {-# LANGUAGE MultiParamTypeClasses, FlexibleContexts, TypeFamilies #-}
+{-# LANGUAGE ConstraintKinds #-}
 
 module Diagrams.Puzzles.Grid where
 
@@ -175,6 +176,13 @@ drawAreaGridGray = drawAreaGrid <> shadeGrid . fmap cols
   where
     cols c | isUpper c  = Just (blend 0.1 black white)
            | otherwise  = Nothing
+
+irregAreaGridX :: Backend' b =>
+                      SGrid Char -> Diagram b R2
+irregAreaGridX = irregularGrid <> drawEdges . borders <> shadeGrid . fmap cols
+  where
+    cols 'X' = Just gray
+    cols _   = Nothing
 
 -- Place a list of diagrams along a ray, with steps of size
 -- @f@.
