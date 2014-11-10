@@ -249,11 +249,15 @@ blackoutDominos = (,)
 
 angleLoop ::
     Backend' b =>
-    RenderPuzzle b (SGrid (Clue Int)) ()
+    RenderPuzzle b (SGrid (Clue Int)) VertexLoop
 angleLoop = (,)
-    (atVertices drawAnglePoly . clues <> plaingrid . size')
-    undefined
+    (cs <> gr)
+    (cs . fst
+     <> lineJoin LineJoinBevel . solstyle . strokeLocLoop . vertexLoop . snd
+     <> gr . fst)
   where
+    cs = atVertices drawAnglePoly . clues
+    gr = plaingrid . size'
     size' g = let (w, h) = size g in (w-1, h-1)
 
 anglers ::

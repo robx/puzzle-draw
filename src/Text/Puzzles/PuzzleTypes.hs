@@ -149,8 +149,8 @@ bahnhof = (parseClueGrid, error "bahnhof solution not implemented")
 blackoutDominos :: ParsePuzzle (SGrid (Clue Int)) ()
 blackoutDominos = (parseIrregGrid, error "blackout solution not implemented")
 
-angleloop :: ParsePuzzle (SGrid (Clue Int)) ()
-angleloop = (parseClueGrid, error "angleloop solution not implemented")
+angleloop :: ParsePuzzle (SGrid (Clue Int)) VertexLoop
+angleloop = (parseClueGrid, parseCoordLoop)
 
 anglers :: ParsePuzzle (OutsideClues (Maybe Int), SGrid (Maybe Fish)) ()
 anglers = ( parseOutsideGridMap blankToMaybe blankToMaybe'
