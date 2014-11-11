@@ -78,11 +78,11 @@ clues g = [ (k, v) | (k, Just v) <- values g ]
 values :: GridShape s => Grid s a -> [(Cell s, a)]
 values (Grid _ m) = Map.toList m
 
-edgesP :: (a -> a -> Bool) -> Grid Square a -> [Edge]
-edgesP p g = [ E pt V | pt <- vedges ] ++ [ E pt H | pt <- hedges ]
+edgesGen :: (a -> a -> Bool) -> (a -> Bool) -> Grid Square a -> [Edge]
+edgesGen p n g = [ E pt V | pt <- vedges ] ++ [ E pt H | pt <- hedges ]
   where
-    edges' f (sx, sy) = [ (x + 1, y) | x <- [0 .. sx - 2]
-                                     , y <- [0 .. sy - 1]
+    edges' f (sx, sy) = [ (x + 1, y) | x <- [-1 .. sx - 1]
+                                     , y <- [-1 .. sy]
                                      , p' (f (x, y)) (f (x + 1, y)) ]
 
     vedges = edges' id (size g)
@@ -91,7 +91,12 @@ edgesP p g = [ E pt V | pt <- vedges ] ++ [ E pt H | pt <- hedges ]
     p' c d = p'' (Map.lookup c (contents g))
                  (Map.lookup d (contents g))
     p'' (Just e) (Just f) = p e f
+    p'' (Just e) Nothing  = n e
+    p'' Nothing (Just e)  = n e
     p'' _        _        = False
+
+edgesP :: (a -> a -> Bool) -> Grid Square a -> [Edge]
+edgesP p g = edgesGen p (const False) g
 
 dualEdgesP :: (a -> a -> Bool) -> Grid Square a -> [Edge]
 dualEdgesP p g = [ E pt H | pt <- hedges ] ++
