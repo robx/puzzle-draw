@@ -144,6 +144,14 @@ instance FromChar Blank where
     parseChar '.' = pure Blank
     parseChar _   = empty
 
+parseCharJSON :: FromChar a => Value -> Parser a
+parseCharJSON v = do
+    [c] <- parseJSON v
+    parseChar c
+
+instance FromJSON Blank where
+   parseJSON = parseCharJSON
+
 instance FromChar Blank' where
     parseChar '.' = pure Blank'
     parseChar '-' = pure Blank'
@@ -185,6 +193,9 @@ instance (FromString a, FromString b) => FromString (Either a b) where
     parseString c = Left <$> parseString c <|> Right <$> parseString c
 
 newtype Either' a b = Either' { unEither' :: Either a b }
+
+instance (FromChar a, FromChar b) => FromChar (Either' a b) where
+    parseChar c = Either' <$> parseChar c
 
 instance (FromJSON a, FromJSON b) => FromJSON (Either' a b) where
     parseJSON v = Either' <$>
