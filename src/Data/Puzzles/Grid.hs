@@ -79,22 +79,40 @@ clues g = [ (k, v) | (k, Just v) <- values g ]
 values :: GridShape s => Grid s a -> [(Cell s, a)]
 values (Grid _ m) = Map.toList m
 
-uneqJust :: Eq a => Maybe a -> Maybe a -> Bool
-uneqJust (Just x) (Just y) = x /= y
-uneqJust _        _        = False
+edgesP :: (a -> a -> Bool) -> Grid Square a -> [Edge]
+edgesP p g = [ E pt V | pt <- vedges ] ++ [ E pt H | pt <- hedges ]
+  where
+    edges' f (sx, sy) = [ (x + 1, y) | x <- [0 .. sx - 2]
+                                     , y <- [0 .. sy - 1]
+                                     , p' (f (x, y)) (f (x + 1, y)) ]
+
+    vedges = edges' id (size g)
+    hedges = map swap $ edges' swap (swap . size $ g)
+    swap (x, y) = (y, x)
+    p' c d = p'' (Map.lookup c (contents g))
+                 (Map.lookup d (contents g))
+    p'' (Just e) (Just f) = p e f
+    p'' _        _        = False
+
+dualEdgesP :: (a -> a -> Bool) -> Grid Square a -> [Edge]
+dualEdgesP p g = [ E pt H | pt <- hedges ] ++
+                 [ E pt V | pt <- vedges ]
+  where
+    edges' f (sx, sy) = [ (x, y) | x <- [0 .. sx - 2]
+                                 , y <- [0 .. sy - 1]
+                                 , p' (f (x, y)) (f (x + 1, y)) ]
+
+    hedges = edges' id (size g)
+    vedges = map swap $ edges' swap (swap . size $ g)
+    swap (x, y) = (y, x)
+    p' c d = p'' (Map.lookup c (contents g))
+                 (Map.lookup d (contents g))
+    p'' (Just e) (Just f) = p e f
+    p'' _        _        = False
 
 -- | The inner edges of a grid that separate unequal cells.
 borders :: Eq a => Grid Square a -> [Edge]
-borders g = [ E p V | p <- vborders ] ++ [ E p H | p <- hborders ]
-  where
-    borders' f (sx, sy) = [ (x + 1, y) | x <- [0 .. sx - 2]
-                                       , y <- [0 .. sy - 1]
-                                       , f (x, y) `uneqJust` f (x + 1, y) ]
-
-    look = flip Map.lookup (contents g)
-    vborders = borders' look (size g)
-    hborders = map swap $ borders' (look . swap) (swap . size $ g)
-    swap (x, y) = (y, x)
+borders = edgesP (/=)
 
 -- | Colour a graph.
 colourM :: (Ord k, Eq a) => (k -> [k]) -> Map.Map k a -> Map.Map k Int
@@ -180,3 +198,9 @@ multiOutsideClues = concatMap distrib . outsideClues . fmap Just . dired
     dired (OC l r b t) = OC (z (-1,0) l) (z (1,0) r) (z (0,-1) b) (z (0,1) t)
     z x ys = zip (repeat x) ys
     distrib (o, (d, xs)) = zip [o ^+^ i *^ d | i <- [0..]] xs
+
+collectLines :: Eq a => SGrid (Maybe a) -> [Edge]
+collectLines = dualEdgesP eq
+  where
+    eq (Just x) (Just y) = x == y
+    eq _        _        = False
