@@ -4,12 +4,10 @@
 module Diagrams.Puzzles.Lib where
 
 import Diagrams.Prelude
-import Diagrams.TwoD.Text (Text)
 
 import Graphics.SVGFonts.ReadFont
 import Control.Arrow ((***))
 
---type Backend' b = (Renderable (Path R2) b, Renderable Text b, Backend b R2)
 type Backend' b = (Renderable (Path R2) b, Backend b R2)
 
 -- | Vertical/horizontal stroked line of given length.
