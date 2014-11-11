@@ -31,11 +31,11 @@ pyramid :: Backend' b => Pyramid -> Diagram b R2
 pyramid = alignBL . vcat . map row . unPyr
 
 kropki :: Backend' b => KropkiDot -> Diagram b R2
-kropki None = mempty
+kropki KNone = mempty
 kropki c = circle 0.1 # lwG 0.03 # fc (col c) # smash
-    where col White = white
-          col Black = blend 0.98 black white
-          col None  = error "can't reach"
+    where col KWhite = white
+          col KBlack = blend 0.98 black white
+          col KNone  = error "can't reach"
 
 krow :: Backend' b => KropkiRow -> Diagram b R2
 krow (KR cs s ks) = ccat dots <> ccat clues

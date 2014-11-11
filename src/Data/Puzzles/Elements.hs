@@ -50,7 +50,7 @@ data SlalomDiag = SlalomForward | SlalomBackward
 data Shade = Shade Bool Bool
     deriving Show
 
-data KropkiDot = None | Black | White
+data KropkiDot = KNone | KBlack | KWhite
     deriving Show
 
 newtype TapaClue = TapaClue [Int]

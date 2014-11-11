@@ -107,9 +107,9 @@ pkropkiclues = do c <- pclue
                   let (ks, cs) = unzip kcs in return (ks, c:cs)
 
 pkropki :: GenParser Char st KropkiDot
-pkropki = (char '*' >> return Black)
-          <|> (char 'o' >> return White)
-          <|> (char ' ' >> return None)
+pkropki = (char '*' >> return KBlack)
+          <|> (char 'o' >> return KWhite)
+          <|> (char ' ' >> return KNone)
 
 toParser :: GenParser a () b -> [a] -> Yaml.Parser b
 toParser p v = case parse p "(unknown)" v of Left e  -> fail (show e)
