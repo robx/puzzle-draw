@@ -352,11 +352,16 @@ buchstabensalat = (p, p . fst <> atCentres drawChar . clues . snd)
 
 doppelblock ::
     Backend' b =>
-    RenderPuzzle b (OutsideClues (Maybe Int)) ()
+    RenderPuzzle b (OutsideClues (Maybe Int))
+                   (SGrid (Either Black Int))
 doppelblock = (,)
-    (atCentres (scale 0.8 . drawInt) . outsideClues <> grid . outsideSize)
-    undefined
-
+    p
+    (p . fst <> atCentres drawVal . values . snd)
+  where
+    p = atCentres (scale 0.8 . drawInt) . outsideClues
+        <> grid . outsideSize
+    drawVal (Right c) = drawInt c
+    drawVal (Left _) = fillBG gray
 
 sudokuDoppelblock ::
     Backend' b =>

@@ -207,10 +207,11 @@ buchstabensalat =
     , fmap (fmap blankToMaybe') . parseGrid
     )
 
-doppelblock :: ParsePuzzle (OutsideClues (Maybe Int)) ()
+doppelblock :: ParsePuzzle (OutsideClues (Maybe Int))
+                           (SGrid (Either Black Int))
 doppelblock =
     ( \v -> fmap (blankToMaybe' . unEither') <$> parseOutside v
-    , error "doppelblock solution not implemented"
+    , parseGrid
     )
 
 sudokuDoppelblock :: ParsePuzzle (AreaGrid, OutsideClues (Maybe Int)) ()
