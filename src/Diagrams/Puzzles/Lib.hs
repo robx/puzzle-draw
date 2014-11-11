@@ -8,6 +8,9 @@ import Diagrams.Prelude
 import Graphics.SVGFonts.ReadFont
 import Control.Arrow ((***))
 
+import Paths_puzzle_draw (getDataFileName)
+import System.IO.Unsafe (unsafePerformIO)
+
 type Backend' b = (Backend b R2, Renderable (Path R2) b)
 
 -- | Vertical/horizontal stroked line of given length.
@@ -85,8 +88,11 @@ fit f a = scale (f / m) a
 -- has an envelope. Sized such that single capital characters fit nicely
 -- into a square of size @1@.
 text' :: Backend' b => String -> Diagram b R2
-text' t = stroke (textSVG' $ TextOpts t bit INSIDE_H KERN False 1 1)
+text' t = stroke (textSVG' $ TextOpts t fnt INSIDE_H KERN False 1 1)
           # lwG 0 # fc black # scale 0.8
+  where
+    fnt = outlMap . unsafePerformIO . getDataFileName
+        $ "data/fonts/gen-light.svg"
 
 -- text' t = text t # fontSize 0.8 # font "Helvetica" # translate (r2 (0.04, -0.07))
 --          <> phantom' (textrect t)
