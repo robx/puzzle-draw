@@ -114,7 +114,7 @@ drawSolution' (pp, ps) (_, ds) (p, ms) = do
     return $ ds (p', s')
 
 -- | Like 'drawSolution'', but renders puzzle and solution in example layout.
-drawExample' :: (Backend b R2, Renderable (Path R2) b) =>
+drawExample' :: Backend' b =>
                 PuzzleHandler b ((Value, Maybe Value) -> Parser (Diagram b R2))
 drawExample' (pp, ps) (dp, ds) (p, ms) = do
     p' <- pp p

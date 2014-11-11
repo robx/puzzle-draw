@@ -59,7 +59,7 @@ drawCompassClue (CC n e s w) = texts <> stroke cross # lwG onepix
 
 -- | Draw a thermometer, given by a list of bottom-left corners
 -- of square cells.
-thermo :: Renderable (Path R2) b => [P2] -> QDiagram b R2 Any
+thermo :: Backend' b => [P2] -> QDiagram b R2 Any
 thermo vs@(v:_) = (bulb `atop` line) # col # translate (r2 (0.5, 0.5))
     where bulb = circle 0.4 # moveTo v
           line = strokeLocLine (fromVertices vs)
@@ -70,7 +70,7 @@ thermo [] = error "invalid empty thermometer"
 
 -- | Draw a list of thermometers, given as lists of @(Int, Int)@ cell
 -- coordinates.
-drawThermos :: Renderable (Path R2) b => [Thermometer] -> QDiagram b R2 Any
+drawThermos :: Backend' b => [Thermometer] -> QDiagram b R2 Any
 drawThermos = mconcat . map (thermo . map p2i)
 
 -- | @drawTight d t@ draws the tight-fit value @t@, using @d@ to
@@ -94,12 +94,12 @@ stackWords :: Backend' b => [String] -> QDiagram b R2 Any
 stackWords = vcat' with {_sep = 0.1} . scale 0.8 . map (alignL . text')
 
 -- | Mark a word in a grid of letters.
-drawMarkedWord :: (Renderable (Path R2) b) => MarkedWord -> QDiagram b R2 Any
+drawMarkedWord :: Backend' b => MarkedWord -> QDiagram b R2 Any
 drawMarkedWord (MW s e) = lwG onepix . stroke $ expandTrail' with {_expandCap = LineCapRound} 0.4 t
     where t = fromVertices [p2i s, p2i e] # translate (r2 (1/2,1/2))
 
 -- | Apply 'drawMarkedWord' to a list of words.
-drawMarkedWords :: (Renderable (Path R2) b) => [MarkedWord] -> QDiagram b R2 Any
+drawMarkedWords :: Backend' b => [MarkedWord] -> QDiagram b R2 Any
 drawMarkedWords = mconcat . map drawMarkedWord
 
 -- | Draw a slalom clue.
@@ -132,11 +132,11 @@ drawWords ws = spread (-1.0 *^ unitY)
 
 -- | Fit a line drawing into a unit square.
 --   For example, a Curve Data clue.
-drawCurve :: Renderable (Path R2) b => [Edge] -> Diagram b R2
+drawCurve :: Backend' b => [Edge] -> Diagram b R2
 drawCurve = lwG onepix . fit 0.6 . centerXY . mconcat . map (stroke . edge)
 
 -- | Draw a shadow in the style of Afternoon Skyscrapers.
-drawShade :: Renderable (Path R2) b => Shade -> Diagram b R2
+drawShade :: Backend' b => Shade -> Diagram b R2
 drawShade (Shade s w) = (if s then south else mempty) <>
                         (if w then west else mempty)
   where

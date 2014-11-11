@@ -15,11 +15,11 @@ import Diagrams.Puzzles.Lib
 import Diagrams.Puzzles.Widths
 
 -- | Draw a small black dot with no envelope.
-dot :: (Renderable (Path R2) b, Backend b R2) => Diagram b R2
+dot :: Backend' b => Diagram b R2
 dot = circle 0.05 # fc black # smash
 
 -- | Draw a Slither Link style grid of dots of the specified size.
-slithergrid :: (Backend b R2, Renderable (Path R2) b) =>
+slithergrid :: Backend' b =>
                Size -> Diagram b R2
 slithergrid (x, y) =
     hcatsep . replicate (x + 1) . vcatsep . replicate (y + 1) $ dot
@@ -42,7 +42,7 @@ fullgridlines (w, h) = fence' w h <> mirror (fence' h w)
     fence' n l = fence (map fromIntegral [0..n]) (fromIntegral l)
 
 -- | Draw a frame around the outside of a rectangle.
-outframe :: Renderable (Path R2) b => Size -> Diagram b R2
+outframe :: Backend' b => Size -> Diagram b R2
 outframe (w, h) = strokePointLoop r # lwG fw
     where wd = fromIntegral w
           hd = fromIntegral h
@@ -53,19 +53,19 @@ outframe (w, h) = strokePointLoop r # lwG fw
           r = [(-e, -e), (wd + e, -e), (wd + e, hd + e), (-e, hd + e)]
 
 -- | Draw a square grid, applying the given style to the grid lines.
-grid' :: (Backend b R2, Renderable (Path R2) b) =>
+grid' :: Backend' b =>
          (Diagram b R2 -> Diagram b R2) -> Size -> Diagram b R2
 grid' gridstyle s =
     outframe s
     <> stroke (gridlines s) # lwG gridwidth # gridstyle
 
 -- | Draw a square grid with default grid line style.
-grid :: (Backend b R2, Renderable (Path R2) b) =>
+grid :: Backend' b =>
         Size -> Diagram b R2
 grid = grid' id
 
 -- | Draw a square grid with thin frame.
-plaingrid :: (Backend b R2, Renderable (Path R2) b) =>
+plaingrid :: Backend' b =>
              Size -> Diagram b R2
 plaingrid s = stroke (fullgridlines s) # lwG gridwidth
 
@@ -87,7 +87,7 @@ gridDashing = bgdashingG dashes dashoffset white'
 -- | Draw a square grid with dashed grid lines. The gaps
 --   between dashes are off-white to aid in using filling
 --   tools.
-dashedgrid :: (Backend b R2, Renderable (Path R2) b) =>
+dashedgrid :: Backend' b =>
               Size -> Diagram b R2
 dashedgrid = grid' gridDashing
 
@@ -103,7 +103,7 @@ irregularGridPaths (Grid _ m) = (toPath outer, toPath inner)
     (outer, inner) = edges (M.keysSet m) (`M.member` m)
     toPath = mconcat . map edgePath
 
-irregularGrid :: (Backend b R2, Renderable (Path R2) b) =>
+irregularGrid :: Backend' b =>
                  SGrid a -> Diagram b R2
 irregularGrid g = stroke outer # lwG (3 * gridwidth) # lineCap LineCapSquare <>
                   stroke inner # lwG gridwidth
@@ -143,34 +143,34 @@ edgeStyle = lineCap LineCapSquare . lwG edgewidth
 thinEdgeStyle :: (HasStyle a, V a ~ R2) => a -> a
 thinEdgeStyle = lineCap LineCapSquare . lwG onepix
 
-drawEdges :: Renderable (Path R2) b => [Edge] -> Diagram b R2
+drawEdges :: Backend' b => [Edge] -> Diagram b R2
 drawEdges = edgeStyle . stroke . mconcat . map edge
 
-drawDualEdges :: Renderable (Path R2) b => [Edge] -> Diagram b R2
+drawDualEdges :: Backend' b => [Edge] -> Diagram b R2
 drawDualEdges = edgeStyle . stroke . mconcat . map dualEdge
 
-drawThinDualEdges :: Renderable (Path R2) b => [Edge] -> Diagram b R2
+drawThinDualEdges :: Backend' b => [Edge] -> Diagram b R2
 drawThinDualEdges = thinEdgeStyle . stroke . mconcat . map dualEdge
 
-drawAreaGrid :: (Backend b R2, Renderable (Path R2) b, Eq a) =>
+drawAreaGrid :: (Backend' b, Eq a) =>
                   SGrid a -> Diagram b R2
 drawAreaGrid = drawEdges . borders <> grid . size
 
-fillBG :: (Backend b R2, Renderable (Path R2) b) => Colour Double -> Diagram b R2
+fillBG :: Backend' b => Colour Double -> Diagram b R2
 fillBG c = square 1 # lwG onepix # fc c # lc c
 
-shadeGrid :: (Backend b R2, Renderable (Path R2) b) =>
+shadeGrid :: Backend' b =>
               SGrid (Maybe (Colour Double)) -> Diagram b R2
 shadeGrid = mconcat . atCentres' . fmap (maybe mempty fillBG)
 
-drawShadedGrid :: (Backend b R2, Renderable (Path R2) b) =>
+drawShadedGrid :: Backend' b =>
                   SGrid Bool -> Diagram b R2
 drawShadedGrid = shadeGrid . fmap f
   where
     f True  = Just gray
     f False = Nothing
 
-drawAreaGridGray :: (Backend b R2, Renderable (Path R2) b) =>
+drawAreaGridGray :: Backend' b =>
                     SGrid Char -> Diagram b R2
 drawAreaGridGray = drawAreaGrid <> shadeGrid . fmap cols
   where

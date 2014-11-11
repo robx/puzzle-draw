@@ -8,7 +8,7 @@ import Diagrams.Prelude
 import Graphics.SVGFonts.ReadFont
 import Control.Arrow ((***))
 
-type Backend' b = (Renderable (Path R2) b, Backend b R2)
+type Backend' b = (Backend b R2, Renderable (Path R2) b)
 
 -- | Vertical/horizontal stroked line of given length.
 vline, hline :: Backend' b => Double -> Diagram b R2
@@ -25,7 +25,7 @@ vcatsep :: (Juxtaposable a, HasOrigin a, Monoid' a, V a ~ R2) => [a] -> a
 vcatsep = cat' (r2 (0,1)) with {_sep = 1}
 
 -- | Collapse the envelope to a point.
-smash :: Backend b R2 => QDiagram b R2 Any -> QDiagram b R2 Any
+smash :: Backend' b => QDiagram b R2 Any -> QDiagram b R2 Any
 smash = withEnvelope (pointDiagram origin :: D R2)
 
 -- | Helper to translate by a point given as @(Int, Int)@.
@@ -49,7 +49,7 @@ interleave [] _ = []
 interleave (x:xs) ys = x : interleave ys xs
 
 -- | Spread diagrams evenly along the given vector.
-spread :: (Backend b R2) => R2 -> [Diagram b R2] -> Diagram b R2
+spread :: Backend' b => R2 -> [Diagram b R2] -> Diagram b R2
 spread v things = cat v . interleave (repeat (strut vgap)) $ things
     where ds = map (diameter v) things
           gap' = (magnitude v - sum ds) / fromIntegral (length things + 1)
@@ -63,13 +63,13 @@ dmid a = (dtop + dbot) / 2 - dbot
 
 -- | Place the second diagram to the right of the first, aligning both
 -- vertically. The origin is the origin of the left diagram.
-besidesL :: (Semigroup m, Backend b R2, Monoid m, Renderable (Path R2) b) =>
+besidesL :: (Backend' b, Semigroup m, Monoid m) =>
             QDiagram b R2 m -> QDiagram b R2 m -> QDiagram b R2 m
 besidesL a b = a ||| strutX 0.5 ||| b'
     where b' = b # centerY # translate (dmid a *^ unitY)
 
 -- | Variant of 'besidesL' where the origin is that of the right diagram.
-besidesR :: (Semigroup m, Backend b R2, Monoid m, Renderable (Path R2) b) =>
+besidesR :: (Backend' b, Semigroup m, Monoid m) =>
            QDiagram b R2 m -> QDiagram b R2 m -> QDiagram b R2 m
 besidesR b a =  b' ||| strutX 0.5 ||| a
     where b' = b # centerY # translate (dmid a *^ unitY)
@@ -84,15 +84,15 @@ fit f a = scale (f / m) a
 -- | Write text that is centered both vertically and horizontally and that
 -- has an envelope. Sized such that single capital characters fit nicely
 -- into a square of size @1@.
-text' :: (Renderable (Path R2) b, Backend b R2) => String -> Diagram b R2
+text' :: Backend' b => String -> Diagram b R2
 text' t = stroke (textSVG' $ TextOpts t bit INSIDE_H KERN False 1 1)
           # lwG 0 # fc black # scale 0.8
 
 -- text' t = text t # fontSize 0.8 # font "Helvetica" # translate (r2 (0.04, -0.07))
 --          <> phantom' (textrect t)
---textrect :: (Renderable (Path R2) b, Backend b R2) => String -> Diagram b R2
+--textrect :: Backend' b => String -> Diagram b R2
 --textrect t = rect (fromIntegral (length t) * 0.4) 0.7 # lc red
---text'' :: (Renderable (Path R2) b, Backend b R2) => String -> Diagram b R2
+--text'' :: Backend' b => String -> Diagram b R2
 --text'' t = text' t `atop` textrect t
 
 -- | Variant of 'phantom' that forces the argument backend type.

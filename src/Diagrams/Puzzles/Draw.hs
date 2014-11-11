@@ -1,4 +1,6 @@
-{-# LANGUAGE MultiParamTypeClasses, FlexibleContexts #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE ConstraintKinds #-}
 
 module Diagrams.Puzzles.Draw (
     PuzzleSol,
@@ -25,7 +27,7 @@ data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
 -- | Optionally render the puzzle, its solution, or a side-by-side
 --   example with puzzle and solution.
-draw :: (Backend b R2, Renderable (Path R2) b) =>
+draw :: Backend' b =>
         PuzzleSol b -> OutputChoice -> Maybe (Diagram b R2)
 draw (p, ms) = fmap (bg white) . d
   where
@@ -49,7 +51,7 @@ toOutputWidth u w = case u of Pixels -> fromIntegral wpix
     wpix = round (gridresd * w) :: Int  -- grid square size 40px
     wpt = cmtopoint (0.8 * w)     -- grid square size 0.8cm
 
-alignPixel :: (Backend b R2, Renderable (Path R2) b) => Diagram b R2 -> Diagram b R2
+alignPixel :: Backend' b => Diagram b R2 -> Diagram b R2
 alignPixel = scale (1/gridresd) . align' . scale gridresd
   where
     align' d = maybe id grow (getCorners $ boundingBox d) d
@@ -60,6 +62,6 @@ alignPixel = scale (1/gridresd) . align' . scale gridresd
     phantoml p q = phantom' $ p ~~ q
 
 -- | Add a phantom border of the given width around a diagram.
-border :: (Backend b R2, Renderable (Path R2) b) => Double -> Diagram b R2 -> Diagram b R2
+border :: Backend' b => Double -> Diagram b R2 -> Diagram b R2
 border w = extrudeEnvelope (w *^ unitX) . extrudeEnvelope (-w *^ unitX)
          . extrudeEnvelope (w *^ unitY) . extrudeEnvelope (-w *^ unitY)
