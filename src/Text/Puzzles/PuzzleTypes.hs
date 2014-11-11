@@ -190,13 +190,13 @@ baca = ( \v -> (,,) <$> parseFrom ["grid"] parseClueGrid v
        )
   where
     parseTopLeft (Object v) = do
-        l <- v .: "left"
+        l <- reverse <$> v .: "left"
         t <- v .: "top"
-        return $ OC l [] [] t
+        return $ OC (map reverse l) [] [] (map reverse t)
     parseTopLeft _ = empty
     parseBottomRight (Object v) = do
         b <- v .: "bottom"
-        r <- v .: "right"
+        r <- reverse <$> v .: "right"
         oc <- OC [] <$> parseLine r <*> parseLine b <*> pure []
         return $ fmap blankToMaybe' oc
     parseBottomRight _ = empty
