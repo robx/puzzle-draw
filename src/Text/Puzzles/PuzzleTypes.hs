@@ -9,7 +9,7 @@ module Text.Puzzles.PuzzleTypes (
     maximallengths, primeplace, labyrinth, bahnhof, blackoutDominos,
     angleloop, anglers, cave, skyscrapers, summon, baca,
     buchstabensalat, doppelblock, sudokuDoppelblock, dominos,
-    skyscrapersStars
+    skyscrapersStars, numberlink
   ) where
 
 import Control.Applicative
@@ -224,3 +224,8 @@ sudokuDoppelblock =
 
 dominos :: ParsePuzzle (SGrid (Maybe Int)) AreaGrid
 dominos = (parseClueGrid, parseGrid)
+
+numberlink :: ParsePuzzle (SGrid (Maybe Int)) [Edge]
+numberlink = (p, fmap collectLines . p)
+  where
+    p = fmap (fmap (blankToMaybe . unEither')) . parseExtGrid

@@ -12,7 +12,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     coral, maximallengths, primeplace, labyrinth, bahnhof,
     blackoutDominos, angleLoop, anglers, cave, skyscrapers,
     summon, baca, buchstabensalat, doppelblock, sudokuDoppelblock,
-    dominos, skyscrapersStars, fillominoCheckered
+    dominos, skyscrapersStars, fillominoCheckered, numberlink
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -362,3 +362,14 @@ dominos ::
 dominos = (,)
     (atCentres drawInt . clues <> grid . size)
     (atCentres drawInt . clues . fst <> drawAreaGridGray . snd)
+
+numberlink ::
+    Backend' b =>
+    RenderPuzzle b (SGrid (Maybe Int)) [Edge]
+numberlink = (,)
+    drawIntGrid
+    (atCentres drawInt' . clues . fst
+     <> solstyle . drawDualEdges . snd
+     <> grid . size . fst)
+  where
+    drawInt' x = drawInt x <> (square 0.7 # lc white # fc white)
