@@ -235,6 +235,26 @@ parseShadedGrid v = rectToSGrid . fmap unShaded <$> parseJSON v
 parseGrid :: FromChar a => Value -> Parser (SGrid a)
 parseGrid v = rectToSGrid <$> parseJSON v
 
+parseGridWith :: (Char -> Parser a) -> Value -> Parser (SGrid a)
+parseGridWith pChar v = traverse pChar =<< parseGrid v
+
+parseWithReplacement :: FromChar a =>
+    (Char -> Maybe a) -> Char -> Parser a
+parseWithReplacement replace c = maybe (parseChar c) pure (replace c)
+
+parseCharMap :: FromJSON a => Value -> Parser (Map.Map Char a)
+parseCharMap v = do
+    m <- parseJSON v
+    guard . all (\k -> length k == 1) . Map.keys $ m
+    return $ Map.mapKeys head m
+
+parseExtGrid :: (FromChar a, FromJSON a) => Value -> Parser (SGrid a)
+parseExtGrid v@(String _) = parseGrid v
+parseExtGrid v = do
+    repl <- parseFrom ["replace"] parseCharMap v
+    parseFrom ["grid"] (parseGridWith
+                        (parseWithReplacement (`Map.lookup` repl))) v
+
 parseClueGrid :: FromChar a => Value -> Parser (SGrid (Clue a))
 parseClueGrid v = rectToClueGrid <$> parseJSON v
 
