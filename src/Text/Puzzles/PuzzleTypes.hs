@@ -204,7 +204,7 @@ baca = ( \v -> (,,) <$> parseFrom ["grid"] parseClueGrid v
 buchstabensalat :: ParsePuzzle (OutsideClues (Maybe Char)) (SGrid (Maybe Char))
 buchstabensalat =
     ( \v -> fmap blankToMaybe <$> parseCharOutside v
-    , parseClueGrid
+    , fmap (fmap blankToMaybe') . parseGrid
     )
 
 doppelblock :: ParsePuzzle (OutsideClues (Maybe Int)) ()
