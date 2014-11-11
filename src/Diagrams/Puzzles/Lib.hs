@@ -96,5 +96,5 @@ text' t = stroke (textSVG' $ TextOpts t bit INSIDE_H KERN False 1 1)
 --text'' t = text' t `atop` textrect t
 
 -- | Variant of 'phantom' that forces the argument backend type.
-phantom' :: (Backend b R2) => D R2 -> Diagram b R2
+phantom' :: Backend' b => Diagram b R2 -> Diagram b R2
 phantom' = phantom

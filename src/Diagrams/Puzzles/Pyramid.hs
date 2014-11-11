@@ -41,8 +41,7 @@ krow :: Backend' b => KropkiRow -> Diagram b R2
 krow (KR cs s ks) = ccat dots <> ccat clues
     where ccat = centerX . hcat
           clues = map (cellc s) cs
-          clues' = map (cellc s) cs :: [D R2]
-          dots = interleave (map phantom' clues') (map kropki ks)
+          dots = interleave (map phantom' clues) (map kropki ks)
 
 kpyramid :: Backend' b => RowKropkiPyramid -> Diagram b R2
 kpyramid = alignBL . vcat . map krow . unKP
