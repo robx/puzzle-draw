@@ -56,8 +56,7 @@ data KropkiDot = KNone | KBlack | KWhite
 newtype TapaClue = TapaClue [Int]
     deriving Show
 
-data JapVal = JapBlack | JapInt Int
-    deriving Show
-
 -- | Diagonal marking for Prime Place: forward diag?, backward diag?
 newtype PrimeDiag = PrimeDiag (Bool, Bool)
+
+data Black = Black

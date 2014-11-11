@@ -193,14 +193,14 @@ tapa = (,)
     tapaGrid = atCentres drawTapaClue . values <> grid . size
 
 japanesesums :: Backend' b =>
-                RenderPuzzle b (OutsideClues [Int]) (SGrid JapVal)
+                RenderPuzzle b (OutsideClues [Int]) (SGrid (Either Black Int))
 japanesesums = (,)
     outsideIntGrid
     (outsideIntGrid . fst <> japcells . snd)
   where
     japcells = atCentres japcell . values
-    japcell JapBlack = fillBG gray
-    japcell (JapInt x) = drawInt x
+    japcell (Left Black) = fillBG gray
+    japcell (Right x) = drawInt x
 
 coral :: Backend' b =>
           RenderPuzzle b (OutsideClues [String]) ShadedGrid

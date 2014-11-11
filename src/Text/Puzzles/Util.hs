@@ -186,6 +186,11 @@ instance FromChar SlalomDiag where
     parseChar '\\' = pure SlalomBackward
     parseChar _    = empty
 
+instance FromChar Black where
+    parseChar 'X' = pure Black
+    parseChar 'x' = pure Black
+    parseChar _   = empty
+
 instance (FromChar a, FromChar b) => FromChar (Either a b) where
     parseChar c = Left <$> parseChar c <|> Right <$> parseChar c
 
@@ -365,10 +370,6 @@ instance FromChar HalfDirs where
                 | c `elem` "│┘"   = pure . HalfDirs $ [V]
                 | c `elem` "─└┌"  = pure . HalfDirs $ [H]
                 | otherwise       = pure . HalfDirs $ []
-
-instance FromChar JapVal where
-    parseChar c | c `elem` ['x', 'X']  = pure JapBlack
-    parseChar c = JapInt <$> parseChar c
 
 -- parses a string like
 --  ┌┐┌─┐
