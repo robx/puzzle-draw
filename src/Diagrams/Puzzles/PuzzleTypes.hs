@@ -195,7 +195,7 @@ japanesesums :: Backend' b =>
                 RenderPuzzle b (OutsideClues [Int]) (SGrid JapVal)
 japanesesums = (,)
     outsideIntGrid
-    (japcells . snd <> outsideIntGrid . fst)
+    (outsideIntGrid . fst <> japcells . snd)
   where
     japcells = atCentres japcell . values
     japcell JapBlack = fillBG gray
