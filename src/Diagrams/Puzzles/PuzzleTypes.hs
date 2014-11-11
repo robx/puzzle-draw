@@ -57,7 +57,7 @@ fillominoCheckered :: Backend' b => RenderPuzzle b IntGrid (SGrid Int)
 fillominoCheckered = (,)
     (atCentres drawInt . clues <> dashedgrid . size)
     ((atCentres drawInt . values
-      <> dashedgrid . size
+      <> drawEdges . borders
       <> outframe . size
       <> shadeGrid . checker) . snd)
   where
