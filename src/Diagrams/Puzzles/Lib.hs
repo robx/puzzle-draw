@@ -28,7 +28,7 @@ vcatsep = cat' (r2 (0,1)) with {_sep = 1}
 
 -- | Collapse the envelope to a point.
 smash :: Backend b R2 => QDiagram b R2 Any -> QDiagram b R2 Any
-smash = withEnvelope (vrule 0 :: D R2)
+smash = withEnvelope (pointDiagram origin :: D R2)
 
 -- | Helper to translate by a point given as @(Int, Int)@.
 translatep :: (Transformable t, V t ~ R2) => (Int, Int) -> t -> t
