@@ -31,7 +31,7 @@ geradeweg :: ParsePuzzle (SGrid (Clue Int)) Loop
 geradeweg = (parseClueGrid, parseEdges)
 
 fillomino :: ParsePuzzle IntGrid (SGrid Int)
-fillomino = (parseClueGrid, parseGrid)
+fillomino = (parseClueGrid, parseExtGrid)
 
 masyu :: ParsePuzzle (SGrid (Clue MasyuPearl)) Loop
 masyu = (parseClueGrid, parseEdges)
