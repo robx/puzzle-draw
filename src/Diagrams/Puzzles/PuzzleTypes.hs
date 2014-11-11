@@ -322,7 +322,7 @@ summon = (,)
     (p . fst <> atCentres drawInt . clues . snd)
   where
     p (g, oc) = drawAreaGridGray g
-                <> atCentres (scale 0.5 . drawInt) (outsideClues oc)
+                <> atCentres (scale 0.7 . drawInt) (outsideClues oc)
 
 baca ::
     Backend' b =>
