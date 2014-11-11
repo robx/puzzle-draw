@@ -10,6 +10,7 @@ import Data.Foldable (Foldable, foldMap)
 import Data.Traversable (Traversable, traverse)
 import Control.Applicative ((<$>))
 import Data.VectorSpace
+import Control.Monad.State
 
 import Data.Puzzles.GridShape hiding (size, cells)
 import qualified Data.Puzzles.GridShape as GS
@@ -94,6 +95,44 @@ borders g = [ E p V | p <- vborders ] ++ [ E p H | p <- hborders ]
     vborders = borders' look (size g)
     hborders = map swap $ borders' (look . swap) (swap . size $ g)
     swap (x, y) = (y, x)
+
+-- | Colour a graph.
+colourM :: (Ord k, Eq a) => (k -> [k]) -> Map.Map k a -> Map.Map k Int
+colourM nbrs m = fmap fromRight . snd . runState colour' $ start
+  where
+    fromRight (Right r) = r
+    fromRight (Left _)  = error "expected Right"
+
+    start = fmap (const $ Left [1..]) m
+    colour' = sequence_ (map pickAndFill (Map.keys m))
+
+    -- choose a colour for the given node, and spread it to
+    -- equal neighbours, removing it from unequal neighbours
+    pickAndFill x = do
+        v <- (Map.! x) <$> get
+        case v of
+            Left (c:_) -> fill (m Map.! x) c x
+            Left _     -> error "empty set of candidates"
+            Right _    -> return ()
+
+    fill a c x = do
+        v <- (Map.! x) <$> get
+        case v of
+            Left _     -> do
+                if m Map.! x == a
+                    then do modify (Map.insert x (Right c))
+                            sequence_ . map (fill a c) $ nbrs x
+                    else modify (del x c)
+            Right _    -> return ()
+
+    -- remove the given colour from the list of candidates
+    del x c = Map.adjust f x
+      where
+        f (Left cs) = Left $ filter (/= c) cs
+        f (Right c') = Right c'
+
+colour :: Eq a => SGrid a -> SGrid Int
+colour (Grid s m) = Grid s $ colourM (edgeNeighbours s) m
 
 -- | Clues along the outside of a square grid.
 data OutsideClues a = OC { left :: [a], right :: [a], bottom :: [a], top :: [a] }
