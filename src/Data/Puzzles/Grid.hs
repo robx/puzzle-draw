@@ -78,22 +78,40 @@ clues g = [ (k, v) | (k, Just v) <- values g ]
 values :: GridShape s => Grid s a -> [(Cell s, a)]
 values (Grid _ m) = Map.toList m
 
-uneqJust :: Eq a => Maybe a -> Maybe a -> Bool
-uneqJust (Just x) (Just y) = x /= y
-uneqJust _        _        = False
+edgesP :: (a -> a -> Bool) -> Grid Square a -> [Edge]
+edgesP p g = [ E pt V | pt <- vedges ] ++ [ E pt H | pt <- hedges ]
+  where
+    edges' f (sx, sy) = [ (x + 1, y) | x <- [0 .. sx - 2]
+                                     , y <- [0 .. sy - 1]
+                                     , p' (f (x, y)) (f (x + 1, y)) ]
+
+    vedges = edges' id (size g)
+    hedges = map swap $ edges' swap (swap . size $ g)
+    swap (x, y) = (y, x)
+    p' c d = p'' (Map.lookup c (contents g))
+                 (Map.lookup d (contents g))
+    p'' (Just e) (Just f) = p e f
+    p'' _        _        = False
+
+dualEdgesP :: (a -> a -> Bool) -> Grid Square a -> [Edge]
+dualEdgesP p g = [ E pt H | pt <- hedges ] ++
+                 [ E pt V | pt <- vedges ]
+  where
+    edges' f (sx, sy) = [ (x, y) | x <- [0 .. sx - 2]
+                                 , y <- [0 .. sy - 1]
+                                 , p' (f (x, y)) (f (x + 1, y)) ]
+
+    hedges = edges' id (size g)
+    vedges = map swap $ edges' swap (swap . size $ g)
+    swap (x, y) = (y, x)
+    p' c d = p'' (Map.lookup c (contents g))
+                 (Map.lookup d (contents g))
+    p'' (Just e) (Just f) = p e f
+    p'' _        _        = False
 
 -- | The inner edges of a grid that separate unequal cells.
 borders :: Eq a => Grid Square a -> [Edge]
-borders g = [ E p V | p <- vborders ] ++ [ E p H | p <- hborders ]
-  where
-    borders' f (sx, sy) = [ (x + 1, y) | x <- [0 .. sx - 2]
-                                       , y <- [0 .. sy - 1]
-                                       , f (x, y) `uneqJust` f (x + 1, y) ]
-
-    look = flip Map.lookup (contents g)
-    vborders = borders' look (size g)
-    hborders = map swap $ borders' (look . swap) (swap . size $ g)
-    swap (x, y) = (y, x)
+borders = edgesP (/=)
 
 -- | Clues along the outside of a square grid.
 data OutsideClues a = OC { left :: [a], right :: [a], bottom :: [a], top :: [a] }
