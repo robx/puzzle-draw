@@ -182,11 +182,11 @@ summon = ( \v -> (,) <$> parseFrom ["grid"] parseGrid v
 
 baca :: ParsePuzzle
             (SGrid (Maybe Char), OutsideClues [Int], OutsideClues (Maybe Char))
-            ()
+            (SGrid (Either Black Char))
 baca = ( \v -> (,,) <$> parseFrom ["grid"] parseClueGrid v
                     <*> parseFrom ["outside"] parseTopLeft v
                     <*> parseFrom ["outside"] parseBottomRight v
-       , error "baca solution not implemented"
+       , parseGrid
        )
   where
     parseTopLeft (Object v) = do

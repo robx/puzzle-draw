@@ -325,12 +325,21 @@ summon = (,)
 
 baca ::
     Backend' b =>
-    RenderPuzzle b (SGrid (Maybe Char), OutsideClues [Int], OutsideClues (Maybe Char)) ()
-baca = (p, undefined)
+    RenderPuzzle b (SGrid (Maybe Char),
+                    OutsideClues [Int],
+                    OutsideClues (Maybe Char))
+                   (SGrid (Either Black Char))
+baca = (,)
+    (inside <> outside)
+    (outside . fst <> atCentres drawVal . values . snd <> inside . fst)
   where
-    p (g,tl,br) = atCentres drawChar (clues g) <> grid (size g)
+    inside (g,_,_) = atCentres drawChar (clues g)
+    outside (g,tl,br) =
+              grid (size g)
               <> atCentres (scale 0.8 . drawInt) (multiOutsideClues tl)
               <> atCentres (scale 0.8 . drawChar) (outsideClues br)
+    drawVal (Right c) = drawChar c
+    drawVal (Left _) = fillBG gray
 
 buchstabensalat ::
     Backend' b =>
