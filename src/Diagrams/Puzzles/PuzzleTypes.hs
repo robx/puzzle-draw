@@ -245,6 +245,7 @@ cave ::
     RenderPuzzle b (SGrid (Clue Int)) ShadedGrid
 cave = (,)
     g
-    (drawShadedGrid . snd <> g . fst)
+    (drawEdges . edgesGen (/=) not . snd
+     <> drawShadedGrid . snd <> g . fst)
   where
     g = (gridDashing . plaingrid . size <> atCentres drawInt . clues)
