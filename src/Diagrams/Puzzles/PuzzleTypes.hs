@@ -12,7 +12,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     coral, maximallengths, primeplace, labyrinth, bahnhof,
     blackoutDominos, angleLoop, anglers, cave, skyscrapers,
     summon, baca, buchstabensalat, doppelblock, sudokuDoppelblock,
-    dominos, skyscrapersStars
+    dominos, skyscrapersStars, fillominoCheckered
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -52,6 +52,19 @@ fillomino :: Backend' b => RenderPuzzle b IntGrid (SGrid Int)
 fillomino = (,)
     (atCentres drawInt . clues <> dashedgrid . size)
     ((atCentres drawInt . values <> drawEdges . borders <> dashedgrid . size) . snd)
+
+fillominoCheckered :: Backend' b => RenderPuzzle b IntGrid (SGrid Int)
+fillominoCheckered = (,)
+    (atCentres drawInt . clues <> dashedgrid . size)
+    ((atCentres drawInt . values
+      <> dashedgrid . size
+      <> outframe . size
+      <> shadeGrid . checker) . snd)
+  where
+    checker = fmap pickColour . colour
+    pickColour 1 = Nothing
+    pickColour 2 = Just gray
+    pickColour _ = Just red
 
 masyu :: Backend' b =>
          RenderPuzzle b (SGrid (Clue MasyuPearl)) Loop
