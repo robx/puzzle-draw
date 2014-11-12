@@ -277,12 +277,16 @@ angleLoop = (,)
 
 anglers ::
     Backend' b =>
-    RenderPuzzle b (OutsideClues (Clue Int), SGrid (Maybe Fish)) ()
+    RenderPuzzle b (OutsideClues (Clue Int), SGrid (Maybe Fish)) [Edge]
 anglers = (,)
-    (atCentres drawInt . outsideClues . fst <>
-     atCentres drawFish . clues . snd <>
-     grid . size . snd)
-    undefined
+    (p <> g)
+    (p . fst <> solstyle . drawDualEdges . snd <> g . fst)
+  where
+    p = atCentres drawInt' . outsideClues . fst <>
+        atCentres drawFish' . clues . snd
+    g = grid . size . snd
+    drawInt' x = drawInt x <> (square 0.6 # lc white # fc white)
+    drawFish' x = drawFish x <> (square 0.6 # lc white # fc white)
 
 cave ::
     Backend' b =>

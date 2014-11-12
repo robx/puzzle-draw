@@ -13,6 +13,7 @@ import Data.List (sortBy)
 import Data.Maybe (catMaybes, fromMaybe)
 import Data.Ord (comparing)
 import qualified Data.Map as Map
+import qualified Data.Set as Set
 import qualified Data.HashMap.Strict as HMap
 import Data.Traversable (traverse, sequenceA, mapM, Traversable)
 import Data.Foldable (Foldable, foldMap)
@@ -385,7 +386,7 @@ data HalfDirs = HalfDirs {unHalfDirs :: [Dir]}
 instance FromChar HalfDirs where
     parseChar c | c == '└'        = pure . HalfDirs $ [V, H]
                 | c `elem` "│┘"   = pure . HalfDirs $ [V]
-                | c `elem` "─└┌"  = pure . HalfDirs $ [H]
+                | c `elem` "─┌"  = pure . HalfDirs $ [H]
                 | otherwise       = pure . HalfDirs $ []
 
 -- parses a string like
@@ -398,6 +399,31 @@ parseEdges :: Value -> Parser [Edge]
 parseEdges v = do
     Grid _ m <- rectToSGrid . fmap unHalfDirs <$> parseJSON v
     return [ E p d | (p, ds) <- Map.toList m, d <- ds ]
+
+data FullDir = DirUp | DirRight | DirDown | DirLeft
+
+toEdge :: Coord -> FullDir -> Edge
+toEdge p     DirRight = E p H
+toEdge p     DirUp    = E p V
+toEdge (x,y) DirLeft  = E (x-1,y) H
+toEdge (x,y) DirDown  = E (x,y-1) V
+
+data FullDirs = FullDirs {unFullDirs :: [FullDir]}
+
+instance FromChar FullDirs where
+    parseChar '└' = pure . FullDirs $ [DirUp, DirRight]
+    parseChar '│' = pure . FullDirs $ [DirUp, DirDown]
+    parseChar '┘' = pure . FullDirs $ [DirLeft, DirUp]
+    parseChar '─' = pure . FullDirs $ [DirLeft, DirRight]
+    parseChar '┌' = pure . FullDirs $ [DirDown, DirRight]
+    parseChar '┐' = pure . FullDirs $ [DirLeft, DirDown]
+    parseChar _   = pure . FullDirs $ []
+
+parseEdgesFull :: Value -> Parser [Edge]
+parseEdgesFull v = do
+    Grid _ m <- fmap unFullDirs <$> parseGrid v
+    return . Set.toList . Set.fromList
+        $ [ toEdge p d | (p, ds) <- Map.toList m, d <- ds ]
 
 type ThermoRect = Rect (Either Blank (Either Int Alpha))
 

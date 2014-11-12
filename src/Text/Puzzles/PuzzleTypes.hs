@@ -156,9 +156,9 @@ blackoutDominos = (,)
 angleloop :: ParsePuzzle (SGrid (Clue Int)) VertexLoop
 angleloop = (parseClueGrid, parseCoordLoop)
 
-anglers :: ParsePuzzle (OutsideClues (Maybe Int), SGrid (Maybe Fish)) ()
+anglers :: ParsePuzzle (OutsideClues (Maybe Int), SGrid (Maybe Fish)) [Edge]
 anglers = ( parseOutsideGridMap blankToMaybe blankToMaybe'
-          , error "anglers solution not implemented")
+          , parseEdgesFull )
 
 cave :: ParsePuzzle (SGrid (Clue Int)) ShadedGrid
 cave = (parseClueGrid, parseShadedGrid)
