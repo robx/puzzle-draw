@@ -108,6 +108,17 @@ checkOutput opts
     req x = (x, True)
     opt x = (x, False)
 
+maybeSkipSolution :: [(OutputChoice, Bool)] -> Maybe Y.Value -> Maybe Y.Value
+maybeSkipSolution _ Nothing    = Nothing
+maybeSkipSolution ocs (Just v) =
+    if any hasSol . map fst $ ocs
+        then Just v
+        else Nothing
+  where
+    hasSol DrawSolution = True
+    hasSol DrawExample  = True
+    hasSol DrawPuzzle   = False
+
 main :: IO ()
 main = do
     opts <- defaultOpts puzzleOpts
@@ -117,7 +128,8 @@ main = do
     TP mt pv msv <- case mp of Left  e -> exitErr $
                                           "parse failure: " ++ show e
                                Right p -> return p
+    let msv' = maybeSkipSolution ocs msv
     t <- checkType $ _type opts `mplus` mt
-    let ps = Y.parseEither (handle drawPuzzleMaybeSol t) (pv, msv)
+    let ps = Y.parseEither (handle drawPuzzleMaybeSol t) (pv, msv')
     case ps of Right ps' -> mapM_ (renderPuzzle opts (draw ps')) ocs
                Left    e -> exitErr e
