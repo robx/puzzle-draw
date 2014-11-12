@@ -296,7 +296,7 @@ cave = (,)
     (drawEdges . edgesGen (/=) not . snd
      <> drawShadedGrid . snd <> g . fst)
   where
-    g = (gridDashing . plaingrid . size <> atCentres drawInt . clues)
+    g = gridDashing . plaingrid . size <> atCentres drawInt . clues
 
 skyscrapers ::
     Backend' b =>
@@ -374,8 +374,8 @@ sudokuDoppelblock = (,)
     p
     (p . fst <> atCentres drawVal . values . snd)
   where
-    p = (atCentres (scale 0.8 . drawInt) . outsideClues . snd
-         <> drawAreaGrid . fst)
+    p = atCentres (scale 0.8 . drawInt) . outsideClues . snd
+        <> drawAreaGrid . fst
     drawVal (Right c) = drawInt c
     drawVal (Left _) = fillBG gray
 

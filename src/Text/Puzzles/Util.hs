@@ -9,7 +9,7 @@ import Control.Arrow
 import Control.Monad hiding (mapM)
 
 import Data.Hashable
-import Data.List (sortBy)
+import Data.List (sortBy, intersect)
 import Data.Maybe (catMaybes, fromMaybe)
 import Data.Ord (comparing)
 import qualified Data.Map as Map
@@ -18,7 +18,6 @@ import qualified Data.HashMap.Strict as HMap
 import Data.Traversable (traverse, sequenceA, mapM, Traversable)
 import Data.Foldable (Foldable, foldMap)
 import Data.Monoid ((<>))
-import Data.List (intersect)
 
 import Data.Char (digitToInt, isAlpha, isDigit)
 import Text.Read (readMaybe)
@@ -39,7 +38,7 @@ field = field' . map T.pack
     field' (f:fs) (Object v) = v .: f >>= field' fs
     field' _  _                = empty
 
-parseFrom :: Path -> (Value -> Parser b) -> (Value -> Parser b)
+parseFrom :: Path -> (Value -> Parser b) -> Value -> Parser b
 parseFrom fs p v = field fs v >>= p
 
 class FromChar a where

@@ -121,13 +121,13 @@ borders = edgesP (/=)
 
 -- | Colour a graph.
 colourM :: (Ord k, Eq a) => (k -> [k]) -> Map.Map k a -> Map.Map k Int
-colourM nbrs m = fmap fromRight . snd . runState colour' $ start
+colourM nbrs m = fmap fromRight . execState colour' $ start
   where
     fromRight (Right r) = r
     fromRight (Left _)  = error "expected Right"
 
     start = fmap (const $ Left [1..]) m
-    colour' = sequence_ (map pickAndFill (Map.keys m))
+    colour' = mapM_ pickAndFill (Map.keys m)
 
     -- choose a colour for the given node, and spread it to
     -- equal neighbours, removing it from unequal neighbours
@@ -141,10 +141,9 @@ colourM nbrs m = fmap fromRight . snd . runState colour' $ start
     fill a c x = do
         v <- (Map.! x) <$> get
         case v of
-            Left _     -> do
-                if m Map.! x == a
+            Left _     -> if m Map.! x == a
                     then do modify (Map.insert x (Right c))
-                            sequence_ . map (fill a c) $ nbrs x
+                            mapM_ (fill a c) (nbrs x)
                     else modify (del x c)
             Right _    -> return ()
 
