@@ -334,17 +334,17 @@ parseEdgeGrid v = uncurry (,,) <$>
         return (gn', gc')
     both f (x, y) = (f x, f y)
     halveGrid (Grid (Square w h) m)
-        | odd w && odd h = pure (Grid snode mnode, Grid scell mcell)
+        | odd w && odd h = pure (Grid snode (divkeys mnode),
+                                 Grid scell (divkeys mcell))
         | otherwise      = fail "non-odd grid size"
       where
         w' = (w + 1) `div` 2
         h' = (h + 1) `div` 2
         snode = Square w' h'
         scell = Square (w' - 1) (h' - 1)
-        (mnode, mcell) =
-            both (Map.mapKeys (both (`div` 2))) .
-            Map.partitionWithKey (const . uncurry (&&) . both even) $
-            m
+        mnode = Map.filterWithKey (const . uncurry (&&) . both even) m
+        mcell = Map.filterWithKey (const . uncurry (&&) . both odd)  m
+        divkeys = Map.mapKeys (both (`div` 2))
 
 -- | Parse a grid of edges with values at the nodes.
 --
