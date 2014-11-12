@@ -21,6 +21,7 @@ data Grid s a where
             , contents :: Map.Map (Cell s) a} -> Grid s a
 
 deriving instance (Show a, Show s, GridShape s) => Show (Grid s a)
+deriving instance (Eq s, Eq (Cell s), Eq a) => Eq (Grid s a)
 
 -- | Standard square grid.
 type SGrid = Grid Square

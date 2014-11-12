@@ -25,7 +25,7 @@ class Show (Cell a) => GridShape a where
 --   The bottom-left corner is vertex (0, 0), the bottom-left
 --   cell is cell (0, 0).
 data Square = Square !Int !Int
-    deriving Show
+    deriving (Show, Eq)
 
 squareNeighbours :: [(Int, Int)] -> Square -> Cell Square -> [Cell Square]
 squareNeighbours deltas (Square w h) c = filter inBounds . map (add c) $ deltas

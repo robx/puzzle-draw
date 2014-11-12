@@ -6,6 +6,8 @@ import Data.Puzzles.GridShape (Coord, Edge)
 type Clue a = Maybe a
 
 data MasyuPearl = MWhite | MBlack
+    deriving (Eq, Show)
+
 type MasyuClue = Clue MasyuPearl
 
 type IntClue = Clue Int
