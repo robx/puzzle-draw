@@ -14,7 +14,7 @@ import Text.Puzzles.PuzzleTypes
 import qualified Data.Puzzles.Grid as Grid
 import Data.Puzzles.Pyramid (PyramidSol(..))
 import Data.Puzzles.Grid (multiOutsideClues, OutsideClues(..))
-import Data.Puzzles.GridShape (Edge, Square(..))
+import Data.Puzzles.GridShape (Edge(..), Square(..), Dir(..))
 
 import Diagrams.Puzzles.PuzzleGrids
 import Diagrams.Prelude
@@ -124,9 +124,13 @@ test_edge_grid :: Assertion
 test_edge_grid = Right (gn, gc, es) @=? res
   where
     res = parseEither parseEdgeGrid edgeGrid_1
-    gn = Grid.Grid (Square 0 0) Map.empty :: Grid.SGrid MasyuPearl
-    gc = Grid.Grid (Square 0 0) Map.empty :: Grid.SGrid Int
-    es = [] :: [Edge]
+    gn = Grid.Grid (Square 4 2) $ Map.fromList
+        [((0,0),Just MBlack),((0,1),Just MWhite),((1,0),Just MWhite),((1,1),Just MBlack),
+         ((2,0),Nothing),((2,1),Just MBlack),((3,0),Nothing),((3,1),Just MWhite)]
+    gc :: Grid.SGrid Int
+    gc = Grid.Grid (Square 3 1) $ Map.fromList
+        [((0,0),1),((1,0),2),((2,0),3)]
+    es = [E (0,0) H, E (0,1) H, E (1,1) H, E (2,1) H, E (0,0) V, E (1,0) V]
 
 parseDataTests :: TestTree
 parseDataTests = testGroup "Parsing tests (full puzzles, result checks)"
