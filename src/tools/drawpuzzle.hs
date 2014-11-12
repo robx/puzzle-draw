@@ -132,4 +132,4 @@ main = do
     t <- checkType $ _type opts `mplus` mt
     let ps = Y.parseEither (handle drawPuzzleMaybeSol t) (pv, msv')
     case ps of Right ps' -> mapM_ (renderPuzzle opts (draw ps')) ocs
-               Left    e -> exitErr e
+               Left    e -> exitErr $ "parse failure: " ++ e
