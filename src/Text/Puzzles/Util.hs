@@ -42,6 +42,9 @@ parseFrom fs p v = field fs v >>= p
 class FromChar a where
     parseChar :: Char -> Parser a
 
+failChar :: Char -> String -> Parser a
+failChar c expect = fail $ "got '" ++ [c] ++ "', expected " ++ expect
+
 instance FromChar Char where
     parseChar = pure
 
@@ -79,7 +82,7 @@ instance FromChar a => FromJSON (Rect a) where
         h = length ls
         filledc = map (T.unpack . T.justifyLeft w ' ') ls
         filled = mapM (mapM parseChar) filledc
-    parseJSON _          = empty
+    parseJSON _          = fail "expected string"
 
 data Border a = Border [a] [a] [a] [a]
     deriving Show
@@ -179,7 +182,7 @@ instance FromChar PlainNode where
 instance FromChar MasyuPearl where
     parseChar '*' = pure MBlack
     parseChar 'o' = pure MWhite
-    parseChar _   = empty
+    parseChar c   = failChar c "'*' or 'o'"
 
 instance FromChar SlalomDiag where
     parseChar '/'  = pure SlalomForward
@@ -332,7 +335,7 @@ parseEdgeGrid v = uncurry (,,) <$>
     both f (x, y) = (f x, f y)
     halveGrid (Grid (Square w h) m)
         | odd w && odd h = pure (Grid snode mnode, Grid scell mcell)
-        | otherwise      = empty
+        | otherwise      = fail "non-odd grid size"
       where
         w' = (w + 1) `div` 2
         h' = (h + 1) `div` 2
