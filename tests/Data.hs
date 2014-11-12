@@ -235,3 +235,10 @@ boxof2or3_1 = packLines $
     , "| | | | |"
     , "o-*-*-*-*"
     ]
+
+edgeGrid_1 :: Value
+edgeGrid_1 = packLines $
+   [ "o-*-*-o"
+   , "|1|2 3"
+   , "*-o"
+   ]

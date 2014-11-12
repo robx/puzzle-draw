@@ -3,16 +3,18 @@ import Test.Tasty.HUnit
 
 import Data.Yaml
 import Data.List (sort)
-
+import qualified Data.Map as Map
 import Control.DeepSeq
 
 import Text.Puzzles.Puzzle
-import Data.Puzzles.Elements (Thermometer)
-import Text.Puzzles.Util (parseChar, parseMultiOutsideClues)
+import Data.Puzzles.Elements (Thermometer, MasyuPearl(..))
+import Text.Puzzles.Util
+    (parseChar, parseMultiOutsideClues, parseEdgeGrid)
 import Text.Puzzles.PuzzleTypes
 import qualified Data.Puzzles.Grid as Grid
 import Data.Puzzles.Pyramid (PyramidSol(..))
 import Data.Puzzles.Grid (multiOutsideClues, OutsideClues(..))
+import Data.Puzzles.GridShape (Edge, Square(..))
 
 import Diagrams.Puzzles.PuzzleGrids
 import Diagrams.Prelude
@@ -118,6 +120,14 @@ test_multioutside = Right oc @=? res
     oc = OC [[3], [1, 2]] [[1, 0], []] [[0, 0, 1]] [[1, -1]]
          :: OutsideClues [Int]
 
+test_edge_grid :: Assertion
+test_edge_grid = Right (gn, gc, es) @=? res
+  where
+    res = parseEither parseEdgeGrid edgeGrid_1
+    gn = Grid.Grid (Square 0 0) Map.empty :: Grid.SGrid MasyuPearl
+    gc = Grid.Grid (Square 0 0) Map.empty :: Grid.SGrid Int
+    es = [] :: [Edge]
+
 parseDataTests :: TestTree
 parseDataTests = testGroup "Parsing tests (full puzzles, result checks)"
     [ testCase "parse tightfit, correct size" $ test_tightfit_1 @? "error in puzzle"
@@ -130,6 +140,7 @@ parseDataTests = testGroup "Parsing tests (full puzzles, result checks)"
                                             , [(0, 2), (1, 3), (2, 4)]
                                             , [(4, 0), (4, 1), (3, 2)] ]
     , testCase "parse multioutsideclues" $ test_multioutside
+    , testCase "parse edge grid" $ test_edge_grid
     ]
 
 -- this used to cause a rendering crash, though it's
