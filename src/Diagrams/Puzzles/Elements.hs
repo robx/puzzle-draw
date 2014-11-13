@@ -203,3 +203,8 @@ note d = d # frame 0.2 # bg (blend 0.2 black white)
 placeNote :: Backend' b =>
              Size -> Diagram b R2 -> Diagram b R2
 placeNote sz d = note d # alignBL # translatep sz # translate (r2 (0.3,0.3))
+
+miniloop :: Backend' b => Diagram b R2
+miniloop = (drawThinEdges [E (0,0) H, E (0,0) V, E (1,0) V, E (0,1) H]
+            <> slithergrid (1, 1))
+           # centerXY # scale 0.4
