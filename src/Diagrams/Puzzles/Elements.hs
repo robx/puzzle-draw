@@ -15,6 +15,7 @@ import Diagrams.TwoD.Offset
 
 import Data.Puzzles.Elements hiding (Loop)
 import Data.Puzzles.GridShape
+import Data.Puzzles.Grid hiding (shape)
 
 import Diagrams.Puzzles.Lib
 import Diagrams.Puzzles.Widths
@@ -208,3 +209,11 @@ miniloop :: Backend' b => Diagram b R2
 miniloop = (drawThinEdges [E (0,0) H, E (0,0) V, E (1,0) V, E (0,1) H]
             <> slithergrid (1, 1))
            # centerXY # scale 0.4
+
+drawDomino :: Backend' b => (Int, Int) -> Diagram b R2
+drawDomino (x, y) =
+    (drawInt x ||| strutX 0.3 ||| drawInt y) # centerXY # scale 0.6
+    <> stroke (rect 0.7 0.4) # lwG 0 # fc (blend 0.2 black white)
+
+drawDominos :: Backend' b => DigitRange -> Diagram b R2
+drawDominos = centerXY . onGrid 0.8 0.5 drawDomino . values . dominoGrid

@@ -208,3 +208,11 @@ collectLines = dualEdgesP eq
   where
     eq (Just x) (Just y) = x == y
     eq _        _        = False
+
+dominoGrid :: DigitRange -> SGrid (Int, Int)
+dominoGrid (DigitRange x y) = Grid
+    (Square s s)
+    (Map.fromList [ ((a, s - b), (b + x, a + x))
+                  | a <- [0..s], b <- [0..s], b <= a ])
+  where
+    s = y - x
