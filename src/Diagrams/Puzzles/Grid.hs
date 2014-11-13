@@ -70,8 +70,8 @@ plaingrid :: Backend' b =>
 plaingrid s = stroke (fullgridlines s) # lwG gridwidth
 
 bgdashingG :: (Semigroup a, HasStyle a, V a ~ R2) =>
-             [Double] -> Double -> Colour Double -> a -> a
-bgdashingG ds offs c x = x # dashingG ds offs <> x # lc c
+             [Double] -> Double -> AlphaColour Double -> a -> a
+bgdashingG ds offs c x = x # dashingG ds offs <> x # lcA c
 
 dashes :: [Double]
 dashes = [5 / 40, 3 / 40]
@@ -82,7 +82,7 @@ dashoffset = 2.5 / 40
 gridDashing :: (Semigroup a, HasStyle a, V a ~ R2) => a -> a
 gridDashing = bgdashingG dashes dashoffset white'
   where
-    white' = blend 0.95 white black
+    white' = black `withOpacity` 0.05
 
 -- | Draw a square grid with dashed grid lines. The gaps
 --   between dashes are off-white to aid in using filling
