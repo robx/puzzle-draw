@@ -630,3 +630,7 @@ parseCoordLoop v = sortCoords <$> parseClueGrid v
   where
     sortCoords :: SGrid (Maybe Char) -> VertexLoop
     sortCoords = map fst . sortBy (comparing snd) . clues
+
+instance FromString DigitRange where
+    parseString (c:'-':d:[]) = DigitRange <$> parseChar c <*> parseChar d
+    parseString _            = fail "expected something like '1-5'"
