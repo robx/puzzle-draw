@@ -398,10 +398,15 @@ sudokuDoppelblock = (,)
 
 dominos ::
     Backend' b =>
-    RenderPuzzle b (SGrid (Clue Int)) AreaGrid
+    RenderPuzzle b (SGrid (Clue Int), DigitRange) AreaGrid
 dominos = (,)
-    (atCentres drawInt . clues <> dashedgrid . size)
-    (atCentres drawInt . clues . fst <> drawAreaGridGray' gridDashing . snd)
+    p
+    (atCentres drawInt . clues . fst . fst <> drawAreaGridGray' gridDashing . snd)
+  where
+    p (g, r) =
+        ((atCentres drawInt . clues <> dashedgrid . size) $ g)
+        `aboveT`
+        drawDominos r
 
 numberlink ::
     Backend' b =>

@@ -241,8 +241,11 @@ sudokuDoppelblock =
   where
     parseOutInts v = fmap (blankToMaybe' . unEither') <$> parseOutside v
 
-dominos :: ParsePuzzle (SGrid (Maybe Int)) AreaGrid
-dominos = (parseClueGrid, parseGrid)
+dominos :: ParsePuzzle (SGrid (Maybe Int), DigitRange) AreaGrid
+dominos = (p, parseGrid)
+  where
+    p v = (,) <$> parseFrom ["grid"] parseClueGrid v
+              <*> parseFrom ["digits"] parseStringJSON v
 
 numberlink :: ParsePuzzle (SGrid (Maybe Int)) [Edge]
 numberlink = (p, fmap collectLines . p)
