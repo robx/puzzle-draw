@@ -124,11 +124,18 @@ atCentres dc = translate (r2 (1/2, 1/2)) . atVertices dc
 atCentres' :: (Transformable a, V a ~ R2) => SGrid a -> [a]
 atCentres' = translate (r2 (1/2, 1/2)) . atVertices'
 
+onGrid :: (Transformable a, Monoid a, V a ~ R2) =>
+          Double -> Double -> (t -> a) -> [(Coord, t)] -> a
+onGrid dx dy f = mconcat . map g
+  where
+    g (p, c) = f c # translate (r2coord p)
+    r2coord (x, y) = r2 (dx * fromIntegral x, dy * fromIntegral y)
+
 -- | In a square grid, use the first argument to draw things
 --   at the grid vertices given by coordinates.
 atVertices :: (Transformable a, Monoid a, V a ~ R2) =>
               (t -> a) -> [(Coord, t)] -> a
-atVertices dc = mconcat . map (\ (p, c) -> dc c # translatep p)
+atVertices = onGrid 1 1
 
 atVertices' :: (Transformable a, V a ~ R2) => SGrid a -> [a]
 atVertices' g = [ (g ! c) # translatep c | c <- cells g ]
