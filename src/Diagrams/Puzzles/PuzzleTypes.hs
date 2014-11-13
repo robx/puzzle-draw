@@ -362,11 +362,12 @@ baca = (,)
 
 buchstabensalat ::
     Backend' b =>
-    RenderPuzzle b (OutsideClues (Maybe Char)) (SGrid (Maybe Char))
-buchstabensalat = (p, p . fst <> atCentres drawChar . clues . snd)
+    RenderPuzzle b (OutsideClues (Maybe Char), String) (SGrid (Maybe Char))
+buchstabensalat = (p <> n, p . fst <> atCentres drawChar . clues . snd)
   where
-    p = atCentres (scale 0.8 . drawChar) . outsideClues
-        <> grid . outsideSize
+    p = (atCentres (scale 0.8 . drawChar) . outsideClues
+         <> grid . outsideSize) . fst
+    n (ocs, ls) = placeNote (outsideSize ocs) (drawText ls # scale 0.8)
 
 doppelblock ::
     Backend' b =>

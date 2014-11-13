@@ -213,11 +213,16 @@ baca = ( \v -> (,,) <$> parseFrom ["grid"] parseClueGrid v
         return $ fmap blankToMaybe' oc
     parseBottomRight _ = empty
 
-buchstabensalat :: ParsePuzzle (OutsideClues (Maybe Char)) (SGrid (Maybe Char))
+buchstabensalat :: ParsePuzzle (OutsideClues (Maybe Char), String)
+                               (SGrid (Maybe Char))
 buchstabensalat =
-    ( \v -> fmap blankToMaybe <$> parseCharOutside v
+    ( p
     , fmap (fmap blankToMaybe') . parseGrid
     )
+  where
+    p v = (,)
+        <$> (fmap blankToMaybe <$> parseCharOutside v)
+        <*> parseFrom ["letters"] parseJSON v
 
 doppelblock :: ParsePuzzle (OutsideClues (Maybe Int))
                            (SGrid (Either Black Int))
