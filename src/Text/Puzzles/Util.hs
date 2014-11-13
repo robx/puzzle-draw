@@ -34,9 +34,9 @@ type Path = [String]
 field :: Path -> Value -> Parser Value
 field = field' . map T.pack
   where
-    field' [] v                = pure v
+    field' [] v              = pure v
     field' (f:fs) (Object v) = v .: f >>= field' fs
-    field' _  _                = empty
+    field' (f:_)  _          = fail $ "expected field '" ++ T.unpack f ++ "'"
 
 parseFrom :: Path -> (Value -> Parser b) -> Value -> Parser b
 parseFrom fs p v = field fs v >>= p
