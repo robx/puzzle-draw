@@ -198,11 +198,13 @@ tapa = (,)
     tapaGrid = atCentres drawTapaClue . clues <> grid gDefault
 
 japanesesums :: Backend' b =>
-                RenderPuzzle b (OutsideClues [Int]) (SGrid (Either Black Int))
+                RenderPuzzle b (OutsideClues [Int], String)
+                               (SGrid (Either Black Int))
 japanesesums = (,)
-    outsideIntGrid
-    (outsideIntGrid . fst <> japcells . snd)
+    (outsideIntGrid . fst <> n)
+    (outsideIntGrid . fst . fst <> japcells . snd)
   where
+    n (ocs, ds) = placeNote (outsideSize ocs) (drawText ds # scale 0.8)
     japcells = atCentres japcell . values
     japcell (Left Black) = fillBG gray
     japcell (Right x) = drawInt x
