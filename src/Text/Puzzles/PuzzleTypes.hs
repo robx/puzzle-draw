@@ -9,7 +9,7 @@ module Text.Puzzles.PuzzleTypes (
     maximallengths, primeplace, labyrinth, bahnhof, blackoutDominos,
     angleloop, anglers, cave, skyscrapers, summon, baca,
     buchstabensalat, doppelblock, sudokuDoppelblock, dominos,
-    skyscrapersStars, numberlink
+    skyscrapersStars, numberlink, slithermulti
   ) where
 
 import Control.Applicative
@@ -59,6 +59,11 @@ kpyramid = (parseJSON, parseJSON)
 
 slither :: ParsePuzzle (SGrid (Clue Int)) Loop
 slither = (parseClueGrid, parseEdges)
+
+slithermulti :: ParsePuzzle (SGrid (Clue Int), Int) [Edge]
+slithermulti = (p, parseEdges)
+  where p v = (,) <$> parseFrom ["grid"] parseClueGrid v
+                  <*> parseFrom ["loops"] parseJSON v
 
 newtype LSol = LSol { unLSol :: (Loop, SGrid Bool) }
 instance FromJSON LSol where

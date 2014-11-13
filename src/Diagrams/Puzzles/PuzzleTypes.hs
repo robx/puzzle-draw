@@ -12,7 +12,8 @@ module Diagrams.Puzzles.PuzzleTypes (
     coral, maximallengths, primeplace, labyrinth, bahnhof,
     blackoutDominos, angleLoop, anglers, cave, skyscrapers,
     summon, baca, buchstabensalat, doppelblock, sudokuDoppelblock,
-    dominos, skyscrapersStars, fillominoCheckered, numberlink
+    dominos, skyscrapersStars, fillominoCheckered, numberlink,
+    slithermulti
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -127,6 +128,14 @@ liarslither = (,)
     (solstyle . drawCrosses . snd . snd
      <> drawSlitherGrid . fst
      <> solstyle . drawEdges . fst . snd)
+
+slithermulti :: Backend' b =>
+                RenderPuzzle b (IntGrid, Int) [Edge]
+slithermulti = (,)
+    (drawSlitherGrid . fst <> n)
+    (drawSlitherGrid . fst . fst <> solstyle . drawEdges . snd)
+  where
+    n (g, l) = placeNote (size g) (drawInt l ||| strutX 0.2 ||| miniloop)
 
 tightfitskyscrapers :: Backend' b =>
                        RenderPuzzle b (OutsideClues (Maybe Int), SGrid (Tightfit ()))
