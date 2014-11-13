@@ -103,12 +103,17 @@ irregularGridPaths (Grid _ m) = (toPath outer, toPath inner)
     (outer, inner) = edges (M.keysSet m) (`M.member` m)
     toPath = mconcat . map edgePath
 
-irregularGrid :: Backend' b =>
-                 SGrid a -> Diagram b R2
-irregularGrid g = stroke outer # lwG edgewidth # lineCap LineCapSquare <>
-                  stroke inner # lwG gridwidth
+irregularGrid' :: Backend' b =>
+                  (Diagram b R2 -> Diagram b R2) -> SGrid a -> Diagram b R2
+irregularGrid' style g =
+    stroke outer # lwG edgewidth # lineCap LineCapSquare <>
+    stroke inner # lwG gridwidth # style
   where
     (outer, inner) = irregularGridPaths g
+
+irregularGrid :: Backend' b =>
+                 SGrid a -> Diagram b R2
+irregularGrid = irregularGrid' id
 
 -- | In a square grid, use the first argument to draw things at the centres
 --   of cells given by coordinates.
@@ -181,8 +186,8 @@ drawAreaGridGray = drawAreaGrid <> shadeGrid . fmap cols
            | otherwise  = Nothing
 
 irregAreaGridX :: Backend' b =>
-                      SGrid Char -> Diagram b R2
-irregAreaGridX = irregularGrid <> drawEdges . borders <> shadeGrid . fmap cols
+                  (Diagram b R2 -> Diagram b R2) -> SGrid Char -> Diagram b R2
+irregAreaGridX style = drawEdges . borders <> irregularGrid' style <> shadeGrid . fmap cols
   where
     cols 'X' = Just gray
     cols _   = Nothing
