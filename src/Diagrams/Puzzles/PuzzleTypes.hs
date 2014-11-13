@@ -398,8 +398,8 @@ dominos ::
     Backend' b =>
     RenderPuzzle b (SGrid (Clue Int)) AreaGrid
 dominos = (,)
-    (atCentres drawInt . clues <> grid . size)
-    (atCentres drawInt . clues . fst <> drawAreaGridGray . snd)
+    (atCentres drawInt . clues <> dashedgrid . size)
+    (atCentres drawInt . clues . fst <> drawAreaGridGray' gridDashing . snd)
 
 numberlink ::
     Backend' b =>
