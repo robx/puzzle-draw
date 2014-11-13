@@ -310,13 +310,15 @@ skyscrapers = (,)
 
 skyscrapersStars ::
     Backend' b =>
-    RenderPuzzle b (OutsideClues (Maybe Int)) (SGrid (Either Int Star))
+    RenderPuzzle b (OutsideClues (Maybe Int), Int)
+                   (SGrid (Either Int Star))
 skyscrapersStars = (,)
-    g
+    (g <> n)
     (g . fst <> atCentres (either drawInt drawStar) . values . snd)
   where
-    g = atCentres drawInt . outsideClues
-        <> grid . outsideSize
+    g = (atCentres drawInt . outsideClues <> grid . outsideSize) . fst
+    n (oc, s) = placeNote (outsideSize oc)
+                          (drawInt s ||| strutX 0.2 ||| drawStar Star)
 
 summon ::
     Backend' b =>

@@ -170,9 +170,12 @@ parseOut v = fmap (blankToMaybe' . unEither') <$> parseOutside v
 skyscrapers :: ParsePuzzle (OutsideClues (Maybe Int)) IntGrid
 skyscrapers = (parseOut, parseClueGrid)
 
-skyscrapersStars :: ParsePuzzle (OutsideClues (Maybe Int))
+skyscrapersStars :: ParsePuzzle (OutsideClues (Maybe Int), Int)
                                 (SGrid (Either Int Star))
-skyscrapersStars = (parseOut, parseGrid)
+skyscrapersStars = (p, parseGrid)
+  where
+    p v@(Object o) = (,) <$> parseOut v <*> o .: "stars"
+    p _            = empty
 
 summon :: ParsePuzzle (AreaGrid, OutsideClues (Maybe Int)) IntGrid
 summon = ( \v -> (,) <$> parseFrom ["grid"] parseGrid v
