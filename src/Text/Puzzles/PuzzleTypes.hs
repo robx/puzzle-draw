@@ -9,7 +9,8 @@ module Text.Puzzles.PuzzleTypes (
     maximallengths, primeplace, labyrinth, bahnhof, blackoutDominos,
     angleloop, anglers, cave, skyscrapers, summon, baca,
     buchstabensalat, doppelblock, sudokuDoppelblock, dominos,
-    skyscrapersStars, numberlink, slithermulti, dominoPills
+    skyscrapersStars, numberlink, slithermulti, dominoPills,
+    fillominoLoop
   ) where
 
 import Control.Applicative
@@ -35,6 +36,12 @@ geradeweg = (parseClueGrid, parseEdges)
 
 fillomino :: ParsePuzzle IntGrid (SGrid Int)
 fillomino = (parseClueGrid, parseExtGrid)
+
+fillominoLoop :: ParsePuzzle (SGrid (Maybe Int)) (SGrid Int, Loop)
+fillominoLoop = (,)
+    parseClueGrid
+    (\v -> (,) <$> parseFrom ["grid"] parseExtGrid v
+               <*> parseFrom ["loop"] parseEdges v)
 
 masyu :: ParsePuzzle (SGrid (Clue MasyuPearl)) Loop
 masyu = (parseClueGrid, parseEdges)

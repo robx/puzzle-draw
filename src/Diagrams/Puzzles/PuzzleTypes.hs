@@ -13,7 +13,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     blackoutDominos, angleLoop, anglers, cave, skyscrapers,
     summon, baca, buchstabensalat, doppelblock, sudokuDoppelblock,
     dominos, skyscrapersStars, fillominoCheckered, numberlink,
-    slithermulti, dominoPills
+    slithermulti, dominoPills, fillominoLoop
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -66,6 +66,14 @@ fillominoCheckered = (,)
     pickColour 1 = Nothing
     pickColour 2 = Just gray
     pickColour _ = Just red
+
+fillominoLoop :: Backend' b => RenderPuzzle b IntGrid (SGrid Int, Loop)
+fillominoLoop = (,)
+    (fst fillomino)
+    ((atCentres drawInt . values . fst
+      <> solstyle . drawDualEdges . snd
+      <> drawEdges . borders . fst
+      <> dashedgrid . size . fst) . snd)
 
 masyu :: Backend' b =>
          RenderPuzzle b (SGrid (Clue MasyuPearl)) Loop
