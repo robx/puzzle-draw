@@ -19,6 +19,8 @@ gridwidth = onepix / 2
 framewidthfactor :: Double
 framewidthfactor = 8
 
-edgewidth, borderwidth :: Double
+edgewidth :: Double
 edgewidth = 3 * onepix
+
+borderwidth :: Double
 borderwidth = 1 / 2
