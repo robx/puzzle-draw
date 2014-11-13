@@ -270,8 +270,9 @@ blackoutDominos :: Backend' b =>
                    RenderPuzzle b (SGrid (Clue Int))
                                   (SGrid (Clue Int), AreaGrid)
 blackoutDominos = (,)
-    (irregularGrid <> atCentres drawInt . clues)
-    (atCentres drawInt . clues . fst . snd <> irregAreaGridX . snd . snd)
+    (atCentres drawInt. clues <> irregularGrid' gridDashing)
+    (atCentres drawInt . clues . fst . snd
+     <> irregAreaGridX gridDashing . snd . snd)
 
 angleLoop ::
     Backend' b =>
