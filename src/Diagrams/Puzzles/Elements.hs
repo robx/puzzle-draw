@@ -220,3 +220,14 @@ drawDomino (x, y) =
 
 drawDominos :: Backend' b => DigitRange -> Diagram b R2
 drawDominos = centerXY . onGrid 0.8 0.5 drawDomino . values . dominoGrid
+
+drawPill :: Backend' b => Int -> Diagram b R2
+drawPill x = drawInt x # scale 0.6
+             <> stroke (roundedRect 0.7 0.4 0.2) # lwG 0 # fc dominoBG
+
+drawPills :: Backend' b => DigitRange -> Diagram b R2
+drawPills (DigitRange a b) = centerXY . onGrid 0.8 0.5 drawPill $ placed
+  where
+    n = b - a + 1
+    root = head [ x | x <- [n,n-1..], x*x <= n ]
+    placed = zip [(x, y) | x <- [0..root], y <- [root,root-1..0]] [a..b]
