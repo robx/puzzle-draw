@@ -160,9 +160,14 @@ drawDualEdges = edgeStyle . stroke . mconcat . map dualEdge
 drawThinDualEdges :: Backend' b => [Edge] -> Diagram b R2
 drawThinDualEdges = thinEdgeStyle . stroke . mconcat . map dualEdge
 
+drawAreaGrid' :: (Backend' b, Eq a) =>
+                  (Diagram b R2 -> Diagram b R2) ->
+                  SGrid a -> Diagram b R2
+drawAreaGrid' style = drawEdges . borders <> grid' style . size
+
 drawAreaGrid :: (Backend' b, Eq a) =>
                   SGrid a -> Diagram b R2
-drawAreaGrid = drawEdges . borders <> grid . size
+drawAreaGrid = drawAreaGrid' id
 
 fillBG :: Backend' b => Colour Double -> Diagram b R2
 fillBG c = square 1 # lwG onepix # fc c # lc c
@@ -178,12 +183,17 @@ drawShadedGrid = shadeGrid . fmap f
     f True  = Just gray
     f False = Nothing
 
-drawAreaGridGray :: Backend' b =>
-                    SGrid Char -> Diagram b R2
-drawAreaGridGray = drawAreaGrid <> shadeGrid . fmap cols
+drawAreaGridGray' :: Backend' b =>
+                     (Diagram b R2 -> Diagram b R2) ->
+                     SGrid Char -> Diagram b R2
+drawAreaGridGray' style = drawAreaGrid' style <> shadeGrid . fmap cols
   where
     cols c | isUpper c  = Just (blend 0.1 black white)
            | otherwise  = Nothing
+
+drawAreaGridGray :: Backend' b =>
+                    SGrid Char -> Diagram b R2
+drawAreaGridGray = drawAreaGridGray' id
 
 irregAreaGridX :: Backend' b =>
                   (Diagram b R2 -> Diagram b R2) -> SGrid Char -> Diagram b R2
