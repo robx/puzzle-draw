@@ -267,12 +267,16 @@ bahnhof = (,)
     undefined
 
 blackoutDominos :: Backend' b =>
-                   RenderPuzzle b (SGrid (Clue Int))
+                   RenderPuzzle b (SGrid (Clue Int), DigitRange)
                                   (SGrid (Clue Int), AreaGrid)
 blackoutDominos = (,)
-    (atCentres drawInt. clues <> irregularGrid' gridDashing)
+    p
     (atCentres drawInt . clues . fst . snd
      <> irregAreaGridX gridDashing . snd . snd)
+  where
+    p (g, ds) = (atCentres drawInt . clues <> irregularGrid' gridDashing $ g)
+                `aboveT`
+                drawDominos ds
 
 angleLoop ::
     Backend' b =>
