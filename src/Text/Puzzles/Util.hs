@@ -53,6 +53,9 @@ instance FromChar Char where
 class FromString a where
     parseString :: String -> Parser a
 
+parseStringJSON :: FromString a => Value -> Parser a
+parseStringJSON v = parseJSON v >>= parseString
+
 parseLine :: FromChar a => String -> Parser [a]
 parseLine = mapM parseChar
 
