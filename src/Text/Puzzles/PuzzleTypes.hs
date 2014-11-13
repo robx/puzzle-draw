@@ -9,7 +9,7 @@ module Text.Puzzles.PuzzleTypes (
     maximallengths, primeplace, labyrinth, bahnhof, blackoutDominos,
     angleloop, anglers, cave, skyscrapers, summon, baca,
     buchstabensalat, doppelblock, sudokuDoppelblock, dominos,
-    skyscrapersStars, numberlink, slithermulti
+    skyscrapersStars, numberlink, slithermulti, dominoPills
   ) where
 
 import Control.Applicative
@@ -248,6 +248,14 @@ dominos = (p, parseGrid)
   where
     p v = (,) <$> parseFrom ["grid"] parseClueGrid v
               <*> parseFrom ["digits"] parseStringJSON v
+
+dominoPills :: ParsePuzzle (SGrid (Maybe Int), DigitRange, DigitRange)
+                           AreaGrid
+dominoPills = (p, parseGrid)
+  where
+    p v = (,,) <$> parseFrom ["grid"] parseClueGrid v
+               <*> parseFrom ["digits"] parseStringJSON v
+               <*> parseFrom ["pills"] parseStringJSON v
 
 numberlink :: ParsePuzzle (SGrid (Maybe Int)) [Edge]
 numberlink = (p, fmap collectLines . p)

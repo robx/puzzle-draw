@@ -632,5 +632,8 @@ parseCoordLoop v = sortCoords <$> parseClueGrid v
     sortCoords = map fst . sortBy (comparing snd) . clues
 
 instance FromString DigitRange where
-    parseString (c:'-':d:[]) = DigitRange <$> parseChar c <*> parseChar d
-    parseString _            = fail "expected something like '1-5'"
+    parseString s = do
+        let (a, b) = break (== '-') s
+        b' <- case b of ('-':cs) -> pure cs
+                        _        -> fail "exected '-' in range"
+        DigitRange <$> parseString a <*> parseString b'

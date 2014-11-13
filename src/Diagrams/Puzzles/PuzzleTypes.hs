@@ -13,7 +13,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     blackoutDominos, angleLoop, anglers, cave, skyscrapers,
     summon, baca, buchstabensalat, doppelblock, sudokuDoppelblock,
     dominos, skyscrapersStars, fillominoCheckered, numberlink,
-    slithermulti
+    slithermulti, dominoPills
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -411,6 +411,19 @@ dominos = (,)
         ((atCentres drawInt . clues <> dashedgrid . size) $ g)
         `aboveT`
         drawDominos r
+
+dominoPills ::
+    Backend' b =>
+    RenderPuzzle b (SGrid (Clue Int), DigitRange, DigitRange) AreaGrid
+dominoPills = (,)
+    p
+    (atCentres drawInt . clues . fst3 . fst <> drawAreaGridGray' gridDashing . snd)
+  where
+    fst3 (a,_,_) = a
+    p (g, ds, ps) =
+        ((atCentres drawInt . clues <> dashedgrid . size) $ g)
+        `aboveT`
+        (drawDominos ds ||| strutX 0.5 ||| drawPills ps)
 
 numberlink ::
     Backend' b =>
