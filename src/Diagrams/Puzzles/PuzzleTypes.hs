@@ -59,7 +59,7 @@ fillominoCheckered = (,)
     (atCentres drawInt . clues <> dashedgrid . size)
     ((atCentres drawInt . values
       <> drawEdges . borders
-      <> outframe . size
+      <> dashedgrid . size
       <> shadeGrid . checker) . snd)
   where
     checker = fmap pickColour . colour
