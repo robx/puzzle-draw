@@ -105,7 +105,7 @@ irregularGridPaths (Grid _ m) = (toPath outer, toPath inner)
 
 irregularGrid :: Backend' b =>
                  SGrid a -> Diagram b R2
-irregularGrid g = stroke outer # lwG (3 * gridwidth) # lineCap LineCapSquare <>
+irregularGrid g = stroke outer # lwG edgewidth # lineCap LineCapSquare <>
                   stroke inner # lwG gridwidth
   where
     (outer, inner) = irregularGridPaths g
