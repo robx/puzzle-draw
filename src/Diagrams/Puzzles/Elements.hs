@@ -195,3 +195,11 @@ drawStar Star = fc black . stroke . star (StarSkip 2) $ pentagon 0.3
 
 vertexLoop :: VertexLoop -> Located (Trail' Loop R2)
 vertexLoop = mapLoc closeLine . fromVertices . map p2i
+
+note :: Backend' b =>
+        Diagram b R2 -> Diagram b R2
+note d = d # frame 0.2 # bg (blend 0.2 black white)
+
+placeNote :: Backend' b =>
+             Size -> Diagram b R2 -> Diagram b R2
+placeNote sz d = note d # alignBL # translatep sz # translate (r2 (0.3,0.3))
