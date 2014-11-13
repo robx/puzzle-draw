@@ -178,17 +178,16 @@ drawAnglePoly 4 = stroke (square 0.25) # fc gray
 drawAnglePoly 5 = stroke (pentagon 0.2) # fc white
 drawAnglePoly _ = error "expected 3..5"
 
-fish :: (Transformable t, Enveloped t, Semigroup t,
-         Alignable t, HasOrigin t, TrailLike t, V t ~ R2) =>
-        Double -> Angle -> t
-fish off startAngle = fit 0.6 . centerXY $ half <> half # reflectY
+fish :: Double -> Angle -> Trail' Loop R2
+fish off startAngle = closeLine $ half <> half # reverseLine # reflectY
   where
     half = arc startAngle endAngle # translateY (-off)
     endAngle = acosA off ^+^ (90 @@ deg)
 
 drawFish :: Backend' b =>
             Fish -> Diagram b R2
-drawFish Fish = stroke $ fish 0.65 (10 @@ deg)
+drawFish Fish = fit 0.6 . centerXY . fc black . strokeLoop $
+                fish 0.7 (30 @@ deg)
 
 drawStar :: Backend' b =>
             Star -> Diagram b R2
