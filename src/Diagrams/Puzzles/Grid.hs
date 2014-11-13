@@ -146,6 +146,9 @@ thinEdgeStyle = lineCap LineCapSquare . lwG onepix
 drawEdges :: Backend' b => [Edge] -> Diagram b R2
 drawEdges = edgeStyle . stroke . mconcat . map edge
 
+drawThinEdges :: Backend' b => [Edge] -> Diagram b R2
+drawThinEdges = thinEdgeStyle . stroke . mconcat . map edge
+
 drawDualEdges :: Backend' b => [Edge] -> Diagram b R2
 drawDualEdges = edgeStyle . stroke . mconcat . map dualEdge
 
