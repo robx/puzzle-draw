@@ -90,6 +90,7 @@ handle f Baca                 = f R.baca                D.baca
 handle f Buchstabensalat      = f R.buchstabensalat     D.buchstabensalat
 handle f Doppelblock          = f R.doppelblock         D.doppelblock
 handle f SudokuDoppelblock    = f R.sudokuDoppelblock   D.sudokuDoppelblock
+handle f Cave                 = f R.cave                D.cave
 
 -- | Handler that parses a puzzle from a YAML value, and renders.
 drawPuzzle :: PuzzleHandler b (Value -> Parser (Diagram b R2))

@@ -322,7 +322,7 @@ cave = (,)
      <> g . fst)
   where
     g = gridDashing . plaingrid . size <> atCentres drawInt . clues
-    fr gr = outframe (size gr) # lc gray
+    fr gr = outframe' 8 (size gr) # lc gray
 
 skyscrapers ::
     Backend' b =>
