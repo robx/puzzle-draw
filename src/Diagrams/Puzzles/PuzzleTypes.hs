@@ -246,6 +246,8 @@ cave ::
 cave = (,)
     g
     (drawEdges . edgesGen (/=) not . snd
-     <> drawShadedGrid . snd <> g . fst)
+     <> drawShadedGrid . snd <> fr . fst
+     <> g . fst)
   where
-    g = (gridDashing . plaingrid . size <> atCentres drawInt . clues)
+    g = gridDashing . plaingrid . size <> atCentres drawInt . clues
+    fr gr = outframe' 8 (size gr) # lc gray
