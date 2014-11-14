@@ -17,6 +17,7 @@ import Diagrams.BoundingBox
 
 import Diagrams.Puzzles.Lib
 import Diagrams.Puzzles.Widths
+import Diagrams.Puzzles.Code
 
 type RenderPuzzle b p s = (p -> Diagram b R2, (p, s) -> Diagram b R2)
 
@@ -27,13 +28,21 @@ data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
 -- | Optionally render the puzzle, its solution, or a side-by-side
 --   example with puzzle and solution.
-draw :: Backend' b =>
-        PuzzleSol b -> OutputChoice -> Maybe (Diagram b R2)
-draw (p, ms) = fmap (bg white) . d
+draw :: Backend' b
+     => Maybe (CodeDiagrams (Diagram b R2))
+     -> PuzzleSol b -> OutputChoice -> Maybe (Diagram b R2)
+draw mc (p, ms) = fmap (bg white) . d
   where
     fixup = alignPixel . border borderwidth
-    d DrawPuzzle   = fixup <$> Just p
-    d DrawSolution = fixup <$> ms
+    addCode x = case mc of
+        Nothing                        -> x
+        Just (CodeDiagrams cleft ctop) -> 
+            (x =!= strutY 0.5 =!= ctop)
+             |!| strutX 0.5 |!| cleft
+    (=!=) = beside unitY
+    (|!|) = beside (negateV unitX)
+    d DrawPuzzle   = fixup . addCode <$> Just p
+    d DrawSolution = fixup . addCode <$> ms
     d DrawExample  = sideBySide <$> d DrawPuzzle <*> d DrawSolution
     sideBySide x y = x ||| strutX 2.0 ||| y
 

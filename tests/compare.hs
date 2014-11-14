@@ -17,7 +17,7 @@ drawpuzzle :: FilePath
 drawpuzzle = "dist/build/drawpuzzle/drawpuzzle"
 
 render :: FilePath -> IO ()
-render fp = callProcess drawpuzzle [ "-e", "-f",  "png", fp ]
+render fp = callProcess drawpuzzle [ "-e", "-c", "-f",  "png", fp ]
 
 testFile :: FilePath -> TestTree
 testFile fp = goldenVsFile ("comparing " ++ fp)

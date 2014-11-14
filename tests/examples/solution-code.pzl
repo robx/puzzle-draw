@@ -1,0 +1,21 @@
+type: slitherlink
+puzzle: |
+  0..2.1
+  .32.3.
+  3....2
+  3....3
+  .2.32.
+  1.1..1
+solution: |
+  ...┌─┐.
+  .┌┐│┌┘.
+  ┌┘││└┐.
+  └┐└┘.└┐
+  ┌┘┌─┐┌┘
+  └─┘┌┘│.
+  ...└─┘.
+code:
+  cell_rows_bottom: [0,2]
+  node_rows_bottom: [4]
+  cell_cols: [1]
+  node_cols: [4]

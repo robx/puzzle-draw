@@ -34,9 +34,11 @@ library
                        Data.Puzzles.Sudoku
                        Data.Puzzles.Compose
                        Data.Puzzles.PuzzleTypes
+                       Data.Puzzles.Code
                        Text.Puzzles.Util
                        Text.Puzzles.Puzzle
                        Text.Puzzles.PuzzleTypes
+                       Text.Puzzles.Code
                        Diagrams.Puzzles.Style
                        Diagrams.Puzzles.Grid
                        Diagrams.Puzzles.Lib
@@ -46,6 +48,7 @@ library
                        Diagrams.Puzzles.PuzzleGrids
                        Diagrams.Puzzles.PuzzleTypes
                        Diagrams.Puzzles.Draw
+                       Diagrams.Puzzles.Code
                        Diagrams.Puzzles.CmdLine
   -- For access to the font files in the data directory.
   other-modules:       Paths_puzzle_draw
