@@ -42,15 +42,18 @@ fullgridlines (w, h) = fence' w h <> mirror (fence' h w)
     fence' n l = fence (map fromIntegral [0..n]) (fromIntegral l)
 
 -- | Draw a frame around the outside of a rectangle.
-outframe :: Backend' b => Size -> Diagram b R2
-outframe (w, h) = strokePointLoop r # lwG fw
+outframe' :: Backend' b => Double -> Size -> Diagram b R2
+outframe' f (w, h) = strokePointLoop r # lwG fw
     where wd = fromIntegral w
           hd = fromIntegral h
           strokePointLoop = strokeLocTrail . mapLoc (wrapLoop . closeLine)
                             . fromVertices . map p2
-          fw = framewidthfactor * gridwidth
+          fw = f * gridwidth
           e = fw / 2 - gridwidth / 2
           r = [(-e, -e), (wd + e, -e), (wd + e, hd + e), (-e, hd + e)]
+
+outframe :: Backend' b => Size -> Diagram b R2
+outframe = outframe' framewidthfactor
 
 -- | Draw a square grid, applying the given style to the grid lines.
 grid' :: Backend' b =>
