@@ -492,13 +492,6 @@ instance FromJSON PCompassC where
 
 newtype RefGrid a = RefGrid { unRG :: SGrid a }
 
-data Ref = Ref { unRef :: Char }
-    deriving Show
-
-instance FromChar Ref where
-    parseChar c | isAlpha c = pure (Ref c)
-    parseChar _             = empty
-
 hashmaptomap :: (Eq a, Hashable a, Ord a) => HMap.HashMap a b -> Map.Map a b
 hashmaptomap = Map.fromList . HMap.toList
 
@@ -507,8 +500,8 @@ compose m1 m2 = mapM (`Map.lookup` m2) m1
 
 instance FromJSON a => FromJSON (RefGrid a) where
     parseJSON (Object v) = RefGrid <$> do
-        Grid s refs <- fmap (fmap ((:[]) . unRef)) . rectToClueGrid <$>
-                       (v .: "grid" :: Parser (Rect (Either Blank Ref)))
+        Grid s refs <- fmap (fmap ((:[]) . unAlpha)) . rectToClueGrid <$>
+                       (v .: "grid" :: Parser (Rect (Either Blank Alpha)))
         m <- hashmaptomap <$> v .: "clues"
         case compose (Map.mapMaybe id refs) m of
             Nothing -> mzero
