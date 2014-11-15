@@ -4,8 +4,9 @@
 -- List of specific puzzle types.
 
 module Data.Puzzles.PuzzleTypes (
-    PuzzleType(..),
-    lookupType,
+    PuzzleType(..)
+  , lookupType
+  , typeNames
   ) where
 
 import Data.Tuple (swap)
