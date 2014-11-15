@@ -42,7 +42,7 @@ puzzleOpts = PuzzleOpts
              <> help "Puzzle type, overriding type in input file"))
     <*> switch
             (long "puzzle" <> short 'p'
-             <> help "Render puzzle (to base.ext")
+             <> help "Render puzzle (to base.ext)")
     <*> switch
             (long "solution" <> short 's'
              <> help "Render solution (to base-sol.ext)")
