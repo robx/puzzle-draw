@@ -62,3 +62,7 @@ newtype TapaClue = TapaClue [Int]
 newtype PrimeDiag = PrimeDiag (Bool, Bool)
 
 data Black = Black
+
+data Crossing = Crossing
+
+type BahnhofClue = Either Int Crossing

@@ -569,3 +569,7 @@ instance FromChar PrimeDiag where
     parseChar '\\' = pure $ PrimeDiag (False, True)
     parseChar 'X'  = pure $ PrimeDiag (True,  True)
     parseChar _    = empty
+
+instance FromChar Crossing where
+    parseChar '+' = pure Crossing
+    parseChar _   = fail "expected '+'"

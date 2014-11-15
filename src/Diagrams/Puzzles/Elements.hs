@@ -170,3 +170,9 @@ drawPrimeDiag (PrimeDiag d) = stroke p # lwG (3 * onepix) # lc (blend 0.5 gray w
                   (True,  False) -> ur
                   (False, True)  -> dr
                   (True,  True)  -> ur <> dr
+
+drawCrossing :: Backend' b => Crossing -> Diagram b R2
+drawCrossing = const $ drawChar '+'
+
+drawBahnhofClue :: Backend' b => BahnhofClue -> Diagram b R2
+drawBahnhofClue = either drawInt drawCrossing

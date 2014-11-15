@@ -141,7 +141,7 @@ primeplace = (parseIrregGrid, parseIrregGrid)
 labyrinth :: ParsePuzzle (SGrid (Clue Int), [Edge]) (SGrid (Clue Int))
 labyrinth = (parseCellEdges, parseClueGrid')
 
-bahnhof :: ParsePuzzle (SGrid (Clue Char)) ()
+bahnhof :: ParsePuzzle (SGrid (Maybe BahnhofClue)) ()
 bahnhof = (parseClueGrid, error "bahnhof solution not implemented")
 
 cave :: ParsePuzzle (SGrid (Clue Int)) ShadedGrid
