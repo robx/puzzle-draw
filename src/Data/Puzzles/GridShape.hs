@@ -6,18 +6,15 @@ module Data.Puzzles.GridShape where
 import Data.Foldable (Foldable)
 import qualified Data.Foldable as F
 import Data.List (partition)
-import Data.VectorSpace ((^+^))
+import qualified Data.Map as Map
+import Data.VectorSpace ((^+^), (^-^))
 import Control.Arrow ((***))
 
 -- | The geometry of a grid.
 class Show (Cell a) => GridShape a where
-    type GridSize a :: *
     type Cell     a :: *
     type Vertex   a :: *
 
-    size :: a -> GridSize a
-    cells :: a -> [Cell a]
-    vertices :: a -> [Vertex a]
     vertexNeighbours :: a -> Cell a -> [Cell a]
     edgeNeighbours :: a -> Cell a -> [Cell a]
 
@@ -25,23 +22,16 @@ class Show (Cell a) => GridShape a where
 --   indexed by pairs of integers in mathematical coordinates.
 --   The bottom-left corner is vertex (0, 0), the bottom-left
 --   cell is cell (0, 0).
-data Square = Square !Int !Int
+data Square = Square
     deriving (Show, Eq)
 
 squareNeighbours :: [(Int, Int)] -> Square -> Cell Square -> [Cell Square]
-squareNeighbours deltas (Square w h) c = filter inBounds . map (add c) $ deltas
-  where
-    inBounds (x, y) = x >= 0 && x < w && y >= 0 && y < h
-    add (x, y) (x', y') = (x + x', y + y')
+squareNeighbours deltas Square c = map (c ^+^) deltas
 
 instance GridShape Square where
-    type GridSize Square = (Int, Int)
     type Cell Square     = (Int, Int)
     type Vertex Square   = (Int, Int)
 
-    size (Square w h)       = (w, h)
-    cells (Square w h)      = [(x, y) | x <- [0..w-1], y <- [0..h-1]]
-    vertices (Square w h)   = [(x, y) | x <- [0..w], y <- [0..h]]
     vertexNeighbours = squareNeighbours [ (dx, dy)
                                         | dx <- [-1..1], dy <- [-1..1]
                                         , dx /= 0 || dy /= 0
@@ -62,7 +52,7 @@ data Edge = E (Cell Square) Dir
     deriving (Show, Eq, Ord)
 
 type Coord = Cell Square
-type Size = GridSize Square
+type Size = (Int, Int)
 
 -- | Oriented edge direction in a square grid.
 data Dir' = U | D | L | R
@@ -84,6 +74,19 @@ orientedEdge (x,y) (x',y')
     | otherwise             = error $ "not neighbours: " ++
                                       show (x,y) ++ " " ++  show (x',y')
 
+-- This is very wrong.
+dualEdge :: Cell Square -> Cell Square -> Edge
+dualEdge p q = forgetOrientation (orientedEdge p q)
+
+forgetOrientation :: Edge' (Cell Square) -> Edge
+forgetOrientation (E' x U) = E x V
+forgetOrientation (E' x R) = E x H
+forgetOrientation (E' x D) = E (x ^-^ (0,1)) V
+forgetOrientation (E' x L) = E (x ^-^ (1,0)) H
+
+unorientedEdge :: Cell Square -> Cell Square -> Edge
+unorientedEdge p q = forgetOrientation $ orientedEdge p q
+
 -- | @edges@ computes the outer and inner edges of a set of cells.
 --   The set is given via fold and membership predicate, the result
 --   is a pair @(outer, inner)@ of lists of edges, where the outer
@@ -101,6 +104,11 @@ edgesPair cs isc = F.foldr f ([], []) cs
         newout = map ((,) c) no
         newin = map (sortPair . ((,) c)) . filter (c >=) $ ni
         sortPair (x, y) = if x < y then (x, y) else (y, x)
+
+edgesPairM :: Map.Map (Cell Square) a ->
+              ([(Cell Square, Cell Square)],
+               [(Cell Square, Cell Square)])
+edgesPairM m = edgesPair (Map.keysSet m) (flip Map.member m)
 
 -- | @edges@ computes the outer and inner edges of a set of cells.
 --   The set is given via fold and membership predicate, the result

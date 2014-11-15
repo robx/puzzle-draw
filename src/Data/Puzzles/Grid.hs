@@ -11,8 +11,7 @@ import Data.Traversable (Traversable, traverse)
 import Control.Applicative ((<$>))
 import Data.VectorSpace
 
-import Data.Puzzles.GridShape hiding (size, cells)
-import qualified Data.Puzzles.GridShape as GS
+import Data.Puzzles.GridShape
 import Data.Puzzles.Elements
 
 -- | A generic grid, with the given shape and contents.
@@ -51,23 +50,15 @@ filterG p (Grid s m) = Grid s (Map.filter p m)
 -- | Initialize a square grid from a list of lists. The grid
 --   might be incomplete if some rows are shorter.
 fromListList :: [[a]] -> Grid Square a
-fromListList g = Grid s m
+fromListList g = Grid Square m
   where
-    w = maximum . map length $ g
     h = length g
-    s = Square w h
     m = Map.fromList . concat
       . zipWith (\y -> zipWith (\x -> (,) (x, y)) [0..]) [h-1,h-2..]
       $ g
 
-size :: GridShape s => Grid s a -> GridSize s
-size = GS.size . shape
-
 cells :: GridShape s => Grid s a -> [Cell s]
 cells = Map.keys . contents
-
-inBounds :: (GridShape s, Eq (Cell s)) => Grid s a -> Cell s -> Bool
-inBounds g c = c `elem` cells g
 
 -- | For a grid with value type @Maybe a@, return an association
 --   list of cells and @Just@ values.
@@ -79,15 +70,9 @@ values :: GridShape s => Grid s a -> [(Cell s, a)]
 values (Grid _ m) = Map.toList m
 
 edgesGen :: (a -> a -> Bool) -> (a -> Bool) -> Grid Square a -> [Edge]
-edgesGen p n g = [ E pt V | pt <- vedges ] ++ [ E pt H | pt <- hedges ]
+edgesGen p n g = map (uncurry unorientedEdge) . filter (uncurry p') $ es
   where
-    edges' f (sx, sy) = [ (x + 1, y) | x <- [-1 .. sx - 1]
-                                     , y <- [-1 .. sy]
-                                     , p' (f (x, y)) (f (x + 1, y)) ]
-
-    vedges = edges' id (size g)
-    hedges = map swap $ edges' swap (swap . size $ g)
-    swap (x, y) = (y, x)
+    es = uncurry (++) $ edgesPairM (contents g)
     p' c d = p'' (Map.lookup c (contents g))
                  (Map.lookup d (contents g))
     p'' (Just e) (Just f) = p e f
@@ -99,16 +84,9 @@ edgesP :: (a -> a -> Bool) -> Grid Square a -> [Edge]
 edgesP p g = edgesGen p (const False) g
 
 dualEdgesP :: (a -> a -> Bool) -> Grid Square a -> [Edge]
-dualEdgesP p g = [ E pt H | pt <- hedges ] ++
-                 [ E pt V | pt <- vedges ]
+dualEdgesP p g = map (uncurry dualEdge) . filter (uncurry p') $ es
   where
-    edges' f (sx, sy) = [ (x, y) | x <- [0 .. sx - 2]
-                                 , y <- [0 .. sy - 1]
-                                 , p' (f (x, y)) (f (x + 1, y)) ]
-
-    hedges = edges' id (size g)
-    vedges = map swap $ edges' swap (swap . size $ g)
-    swap (x, y) = (y, x)
+    es = uncurry (++) $ edgesPairM (contents g)
     p' c d = p'' (Map.lookup c (contents g))
                  (Map.lookup d (contents g))
     p'' (Just e) (Just f) = p e f
@@ -164,3 +142,8 @@ multiOutsideClues = concatMap distrib . outsideClues . fmap Just . dired
     dired (OC l r b t) = OC (z (-1,0) l) (z (1,0) r) (z (0,-1) b) (z (0,1) t)
     z x ys = zip (repeat x) ys
     distrib (o, (d, xs)) = zip [o ^+^ i *^ d | i <- [0..]] xs
+
+size :: Grid Square a -> Size
+size (Grid _ m) = foldr (both max) (0, 0) (Map.keys m) ^+^ (1, 1)
+  where
+    both f (x, y) (x', y') = (f x x', f y y')

@@ -24,7 +24,7 @@ import qualified Data.Text as T
 import Data.Yaml
 
 import Data.Puzzles.Grid
-import Data.Puzzles.GridShape hiding (size)
+import Data.Puzzles.GridShape
 import Data.Puzzles.Elements
 
 type Path = [String]
@@ -228,7 +228,7 @@ listListToMap ls = Map.fromList . concat
     h = length ls
 
 rectToSGrid :: Rect a -> SGrid a
-rectToSGrid (Rect w h ls) = Grid (Square w h) (listListToMap ls)
+rectToSGrid (Rect _ _ ls) = Grid Square (listListToMap ls)
 
 blankToMaybe :: Either Blank a -> Maybe a
 blankToMaybe = either (const Nothing) Just
@@ -343,20 +343,14 @@ parseEdgeGrid v = uncurry (,,) <$>
   where
     parseBoth = do
         g <- parseGrid v
-        (gn, gc) <- halveGrid g
+        let (gn, gc) = halveGrid g
         gn' <- parseGridChars gn
         gc' <- parseGridChars gc
         return (gn', gc')
     both f (x, y) = (f x, f y)
-    halveGrid (Grid (Square w h) m)
-        | odd w && odd h = pure (Grid snode (divkeys mnode),
-                                 Grid scell (divkeys mcell))
-        | otherwise      = fail "non-odd grid size"
+    halveGrid (Grid Square m) =
+        (Grid Square (divkeys mnode), Grid Square (divkeys mcell))
       where
-        w' = (w + 1) `div` 2
-        h' = (h + 1) `div` 2
-        snode = Square w' h'
-        scell = Square (w' - 1) (h' - 1)
         mnode = Map.filterWithKey (const . uncurry (&&) . both even) m
         mcell = Map.filterWithKey (const . uncurry (&&) . both odd)  m
         divkeys = Map.mapKeys (both (`div` 2))
@@ -437,10 +431,9 @@ parseThermos (Grid s m) = catMaybes <$> mapM parseThermo (Map.keys m)
         succs' q = maybe [] (const $ succs q) (Map.lookup q m')
 
 parseThermoGrid :: ThermoRect -> Parser (SGrid Int, [Thermometer])
-parseThermoGrid (Rect w h ls) = (,) (Grid s ints)
-                              <$> parseThermos (Grid s alphas)
+parseThermoGrid (Rect _ _ ls) = (,) (Grid Square ints)
+                              <$> parseThermos (Grid Square alphas)
   where
-    s = Square w h
     (ints, alphas) = partitionEithers . snd . partitionEithers $
                      listListToMap ls
 
@@ -532,9 +525,9 @@ instance FromJSON a => FromJSON (RefGrid a) where
 
 parseAfternoonGrid :: Value -> Parser (SGrid Shade)
 parseAfternoonGrid v = do
-    (_, Grid s _, es) <- parseEdgeGrid v
-                         :: Parser (SGrid Char, SGrid Char, [Edge])
-    return . Grid s . toMap $ es
+    (_, _, es) <- parseEdgeGrid v
+                  :: Parser (SGrid Char, SGrid Char, [Edge])
+    return . Grid Square . toMap $ es
   where
     toShade V = Shade False True
     toShade H = Shade True  False

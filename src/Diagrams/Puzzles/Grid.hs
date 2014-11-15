@@ -9,7 +9,7 @@ import qualified Data.Map as M
 import Diagrams.Prelude
 
 import Data.Puzzles.Grid
-import Data.Puzzles.GridShape hiding (size, cells)
+import Data.Puzzles.GridShape hiding (dualEdge)
 
 import Diagrams.Puzzles.Lib
 import Diagrams.Puzzles.Widths

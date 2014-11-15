@@ -17,7 +17,7 @@ import Data.Yaml
 import Text.Puzzles.Util
 import Text.Puzzles.Puzzle
 import Data.Puzzles.Grid
-import Data.Puzzles.GridShape hiding (size)
+import Data.Puzzles.GridShape
 import qualified Data.Puzzles.Pyramid as Pyr
 import Data.Puzzles.Elements
 
