@@ -40,7 +40,8 @@ nurikabe :: ParsePuzzle IntGrid ShadedGrid
 nurikabe = (parseSpacedClueGrid, parseShadedGrid)
 
 latintapa :: ParsePuzzle (SGrid (Clue [String])) (SGrid (Maybe Char))
-latintapa = ((unRG <$>) . parseJSON, parseClueGrid)
+latintapa = ((unRG <$>) . parseJSON,
+             fmap (fmap (fmap fromLetter)) . parseClueGrid')
 
 sudoku :: ParsePuzzle IntGrid IntGrid
 sudoku = (parseClueGrid, parseClueGrid)
