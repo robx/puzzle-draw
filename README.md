@@ -46,7 +46,7 @@ solution:
 ```
 
 Or see a [puzzle set][twentyfour] that covers the puzzle types
-that are supported currently.
+that are supported as of 2014-05.
 
 [travis]: http://travis-ci.org/robx/puzzle-draw
 [cmdline]: http://github.com/robx/puzzle-draw-cmdline
