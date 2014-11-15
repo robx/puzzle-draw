@@ -1,3 +1,6 @@
+0.1.0.4: 20141115
+-----------------
+
 * add installation and usage instructions to README
 * merge puzzle-draw-cmdline
 * update for diagrams 1.2 and ghc 7.8
