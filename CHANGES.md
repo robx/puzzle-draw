@@ -1,7 +1,14 @@
+0.1.0.4: 20141115
+-----------------
+
+* add installation and usage instructions to README
 * merge puzzle-draw-cmdline
 * update for diagrams 1.2 and ghc 7.8
-* add new puzzle type: Bahnhof
+* add new puzzle types: Bahnhof, Cave
+* rename `countnumbers` to `meanderingnumbers`
 * include and use a nicer font
+* command-line option to list supported puzzle types
+* various tweaks and fixes
 
 0.1.0.3: 20140519
 -----------------

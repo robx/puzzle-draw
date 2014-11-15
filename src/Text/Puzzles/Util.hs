@@ -72,6 +72,14 @@ instance FromChar Alpha where
         | isAlpha c  = Alpha <$> parseChar c
         | otherwise  = empty
 
+-- | Helper to parse strings from number-formatted YAML fields.
+--   Somewhat dodgy.
+newtype IntString = IntString { unIntString :: String }
+
+instance FromJSON IntString where
+    parseJSON v@(Number _) = IntString . (show :: Int -> String) <$> parseJSON v
+    parseJSON v            = IntString <$> parseJSON v
+
 -- | A rectangle. Each row has length `w`.
 data Rect a = Rect !Int !Int [[a]]
     deriving Show
@@ -386,9 +394,9 @@ parseCellEdges v = proj23 <$> parseEdgeGrid v
 data HalfDirs = HalfDirs {unHalfDirs :: [Dir]}
 
 instance FromChar HalfDirs where
-    parseChar c | c == '└'        = pure . HalfDirs $ [V, H]
-                | c `elem` "│┘"   = pure . HalfDirs $ [V]
-                | c `elem` "─┌"  = pure . HalfDirs $ [H]
+    parseChar c | c `elem` "└┴├┼" = pure . HalfDirs $ [V, H]
+                | c `elem` "│┘┤"  = pure . HalfDirs $ [V]
+                | c `elem` "─┌┬"  = pure . HalfDirs $ [H]
                 | otherwise       = pure . HalfDirs $ []
 
 -- parses a string like
@@ -637,3 +645,7 @@ instance FromString DigitRange where
         b' <- case b of ('-':cs) -> pure cs
                         _        -> fail "exected '-' in range"
         DigitRange <$> parseString a <*> parseString b'
+
+instance FromChar Crossing where
+    parseChar '+' = pure Crossing
+    parseChar _   = fail "expected '+'"

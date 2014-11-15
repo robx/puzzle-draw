@@ -45,11 +45,59 @@ solution:
     ..X...
 ```
 
-Or see a [puzzle set][twentyfour] that covers the puzzle types
-that are supported currently.
+There is a demo web application at [demo] that provides some more
+examples and that can be used to generate SVG images from such
+puzzle descriptions.
 
-[travis]: http://travis-ci.org/robx/puzzle-draw
-[cmdline]: http://github.com/robx/puzzle-draw-cmdline
-[liarslither]: http://maybepuzzles.wordpress.com/types/liar-slither-link/
-[twentyfour]: http://maybepuzzles.wordpress.com/2014/03/29/puzzle-set-24-hour-marathon/
+Or see a [puzzle set][twentyfour] that covers the puzzle types
+that are supported as of 2014-05.
+
+Installing
+----------
+
+This is a brief overview of how to install the command line tool.
+You'll need to get a Haskell environment, by installing the
+[Haskell Platform][platform]. Then install `puzzle-draw` with cabal:
+
+```
+$ cabal install puzzle-draw
+```
+
+This will compile puzzle-draw against the SVG backend, and install
+a binary `drawpuzzle` that formats puzzles to SVG. Alternatively,
+you can compile against the Cairo backend by passing `-fcairo`:
+
+```
+$ cabal install -fcairo puzzle-draw
+```
+
+This will enable PDF and PNG output. Be warned that getting Cairo
+installed can be tricky on non-Linux platforms.
+
+Running
+-------
+
+As an example, suppose the Liar Slitherlink puzzle description above
+is copied into a file `slitherliar.pzl`.
+
+```
+$ drawpuzzle slitherliar.pzl
+```
+
+This will generate two files `slitherliar.svg` and `slitherliar-sol.svg`,
+containing the puzzle and solved puzzle, respectively. Run
+
+```
+$ drawpuzzle -h
+```
+
+to see some command line options that allow modifying the program's
+behaviour, e.g., choosing the output format.
+
+[travis]: https://travis-ci.org/robx/puzzle-draw
+[cmdline]: https://github.com/robx/puzzle-draw-cmdline
+[liarslither]: https://maybepuzzles.wordpress.com/types/liar-slither-link/
+[twentyfour]: https://maybepuzzles.wordpress.com/2014/03/29/puzzle-set-24-hour-marathon/
 [diagrams]: http://projects.haskell.org/diagrams/
+[demo]: https://puzzle-draw-demo.herokuapp.com
+[platform]: https://www.haskell.org/platform/

@@ -8,7 +8,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
-    afternoonskyscrapers, countnumbers, tapa, japanesesums,
+    afternoonskyscrapers, meanderingnumbers, tapa, japanesesums,
     coral, maximallengths, primeplace, labyrinth, bahnhof,
     blackoutDominos, angleLoop, anglers, cave, skyscrapers,
     summon, baca, buchstabensalat, doppelblock, sudokuDoppelblock,
@@ -211,9 +211,9 @@ afternoonskyscrapers = (,)
     (grid . size <> atCentres drawShade . values)
     (drawIntGrid . snd <> atCentres drawShade . values . fst)
 
-countnumbers :: Backend' b =>
+meanderingnumbers :: Backend' b =>
                         RenderPuzzle b AreaGrid IntGrid
-countnumbers = (,)
+meanderingnumbers = (,)
     drawAreaGrid
     (drawIntGrid . snd <> drawAreaGrid . fst)
 
@@ -241,7 +241,7 @@ coral :: Backend' b =>
           RenderPuzzle b (OutsideClues [String]) ShadedGrid
 coral = (,)
     outsideGrid
-    (drawShadedGrid . snd <> outsideGrid . fst)
+    (outsideGrid . fst <> drawShadedGrid . snd)
 
 maximallengths :: Backend' b =>
                   RenderPuzzle b (OutsideClues (Maybe Int)) Loop
@@ -269,10 +269,14 @@ labyrinth = (,)
     g = drawEdges . snd <> plaingrid . size . fst
 
 bahnhof :: Backend' b =>
-            RenderPuzzle b (SGrid (Clue Char)) ()
+            RenderPuzzle b (SGrid (Maybe BahnhofClue)) [Edge]
 bahnhof = (,)
-    drawClueGrid
-    undefined
+    (atCentres drawBahnhofClue . clues <> grid . size)
+    (atCentres drawBahnhofStation . clues . fst
+     <> solstyle . drawDualEdges . snd
+     <> grid . size . fst)
+  where
+    drawBahnhofStation = either drawInt (const mempty)
 
 blackoutDominos :: Backend' b =>
                    RenderPuzzle b (SGrid (Clue Int), DigitRange)

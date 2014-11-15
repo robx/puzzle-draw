@@ -8,17 +8,27 @@ import Diagrams.Puzzles.CmdLine
 
 import Text.Puzzles.Puzzle
 import Data.Puzzles.Compose
+import Data.Puzzles.PuzzleTypes (typeNames)
 import Diagrams.Puzzles.Draw
 
 import Options.Applicative
 import Control.Monad
 import Data.Maybe
-import Data.List (intercalate)
+import Data.List (intercalate, sort)
 
 import System.FilePath
 import System.Environment (getProgName)
 
 import qualified Data.Yaml as Y
+
+optListTypes :: Parser (a -> a)
+optListTypes =
+    infoOption
+        (unlines' . sort . map snd $ typeNames)
+        (long "list-types"
+         <> help "List supported puzzle types")
+  where
+    unlines' = intercalate "\n"
 
 data PuzzleOpts = PuzzleOpts
     { _format   :: String
@@ -42,7 +52,7 @@ puzzleOpts = PuzzleOpts
              <> help "Puzzle type, overriding type in input file"))
     <*> switch
             (long "puzzle" <> short 'p'
-             <> help "Render puzzle (to base.ext")
+             <> help "Render puzzle (to base.ext)")
     <*> switch
             (long "solution" <> short 's'
              <> help "Render solution (to base-sol.ext)")
@@ -87,7 +97,7 @@ renderPuzzle opts r (oc, req) = do
 defaultOpts :: Parser a -> IO a
 defaultOpts optsParser = do
     prog <- getProgName
-    let p = info (helper <*> optsParser)
+    let p = info (helper <*> optListTypes <*> optsParser)
                 (fullDesc
                  <> progDesc "Command-line diagram generation."
                  <> header prog)

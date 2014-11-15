@@ -231,3 +231,9 @@ drawPills (DigitRange a b) = centerXY . onGrid 0.8 0.5 drawPill $ placed
     n = b - a + 1
     root = head [ x | x <- [n,n-1..], x*x <= n ]
     placed = zip [(x, y) | x <- [0..root], y <- [root,root-1..0]] [a..b]
+
+drawCrossing :: Backend' b => Crossing -> Diagram b R2
+drawCrossing = const $ drawChar '+'
+
+drawBahnhofClue :: Backend' b => BahnhofClue -> Diagram b R2
+drawBahnhofClue = either drawInt drawCrossing

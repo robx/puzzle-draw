@@ -1,5 +1,5 @@
 name:                puzzle-draw
-version:             0.1.0.3
+version:             0.1.0.4
 synopsis:            Creating graphics for pencil puzzles.
 description:         puzzle-draw is a library and tool for drawing pencil
                      puzzles using Diagrams. It aims to provide a utility
@@ -47,7 +47,7 @@ library
                        Diagrams.Puzzles.CmdLine
   -- For access to the font files in the data directory.
   other-modules:       Paths_puzzle_draw
-  build-depends:       base >= 4.2,
+  build-depends:       base >= 4.2 && < 5,
                        diagrams-lib >= 1.2,
                        parsec >= 3.1,
                        yaml >= 0.8.4,

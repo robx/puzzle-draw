@@ -5,7 +5,7 @@ module Text.Puzzles.PuzzleTypes (
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
-    afternoonskyscrapers, countnumbers, tapa, japanesesums, coral,
+    afternoonskyscrapers, meanderingnumbers, tapa, japanesesums, coral,
     maximallengths, primeplace, labyrinth, bahnhof, blackoutDominos,
     angleloop, anglers, cave, skyscrapers, summon, baca,
     buchstabensalat, doppelblock, sudokuDoppelblock, dominos,
@@ -50,7 +50,8 @@ nurikabe :: ParsePuzzle IntGrid ShadedGrid
 nurikabe = (parseSpacedClueGrid, parseShadedGrid)
 
 latintapa :: ParsePuzzle (SGrid (Clue [String])) (SGrid (Maybe Char))
-latintapa = ((unRG <$>) . parseJSON, parseClueGrid)
+latintapa = ((unRG <$>) . parseJSON,
+             fmap (fmap (fmap unAlpha)) . parseClueGrid')
 
 sudoku :: ParsePuzzle IntGrid IntGrid
 sudoku = (parseClueGrid, parseClueGrid)
@@ -133,8 +134,8 @@ afternoonskyscrapers :: ParsePuzzle (SGrid Shade) IntGrid
 afternoonskyscrapers = (parseAfternoonGrid, parseGrid)
 
 -- this should be changed to support clue numbers
-countnumbers :: ParsePuzzle AreaGrid IntGrid
-countnumbers = (parseGrid, parseGrid)
+meanderingnumbers :: ParsePuzzle AreaGrid IntGrid
+meanderingnumbers = (parseGrid, parseGrid)
 
 tapa :: ParsePuzzle (SGrid TapaClue) ShadedGrid
 tapa = (\v -> fmap unParseTapaClue . unRG <$> parseJSON v,
@@ -148,7 +149,9 @@ japanesesums = (p, parseGrid)
     p _            = empty
 
 coral :: ParsePuzzle (OutsideClues [String]) ShadedGrid
-coral = (parseMultiOutsideClues, parseShadedGrid)
+coral = (,)
+    (fmap (fmap (map unIntString)) . parseMultiOutsideClues)
+    parseShadedGrid
 
 maximallengths :: ParsePuzzle (OutsideClues (Maybe Int)) Loop
 maximallengths = (\v -> fmap blankToMaybe <$> parseCharOutside v,
@@ -160,8 +163,8 @@ primeplace = (parseIrregGrid, parseIrregGrid)
 labyrinth :: ParsePuzzle (SGrid (Clue Int), [Edge]) (SGrid (Clue Int))
 labyrinth = (parseCellEdges, parseClueGrid')
 
-bahnhof :: ParsePuzzle (SGrid (Clue Char)) ()
-bahnhof = (parseClueGrid, error "bahnhof solution not implemented")
+bahnhof :: ParsePuzzle (SGrid (Maybe BahnhofClue)) [Edge]
+bahnhof = (parseClueGrid, parseEdges)
 
 blackoutDominos :: ParsePuzzle (SGrid (Clue Int), DigitRange)
                                (SGrid (Clue Int), AreaGrid)

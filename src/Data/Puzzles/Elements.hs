@@ -68,6 +68,9 @@ newtype PrimeDiag = PrimeDiag (Bool, Bool)
 data Black = Black
 data Fish = Fish
 data Star = Star
+data Crossing = Crossing
+
+type BahnhofClue = Either Int Crossing
 
 data DigitRange = DigitRange !Int !Int
     deriving (Show, Eq)
