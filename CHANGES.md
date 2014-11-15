@@ -3,6 +3,7 @@
 * update for diagrams 1.2 and ghc 7.8
 * add new puzzle types: Bahnhof, Cave
 * include and use a nicer font
+* command-line option to list supported puzzle types
 
 0.1.0.3: 20140519
 -----------------
