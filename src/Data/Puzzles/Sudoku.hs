@@ -3,8 +3,10 @@ module Data.Puzzles.Sudoku (
     sudokubordersg
   ) where
 
+import qualified Data.Map as Map
+
 import Data.Puzzles.Grid
-import Data.Puzzles.GridShape hiding (size)
+import Data.Puzzles.GridShape
 
 msqrt :: Integral a => a -> Maybe a
 msqrt x = if r ^ (2 :: Int) == x then Just r else Nothing
@@ -30,7 +32,6 @@ sudokuborders s =
 -- | Determine the internal borders of a standard sudoku of the
 --   on the given grid.
 sudokubordersg :: SGrid a -> [Edge]
-sudokubordersg g = sudokuborders s
-   where (w, h) = size g
-         s | w == h    = w
-           | otherwise = error "non-square sudoku grid?"
+sudokubordersg = sudokuborders
+               . (+1) . maximum . map (uncurry max) . Map.keys
+               . contents
