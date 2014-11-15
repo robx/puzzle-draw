@@ -510,12 +510,10 @@ instance FromJSON a => FromJSON (RefGrid a) where
 
 parseAfternoonGrid :: Value -> Parser (SGrid Shade)
 parseAfternoonGrid v = do
-    (Grid s _ , es) <- parseNodeEdges v :: Parser (SGrid Char, [Edge])
-    let (m, b) = splitBorder s $ toMap es
-    guard $ Map.null b
-    return $ Grid (shrink s) m
+    (_, Grid s _, es) <- parseEdgeGrid v
+                         :: Parser (SGrid Char, SGrid Char, [Edge])
+    return . Grid s . toMap $ es
   where
-    shrink (Square w h) = Square (w-1) (h-1)
     toShade V = Shade False True
     toShade H = Shade True  False
     merge (Shade a b) (Shade c d)
@@ -524,8 +522,6 @@ parseAfternoonGrid v = do
     toMap es = Map.fromListWith
         merge
         [(p, toShade d) | E p d <- es]
-    splitBorder (Square w h) = Map.partitionWithKey
-        (\(x, y) _ -> x < w - 1 && y < h - 1)
 
 newtype ParseTapaClue = ParseTapaClue { unParseTapaClue :: TapaClue }
 
