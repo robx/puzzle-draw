@@ -369,9 +369,9 @@ parseCellEdges v = proj23 <$> parseEdgeGrid v
 data HalfDirs = HalfDirs {unHalfDirs :: [Dir]}
 
 instance FromChar HalfDirs where
-    parseChar c | c == '└'        = pure . HalfDirs $ [V, H]
-                | c `elem` "│┘"   = pure . HalfDirs $ [V]
-                | c `elem` "─└┌"  = pure . HalfDirs $ [H]
+    parseChar c | c `elem` "└┴├┼" = pure . HalfDirs $ [V, H]
+                | c `elem` "│┘┤"  = pure . HalfDirs $ [V]
+                | c `elem` "─┌┬"  = pure . HalfDirs $ [H]
                 | otherwise       = pure . HalfDirs $ []
 
 -- parses a string like
