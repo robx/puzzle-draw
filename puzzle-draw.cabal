@@ -1,5 +1,5 @@
 name:                puzzle-draw
-version:             0.1.0.3
+version:             0.1.0.4
 synopsis:            Creating graphics for pencil puzzles.
 description:         puzzle-draw is a library and tool for drawing pencil
                      puzzles using Diagrams. It aims to provide a utility
