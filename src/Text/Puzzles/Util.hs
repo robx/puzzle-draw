@@ -48,6 +48,12 @@ failChar c expect = fail $ "got '" ++ [c] ++ "', expected " ++ expect
 instance FromChar Char where
     parseChar = pure
 
+newtype Letter = Letter {fromLetter :: Char}
+
+instance FromChar Letter where
+    parseChar c | isAlpha c  = pure $ Letter c
+                | otherwise  = fail "expected a letter"
+
 class FromString a where
     parseString :: String -> Parser a
 
