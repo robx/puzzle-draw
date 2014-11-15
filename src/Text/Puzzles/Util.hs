@@ -175,7 +175,7 @@ instance FromJSON Blank' where
 
 instance FromChar Empty where
     parseChar ' ' = pure Empty
-    parseChar _   = empty
+    parseChar _   = fail "expected ' '"
 
 instance FromString Blank where
     parseString "." = pure Blank
