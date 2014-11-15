@@ -235,10 +235,14 @@ labyrinth = (,)
     g = drawEdges . snd <> plaingrid . size . fst
 
 bahnhof :: Backend' b =>
-            RenderPuzzle b (SGrid (Maybe BahnhofClue)) ()
+            RenderPuzzle b (SGrid (Maybe BahnhofClue)) [Edge]
 bahnhof = (,)
     (atCentres drawBahnhofClue . clues <> grid . size)
-    undefined
+    (atCentres drawBahnhofStation . clues . fst
+     <> solstyle . drawDualEdges . snd
+     <> grid . size . fst)
+  where
+    drawBahnhofStation = either drawInt (const mempty)
 
 cave ::
     (Backend b R2, Renderable (Path R2) b) =>
