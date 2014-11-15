@@ -57,7 +57,7 @@ Installing
 
 This is a brief overview of how to install the command line tool.
 You'll need to get a Haskell environment, by installing the
-[platform][Haskell Platform]. Then install `puzzle-draw` with cabal:
+[Haskell Platform][platform]. Then install `puzzle-draw` with cabal:
 
 ```
 $ cabal install puzzle-draw
