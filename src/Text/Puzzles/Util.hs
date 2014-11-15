@@ -67,6 +67,14 @@ instance FromChar Alpha where
         | isAlpha c  = Alpha <$> parseChar c
         | otherwise  = empty
 
+-- | Helper to parse strings from number-formatted YAML fields.
+--   Somewhat dodgy.
+newtype IntString = IntString { unIntString :: String }
+
+instance FromJSON IntString where
+    parseJSON v@(Number _) = IntString . (show :: Int -> String) <$> parseJSON v
+    parseJSON v            = IntString <$> parseJSON v
+
 -- | A rectangle. Each row has length `w`.
 data Rect a = Rect !Int !Int [[a]]
     deriving Show
