@@ -130,7 +130,9 @@ japanesesums :: ParsePuzzle (OutsideClues [Int]) (SGrid (Either Black Int))
 japanesesums = (parseMultiOutsideClues, parseGrid)
 
 coral :: ParsePuzzle (OutsideClues [String]) ShadedGrid
-coral = (parseMultiOutsideClues, parseShadedGrid)
+coral = (,)
+    (fmap (fmap (map unIntString)) . parseMultiOutsideClues)
+    parseShadedGrid
 
 maximallengths :: ParsePuzzle (OutsideClues (Maybe Int)) Loop
 maximallengths = (\v -> fmap blankToMaybe <$> parseCharOutside v,
