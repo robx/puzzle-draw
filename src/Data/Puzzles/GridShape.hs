@@ -7,6 +7,7 @@ import Data.Foldable (Foldable)
 import qualified Data.Foldable as F
 import Data.List (partition)
 import Data.VectorSpace ((^+^))
+import Control.Arrow ((***))
 
 -- | The geometry of a grid.
 class Show (Cell a) => GridShape a where
@@ -87,14 +88,26 @@ orientedEdge (x,y) (x',y')
 --   The set is given via fold and membership predicate, the result
 --   is a pair @(outer, inner)@ of lists of edges, where the outer
 --   edges are oriented such that the outside is to the left.
-edges :: Foldable f =>
-           f (Cell Square) -> (Cell Square -> Bool) ->
-           ([Edge' (Vertex Square)], [Edge' (Vertex Square)])
-edges cs isc = F.foldr f ([], []) cs
+edgesPair :: Foldable f =>
+             f (Cell Square) -> (Cell Square -> Bool) ->
+             ([(Cell Square, Cell Square)],
+              [(Cell Square, Cell Square)])
+edgesPair cs isc = F.foldr f ([], []) cs
   where
     f c (outer, inner) = (newout ++ outer, newin ++ inner)
       where
         nbrs = [ c ^+^ d | d <- [(-1,0), (0,1), (1,0), (0,-1)] ]
         (ni, no) = partition isc nbrs
-        newout = map (orientedEdge c) no
-        newin = map (orientedEdge c) . filter (c >=) $ ni
+        newout = map ((,) c) no
+        newin = map (sortPair . ((,) c)) . filter (c >=) $ ni
+        sortPair (x, y) = if x < y then (x, y) else (y, x)
+
+-- | @edges@ computes the outer and inner edges of a set of cells.
+--   The set is given via fold and membership predicate, the result
+--   is a pair @(outer, inner)@ of lists of edges, where the outer
+--   edges are oriented such that the outside is to the left.
+edges :: Foldable f =>
+           f (Cell Square) -> (Cell Square -> Bool) ->
+           ([Edge' (Vertex Square)], [Edge' (Vertex Square)])
+edges cs isc = map (uncurry orientedEdge) *** map (uncurry orientedEdge)
+             $ edgesPair cs isc
