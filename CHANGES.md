@@ -1,3 +1,4 @@
+* extended README
 * merge puzzle-draw-cmdline
 * update for diagrams 1.2 and ghc 7.8
 * add new puzzle types: Bahnhof, Cave
