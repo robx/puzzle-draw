@@ -304,20 +304,27 @@ parsePlainEdges :: Value -> Parser [Edge]
 parsePlainEdges v = readEdges <$> parseGrid v
 
 readEdges :: SGrid Char -> [Edge]
-readEdges g = horiz ++ vert
-    where (w, h) = size g
-          w' = w `div` 2
-          h' = h `div` 2
-          isHoriz (x, y) = g ! (2 * x + 1, 2 * y) == '-'
-          isVert  (x, y) = g ! (2 * x, 2 * y + 1) == '|'
-          horiz = [ E (x, y) H | x <- [0 .. w' - 1]
-                               , y <- [0 .. h']
-                               , isHoriz (x, y)
-                               ]
-          vert =  [ E (x, y) V | x <- [0 .. w']
-                               , y <- [0 .. h' - 1]
-                               , isVert (x, y)
-                               ]
+readEdges (Grid _ m) = horiz ++ vert
+  where
+    horiz = [ E (x, y) H
+            | (x, y) <- map div2
+                      . Map.keys
+                      . Map.filterWithKey
+                           (\(x, y) c -> x `mod` 2 == 1
+                                      && y `mod` 2 == 0
+                                      && c == '-')
+                      $ m
+            ]
+    vert  = [ E (x, y) V
+            | (x, y) <- map div2
+                      . Map.keys
+                      . Map.filterWithKey
+                           (\(x, y) c -> x `mod` 2 == 0
+                                      && y `mod` 2 == 1
+                                      && c == '|')
+                      $ m
+            ]
+    div2 (x', y') = (x' `div` 2, y' `div` 2)
 
 parseGridChars :: FromChar a => SGrid Char -> Parser (SGrid a)
 parseGridChars = traverse parseChar
