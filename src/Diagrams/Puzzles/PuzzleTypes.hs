@@ -207,7 +207,7 @@ coral :: Backend' b =>
           RenderPuzzle b (OutsideClues [String]) ShadedGrid
 coral = (,)
     outsideGrid
-    (drawShadedGrid . snd <> outsideGrid . fst)
+    (outsideGrid . fst <> drawShadedGrid . snd)
 
 maximallengths :: Backend' b =>
                   RenderPuzzle b (OutsideClues (Maybe Int)) Loop
