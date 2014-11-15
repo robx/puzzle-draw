@@ -45,7 +45,8 @@ solution:
     ..X...
 ```
 
-There is a demo web application at [demo] that provides some more
+There is a demo web application at
+[puzzle-draw-demo.herokuapp.com][demo] that provides some more
 examples and that can be used to generate SVG images from such
 puzzle descriptions.
 
