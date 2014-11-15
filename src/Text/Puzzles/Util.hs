@@ -364,7 +364,7 @@ parseNodeEdges :: FromChar a =>
                   Value -> Parser (SGrid a, [Edge])
 parseNodeEdges v = proj13 <$> parseEdgeGrid v
   where
-    proj13 :: (SGrid a, SGrid Empty, [Edge]) -> (SGrid a, [Edge])
+    proj13 :: (SGrid a, SGrid Char, [Edge]) -> (SGrid a, [Edge])
     proj13 (x,_,z) = (x,z)
 
 parseCellEdges :: FromChar a =>
