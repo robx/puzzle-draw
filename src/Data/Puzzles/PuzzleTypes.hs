@@ -34,7 +34,7 @@ data PuzzleType = LITS
                 | Compass
                 | BoxOf2Or3
                 | AfternoonSkyscrapers
-                | CountNumbers
+                | MeanderingNumbers
                 | Tapa
                 | JapaneseSums
                 | Coral
@@ -68,7 +68,7 @@ typeNames = [ (LITS, "lits")
             , (Compass, "compass")
             , (BoxOf2Or3, "boxof2or3")
             , (AfternoonSkyscrapers, "afternoonskyscrapers")
-            , (CountNumbers, "countnumbers")
+            , (MeanderingNumbers, "meanderingnumbers")
             , (Tapa, "tapa")
             , (JapaneseSums, "japanesesums")
             , (Coral, "coral")

@@ -5,7 +5,7 @@ module Text.Puzzles.PuzzleTypes (
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
-    afternoonskyscrapers, countnumbers, tapa, japanesesums, coral,
+    afternoonskyscrapers, meanderingnumbers, tapa, japanesesums, coral,
     maximallengths, primeplace, labyrinth, bahnhof, cave
   ) where
 
@@ -119,8 +119,8 @@ afternoonskyscrapers :: ParsePuzzle (SGrid Shade) IntGrid
 afternoonskyscrapers = (parseAfternoonGrid, parseGrid)
 
 -- this should be changed to support clue numbers
-countnumbers :: ParsePuzzle AreaGrid IntGrid
-countnumbers = (parseGrid, parseGrid)
+meanderingnumbers :: ParsePuzzle AreaGrid IntGrid
+meanderingnumbers = (parseGrid, parseGrid)
 
 tapa :: ParsePuzzle (SGrid TapaClue) ShadedGrid
 tapa = (\v -> fmap unParseTapaClue . unRG <$> parseJSON v,

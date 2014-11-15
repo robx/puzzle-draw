@@ -8,7 +8,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
-    afternoonskyscrapers, countnumbers, tapa, japanesesums,
+    afternoonskyscrapers, meanderingnumbers, tapa, japanesesums,
     coral, maximallengths, primeplace, labyrinth, bahnhof,
     cave
   ) where
@@ -179,9 +179,9 @@ afternoonskyscrapers = (,)
     (grid . size <> atCentres drawShade . values)
     (drawIntGrid . snd <> atCentres drawShade . values . fst)
 
-countnumbers :: Backend' b =>
+meanderingnumbers :: Backend' b =>
                         RenderPuzzle b AreaGrid IntGrid
-countnumbers = (,)
+meanderingnumbers = (,)
     drawAreaGrid
     (drawIntGrid . snd <> drawAreaGrid . fst)
 
