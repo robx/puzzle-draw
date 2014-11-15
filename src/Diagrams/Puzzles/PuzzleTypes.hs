@@ -186,12 +186,12 @@ meanderingnumbers = (,)
     (drawIntGrid . snd <> drawAreaGrid . fst)
 
 tapa :: Backend' b =>
-        RenderPuzzle b (SGrid TapaClue) ShadedGrid
+        RenderPuzzle b (SGrid (Maybe TapaClue)) ShadedGrid
 tapa = (,)
     tapaGrid
     (tapaGrid . fst <> drawShadedGrid . snd)
   where
-    tapaGrid = atCentres drawTapaClue . values <> grid . size
+    tapaGrid = atCentres drawTapaClue . clues <> grid . size
 
 japanesesums :: Backend' b =>
                 RenderPuzzle b (OutsideClues [Int]) (SGrid (Either Black Int))

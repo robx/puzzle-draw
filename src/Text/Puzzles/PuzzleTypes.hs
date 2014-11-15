@@ -122,8 +122,8 @@ afternoonskyscrapers = (parseAfternoonGrid, parseGrid)
 meanderingnumbers :: ParsePuzzle AreaGrid IntGrid
 meanderingnumbers = (parseGrid, parseGrid)
 
-tapa :: ParsePuzzle (SGrid TapaClue) ShadedGrid
-tapa = (\v -> fmap unParseTapaClue . unRG <$> parseJSON v,
+tapa :: ParsePuzzle (SGrid (Maybe TapaClue)) ShadedGrid
+tapa = (\v -> fmap (fmap unParseTapaClue) . unRG <$> parseJSON v,
         parseShadedGrid)
 
 japanesesums :: ParsePuzzle (OutsideClues [Int]) (SGrid (Either Black Int))

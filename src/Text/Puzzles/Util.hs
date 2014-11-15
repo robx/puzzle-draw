@@ -497,7 +497,7 @@ instance FromJSON PCompassC where
               comp _            = empty
     parseJSON _          = empty
 
-newtype RefGrid a = RefGrid { unRG :: SGrid a }
+newtype RefGrid a = RefGrid { unRG :: SGrid (Maybe a) }
 
 hashmaptomap :: (Eq a, Hashable a, Ord a) => HMap.HashMap a b -> Map.Map a b
 hashmaptomap = Map.fromList . HMap.toList
@@ -505,15 +505,30 @@ hashmaptomap = Map.fromList . HMap.toList
 compose :: (Ord a, Ord b) => Map.Map a b -> Map.Map b c -> Maybe (Map.Map a c)
 compose m1 m2 = mapM (`Map.lookup` m2) m1
 
+newtype MaybeMap k a = MM { unMaybeMap :: Map.Map k (Maybe a) }
+
+instance Functor (MaybeMap k) where
+    fmap f (MM m) = MM (fmap (fmap f) m)
+
+instance Foldable (MaybeMap k) where
+    foldMap f (MM m) = foldMap (foldMap f) m
+
+instance Traversable (MaybeMap k) where
+    traverse f m = MM <$> traverse (traverse f) (unMaybeMap m)
+
+compose' :: (Ord a, Ord b) => Map.Map a (Maybe b)
+                           -> Map.Map b c
+                           -> Maybe (Map.Map a (Maybe c))
+compose' m1 m2 = unMaybeMap <$> mapM (`Map.lookup` m2) (MM m1)
+
 instance FromJSON a => FromJSON (RefGrid a) where
-    parseJSON (Object v) = RefGrid <$> do
-        Grid s refs <- fmap (fmap ((:[]) . unAlpha)) . rectToClueGrid <$>
-                       (v .: "grid" :: Parser (Rect (Either Blank Alpha)))
-        m <- hashmaptomap <$> v .: "clues"
-        case compose (Map.mapMaybe id refs) m of
+    parseJSON v = RefGrid <$> do
+        Grid Square refs <- fmap (fmap ((:[]) . unAlpha) . blankToMaybe)
+                            <$> parseFrom ["grid"] parseGrid v
+        m <- hashmaptomap <$> parseFrom ["clues"] parseJSON v
+        case compose' refs m of
             Nothing -> mzero
-            Just m' -> return $ Grid s m'
-    parseJSON _ = empty
+            Just m' -> return $ Grid Square m'
 
 parseAfternoonGrid :: Value -> Parser (SGrid Shade)
 parseAfternoonGrid v = do
