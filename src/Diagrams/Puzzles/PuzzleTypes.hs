@@ -1,3 +1,4 @@
+
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -15,6 +16,7 @@ module Diagrams.Puzzles.PuzzleTypes (
 
 import Diagrams.Prelude hiding (Loop, coral)
 
+import Diagrams.Puzzles.Style
 import Diagrams.Puzzles.PuzzleGrids
 import Diagrams.Puzzles.Draw
 import Diagrams.Puzzles.Grid
@@ -31,7 +33,7 @@ import qualified Data.Puzzles.Pyramid as Pyr
 lits :: Backend' b => RenderPuzzle b AreaGrid ShadedGrid
 lits = (,)
     drawAreaGridGray
-    (drawAreaGrid . fst <> drawShadedGrid . snd)
+    (drawAreaGrid . fst <> drawShade . snd)
 
 litsplus :: Backend' b => RenderPuzzle b AreaGrid ShadedGrid
 litsplus = lits
@@ -61,7 +63,7 @@ nurikabe :: Backend' b =>
             RenderPuzzle b IntGrid ShadedGrid
 nurikabe = (,)
     drawIntGrid
-    (drawIntGrid . fst <> drawShadedGrid . snd)
+    (drawIntGrid . fst <> drawShade . snd)
 
 latintapa :: Backend' b =>
              RenderPuzzle b (SGrid (Clue [String])) CharClueGrid
@@ -189,7 +191,7 @@ tapa :: Backend' b =>
         RenderPuzzle b (SGrid (Maybe TapaClue)) ShadedGrid
 tapa = (,)
     tapaGrid
-    (tapaGrid . fst <> drawShadedGrid . snd)
+    (tapaGrid . fst <> drawShade . snd)
   where
     tapaGrid = atCentres drawTapaClue . clues <> grid
 
@@ -207,7 +209,7 @@ coral :: Backend' b =>
           RenderPuzzle b (OutsideClues [String]) ShadedGrid
 coral = (,)
     drawOutsideGrid
-    (drawOutsideGrid . fst <> drawShadedGrid . snd)
+    (drawOutsideGrid . fst <> drawShade . snd)
 
 maximallengths :: Backend' b =>
                   RenderPuzzle b (OutsideClues (Maybe Int)) Loop
@@ -224,7 +226,8 @@ primeplace = (,)
     g
     (atCentres drawInt . values . snd <> g . fst)
   where
-    g = irregularGrid <> atCentres drawPrimeDiag . values
+    g = drawGrid GridLineThin GridBorderThick GridVertexNone
+        <> atCentres drawPrimeDiag . values
 
 labyrinth :: Backend' b =>
              RenderPuzzle b (SGrid (Clue Int), [Edge]) (SGrid (Clue Int))
@@ -248,10 +251,8 @@ cave ::
     (Backend b R2, Renderable (Path R2) b) =>
     RenderPuzzle b (SGrid (Clue Int)) ShadedGrid
 cave = (,)
-    g
+    (plaindashedgrid <> atCentres drawInt . clues)
     (drawEdges . edgesGen (/=) not . snd
-     <> drawShadedGrid . snd <> fr . fst
-     <> g . fst)
-  where
-    g = plaindashedgrid <> atCentres drawInt . clues
-    fr gr = outframe' 8 (size gr) # lc gray
+     <> atCentres drawInt . clues . fst
+     <> drawGrid GridLineDashed (GridBorderFrame 8 gray) GridVertexNone . fst
+     <> drawShade . snd)

@@ -1,11 +1,23 @@
 module Diagrams.Puzzles.Style
-    (
-      GridStyle(..)
+    ( GridLineStyle   (..)
+    , GridBorderStyle (..)
+    , GridVertexStyle (..)
     ) where
 
-data GridStyle =
-      GridNormal      -- ^ Normal grid with thin lines and thick border
-    | GridDashed      -- ^ dashed lines, thick border
-    | GridPlain       -- ^ thin lines, thin border
-    | GridPlainDashed -- ^ dashed lines, including border
-    | GridSlither     -- ^ Slitherlink grid (dots)
+import Diagrams.Prelude
+
+data GridLineStyle =
+      GridLineThin
+    | GridLineDashed
+    | GridLineNone
+
+data GridBorderStyle =
+      GridBorderNone
+    | GridBorderThin
+    | GridBorderDashed
+    | GridBorderThick
+    | GridBorderFrame Double (Colour Double)
+
+data GridVertexStyle =
+      GridVertexNone
+    | GridVertexDot

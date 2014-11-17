@@ -5,6 +5,8 @@ module Diagrams.Puzzles.Grid where
 
 import Data.Char (isUpper)
 import qualified Data.Map as M
+import qualified Data.Set as S
+import Control.Arrow (first)
 
 import Diagrams.Prelude
 import Diagrams.TwoD.Offset
@@ -22,79 +24,62 @@ dot :: Backend' b => Diagram b R2
 dot = circle 0.05 # fc black # smash
 
 drawGrid :: Backend' b
-         => GridStyle -> SGrid a -> Diagram b R2
-drawGrid s g = case s of
-    GridSlither       -> 
-        hcatsep . replicate (x + 1) . vcatsep . replicate (y + 1) $ dot
-    GridNormal        -> grid' id 
-    GridPlain         -> stroke (fullgridlines sz) # lwG gridwidth
-    GridDashed        -> grid' gridDashing
-    GridPlainDashed   -> gridDashing (drawGrid GridPlain g)
+         => GridLineStyle -> GridBorderStyle -> GridVertexStyle
+         -> SGrid a -> Diagram b R2
+drawGrid sline sborder svertex g =
+    atVerticesP (const vertex) (map (\p -> (p, ())) . S.toList $ vall)
+    <> stroke inner # linestyle
+    <> stroke outer # borderstyle
   where
-    sz = size g
-    (x, y) = sz
-    grid' gridstyle =
-        outframe sz
-        <> stroke (gridlines sz) # lwG gridwidth # gridstyle
+    vertex = case svertex of
+        GridVertexDot    -> dot
+        GridVertexNone   -> mempty
+    linestyle = case sline of
+        GridLineNone     -> const mempty
+        GridLineThin     -> lwG gridwidth
+        GridLineDashed   -> gridDashing . lwG gridwidth
+    borderstyle = case sborder of
+        GridBorderNone      -> const mempty
+        GridBorderThin      -> lwG gridwidth
+        GridBorderDashed    -> gridDashing . lwG gridwidth
+        GridBorderThick     -> lwG edgewidth
+        GridBorderFrame f c -> const (outLine f outer # fc c)
+
+    (outer, inner) = irregularGridPaths g
+    (_, _, vall) = irregPathToVertices (inner, outer)
 
 slithergrid :: Backend' b =>
                SGrid a -> Diagram b R2
-slithergrid = drawGrid GridSlither
+slithergrid = drawGrid GridLineNone GridBorderNone GridVertexDot
 
 -- | Draw a square grid with default grid line style.
 grid :: Backend' b =>
         SGrid a -> Diagram b R2
-grid = drawGrid GridNormal
+grid = drawGrid GridLineThin GridBorderThick GridVertexNone
 
 -- | Draw a square grid with thin frame.
 plaingrid :: Backend' b =>
              SGrid a -> Diagram b R2
-plaingrid = drawGrid GridPlain
+plaingrid = drawGrid GridLineThin GridBorderThin GridVertexNone
 
 -- | Draw a square grid with dashed grid lines. The gaps
 --   between dashes are off-white to aid in using filling
 --   tools.
 dashedgrid :: Backend' b =>
               SGrid a -> Diagram b R2
-dashedgrid = drawGrid GridDashed
+dashedgrid = drawGrid GridLineDashed GridBorderThick GridVertexNone
 
 -- | Draw a square grid with thin frame.
 plaindashedgrid :: Backend' b =>
                    SGrid a -> Diagram b R2
-plaindashedgrid = drawGrid GridPlainDashed
-
-fence :: [Double] -> Double -> Path R2
-fence xs h = decoratePath xspath (repeat v)
-  where
-    xspath = fromVertices [ p2 (x, 0) | x <- xs ]
-    v = alignB (vrule h)
-
--- | The inner grid lines of a square grid of the specified size.
-gridlines :: Size -> Path R2
-gridlines (w, h) = fence' w h <> mirror (fence' h w)
-  where
-    fence' n l = fence (map fromIntegral [1..n-1]) (fromIntegral l)
-
-fullgridlines :: Size -> Path R2
-fullgridlines (w, h) = fence' w h <> mirror (fence' h w)
-  where
-    fence' n l = fence (map fromIntegral [0..n]) (fromIntegral l)
+plaindashedgrid = drawGrid GridLineDashed GridBorderDashed GridVertexNone
 
 outLine :: Backend' b => Double -> Path R2 -> Diagram b R2
-outLine f p = fc black . lwG 0 . stroke $ pin <> pout
+outLine f p = lwG 0 . stroke $ pin <> pout
   where
     pout = reversePath $ offsetPath (f * gridwidth - e) p
     pin = offsetPath (-e) p
     e = gridwidth / 2
-
-outframe' :: Backend' b => Double -> Size -> Diagram b R2
-outframe' f (w, h) = outLine f $ rect wd hd # alignBL
-  where
-    wd = fromIntegral w
-    hd = fromIntegral h
-
-outframe :: Backend' b => Size -> Diagram b R2
-outframe = outframe' framewidthfactor
 
 bgdashingG :: (Semigroup a, HasStyle a, V a ~ R2) =>
              [Double] -> Double -> Colour Double -> a -> a
@@ -141,17 +126,11 @@ irregularGridPaths (Grid _ m) = (toPath' (map rev outer), toPath inner)
     rev (E' v D) = E' (v ^+^ (0,-1)) U
 
 
-irregularGrid' :: Backend' b =>
-                  (Diagram b R2 -> Diagram b R2) -> SGrid a -> Diagram b R2
-irregularGrid' style g =
-    stroke outer # lwG edgewidth # lineCap LineCapSquare <>
-    stroke inner # lwG gridwidth # style
+irregPathToVertices :: (Path R2, Path R2) -> (S.Set P2, S.Set P2, S.Set P2)
+irregPathToVertices (pouter, pinner) = (outer, inner S.\\ outer, inner `S.union` outer)
   where
-    (outer, inner) = irregularGridPaths g
-
-irregularGrid :: Backend' b =>
-                 SGrid a -> Diagram b R2
-irregularGrid = irregularGrid' id
+    outer = S.fromList . mconcat . pathVertices $ pouter
+    inner = S.fromList . mconcat . pathVertices $ pinner
 
 -- | In a square grid, use the first argument to draw things at the centres
 --   of cells given by coordinates.
@@ -163,10 +142,16 @@ atCentres' :: (Transformable a, V a ~ R2) => SGrid a -> [a]
 atCentres' = translate (r2 (1/2, 1/2)) . atVertices'
 
 -- | In a square grid, use the first argument to draw things
+--   at the given points..
+atVerticesP :: (Transformable a, Monoid a, V a ~ R2) =>
+              (t -> a) -> [(P2, t)] -> a
+atVerticesP dc = mconcat . map (\ (p, c) -> dc c # translate (p .-. origin))
+
+-- | In a square grid, use the first argument to draw things
 --   at the grid vertices given by coordinates.
 atVertices :: (Transformable a, Monoid a, V a ~ R2) =>
               (t -> a) -> [(Coord, t)] -> a
-atVertices dc = mconcat . map (\ (p, c) -> dc c # translatep p)
+atVertices dc = atVerticesP dc . map (first p2i)
 
 atVertices' :: (Transformable a, V a ~ R2) => SGrid a -> [a]
 atVertices' g = [ (g ! c) # translatep c | c <- cells g ]
@@ -206,9 +191,9 @@ shadeGrid :: Backend' b =>
               SGrid (Maybe (Colour Double)) -> Diagram b R2
 shadeGrid = mconcat . atCentres' . fmap (maybe mempty fillBG)
 
-drawShadedGrid :: Backend' b =>
+drawShade :: Backend' b =>
                   SGrid Bool -> Diagram b R2
-drawShadedGrid = shadeGrid . fmap f
+drawShade = shadeGrid . fmap f
   where
     f True  = Just gray
     f False = Nothing
@@ -219,13 +204,6 @@ drawAreaGridGray = drawAreaGrid <> shadeGrid . fmap cols
   where
     cols c | isUpper c  = Just (blend 0.1 black white)
            | otherwise  = Nothing
-
-irregAreaGridX :: Backend' b =>
-                  (Diagram b R2 -> Diagram b R2) -> SGrid Char -> Diagram b R2
-irregAreaGridX style = drawEdges . borders <> irregularGrid' style <> shadeGrid . fmap cols
-  where
-    cols 'X' = Just gray
-    cols _   = Nothing
 
 -- Place a list of diagrams along a ray, with steps of size
 -- @f@.
