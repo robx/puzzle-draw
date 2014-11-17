@@ -103,10 +103,20 @@ data OutsideClues a = OC { left :: [a], right :: [a], bottom :: [a], top :: [a] 
 instance Functor OutsideClues where
     fmap f (OC l r b t) = OC (fmap f l) (fmap f r) (fmap f b) (fmap f t)
 
-outsideSize :: OutsideClues a -> (Int, Int)
-outsideSize (OC l r b t) = ( max (length t) (length b)
-                           , max (length l) (length r)
-                           )
+outsideSize :: OutsideClues a -> Size
+outsideSize (OC l r b t) = (w, h)
+  where
+    w = max (length t) (length b)
+    h = max (length l) (length r)
+
+-- | Create a dummy grid matching the given outside clues in size.
+outsideGrid :: OutsideClues a -> SGrid ()
+outsideGrid = sizeGrid . outsideSize
+
+-- | Create a dummy grid of the given size.
+sizeGrid :: Size -> SGrid ()
+sizeGrid (w, h) =
+    Grid Square $ Map.fromList [ ((x, y), ()) | x <- [0..w-1], y <- [0..h-1] ]
 
 data OutsideClue a = OClue
     { ocBase  :: (Int, Int)

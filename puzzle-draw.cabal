@@ -36,6 +36,7 @@ library
                        Text.Puzzles.Util
                        Text.Puzzles.Puzzle
                        Text.Puzzles.PuzzleTypes
+                       Diagrams.Puzzles.Style
                        Diagrams.Puzzles.Grid
                        Diagrams.Puzzles.Lib
                        Diagrams.Puzzles.Elements

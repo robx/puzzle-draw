@@ -11,6 +11,7 @@ import Diagrams.Prelude
 import Data.Puzzles.Grid
 import Data.Puzzles.GridShape hiding (dualEdge)
 
+import Diagrams.Puzzles.Style
 import Diagrams.Puzzles.Lib
 import Diagrams.Puzzles.Widths
 
@@ -18,11 +19,47 @@ import Diagrams.Puzzles.Widths
 dot :: Backend' b => Diagram b R2
 dot = circle 0.05 # fc black # smash
 
--- | Draw a Slither Link style grid of dots of the specified size.
+drawGrid :: Backend' b
+         => GridStyle -> SGrid a -> Diagram b R2
+drawGrid s g = case s of
+    GridSlither       -> 
+        hcatsep . replicate (x + 1) . vcatsep . replicate (y + 1) $ dot
+    GridNormal        -> grid' id 
+    GridPlain         -> stroke (fullgridlines sz) # lwG gridwidth
+    GridDashed        -> grid' gridDashing
+    GridPlainDashed   -> gridDashing (drawGrid GridPlain g)
+  where
+    sz = size g
+    (x, y) = sz
+    grid' gridstyle =
+        outframe sz
+        <> stroke (gridlines sz) # lwG gridwidth # gridstyle
+
 slithergrid :: Backend' b =>
-               Size -> Diagram b R2
-slithergrid (x, y) =
-    hcatsep . replicate (x + 1) . vcatsep . replicate (y + 1) $ dot
+               SGrid a -> Diagram b R2
+slithergrid = drawGrid GridSlither
+
+-- | Draw a square grid with default grid line style.
+grid :: Backend' b =>
+        SGrid a -> Diagram b R2
+grid = drawGrid GridNormal
+
+-- | Draw a square grid with thin frame.
+plaingrid :: Backend' b =>
+             SGrid a -> Diagram b R2
+plaingrid = drawGrid GridPlain
+
+-- | Draw a square grid with dashed grid lines. The gaps
+--   between dashes are off-white to aid in using filling
+--   tools.
+dashedgrid :: Backend' b =>
+              SGrid a -> Diagram b R2
+dashedgrid = drawGrid GridDashed
+
+-- | Draw a square grid with thin frame.
+plaindashedgrid :: Backend' b =>
+                   SGrid a -> Diagram b R2
+plaindashedgrid = drawGrid GridPlainDashed
 
 fence :: [Double] -> Double -> Path R2
 fence xs h = decoratePath xspath (repeat v)
@@ -55,23 +92,6 @@ outframe' f (w, h) = strokePointLoop r # lwG fw
 outframe :: Backend' b => Size -> Diagram b R2
 outframe = outframe' framewidthfactor
 
--- | Draw a square grid, applying the given style to the grid lines.
-grid' :: Backend' b =>
-         (Diagram b R2 -> Diagram b R2) -> Size -> Diagram b R2
-grid' gridstyle s =
-    outframe s
-    <> stroke (gridlines s) # lwG gridwidth # gridstyle
-
--- | Draw a square grid with default grid line style.
-grid :: Backend' b =>
-        Size -> Diagram b R2
-grid = grid' id
-
--- | Draw a square grid with thin frame.
-plaingrid :: Backend' b =>
-             Size -> Diagram b R2
-plaingrid s = stroke (fullgridlines s) # lwG gridwidth
-
 bgdashingG :: (Semigroup a, HasStyle a, V a ~ R2) =>
              [Double] -> Double -> Colour Double -> a -> a
 bgdashingG ds offs c x = x # dashingG ds offs <> x # lc c
@@ -86,13 +106,6 @@ gridDashing :: (Semigroup a, HasStyle a, V a ~ R2) => a -> a
 gridDashing = bgdashingG dashes dashoffset white'
   where
     white' = blend 0.95 white black
-
--- | Draw a square grid with dashed grid lines. The gaps
---   between dashes are off-white to aid in using filling
---   tools.
-dashedgrid :: Backend' b =>
-              Size -> Diagram b R2
-dashedgrid = grid' gridDashing
 
 edgePath :: Edge' (Vertex Square) -> Path R2
 edgePath (E' v R) = p2i v ~~ p2i (v ^+^ (1,0))
@@ -157,7 +170,7 @@ drawThinDualEdges = thinEdgeStyle . stroke . mconcat . map dualEdge
 
 drawAreaGrid :: (Backend' b, Eq a) =>
                   SGrid a -> Diagram b R2
-drawAreaGrid = drawEdges . borders <> grid . size
+drawAreaGrid = drawEdges . borders <> grid
 
 fillBG :: Backend' b => Colour Double -> Diagram b R2
 fillBG c = square 1 # lwG onepix # fc c # lc c
