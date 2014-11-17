@@ -7,6 +7,7 @@ import Data.Char (isUpper)
 import qualified Data.Map as M
 
 import Diagrams.Prelude
+import Diagrams.TwoD.Offset
 
 import Data.Puzzles.Grid
 import Data.Puzzles.GridShape hiding (dualEdge)
@@ -78,16 +79,16 @@ fullgridlines (w, h) = fence' w h <> mirror (fence' h w)
   where
     fence' n l = fence (map fromIntegral [0..n]) (fromIntegral l)
 
--- | Draw a frame around the outside of a rectangle.
 outframe' :: Backend' b => Double -> Size -> Diagram b R2
-outframe' f (w, h) = strokePointLoop r # lwG fw
-    where wd = fromIntegral w
-          hd = fromIntegral h
-          strokePointLoop = strokeLocTrail . mapLoc (wrapLoop . closeLine)
-                            . fromVertices . map p2
-          fw = f * gridwidth
-          e = fw / 2 - gridwidth / 2
-          r = [(-e, -e), (wd + e, -e), (wd + e, hd + e), (-e, hd + e)]
+outframe' f (w, h) = fr # lwG 0 # fc black
+  where
+    fr = stroke $ rin <> rout
+    rout = reversePath $ offsetPath (f * gridwidth - e) r
+    rin = offsetPath (-e) r
+    r = rect wd hd # alignBL
+    wd = fromIntegral w
+    hd = fromIntegral h
+    e = gridwidth / 2
 
 outframe :: Backend' b => Size -> Diagram b R2
 outframe = outframe' framewidthfactor
