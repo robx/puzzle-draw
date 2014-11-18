@@ -9,6 +9,7 @@ import qualified Data.Map as M
 import Diagrams.Prelude
 import Diagrams.TwoD.Offset
 
+import Data.Puzzles.Util
 import Data.Puzzles.Grid
 import Data.Puzzles.GridShape hiding (dualEdge)
 
@@ -79,16 +80,18 @@ fullgridlines (w, h) = fence' w h <> mirror (fence' h w)
   where
     fence' n l = fence (map fromIntegral [0..n]) (fromIntegral l)
 
-outframe' :: Backend' b => Double -> Size -> Diagram b R2
-outframe' f (w, h) = fr # lwG 0 # fc black
+outLine :: Backend' b => Double -> Path R2 -> Diagram b R2
+outLine f p = fc black . lwG 0 . stroke $ pin <> pout
   where
-    fr = stroke $ rin <> rout
-    rout = reversePath $ offsetPath (f * gridwidth - e) r
-    rin = offsetPath (-e) r
-    r = rect wd hd # alignBL
+    pout = reversePath $ offsetPath (f * gridwidth - e) p
+    pin = offsetPath (-e) p
+    e = gridwidth / 2
+
+outframe' :: Backend' b => Double -> Size -> Diagram b R2
+outframe' f (w, h) = outLine f $ rect wd hd # alignBL
+  where
     wd = fromIntegral w
     hd = fromIntegral h
-    e = gridwidth / 2
 
 outframe :: Backend' b => Size -> Diagram b R2
 outframe = outframe' framewidthfactor
