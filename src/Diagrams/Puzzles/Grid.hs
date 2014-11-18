@@ -111,8 +111,16 @@ gridDashing = bgdashingG dashes dashoffset white'
   where
     white' = blend 0.95 white black
 
+-- | `irregularGridPaths g` is a pair `(outer, inner)` of paths.
+--
+-- `outer` consists of the loops that make up the border of the
+-- grid (assuming the grid is connected orthogonally). They are
+-- reoriented to be compatible with `outLine`; for some reason,
+-- reversePath on the immediate result does not work.
+--
+-- `inner` consists of the individual inner segments.
 irregularGridPaths :: SGrid a -> (Path R2, Path R2)
-irregularGridPaths (Grid _ m) = (toPath' outer, toPath inner)
+irregularGridPaths (Grid _ m) = (toPath' (map rev outer), toPath inner)
   where
     (outer, inner) = edges (M.keysSet m) (`M.member` m)
     toPath  es = mconcat . map (conn . ends) $ es
@@ -127,6 +135,10 @@ irregularGridPaths (Grid _ m) = (toPath' outer, toPath inner)
     ends (E' v L) = (v, v ^+^ (-1,0))
     ends (E' v U) = (v, v ^+^ (0,1))
     ends (E' v D) = (v, v ^+^ (0,-1))
+    rev (E' v R) = E' (v ^+^ (1,0))  L
+    rev (E' v L) = E' (v ^+^ (-1,0)) R
+    rev (E' v U) = E' (v ^+^ (0,1))  D
+    rev (E' v D) = E' (v ^+^ (0,-1)) U
 
 
 irregularGrid :: Backend' b =>
