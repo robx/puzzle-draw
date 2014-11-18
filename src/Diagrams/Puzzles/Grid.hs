@@ -111,17 +111,23 @@ gridDashing = bgdashingG dashes dashoffset white'
   where
     white' = blend 0.95 white black
 
-edgePath :: Edge' (Vertex Square) -> Path R2
-edgePath (E' v R) = p2i v ~~ p2i (v ^+^ (1,0))
-edgePath (E' v L) = p2i v ~~ p2i (v ^+^ (-1,0))
-edgePath (E' v U) = p2i v ~~ p2i (v ^+^ (0,1))
-edgePath (E' v D) = p2i v ~~ p2i (v ^+^ (0,-1))
-
 irregularGridPaths :: SGrid a -> (Path R2, Path R2)
-irregularGridPaths (Grid _ m) = (toPath outer, toPath inner)
+irregularGridPaths (Grid _ m) = (toPath' outer, toPath inner)
   where
     (outer, inner) = edges (M.keysSet m) (`M.member` m)
-    toPath = mconcat . map edgePath
+    toPath  es = mconcat . map (conn . ends) $ es
+    toPath' es = case loops (map ends es) of
+        Just ls   -> mconcat . map (pathFromLoopVertices  . map p2i) $ ls
+        Nothing   -> mempty
+    pathFromLoopVertices = pathFromLocTrail
+                         . mapLoc (wrapLoop . closeLine)
+                         . fromVertices
+    conn (v, w) = p2i v ~~ p2i w
+    ends (E' v R) = (v, v ^+^ (1,0))
+    ends (E' v L) = (v, v ^+^ (-1,0))
+    ends (E' v U) = (v, v ^+^ (0,1))
+    ends (E' v D) = (v, v ^+^ (0,-1))
+
 
 irregularGrid :: Backend' b =>
                  SGrid a -> Diagram b R2
