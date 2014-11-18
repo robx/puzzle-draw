@@ -176,8 +176,8 @@ boxof2or3 = (,)
 afternoonskyscrapers :: Backend' b =>
                         RenderPuzzle b (SGrid Shade) IntGrid
 afternoonskyscrapers = (,)
-    (grid <> atCentres drawShade . values)
-    (drawIntGrid . snd <> atCentres drawShade . values . fst)
+    (grid <> atCentres drawShadow . values)
+    (drawIntGrid . snd <> atCentres drawShadow . values . fst)
 
 meanderingnumbers :: Backend' b =>
                         RenderPuzzle b AreaGrid IntGrid

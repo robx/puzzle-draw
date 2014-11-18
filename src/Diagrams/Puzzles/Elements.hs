@@ -136,9 +136,9 @@ drawCurve :: Backend' b => [Edge] -> Diagram b R2
 drawCurve = lwG onepix . fit 0.6 . centerXY . mconcat . map (stroke . edge)
 
 -- | Draw a shadow in the style of Afternoon Skyscrapers.
-drawShade :: Backend' b => Shade -> Diagram b R2
-drawShade (Shade s w) = (if s then south else mempty) <>
-                        (if w then west else mempty)
+drawShadow :: Backend' b => Shade -> Diagram b R2
+drawShadow (Shade s w) = (if s then south else mempty) <>
+                         (if w then west else mempty)
   where
     shape = translate (r2 (-1/2, -1/2)) . fromVertices . map p2 $
         [ (0, 0), (1/4, 1/4), (1, 1/4), (1, 0), (0, 0) ]
