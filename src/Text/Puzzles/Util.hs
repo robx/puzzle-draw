@@ -10,6 +10,7 @@ import Control.Monad hiding (mapM)
 
 import Data.Hashable
 import Data.Maybe (catMaybes, fromMaybe)
+import Data.Either (isRight)
 import qualified Data.Map as Map
 import qualified Data.HashMap.Strict as HMap
 import Data.Traversable (traverse, sequenceA, mapM, Traversable)
@@ -245,7 +246,6 @@ rectToClueGrid' = fmap blankToMaybe' . rectToSGrid
 rectToIrregGrid :: Rect (Either Empty a) -> SGrid a
 rectToIrregGrid = fmap fromRight . filterG isRight . rectToSGrid
   where
-    isRight = either (const False) (const True)
     fromRight (Right r) = r
     fromRight _         = error "no way"
 
@@ -430,12 +430,16 @@ parseThermos (Grid s m) = catMaybes <$> mapM parseThermo (Map.keys m)
         disjointSucc q = null $ intersect (succs p) (succs' q)
         succs' q = maybe [] (const $ succs q) (Map.lookup q m')
 
-parseThermoGrid :: ThermoRect -> Parser (SGrid Int, [Thermometer])
+parseThermoGrid :: ThermoRect -> Parser (SGrid (Maybe Int), [Thermometer])
 parseThermoGrid (Rect _ _ ls) = (,) (Grid Square ints)
                               <$> parseThermos (Grid Square alphas)
   where
-    (ints, alphas) = partitionEithers . snd . partitionEithers $
-                     listListToMap ls
+    m = listListToMap ls
+    ints = either (const Nothing) (either Just (const Nothing)) <$> m
+    alphas = fmap fromRight . Map.filter isRight
+           . fmap fromRight . Map.filter isRight $ m
+    fromRight (Left _) = error "not right"
+    fromRight (Right x) = x
 
 newtype Tight = Tight { unTight :: Tightfit () }
 

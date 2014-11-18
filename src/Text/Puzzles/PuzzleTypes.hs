@@ -46,7 +46,7 @@ latintapa = ((unRG <$>) . parseJSON,
 sudoku :: ParsePuzzle IntGrid IntGrid
 sudoku = (parseClueGrid, parseClueGrid)
 
-thermosudoku :: ParsePuzzle (SGrid Int, [Thermometer]) IntGrid
+thermosudoku :: ParsePuzzle (SGrid (Maybe Int), [Thermometer]) IntGrid
 thermosudoku = ((parseThermoGrid =<<) . parseJSON, parseClueGrid)
 
 pyramid :: ParsePuzzle Pyr.Pyramid Pyr.PyramidSol

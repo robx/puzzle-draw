@@ -78,10 +78,10 @@ sudoku = (,)
     ((drawIntClues <> sudokugrid) . snd)
 
 thermosudoku :: Backend' b =>
-                RenderPuzzle b (SGrid Int, [Thermometer]) IntGrid
+                RenderPuzzle b (SGrid (Maybe Int), [Thermometer]) (SGrid (Maybe Int))
 thermosudoku = (,)
-    (drawInts . fst <> sudokugrid . fst <> drawThermos . snd)
-    (drawIntClues . snd <> sudokugrid . snd <> drawThermos . snd . fst)
+    (atCentres drawInt . clues . fst <> sudokugrid . fst <> drawThermos . snd)
+    (atCentres drawInt . clues . snd <> sudokugrid . snd <> drawThermos . snd . fst)
 
 pyramid :: Backend' b =>
     RenderPuzzle b Pyr.Pyramid Pyr.PyramidSol
