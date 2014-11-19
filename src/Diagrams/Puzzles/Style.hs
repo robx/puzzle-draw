@@ -1,23 +1,47 @@
 module Diagrams.Puzzles.Style
-    ( GridLineStyle   (..)
-    , GridBorderStyle (..)
-    , GridVertexStyle (..)
+    ( LineStyle (..)
+    , FrameStyle (..)
+    , VertexStyle (..)
+    , GridStyle (..)
+
+    , gDefault
+    , gDashed
+    , gPlain
+    , gPlainDashed
+    , gSlither
     ) where
+
+import Diagrams.Puzzles.Widths
 
 import Diagrams.Prelude
 
-data GridLineStyle =
-      GridLineThin
-    | GridLineDashed
-    | GridLineNone
+data LineStyle =
+      LineNone
+    | LineThin
+    | LineDashed
+    | LineThick
 
-data GridBorderStyle =
-      GridBorderNone
-    | GridBorderThin
-    | GridBorderDashed
-    | GridBorderThick
-    | GridBorderFrame Double (Colour Double)
+data FrameStyle = FrameStyle
+    { _fWidthFactor :: Double
+    , _fColour      :: Colour Double
+    }
 
-data GridVertexStyle =
-      GridVertexNone
-    | GridVertexDot
+data VertexStyle =
+      VertexNone
+    | VertexDot
+
+data GridStyle = GridStyle
+    { _line    :: LineStyle
+    , _border  :: LineStyle
+    , _frame   :: Maybe FrameStyle
+    , _vertex  :: VertexStyle
+    }
+
+gDefault, gSlither, gDashed, gPlain, gPlainDashed :: GridStyle
+gDefault = GridStyle LineThin LineThin
+                     (Just (FrameStyle framewidthfactor black)) VertexNone
+gSlither = GridStyle LineNone LineNone Nothing VertexDot
+gDashed  = GridStyle LineDashed LineThin
+                     (Just (FrameStyle framewidthfactor black)) VertexNone
+gPlain   = GridStyle LineThin LineThin Nothing VertexNone
+gPlainDashed = GridStyle LineDashed LineDashed Nothing VertexNone

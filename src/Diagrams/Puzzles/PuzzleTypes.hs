@@ -32,8 +32,8 @@ import qualified Data.Puzzles.Pyramid as Pyr
 
 lits :: Backend' b => RenderPuzzle b AreaGrid ShadedGrid
 lits = (,)
-    drawAreaGridGray
-    (drawAreaGrid . fst <> drawShade . snd)
+    (drawAreas <> grid gDefault)
+    ((drawAreas <> grid gDefault) . fst <> drawShade . snd)
 
 litsplus :: Backend' b => RenderPuzzle b AreaGrid ShadedGrid
 litsplus = lits
@@ -46,12 +46,12 @@ geradeweg = (,)
     drawIntGrid
     (drawIntClues . fst
      <> solstyle . drawDualEdges . snd
-     <> grid . fst)
+     <> grid gDefault . fst)
 
 fillomino :: Backend' b => RenderPuzzle b IntGrid (SGrid Int)
 fillomino = (,)
-    (atCentres drawInt . clues <> dashedgrid)
-    ((atCentres drawInt . values <> drawEdges . borders <> dashedgrid) . snd)
+    (atCentres drawInt . clues <> grid gDashed)
+    ((atCentres drawInt . values <> drawEdges . borders <> grid gDashed) . snd)
 
 masyu :: Backend' b =>
          RenderPuzzle b (SGrid (Clue MasyuPearl)) Loop
@@ -71,7 +71,7 @@ latintapa = (,)
     l
     (l . fst <> atCentres drawChar . clues . snd)
   where
-    l = grid <> drawWordsClues
+    l = grid gDefault <> drawWordsClues
 
 sudoku :: Backend' b =>
           RenderPuzzle b IntGrid IntGrid
@@ -147,13 +147,15 @@ curvedata = (,)
     cd
     ((solstyle . drawDualEdges . snd) <> cd . fst)
   where
-    cd = atCentres drawCurve . clues <> grid
+    cd = atCentres drawCurve . clues <> grid gDefault
 
 doubleback :: Backend' b =>
               RenderPuzzle b AreaGrid Loop
 doubleback = (,)
-    drawAreaGridGray
-    (solstyle . drawDualEdges . snd <> drawAreaGridGray . fst)
+    p
+    (solstyle . drawDualEdges . snd <> p . fst)
+  where
+    p = grid gDefault <> drawAreasGray
 
 slalom :: Backend' b =>
           RenderPuzzle b IntGrid (SGrid SlalomDiag)
@@ -165,27 +167,27 @@ compass :: Backend' b =>
            RenderPuzzle b (SGrid (Clue CompassC)) AreaGrid
 compass = (,)
     drawCompassGrid
-    (drawCompassClues . fst <> drawAreaGridGray . snd)
+    (drawCompassClues . fst <> (grid gDefault <> drawAreasGray) . snd)
 
 boxof2or3 :: Backend' b =>
              RenderPuzzle b (SGrid MasyuPearl, [Edge]) ()
 boxof2or3 = (,)
     (atCentres smallPearl . values . fst
-     <> phantom' . grid . fst
+     <> phantom' . grid gDefault . fst
      <> drawThinDualEdges . snd)
     (error "boxof2or3 solution not implemented")
 
 afternoonskyscrapers :: Backend' b =>
                         RenderPuzzle b (SGrid Shade) IntGrid
 afternoonskyscrapers = (,)
-    (grid <> atCentres drawShadow . values)
+    (grid gDefault <> atCentres drawShadow . values)
     (drawIntGrid . snd <> atCentres drawShadow . values . fst)
 
 meanderingnumbers :: Backend' b =>
                         RenderPuzzle b AreaGrid IntGrid
 meanderingnumbers = (,)
-    drawAreaGrid
-    (drawIntGrid . snd <> drawAreaGrid . fst)
+    (grid gDefault <> drawAreas)
+    (drawIntGrid . snd <> drawAreas . fst)
 
 tapa :: Backend' b =>
         RenderPuzzle b (SGrid (Maybe TapaClue)) ShadedGrid
@@ -193,7 +195,7 @@ tapa = (,)
     tapaGrid
     (tapaGrid . fst <> drawShade . snd)
   where
-    tapaGrid = atCentres drawTapaClue . clues <> grid
+    tapaGrid = atCentres drawTapaClue . clues <> grid gDefault
 
 japanesesums :: Backend' b =>
                 RenderPuzzle b (OutsideClues [Int]) (SGrid (Either Black Int))
@@ -218,7 +220,7 @@ maximallengths = (,)
     (solstyle . drawDualEdges . snd <> g . fst)
   where
     g = atCentres drawInt . outsideClues
-        <> grid . outsideGrid
+        <> grid gDefault . outsideGrid
 
 primeplace :: Backend' b =>
               RenderPuzzle b (SGrid PrimeDiag) (SGrid Int)
@@ -226,8 +228,9 @@ primeplace = (,)
     g
     (atCentres drawInt . values . snd <> g . fst)
   where
-    g = drawGrid GridLineThin GridBorderThick GridVertexNone
+    g = grid gStyle
         <> atCentres drawPrimeDiag . values
+    gStyle = GridStyle LineThin LineThick Nothing VertexNone
 
 labyrinth :: Backend' b =>
              RenderPuzzle b (SGrid (Clue Int), [Edge]) (SGrid (Clue Int))
@@ -235,15 +238,15 @@ labyrinth = (,)
     (atCentres drawInt . clues . fst <> g)
     (atCentres drawInt . clues . snd <> g . fst)
   where
-    g = drawEdges . snd <> plaingrid . fst
+    g = drawEdges . snd <> grid gPlain . fst
 
 bahnhof :: Backend' b =>
             RenderPuzzle b (SGrid (Maybe BahnhofClue)) [Edge]
 bahnhof = (,)
-    (atCentres drawBahnhofClue . clues <> grid)
+    (atCentres drawBahnhofClue . clues <> grid gDefault)
     (atCentres drawBahnhofStation . clues . fst
      <> solstyle . drawDualEdges . snd
-     <> grid . fst)
+     <> grid gDefault . fst)
   where
     drawBahnhofStation = either drawInt (const mempty)
 
@@ -251,8 +254,12 @@ cave ::
     (Backend b R2, Renderable (Path R2) b) =>
     RenderPuzzle b (SGrid (Clue Int)) ShadedGrid
 cave = (,)
-    (plaindashedgrid <> atCentres drawInt . clues)
+    (grid gDashDash <> atCentres drawInt . clues)
     (drawEdges . edgesGen (/=) not . snd
      <> atCentres drawInt . clues . fst
-     <> drawGrid GridLineDashed (GridBorderFrame 8 gray) GridVertexNone . fst
-     <> drawShade . snd)
+     <> drawShade . snd
+     <> grid gStyle . fst)
+  where
+    gDashDash = GridStyle LineDashed LineDashed Nothing VertexNone
+    gStyle = GridStyle LineDashed LineNone (Just $ FrameStyle 8 gray)
+                       VertexNone

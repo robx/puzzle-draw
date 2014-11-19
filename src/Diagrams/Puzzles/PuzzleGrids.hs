@@ -12,13 +12,14 @@ import Data.Puzzles.Elements
 import Data.Puzzles.Sudoku
 
 import Diagrams.Puzzles.Lib
+import Diagrams.Puzzles.Style
 import Diagrams.Puzzles.Grid
 import Diagrams.Puzzles.Widths
 import Diagrams.Puzzles.Elements
 
 drawClueGrid :: Backend' b =>
                 SGrid (Clue Char) -> Diagram b R2
-drawClueGrid = atCentres drawChar . clues <> grid
+drawClueGrid = atCentres drawChar . clues <> grid gDefault
 
 drawIntClues :: Backend' b =>
                 SGrid (Clue Int) -> Diagram b R2
@@ -30,15 +31,15 @@ drawInts = atCentres drawInt . values
 
 drawIntGrid :: Backend' b =>
                SGrid (Clue Int) -> Diagram b R2
-drawIntGrid = drawIntClues <> grid
+drawIntGrid = drawIntClues <> grid gDefault
 
 drawSlitherGrid :: Backend' b =>
                    SGrid (Clue Int) -> Diagram b R2
-drawSlitherGrid = atCentres drawInt . clues <> slithergrid
+drawSlitherGrid = atCentres drawInt . clues <> grid gSlither
 
 drawMasyuGrid :: Backend' b =>
                  SGrid MasyuClue -> Diagram b R2
-drawMasyuGrid = atCentres pearl . clues <> grid
+drawMasyuGrid = atCentres pearl . clues <> grid gDefault
 
 drawCompassClues :: Backend' b =>
                     SGrid CompassClue -> Diagram b R2
@@ -46,11 +47,11 @@ drawCompassClues = atCentres drawCompassClue . clues
 
 drawCompassGrid :: Backend' b =>
                    SGrid CompassClue -> Diagram b R2
-drawCompassGrid = drawCompassClues <> grid
+drawCompassGrid = drawCompassClues <> grid gDefault
 
 sudokugrid :: Backend' b =>
               SGrid a -> Diagram b R2
-sudokugrid = drawEdges . sudokubordersg  <> grid
+sudokugrid = drawEdges . sudokubordersg  <> grid gDefault
 
 drawWordsClues :: Backend' b =>
                   SGrid (Clue [String]) -> Diagram b R2
@@ -59,14 +60,14 @@ drawWordsClues = atCentres drawWords . clues
 drawTightGrid :: Backend' b =>
                  (t -> Diagram b R2) -> SGrid (Tightfit t) -> Diagram b R2
 drawTightGrid d g = atCentres (drawTight d) (values g)
-                    <> grid g
+                    <> grid gDefault g
                     <> phantom' (stroke $ p2i (-1,-1) ~~ p2i (sx + 1, sy + 1))
     where (sx, sy) = size g
 
 drawSlalomGrid :: Backend' b =>
                   SGrid (Clue Int) -> Diagram b R2
 drawSlalomGrid g = atVertices drawSlalomClue (clues g)
-                   <> grid (sizeGrid (w-1, h-1))
+                   <> grid gDefault (sizeGrid (w-1, h-1))
     where (w, h) = size g
 
 drawSlalomDiags :: Backend' b =>
@@ -84,9 +85,9 @@ drawCrosses = atCentres (if' drawCross mempty) . values
 drawOutsideGrid :: Backend' b =>
                OutsideClues [String] -> Diagram b R2
 drawOutsideGrid = atCentres (scale 0.8 . drawText) . multiOutsideClues
-              <> grid . outsideGrid
+              <> grid gDefault . outsideGrid
 
 outsideIntGrid :: Backend' b =>
                   OutsideClues [Int] -> Diagram b R2
 outsideIntGrid = atCentres (scale 0.8 . drawInt) . multiOutsideClues
-                 <> grid . outsideGrid
+                 <> grid gDefault . outsideGrid

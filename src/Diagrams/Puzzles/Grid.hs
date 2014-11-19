@@ -23,56 +23,27 @@ import Diagrams.Puzzles.Widths
 dot :: Backend' b => Diagram b R2
 dot = circle 0.05 # fc black # smash
 
-drawGrid :: Backend' b
-         => GridLineStyle -> GridBorderStyle -> GridVertexStyle
-         -> SGrid a -> Diagram b R2
-drawGrid sline sborder svertex g =
+grid :: Backend' b
+     => GridStyle -> SGrid a -> Diagram b R2
+grid s g =
     atVerticesP (const vertex) (map (\p -> (p, ())) . S.toList $ vall)
-    <> stroke inner # linestyle
-    <> stroke outer # borderstyle
+    <> stroke inner # linestyle (_line s)
+    <> stroke outer # linestyle (_border s)
+    <> frm
   where
-    vertex = case svertex of
-        GridVertexDot    -> dot
-        GridVertexNone   -> mempty
-    linestyle = case sline of
-        GridLineNone     -> const mempty
-        GridLineThin     -> lwG gridwidth
-        GridLineDashed   -> gridDashing . lwG gridwidth
-    borderstyle = case sborder of
-        GridBorderNone      -> const mempty
-        GridBorderThin      -> lwG gridwidth
-        GridBorderDashed    -> gridDashing . lwG gridwidth
-        GridBorderThick     -> lwG edgewidth
-        GridBorderFrame f c -> const (outLine f outer # fc c)
+    vertex = case _vertex s of
+        VertexDot    -> dot
+        VertexNone   -> mempty
+    linestyle LineNone   = const mempty
+    linestyle LineThin   = lwG gridwidth
+    linestyle LineDashed = gridDashing . lwG gridwidth
+    linestyle LineThick  = lwG edgewidth
+    frm = case _frame s of
+        Just (FrameStyle f c)  -> outLine f outer # fc c
+        Nothing                -> mempty
 
     (outer, inner) = irregularGridPaths g
     (_, _, vall) = irregPathToVertices (inner, outer)
-
-slithergrid :: Backend' b =>
-               SGrid a -> Diagram b R2
-slithergrid = drawGrid GridLineNone GridBorderNone GridVertexDot
-
--- | Draw a square grid with default grid line style.
-grid :: Backend' b =>
-        SGrid a -> Diagram b R2
-grid = drawGrid GridLineThin GridBorderThick GridVertexNone
-
--- | Draw a square grid with thin frame.
-plaingrid :: Backend' b =>
-             SGrid a -> Diagram b R2
-plaingrid = drawGrid GridLineThin GridBorderThin GridVertexNone
-
--- | Draw a square grid with dashed grid lines. The gaps
---   between dashes are off-white to aid in using filling
---   tools.
-dashedgrid :: Backend' b =>
-              SGrid a -> Diagram b R2
-dashedgrid = drawGrid GridLineDashed GridBorderThick GridVertexNone
-
--- | Draw a square grid with thin frame.
-plaindashedgrid :: Backend' b =>
-                   SGrid a -> Diagram b R2
-plaindashedgrid = drawGrid GridLineDashed GridBorderDashed GridVertexNone
 
 outLine :: Backend' b => Double -> Path R2 -> Diagram b R2
 outLine f p = lwG 0 . stroke $ pin <> pout
@@ -180,9 +151,9 @@ drawDualEdges = edgeStyle . stroke . mconcat . map dualEdge
 drawThinDualEdges :: Backend' b => [Edge] -> Diagram b R2
 drawThinDualEdges = thinEdgeStyle . stroke . mconcat . map dualEdge
 
-drawAreaGrid :: (Backend' b, Eq a) =>
+drawAreas :: (Backend' b, Eq a) =>
                   SGrid a -> Diagram b R2
-drawAreaGrid = drawEdges . borders <> grid
+drawAreas = drawEdges . borders
 
 fillBG :: Backend' b => Colour Double -> Diagram b R2
 fillBG c = square 1 # lwG onepix # fc c # lc c
@@ -198,9 +169,9 @@ drawShade = shadeGrid . fmap f
     f True  = Just gray
     f False = Nothing
 
-drawAreaGridGray :: Backend' b =>
+drawAreasGray :: Backend' b =>
                     SGrid Char -> Diagram b R2
-drawAreaGridGray = drawAreaGrid <> shadeGrid . fmap cols
+drawAreasGray = drawAreas <> shadeGrid . fmap cols
   where
     cols c | isUpper c  = Just (blend 0.1 black white)
            | otherwise  = Nothing
