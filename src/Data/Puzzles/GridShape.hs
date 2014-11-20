@@ -102,13 +102,13 @@ edgesPair cs isc = F.foldr f ([], []) cs
         nbrs = [ c ^+^ d | d <- [(-1,0), (0,1), (1,0), (0,-1)] ]
         (ni, no) = partition isc nbrs
         newout = map ((,) c) no
-        newin = map (sortPair . ((,) c)) . filter (c >=) $ ni
+        newin = map (sortPair . (,) c) . filter (c >=) $ ni
         sortPair (x, y) = if x < y then (x, y) else (y, x)
 
 edgesPairM :: Map.Map (Cell Square) a ->
               ([(Cell Square, Cell Square)],
                [(Cell Square, Cell Square)])
-edgesPairM m = edgesPair (Map.keysSet m) (flip Map.member m)
+edgesPairM m = edgesPair (Map.keysSet m) (`Map.member` m)
 
 -- | @edges@ computes the outer and inner edges of a set of cells.
 --   The set is given via fold and membership predicate, the result

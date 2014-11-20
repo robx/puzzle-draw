@@ -37,7 +37,7 @@ field = field' . map T.pack
     field' (f:fs) (Object v) = v .: f >>= field' fs
     field' _  _                = empty
 
-parseFrom :: Path -> (Value -> Parser b) -> (Value -> Parser b)
+parseFrom :: Path -> (Value -> Parser b) -> Value -> Parser b
 parseFrom fs p v = field fs v >>= p
 
 class FromChar a where
