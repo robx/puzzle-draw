@@ -48,9 +48,9 @@ grid s g =
 outLine :: Backend' b => Double -> Path R2 -> Diagram b R2
 outLine f p = lwG 0 . stroke $ pin <> pout
   where
-    pout = reversePath $ offsetPath (f * gridwidth - e) p
+    pout = reversePath $ offsetPath (f * onepix - e) p
     pin = offsetPath (-e) p
-    e = gridwidth / 2
+    e = onepix / 2
 
 bgdashingG :: (Semigroup a, HasStyle a, V a ~ R2) =>
              [Double] -> Double -> AlphaColour Double -> a -> a
