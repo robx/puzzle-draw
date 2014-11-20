@@ -28,6 +28,7 @@ flag cairo
 library
   exposed-modules:     Data.Puzzles.Grid
                        Data.Puzzles.GridShape
+                       Data.Puzzles.Util
                        Data.Puzzles.Elements
                        Data.Puzzles.Pyramid
                        Data.Puzzles.Sudoku
@@ -36,6 +37,7 @@ library
                        Text.Puzzles.Util
                        Text.Puzzles.Puzzle
                        Text.Puzzles.PuzzleTypes
+                       Diagrams.Puzzles.Style
                        Diagrams.Puzzles.Grid
                        Diagrams.Puzzles.Lib
                        Diagrams.Puzzles.Elements

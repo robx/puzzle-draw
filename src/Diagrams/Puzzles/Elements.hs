@@ -18,6 +18,7 @@ import Data.Puzzles.GridShape
 import Data.Puzzles.Grid hiding (shape)
 
 import Diagrams.Puzzles.Lib
+import Diagrams.Puzzles.Style
 import Diagrams.Puzzles.Widths
 import Diagrams.Puzzles.Grid
 
@@ -137,9 +138,9 @@ drawCurve :: Backend' b => [Edge] -> Diagram b R2
 drawCurve = lwG onepix . fit 0.6 . centerXY . mconcat . map (stroke . edge)
 
 -- | Draw a shadow in the style of Afternoon Skyscrapers.
-drawShade :: Backend' b => Shade -> Diagram b R2
-drawShade (Shade s w) = (if s then south else mempty) <>
-                        (if w then west else mempty)
+drawShadow :: Backend' b => Shade -> Diagram b R2
+drawShadow (Shade s w) = (if s then south else mempty) <>
+                         (if w then west else mempty)
   where
     shape = translate (r2 (-1/2, -1/2)) . fromVertices . map p2 $
         [ (0, 0), (1/4, 1/4), (1, 1/4), (1, 0), (0, 0) ]
@@ -207,7 +208,7 @@ placeNote sz d = note d # alignBL # translatep sz # translate (r2 (0.3,0.3))
 
 miniloop :: Backend' b => Diagram b R2
 miniloop = (drawThinEdges [E (0,0) H, E (0,0) V, E (1,0) V, E (0,1) H]
-            <> slithergrid (1, 1))
+            <> grid gSlither (sizeGrid (1, 1)))
            # centerXY # scale 0.4
 
 dominoBG :: Colour Double

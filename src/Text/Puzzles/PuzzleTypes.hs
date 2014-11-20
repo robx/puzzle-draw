@@ -21,7 +21,7 @@ import Data.Yaml
 import Text.Puzzles.Util
 import Text.Puzzles.Puzzle
 import Data.Puzzles.Grid
-import Data.Puzzles.GridShape hiding (size)
+import Data.Puzzles.GridShape
 import qualified Data.Puzzles.Pyramid as Pyr
 import Data.Puzzles.Elements
 
@@ -56,7 +56,7 @@ latintapa = ((unRG <$>) . parseJSON,
 sudoku :: ParsePuzzle IntGrid IntGrid
 sudoku = (parseClueGrid, parseClueGrid)
 
-thermosudoku :: ParsePuzzle (SGrid Int, [Thermometer]) IntGrid
+thermosudoku :: ParsePuzzle (SGrid (Maybe Int), [Thermometer]) IntGrid
 thermosudoku = ((parseThermoGrid =<<) . parseJSON, parseClueGrid)
 
 pyramid :: ParsePuzzle Pyr.Pyramid Pyr.PyramidSol
@@ -137,8 +137,8 @@ afternoonskyscrapers = (parseAfternoonGrid, parseGrid)
 meanderingnumbers :: ParsePuzzle AreaGrid IntGrid
 meanderingnumbers = (parseGrid, parseGrid)
 
-tapa :: ParsePuzzle (SGrid TapaClue) ShadedGrid
-tapa = (\v -> fmap unParseTapaClue . unRG <$> parseJSON v,
+tapa :: ParsePuzzle (SGrid (Maybe TapaClue)) ShadedGrid
+tapa = (\v -> fmap (fmap unParseTapaClue) . unRG <$> parseJSON v,
         parseShadedGrid)
 
 japanesesums :: ParsePuzzle (OutsideClues [Int], String)

@@ -12,6 +12,7 @@ import Data.Hashable
 import Data.List (sortBy, intersect)
 import Data.Maybe (catMaybes, fromMaybe)
 import Data.Ord (comparing)
+import Data.Either (isRight)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 import qualified Data.HashMap.Strict as HMap
@@ -26,7 +27,7 @@ import qualified Data.Text as T
 import Data.Yaml
 
 import Data.Puzzles.Grid
-import Data.Puzzles.GridShape hiding (size)
+import Data.Puzzles.GridShape
 import Data.Puzzles.Elements
 
 type Path = [String]
@@ -184,7 +185,7 @@ instance FromJSON Blank' where
 
 instance FromChar Empty where
     parseChar ' ' = pure Empty
-    parseChar _   = empty
+    parseChar _   = fail "expected ' '"
 
 instance FromString Blank where
     parseString "." = pure Blank
@@ -245,7 +246,7 @@ listListToMap ls = Map.fromList . concat
     h = length ls
 
 rectToSGrid :: Rect a -> SGrid a
-rectToSGrid (Rect w h ls) = Grid (Square w h) (listListToMap ls)
+rectToSGrid (Rect _ _ ls) = Grid Square (listListToMap ls)
 
 blankToMaybe :: Either Blank a -> Maybe a
 blankToMaybe = either (const Nothing) Just
@@ -262,7 +263,6 @@ rectToClueGrid' = fmap blankToMaybe' . rectToSGrid
 rectToIrregGrid :: Rect (Either Empty a) -> SGrid a
 rectToIrregGrid = fmap fromRight . filterG isRight . rectToSGrid
   where
-    isRight = either (const False) (const True)
     fromRight (Right r) = r
     fromRight _         = error "no way"
 
@@ -321,20 +321,27 @@ parsePlainEdges :: Value -> Parser [Edge]
 parsePlainEdges v = readEdges <$> parseGrid v
 
 readEdges :: SGrid Char -> [Edge]
-readEdges g = horiz ++ vert
-    where (w, h) = size g
-          w' = w `div` 2
-          h' = h `div` 2
-          isHoriz (x, y) = g ! (2 * x + 1, 2 * y) == '-'
-          isVert  (x, y) = g ! (2 * x, 2 * y + 1) == '|'
-          horiz = [ E (x, y) H | x <- [0 .. w' - 1]
-                               , y <- [0 .. h']
-                               , isHoriz (x, y)
-                               ]
-          vert =  [ E (x, y) V | x <- [0 .. w']
-                               , y <- [0 .. h' - 1]
-                               , isVert (x, y)
-                               ]
+readEdges (Grid _ m) = horiz ++ vert
+  where
+    horiz = [ E (x, y) H
+            | (x, y) <- map div2
+                      . Map.keys
+                      . Map.filterWithKey
+                           (\(x, y) c -> x `mod` 2 == 1
+                                      && y `mod` 2 == 0
+                                      && c == '-')
+                      $ m
+            ]
+    vert  = [ E (x, y) V
+            | (x, y) <- map div2
+                      . Map.keys
+                      . Map.filterWithKey
+                           (\(x, y) c -> x `mod` 2 == 0
+                                      && y `mod` 2 == 1
+                                      && c == '|')
+                      $ m
+            ]
+    div2 (x', y') = (x' `div` 2, y' `div` 2)
 
 parseGridChars :: FromChar a => SGrid Char -> Parser (SGrid a)
 parseGridChars = traverse parseChar
@@ -353,20 +360,14 @@ parseEdgeGrid v = uncurry (,,) <$>
   where
     parseBoth = do
         g <- parseGrid v
-        (gn, gc) <- halveGrid g
+        let (gn, gc) = halveGrid g
         gn' <- parseGridChars gn
         gc' <- parseGridChars gc
         return (gn', gc')
     both f (x, y) = (f x, f y)
-    halveGrid (Grid (Square w h) m)
-        | odd w && odd h = pure (Grid snode (divkeys mnode),
-                                 Grid scell (divkeys mcell))
-        | otherwise      = fail "non-odd grid size"
+    halveGrid (Grid Square m) =
+        (Grid Square (divkeys mnode), Grid Square (divkeys mcell))
       where
-        w' = (w + 1) `div` 2
-        h' = (h + 1) `div` 2
-        snode = Square w' h'
-        scell = Square (w' - 1) (h' - 1)
         mnode = Map.filterWithKey (const . uncurry (&&) . both even) m
         mcell = Map.filterWithKey (const . uncurry (&&) . both odd)  m
         divkeys = Map.mapKeys (both (`div` 2))
@@ -381,7 +382,7 @@ parseNodeEdges :: FromChar a =>
                   Value -> Parser (SGrid a, [Edge])
 parseNodeEdges v = proj13 <$> parseEdgeGrid v
   where
-    proj13 :: (SGrid a, SGrid Empty, [Edge]) -> (SGrid a, [Edge])
+    proj13 :: (SGrid a, SGrid Char, [Edge]) -> (SGrid a, [Edge])
     proj13 (x,_,z) = (x,z)
 
 parseCellEdges :: FromChar a =>
@@ -471,13 +472,16 @@ parseThermos (Grid s m) = catMaybes <$> mapM parseThermo (Map.keys m)
         disjointSucc q = null $ intersect (succs p) (succs' q)
         succs' q = maybe [] (const $ succs q) (Map.lookup q m')
 
-parseThermoGrid :: ThermoRect -> Parser (SGrid Int, [Thermometer])
-parseThermoGrid (Rect w h ls) = (,) (Grid s ints)
-                              <$> parseThermos (Grid s alphas)
+parseThermoGrid :: ThermoRect -> Parser (SGrid (Maybe Int), [Thermometer])
+parseThermoGrid (Rect _ _ ls) = (,) (Grid Square ints)
+                              <$> parseThermos (Grid Square alphas)
   where
-    s = Square w h
-    (ints, alphas) = partitionEithers . snd . partitionEithers $
-                     listListToMap ls
+    m = listListToMap ls
+    ints = either (const Nothing) (either Just (const Nothing)) <$> m
+    alphas = fmap fromRight . Map.filter isRight
+           . fmap fromRight . Map.filter isRight $ m
+    fromRight (Left _) = error "not right"
+    fromRight (Right x) = x
 
 parseOutsideGrid :: (Char -> Parser a)
                  -> (Char -> Parser b)
@@ -545,14 +549,7 @@ instance FromJSON PCompassC where
               comp _            = empty
     parseJSON _          = empty
 
-newtype RefGrid a = RefGrid { unRG :: SGrid a }
-
-data Ref = Ref { unRef :: Char }
-    deriving Show
-
-instance FromChar Ref where
-    parseChar c | isAlpha c = pure (Ref c)
-    parseChar _             = empty
+newtype RefGrid a = RefGrid { unRG :: SGrid (Maybe a) }
 
 hashmaptomap :: (Eq a, Hashable a, Ord a) => HMap.HashMap a b -> Map.Map a b
 hashmaptomap = Map.fromList . HMap.toList
@@ -560,24 +557,37 @@ hashmaptomap = Map.fromList . HMap.toList
 compose :: (Ord a, Ord b) => Map.Map a b -> Map.Map b c -> Maybe (Map.Map a c)
 compose m1 m2 = mapM (`Map.lookup` m2) m1
 
+newtype MaybeMap k a = MM { unMaybeMap :: Map.Map k (Maybe a) }
+
+instance Functor (MaybeMap k) where
+    fmap f (MM m) = MM (fmap (fmap f) m)
+
+instance Foldable (MaybeMap k) where
+    foldMap f (MM m) = foldMap (foldMap f) m
+
+instance Traversable (MaybeMap k) where
+    traverse f m = MM <$> traverse (traverse f) (unMaybeMap m)
+
+compose' :: (Ord a, Ord b) => Map.Map a (Maybe b)
+                           -> Map.Map b c
+                           -> Maybe (Map.Map a (Maybe c))
+compose' m1 m2 = unMaybeMap <$> mapM (`Map.lookup` m2) (MM m1)
+
 instance FromJSON a => FromJSON (RefGrid a) where
-    parseJSON (Object v) = RefGrid <$> do
-        Grid s refs <- fmap (fmap ((:[]) . unRef)) . rectToClueGrid <$>
-                       (v .: "grid" :: Parser (Rect (Either Blank Ref)))
-        m <- hashmaptomap <$> v .: "clues"
-        case compose (Map.mapMaybe id refs) m of
+    parseJSON v = RefGrid <$> do
+        Grid Square refs <- fmap (fmap ((:[]) . unAlpha) . blankToMaybe)
+                            <$> parseFrom ["grid"] parseGrid v
+        m <- hashmaptomap <$> parseFrom ["clues"] parseJSON v
+        case compose' refs m of
             Nothing -> mzero
-            Just m' -> return $ Grid s m'
-    parseJSON _ = empty
+            Just m' -> return $ Grid Square m'
 
 parseAfternoonGrid :: Value -> Parser (SGrid Shade)
 parseAfternoonGrid v = do
-    (Grid s _ , es) <- parseNodeEdges v :: Parser (SGrid Char, [Edge])
-    let (m, b) = splitBorder s $ toMap es
-    guard $ Map.null b
-    return $ Grid (shrink s) m
+    (_, _, es) <- parseEdgeGrid v
+                  :: Parser (SGrid Char, SGrid Char, [Edge])
+    return . Grid Square . toMap $ es
   where
-    shrink (Square w h) = Square (w-1) (h-1)
     toShade V = Shade False True
     toShade H = Shade True  False
     merge (Shade a b) (Shade c d)
@@ -586,8 +596,6 @@ parseAfternoonGrid v = do
     toMap es = Map.fromListWith
         merge
         [(p, toShade d) | E p d <- es]
-    splitBorder (Square w h) = Map.partitionWithKey
-        (\(x, y) _ -> x < w - 1 && y < h - 1)
 
 newtype ParseTapaClue = ParseTapaClue { unParseTapaClue :: TapaClue }
 

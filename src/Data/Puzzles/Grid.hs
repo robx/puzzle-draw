@@ -12,8 +12,7 @@ import Control.Applicative ((<$>))
 import Data.VectorSpace
 import Control.Monad.State
 
-import Data.Puzzles.GridShape hiding (size, cells)
-import qualified Data.Puzzles.GridShape as GS
+import Data.Puzzles.GridShape
 import Data.Puzzles.Elements
 
 -- | A generic grid, with the given shape and contents.
@@ -52,23 +51,15 @@ filterG p (Grid s m) = Grid s (Map.filter p m)
 -- | Initialize a square grid from a list of lists. The grid
 --   might be incomplete if some rows are shorter.
 fromListList :: [[a]] -> Grid Square a
-fromListList g = Grid s m
+fromListList g = Grid Square m
   where
-    w = maximum . map length $ g
     h = length g
-    s = Square w h
     m = Map.fromList . concat
       . zipWith (\y -> zipWith (\x -> (,) (x, y)) [0..]) [h-1,h-2..]
       $ g
 
-size :: GridShape s => Grid s a -> GridSize s
-size = GS.size . shape
-
 cells :: GridShape s => Grid s a -> [Cell s]
 cells = Map.keys . contents
-
-inBounds :: (GridShape s, Eq (Cell s)) => Grid s a -> Cell s -> Bool
-inBounds g c = c `elem` cells g
 
 -- | For a grid with value type @Maybe a@, return an association
 --   list of cells and @Just@ values.
@@ -80,15 +71,9 @@ values :: GridShape s => Grid s a -> [(Cell s, a)]
 values (Grid _ m) = Map.toList m
 
 edgesGen :: (a -> a -> Bool) -> (a -> Bool) -> Grid Square a -> [Edge]
-edgesGen p n g = [ E pt V | pt <- vedges ] ++ [ E pt H | pt <- hedges ]
+edgesGen p n g = map (uncurry unorientedEdge) . filter (uncurry p') $ es
   where
-    edges' f (sx, sy) = [ (x + 1, y) | x <- [-1 .. sx - 1]
-                                     , y <- [-1 .. sy]
-                                     , p' (f (x, y)) (f (x + 1, y)) ]
-
-    vedges = edges' id (size g)
-    hedges = map swap $ edges' swap (swap . size $ g)
-    swap (x, y) = (y, x)
+    es = uncurry (++) $ edgesPairM (contents g)
     p' c d = p'' (Map.lookup c (contents g))
                  (Map.lookup d (contents g))
     p'' (Just e) (Just f) = p e f
@@ -100,16 +85,9 @@ edgesP :: (a -> a -> Bool) -> Grid Square a -> [Edge]
 edgesP p g = edgesGen p (const False) g
 
 dualEdgesP :: (a -> a -> Bool) -> Grid Square a -> [Edge]
-dualEdgesP p g = [ E pt H | pt <- hedges ] ++
-                 [ E pt V | pt <- vedges ]
+dualEdgesP p g = map (uncurry dualEdge) . filter (uncurry p') $ es
   where
-    edges' f (sx, sy) = [ (x, y) | x <- [0 .. sx - 2]
-                                 , y <- [0 .. sy - 1]
-                                 , p' (f (x, y)) (f (x + 1, y)) ]
-
-    hedges = edges' id (size g)
-    vedges = map swap $ edges' swap (swap . size $ g)
-    swap (x, y) = (y, x)
+    es = uncurry (++) $ edgesPairM (contents g)
     p' c d = p'' (Map.lookup c (contents g))
                  (Map.lookup d (contents g))
     p'' (Just e) (Just f) = p e f
@@ -154,7 +132,10 @@ colourM nbrs m = fmap fromRight . execState colour' $ start
         f (Right c') = Right c'
 
 colour :: Eq a => SGrid a -> SGrid Int
-colour (Grid s m) = Grid s $ colourM (edgeNeighbours s) m
+colour (Grid s m) = Grid s $ colourM edgeNeighbours' m
+  where
+    edgeNeighbours' p = [ q | q <- edgeNeighbours s p
+                            , q `Map.member` m ]
 
 -- | Clues along the outside of a square grid.
 data OutsideClues a = OC { left :: [a], right :: [a], bottom :: [a], top :: [a] }
@@ -163,10 +144,20 @@ data OutsideClues a = OC { left :: [a], right :: [a], bottom :: [a], top :: [a] 
 instance Functor OutsideClues where
     fmap f (OC l r b t) = OC (fmap f l) (fmap f r) (fmap f b) (fmap f t)
 
-outsideSize :: OutsideClues a -> (Int, Int)
-outsideSize (OC l r b t) = ( max (length t) (length b)
-                           , max (length l) (length r)
-                           )
+outsideSize :: OutsideClues a -> Size
+outsideSize (OC l r b t) = (w, h)
+  where
+    w = max (length t) (length b)
+    h = max (length l) (length r)
+
+-- | Create a dummy grid matching the given outside clues in size.
+outsideGrid :: OutsideClues a -> SGrid ()
+outsideGrid = sizeGrid . outsideSize
+
+-- | Create a dummy grid of the given size.
+sizeGrid :: Size -> SGrid ()
+sizeGrid (w, h) =
+    Grid Square $ Map.fromList [ ((x, y), ()) | x <- [0..w-1], y <- [0..h-1] ]
 
 data OutsideClue a = OClue
     { ocBase  :: (Int, Int)
@@ -211,8 +202,13 @@ collectLines = dualEdgesP eq
 
 dominoGrid :: DigitRange -> SGrid (Int, Int)
 dominoGrid (DigitRange x y) = Grid
-    (Square s s)
+    Square
     (Map.fromList [ ((a, s - b), (b + x, a + x))
                   | a <- [0..s], b <- [0..s], b <= a ])
   where
     s = y - x
+
+size :: Grid Square a -> Size
+size (Grid _ m) = foldr (both max) (0, 0) (Map.keys m) ^+^ (1, 1)
+  where
+    both f (x, y) (x', y') = (f x x', f y y')
