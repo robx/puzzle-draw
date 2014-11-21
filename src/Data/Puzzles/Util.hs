@@ -18,7 +18,7 @@ paths ((a,b):segs) = do
         []      -> Just ([x], withoutx)
         [(y,z)] -> do
             (xs, sgs') <- collect (if x == y then z else y) withoutx
-            Just ((x:xs), sgs')
+            Just (x:xs, sgs')
         _       -> Nothing
       where
         (withx, withoutx) = partition (\s -> fst s == x || snd s == x) sgs

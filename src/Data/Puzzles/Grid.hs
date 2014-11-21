@@ -82,7 +82,7 @@ edgesGen p n g = map (uncurry unorientedEdge) . filter (uncurry p') $ es
     p'' _        _        = False
 
 edgesP :: (a -> a -> Bool) -> Grid Square a -> [Edge]
-edgesP p g = edgesGen p (const False) g
+edgesP p = edgesGen p (const False)
 
 dualEdgesP :: (a -> a -> Bool) -> Grid Square a -> [Edge]
 dualEdgesP p g = map (uncurry dualEdge) . filter (uncurry p') $ es
@@ -191,7 +191,7 @@ multiOutsideClues :: OutsideClues [a] -> [((Int, Int), a)]
 multiOutsideClues = concatMap distrib . outsideClues . fmap Just . dired
   where
     dired (OC l r b t) = OC (z (-1,0) l) (z (1,0) r) (z (0,-1) b) (z (0,1) t)
-    z x ys = zip (repeat x) ys
+    z x = zip (repeat x)
     distrib (o, (d, xs)) = zip [o ^+^ i *^ d | i <- [0..]] xs
 
 collectLines :: Eq a => SGrid (Maybe a) -> [Edge]
