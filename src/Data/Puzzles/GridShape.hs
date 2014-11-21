@@ -1,7 +1,24 @@
 {-# LANGUAGE TypeFamilies, FlexibleContexts #-}
 
 -- | Grid shapes.
-module Data.Puzzles.GridShape where
+module Data.Puzzles.GridShape
+    (
+      GridShape(..)
+
+    , Coord
+    , Size
+    , Square(..)
+    , Dir(..)
+    , Edge(..)
+    , Dir'(..)
+    , Edge'(..)
+
+    , edgesPairM
+    , unorientedEdge
+    , dualEdge
+    , edges
+
+    ) where
 
 import Data.Foldable (Foldable)
 import qualified Data.Foldable as F
