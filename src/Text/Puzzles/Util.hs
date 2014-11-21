@@ -272,12 +272,19 @@ parseCharMap v = do
     guard . all (\k -> length k == 1) . Map.keys $ m
     return $ Map.mapKeys head m
 
-parseExtGrid :: (FromChar a, FromJSON a) => Value -> Parser (SGrid a)
-parseExtGrid v@(String _) = parseGrid v
-parseExtGrid v = do
-    repl <- parseFrom ["replace"] parseCharMap v
+parseExtGrid' :: (FromChar a, FromJSON a, FromChar b)
+              => (a -> b) -> Value -> Parser (SGrid b)
+parseExtGrid' _ v@(String _) = parseGrid v
+parseExtGrid' f v = do
+    repl <- fmap f <$> parseFrom ["replace"] parseCharMap v
     parseFrom ["grid"] (parseGridWith
                         (parseWithReplacement (`Map.lookup` repl))) v
+
+parseExtGrid :: (FromChar a, FromJSON a) => Value -> Parser (SGrid a)
+parseExtGrid = parseExtGrid' id
+
+parseExtClueGrid :: (FromChar a, FromJSON a) => Value -> Parser (SGrid (Clue a))
+parseExtClueGrid v = fmap blankToMaybe <$> parseExtGrid' Right v
 
 parseClueGrid :: FromChar a => Value -> Parser (SGrid (Clue a))
 parseClueGrid v = fmap blankToMaybe <$> parseGrid v
