@@ -74,9 +74,13 @@ orientedEdge (x,y) (x',y')
     | otherwise             = error $ "not neighbours: " ++
                                       show (x,y) ++ " " ++  show (x',y')
 
--- This is very wrong.
 dualEdge :: Cell Square -> Cell Square -> Edge
-dualEdge p q = forgetOrientation (orientedEdge p q)
+dualEdge p q = case q ^-^ p of
+    (1, 0)  -> E p H
+    (-1,0)  -> E q H
+    (0, 1)  -> E p V
+    (0,-1)  -> E q V
+    _       -> error "non-neighbouring cells"
 
 forgetOrientation :: Edge' (Cell Square) -> Edge
 forgetOrientation (E' x U) = E x V
