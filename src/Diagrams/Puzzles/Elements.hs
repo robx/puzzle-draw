@@ -14,7 +14,7 @@ import Diagrams.Prelude
 import Diagrams.TwoD.Offset
 
 import Data.Puzzles.Elements
-import Data.Puzzles.GridShape
+import Data.Puzzles.GridShape hiding (edge)
 
 import Diagrams.Puzzles.Lib
 import Diagrams.Puzzles.Widths
@@ -57,10 +57,9 @@ drawCompassClue (CC n e s w) = texts <> stroke cross # lwG onepix
                   [(0,f), (f,0), (0,-f), (-f,0)]
           f = 3/10
 
--- | Draw a thermometer, given by a list of bottom-left corners
--- of square cells.
+-- | Draw a thermometer.
 thermo :: Backend' b => [P2] -> QDiagram b R2 Any
-thermo vs@(v:_) = (bulb `atop` line) # col # translate (r2 (0.5, 0.5))
+thermo vs@(v:_) = (bulb `atop` line) # col
     where bulb = circle 0.4 # moveTo v
           line = strokeLocLine (fromVertices vs)
                  # lwG 0.55 # lineCap LineCapSquare
@@ -71,7 +70,7 @@ thermo [] = error "invalid empty thermometer"
 -- | Draw a list of thermometers, given as lists of @(Int, Int)@ cell
 -- coordinates.
 drawThermos :: Backend' b => [Thermometer] -> QDiagram b R2 Any
-drawThermos = mconcat . map (thermo . map p2i)
+drawThermos = mconcat . map (thermo . map toPoint)
 
 -- | @drawTight d t@ draws the tight-fit value @t@, using @d@ to
 -- draw the components.
@@ -132,7 +131,7 @@ drawWords ws = spread (-1.0 *^ unitY)
 
 -- | Fit a line drawing into a unit square.
 --   For example, a Curve Data clue.
-drawCurve :: Backend' b => [Edge] -> Diagram b R2
+drawCurve :: Backend' b => [Edge N] -> Diagram b R2
 drawCurve = lwG onepix . fit 0.6 . centerXY . mconcat . map (stroke . edge)
 
 -- | Draw a shadow in the style of Afternoon Skyscrapers.
