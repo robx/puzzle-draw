@@ -31,13 +31,13 @@ geradeweg :: ParsePuzzle (SGrid (Clue Int)) Loop
 geradeweg = (parseClueGrid, parseEdges)
 
 fillomino :: ParsePuzzle IntGrid (SGrid Int)
-fillomino = (parseClueGrid, parseExtGrid)
+fillomino = (parseExtClueGrid, parseExtGrid)
 
 masyu :: ParsePuzzle (SGrid (Clue MasyuPearl)) Loop
 masyu = (parseClueGrid, parseEdges)
 
 nurikabe :: ParsePuzzle IntGrid ShadedGrid
-nurikabe = (parseSpacedClueGrid, parseShadedGrid)
+nurikabe = (parseExtClueGrid, parseShadedGrid)
 
 latintapa :: ParsePuzzle (SGrid (Clue [String])) (SGrid (Maybe Char))
 latintapa = ((unRG <$>) . parseJSON,
