@@ -237,12 +237,6 @@ blankToMaybe = either (const Nothing) Just
 blankToMaybe' :: Either Blank' a -> Maybe a
 blankToMaybe' = either (const Nothing) Just
 
-rectToClueGrid :: Rect (Either Blank a) -> SGrid (Clue a)
-rectToClueGrid = fmap blankToMaybe . rectToSGrid
-
-rectToClueGrid' :: Rect (Either Blank' a) -> SGrid (Clue a)
-rectToClueGrid' = fmap blankToMaybe' . rectToSGrid
-
 rectToIrregGrid :: Rect (Either Empty a) -> SGrid a
 rectToIrregGrid = fmap fromRight . filterG isRight . rectToSGrid
   where
@@ -261,6 +255,9 @@ parseShadedGrid v = rectToSGrid . fmap unShaded <$> parseJSON v
 
 parseGrid :: FromChar a => Value -> Parser (SGrid a)
 parseGrid v = rectToSGrid <$> parseJSON v
+
+parseSpacedGrid :: FromString a => Value -> Parser (SGrid a)
+parseSpacedGrid v = rectToSGrid . unSpaced <$> parseJSON v
 
 parseGridWith :: (Char -> Parser a) -> Value -> Parser (SGrid a)
 parseGridWith pChar v = traverse pChar =<< parseGrid v
@@ -283,16 +280,16 @@ parseExtGrid v = do
                         (parseWithReplacement (`Map.lookup` repl))) v
 
 parseClueGrid :: FromChar a => Value -> Parser (SGrid (Clue a))
-parseClueGrid v = rectToClueGrid <$> parseJSON v
+parseClueGrid v = fmap blankToMaybe <$> parseGrid v
 
 parseClueGrid' :: FromChar a => Value -> Parser (SGrid (Clue a))
-parseClueGrid' v = rectToClueGrid' <$> parseJSON v
+parseClueGrid' v = fmap blankToMaybe' <$> parseGrid v
 
 parseIrregGrid :: FromChar a => Value -> Parser (SGrid a)
 parseIrregGrid v = rectToIrregGrid <$> parseJSON v
 
 parseSpacedClueGrid :: FromString a => Value -> Parser (SGrid (Clue a))
-parseSpacedClueGrid v = rectToClueGrid . unSpaced <$> parseJSON v
+parseSpacedClueGrid v = fmap blankToMaybe <$> parseSpacedGrid v
 
 -- parses a string like
 --  o-o-o
