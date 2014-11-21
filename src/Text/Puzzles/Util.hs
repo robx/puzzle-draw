@@ -310,7 +310,7 @@ parsePlainEdges v = readEdges <$> parseGrid v
 readEdges :: SGrid Char -> [Edge]
 readEdges (Grid _ m) = horiz ++ vert
   where
-    horiz = [ E (x, y) H
+    horiz = [ E (x, y) Horiz
             | (x, y) <- map div2
                       . Map.keys
                       . Map.filterWithKey
@@ -319,7 +319,7 @@ readEdges (Grid _ m) = horiz ++ vert
                                       && c == '-')
                       $ m
             ]
-    vert  = [ E (x, y) V
+    vert  = [ E (x, y) Vert
             | (x, y) <- map div2
                       . Map.keys
                       . Map.filterWithKey
@@ -382,9 +382,9 @@ parseCellEdges v = proj23 <$> parseEdgeGrid v
 data HalfDirs = HalfDirs {unHalfDirs :: [Dir]}
 
 instance FromChar HalfDirs where
-    parseChar c | c `elem` "└┴├┼" = pure . HalfDirs $ [V, H]
-                | c `elem` "│┘┤"  = pure . HalfDirs $ [V]
-                | c `elem` "─┌┬"  = pure . HalfDirs $ [H]
+    parseChar c | c `elem` "└┴├┼" = pure . HalfDirs $ [Vert, Horiz]
+                | c `elem` "│┘┤"  = pure . HalfDirs $ [Vert]
+                | c `elem` "─┌┬"  = pure . HalfDirs $ [Horiz]
                 | otherwise       = pure . HalfDirs $ []
 
 -- parses a string like
@@ -537,8 +537,8 @@ parseAfternoonGrid v = do
                   :: Parser (SGrid Char, SGrid Char, [Edge])
     return . Grid Square . toMap $ es
   where
-    toShade V = Shade False True
-    toShade H = Shade True  False
+    toShade Vert = Shade False True
+    toShade Horiz = Shade True  False
     merge (Shade a b) (Shade c d)
         | a && c || b && d  = error "shading collision"
         | otherwise         = Shade (a || c) (b || d)

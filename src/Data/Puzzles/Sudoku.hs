@@ -24,10 +24,10 @@ sudokuborders s =
         Nothing -> case mhalf s of
                        Just h  -> rectborders h
                        Nothing -> error "no sudoku layout of this size"
-    where squareborders r = [ E (r*x, y) V | x <- [1..r-1], y <- [0..r*r-1] ]
-                            ++ [ E (x, r*y) H | x <- [0..r*r-1], y <- [1..r-1] ]
-          rectborders h = [ E (h, y) V | y <- [0..2*h-1] ]
-                          ++ [ E (x, 2*y) H | x <- [0..2*h-1], y <- [1..h-1] ]
+    where squareborders r = [ E (r*x, y) Vert | x <- [1..r-1], y <- [0..r*r-1] ]
+                            ++ [ E (x, r*y) Horiz | x <- [0..r*r-1], y <- [1..r-1] ]
+          rectborders h = [ E (h, y) Vert | y <- [0..2*h-1] ]
+                          ++ [ E (x, 2*y) Horiz | x <- [0..2*h-1], y <- [1..h-1] ]
 
 -- | Determine the internal borders of a standard sudoku of the
 --   on the given grid.

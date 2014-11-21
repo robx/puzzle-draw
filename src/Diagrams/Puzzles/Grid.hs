@@ -130,8 +130,8 @@ atVertices' g = [ (g ! c) # translatep c | c <- cells g ]
 edge :: Edge -> Path R2
 edge (E c d) = rule d # translate (r2i c)
   where
-    rule V = vrule 1.0 # alignB
-    rule H = hrule 1.0 # alignL
+    rule Vert = vrule 1.0 # alignB
+    rule Horiz = hrule 1.0 # alignL
 
 dualEdge :: Edge -> Path R2
 dualEdge = translate (r2 (1/2, 1/2)) . edge

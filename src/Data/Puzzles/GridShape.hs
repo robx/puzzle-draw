@@ -63,7 +63,7 @@ instance GridShape Square where
                                       ]
 
 -- | Edge direction in a square grid, vertical or horizontal.
-data Dir = V | H
+data Dir = Vert | Horiz
     deriving (Eq, Ord, Show)
 
 -- | An edge in a square grid, going up or right from the given cell
@@ -96,10 +96,10 @@ orientedEdge (x,y) (x',y')
 
 dualEdge :: Cell Square -> Cell Square -> Edge
 dualEdge p q = case q ^-^ p of
-    (1, 0)  -> E p H
-    (-1,0)  -> E q H
-    (0, 1)  -> E p V
-    (0,-1)  -> E q V
+    (1, 0)  -> E p Horiz
+    (-1,0)  -> E q Horiz
+    (0, 1)  -> E p Vert
+    (0,-1)  -> E q Vert
     _       -> error "non-neighbouring cells"
 
 dualEdge' :: Cell Square -> Cell Square -> Edge' (Cell Square)
@@ -111,10 +111,10 @@ dualEdge' p q = case q ^-^ p of
     _       -> error "non-neighbouring cells"
 
 forgetOrientation :: Edge' (Cell Square) -> Edge
-forgetOrientation (E' x U) = E x V
-forgetOrientation (E' x R) = E x H
-forgetOrientation (E' x D) = E (x ^-^ (0,1)) V
-forgetOrientation (E' x L) = E (x ^-^ (1,0)) H
+forgetOrientation (E' x U) = E x Vert
+forgetOrientation (E' x R) = E x Horiz
+forgetOrientation (E' x D) = E (x ^-^ (0,1)) Vert
+forgetOrientation (E' x L) = E (x ^-^ (1,0)) Horiz
 
 unorientedEdge :: Cell Square -> Cell Square -> Edge
 unorientedEdge p q = forgetOrientation $ orientedEdge p q
