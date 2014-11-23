@@ -1,4 +1,2 @@
 language: haskell
 ghc: 7.8
-script:
-  - cabal configure --enable-tests -fcairo && cabal build && cabal test
