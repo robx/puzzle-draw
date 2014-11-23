@@ -14,8 +14,11 @@ module Data.Puzzles.GridShape
     , Edge'(..)
 
     , edgesPairM
+    , orientedEdge
     , unorientedEdge
+    , forgetOrientation
     , dualEdge
+    , dualEdge'
     , edges
 
     ) where
@@ -97,6 +100,14 @@ dualEdge p q = case q ^-^ p of
     (-1,0)  -> E q H
     (0, 1)  -> E p V
     (0,-1)  -> E q V
+    _       -> error "non-neighbouring cells"
+
+dualEdge' :: Cell Square -> Cell Square -> Edge' (Cell Square)
+dualEdge' p q = case q ^-^ p of
+    (1, 0)  -> E' p R
+    (-1,0)  -> E' p L
+    (0, 1)  -> E' p U
+    (0,-1)  -> E' p D
     _       -> error "non-neighbouring cells"
 
 forgetOrientation :: Edge' (Cell Square) -> Edge

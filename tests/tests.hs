@@ -14,7 +14,7 @@ import Text.Puzzles.PuzzleTypes
 import qualified Data.Puzzles.Grid as Grid
 import Data.Puzzles.Pyramid (PyramidSol(..))
 import Data.Puzzles.Grid (multiOutsideClues, OutsideClues(..))
-import Data.Puzzles.GridShape (Edge(..), Square(..), Dir(..))
+import Data.Puzzles.GridShape
 
 import Diagrams.Puzzles.PuzzleGrids
 import Diagrams.Prelude
@@ -164,10 +164,12 @@ renderTests = testGroup "Rendering tests"
          $ testBreakSlalom @? "just testing against errors"
     ]
 
+sorteq :: (Show a, Ord a) => [a] -> [a] -> Assertion
+sorteq xs ys = sort xs @?= sort ys
+
 testMultiOutsideClues :: Assertion
 testMultiOutsideClues = multiOutsideClues (OC l r b t) `sorteq` res
   where
-    sorteq xs ys = sort xs @?= sort ys
     l = [[1, 2], [3]]
     r = [[], [1, 0]]
     b = [[0, 0, 1]]
@@ -176,7 +178,29 @@ testMultiOutsideClues = multiOutsideClues (OC l r b t) `sorteq` res
             ((1,1), 1), ((2,1), 0), ((0,-1), 0), ((0,-2), 0), ((0,-3), 1),
             ((0,2), 1), ((0,3), -1) ] :: [((Int, Int), Int)]
 
+testEdges :: Assertion
+testEdges = do
+    map forgetOrientation inner `sorteq` expinner'
+    outer `sorteq` expouter'
+  where
+    (outer, inner) = edges cs (`elem` cs)
+    {-
+      ###
+      # #
+      ###
+    -}
+    cs = [(0,0), (1,0), (2,0), (0,1), (2,1), (0,2), (1,2), (2,2)]
+    expouter = [((0,0),(0,1)), ((0,1),(0,2)), ((0,2),(0,3)), ((0,3),(1,3)),
+                ((1,3),(2,3)), ((2,3),(3,3)), ((3,3),(3,2)), ((3,2),(3,1)),
+                ((3,1),(3,0)), ((3,0),(2,0)), ((2,0),(1,0)), ((1,0),(0,0)),
+                ((1,1),(2,1)), ((2,1),(2,2)), ((2,2),(1,2)), ((1,2),(1,1))]
+    expouter' = map (uncurry dualEdge') expouter
+    expinner = [((0,1),(1,1)), ((0,2),(1,2)), ((1,0),(1,1)), ((2,0),(2,1)),
+                ((1,3),(1,2)), ((2,3),(2,2)), ((3,1),(2,1)), ((3,2),(2,2))]
+    expinner' = map (uncurry dualEdge) expinner
+
 dataTests :: TestTree
 dataTests = testGroup "Generic tests for the Data modules"
     [ testCase "multiOutsideClues" testMultiOutsideClues
+    , testCase "edges" testEdges
     ]
