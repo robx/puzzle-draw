@@ -1,6 +1,4 @@
 language: haskell
 ghc: 7.8
-install:
-  - cabal install --dependencies-only --enable-tests -fcairo
 script:
   - cabal configure --enable-tests -fcairo && cabal build && cabal test
