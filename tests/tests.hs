@@ -13,8 +13,9 @@ import Text.Puzzles.Util
 import Text.Puzzles.PuzzleTypes
 import qualified Data.Puzzles.Grid as Grid
 import Data.Puzzles.Pyramid (PyramidSol(..))
-import Data.Puzzles.Grid (multiOutsideClues, OutsideClues(..))
-import Data.Puzzles.GridShape (Edge(..), Square(..), Dir(..))
+import Data.Puzzles.Grid
+import Data.Puzzles.GridShape
+import Data.Puzzles.Util
 
 import Diagrams.Puzzles.PuzzleGrids
 import Diagrams.Prelude
@@ -92,15 +93,15 @@ test_thermo_2 :: [Thermometer]
 test_thermo_2 = either (const []) snd $
                 parseEither (fst thermosudoku) thermo_2
 
-testThermo :: [Thermometer] -> [Thermometer] -> Assertion
-testThermo t expect = sort t @?= expect
+testThermo :: [Thermometer] -> [[Coord]] -> Assertion
+testThermo t expect = sort t @?= map (map fromCoord) expect
 
 test_tightfit_1 :: Bool
 test_tightfit_1 = either (const False) test_both res
   where
     res = parseEither (fst tightfitskyscrapers) tightfit_1
     test_both (o, g) = test_size g && test_clues o
-    test_size g = Grid.size g == (3, 3)
+    test_size g = Grid.size (Map.mapKeys toCoord g) == (3, 3)
     test_clues (Grid.OC l r b t) = l == [Nothing, Nothing, Just 3] &&
                                    r == [Nothing, Just 4, Nothing] &&
                                    b == [Just 3, Just 5, Nothing] &&
@@ -118,19 +119,22 @@ test_multioutside = Right oc @=? res
   where
     res = parseEither parseMultiOutsideClues multioutside
     oc = OC [[3], [1, 2]] [[1, 0], []] [[0, 0, 1]] [[1, -1]]
-         :: OutsideClues [Int]
+         :: OutsideClues Coord [Int]
 
 test_edge_grid :: Assertion
 test_edge_grid = Right (gn, gc, es) @=? res
   where
     res = parseEither parseEdgeGrid edgeGrid_1
-    gn = Grid.Grid Square $ Map.fromList
+    gn :: Grid.Grid N (Maybe MasyuPearl)
+    gn = Map.mapKeys fromCoord . Map.fromList $
         [((0,0),Just MBlack),((0,1),Just MWhite),((1,0),Just MWhite),((1,1),Just MBlack),
          ((2,0),Nothing),((2,1),Just MBlack),((3,0),Nothing),((3,1),Just MWhite)]
-    gc :: Grid.SGrid Int
-    gc = Grid.Grid Square $ Map.fromList
+    gc :: Grid.Grid C Int
+    gc = Map.mapKeys fromCoord . Map.fromList $
         [((0,0),1),((1,0),2),((2,0),3)]
-    es = [E (0,0) H, E (0,1) H, E (1,1) H, E (2,1) H, E (0,0) V, E (1,0) V]
+    es = map (\(E c d) -> E (fromCoord c) d)
+         [E (0,0) Horiz, E (0,1) Horiz, E (1,1) Horiz, E (2,1) Horiz,
+          E (0,0) Vert, E (1,0) Vert]
 
 parseDataTests :: TestTree
 parseDataTests = testGroup "Parsing tests (full puzzles, result checks)"
@@ -164,19 +168,63 @@ renderTests = testGroup "Rendering tests"
          $ testBreakSlalom @? "just testing against errors"
     ]
 
+sorteq :: (Show a, Ord a) => [a] -> [a] -> Assertion
+sorteq xs ys = sort xs @?= sort ys
+
 testMultiOutsideClues :: Assertion
-testMultiOutsideClues = multiOutsideClues (OC l r b t) `sorteq` res
+testMultiOutsideClues = multiOutsideClues (OC l r b t) @=? res
   where
-    sorteq xs ys = sort xs @?= sort ys
     l = [[1, 2], [3]]
     r = [[], [1, 0]]
     b = [[0, 0, 1]]
     t = [[1, -1]]
-    res = [ ((-1,0), 1), ((-2,0), 2), ((-1,1), 3),
+    res :: Map.Map C Int
+    res = Map.mapKeys fromCoord . Map.fromList $
+          [ ((-1,0), 1), ((-2,0), 2), ((-1,1), 3),
             ((1,1), 1), ((2,1), 0), ((0,-1), 0), ((0,-2), 0), ((0,-3), 1),
-            ((0,2), 1), ((0,3), -1) ] :: [((Int, Int), Int)]
+            ((0,2), 1), ((0,3), -1) ]
+
+testEdges :: Assertion
+testEdges = do
+    inner `sorteq` expinner'
+    outer `sorteq` expouter'
+  where
+    (outer, inner) = edges cs (`elem` cs)
+    {-
+      ###
+      # #
+      ###
+    -}
+    cs :: [C]
+    cs = map fromCoord [(0,0), (1,0), (2,0), (0,1), (2,1), (0,2), (1,2), (2,2)]
+    expouter = [((0,0),(0,1)), ((0,1),(0,2)), ((0,2),(0,3)), ((0,3),(1,3)),
+                ((1,3),(2,3)), ((2,3),(3,3)), ((3,3),(3,2)), ((3,2),(3,1)),
+                ((3,1),(3,0)), ((3,0),(2,0)), ((2,0),(1,0)), ((1,0),(0,0)),
+                ((1,1),(2,1)), ((2,1),(2,2)), ((2,2),(1,2)), ((1,2),(1,1))]
+    expouter' = map (uncurry edge' . fromCoord2) expouter
+    expinner = [((0,1),(1,1)), ((0,2),(1,2)), ((1,0),(1,1)), ((2,0),(2,1)),
+                ((1,3),(1,2)), ((2,3),(2,2)), ((3,1),(2,1)), ((3,2),(2,2))]
+    expinner' = map (uncurry edge . fromCoord2) expinner
+    fromCoord2 (p,q) = (fromCoord p, fromCoord q)
+
+testLoops :: Assertion
+testLoops = loops es @=? Just loopsexp
+  -- rotations of the loops would be fine
+  where
+    es = [((0,0),(0,1)), ((0,1),(0,2)), ((0,2),(0,3)), ((0,3),(1,3)),
+          ((1,3),(2,3)), ((2,3),(3,3)), ((3,3),(3,2)), ((3,2),(3,1)),
+          ((3,1),(3,0)), ((3,0),(2,0)), ((2,0),(1,0)), ((1,0),(0,0)),
+          ((1,1),(2,1)), ((2,1),(2,2)), ((2,2),(1,2)), ((1,2),(1,1))]
+    loopsexp :: [[(Int, Int)]]
+    loopsexp =
+        [ [(0,0), (0,1), (0,2), (0,3), (1,3), (2,3), (3,3), (3,2), (3,1),
+           (3,0), (2,0), (1,0), (0,0)]
+        , [(1,1), (2,1), (2,2), (1,2), (1,1)]
+        ]
 
 dataTests :: TestTree
 dataTests = testGroup "Generic tests for the Data modules"
     [ testCase "multiOutsideClues" testMultiOutsideClues
+    , testCase "edges" testEdges
+    , testCase "loops" testLoops
     ]

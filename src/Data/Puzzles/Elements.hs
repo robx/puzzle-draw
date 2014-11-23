@@ -1,7 +1,7 @@
 -- | Types for a variety of puzzle elements.
 module Data.Puzzles.Elements where
 
-import Data.Puzzles.GridShape (Coord, Edge)
+import Data.Puzzles.GridShape
 
 type Clue a = Maybe a
 
@@ -34,17 +34,17 @@ instance Show a => Show (Tightfit a) where
 data MarkedWord = MW { mwstart :: Coord, mwend :: Coord }
 
 -- | A loop of edges.
-type Loop = [Edge]
+type Loop a = [Edge a]
 
 -- | A loop consisting of straight segments of arbitrary
 -- angles between vertices.
-type VertexLoop = [Coord]
+type VertexLoop = [N]
 
 -- | A thermometer, as a list of coordinates from bulb to end.
 --   There should be at least two entries, entries should be distinct,
 --   and successive entries should be neighbours (diagonal neighbours
 --   are fine).
-type Thermometer = [Coord]
+type Thermometer = [C]
 
 -- | A forward or backward diagonal as occurring in the solution
 --   of a slalom puzzle.

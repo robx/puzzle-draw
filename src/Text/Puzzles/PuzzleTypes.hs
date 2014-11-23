@@ -25,38 +25,39 @@ import Data.Puzzles.GridShape
 import qualified Data.Puzzles.Pyramid as Pyr
 import Data.Puzzles.Elements
 
-lits :: ParsePuzzle AreaGrid ShadedGrid
+lits :: ParsePuzzle AreaGrid (Grid C Bool)
 lits = (parseGrid, parseShadedGrid)
 
-litsplus :: ParsePuzzle AreaGrid ShadedGrid
+litsplus :: ParsePuzzle AreaGrid (Grid C Bool)
 litsplus = lits
 
-geradeweg :: ParsePuzzle (SGrid (Clue Int)) Loop
+geradeweg :: ParsePuzzle (Grid C (Maybe Int)) (Loop C)
 geradeweg = (parseClueGrid, parseEdges)
 
-fillomino :: ParsePuzzle IntGrid (SGrid Int)
-fillomino = (parseClueGrid, parseExtGrid)
+fillomino :: ParsePuzzle (Grid C (Maybe Int)) (Grid C Int)
+fillomino = (parseExtClueGrid, parseExtGrid)
 
-fillominoLoop :: ParsePuzzle (SGrid (Maybe Int)) (SGrid Int, Loop)
+fillominoLoop :: ParsePuzzle (Grid C (Maybe Int)) (Grid C Int, Loop C)
 fillominoLoop = (,)
     parseClueGrid
     (\v -> (,) <$> parseFrom ["grid"] parseExtGrid v
                <*> parseFrom ["loop"] parseEdges v)
 
-masyu :: ParsePuzzle (SGrid (Clue MasyuPearl)) Loop
+masyu :: ParsePuzzle (Grid C (Maybe MasyuPearl)) (Loop C)
 masyu = (parseClueGrid, parseEdges)
 
-nurikabe :: ParsePuzzle IntGrid ShadedGrid
-nurikabe = (parseSpacedClueGrid, parseShadedGrid)
+nurikabe :: ParsePuzzle (Grid C (Maybe Int)) (Grid C Bool)
+nurikabe = (parseExtClueGrid, parseShadedGrid)
 
-latintapa :: ParsePuzzle (SGrid (Clue [String])) (SGrid (Maybe Char))
+latintapa :: ParsePuzzle (Grid C (Maybe [String])) (Grid C (Maybe Char))
 latintapa = ((unRG <$>) . parseJSON,
              fmap (fmap (fmap unAlpha)) . parseClueGrid')
 
-sudoku :: ParsePuzzle IntGrid IntGrid
+sudoku :: ParsePuzzle (Grid C (Maybe Int)) (Grid C (Maybe Int))
 sudoku = (parseClueGrid, parseClueGrid)
 
-thermosudoku :: ParsePuzzle (SGrid (Maybe Int), [Thermometer]) IntGrid
+thermosudoku :: ParsePuzzle (Grid C (Maybe Int), [Thermometer])
+                            (Grid C (Maybe Int))
 thermosudoku = ((parseThermoGrid =<<) . parseJSON, parseClueGrid)
 
 pyramid :: ParsePuzzle Pyr.Pyramid Pyr.PyramidSol
@@ -65,30 +66,30 @@ pyramid = (parseJSON, parseJSON)
 kpyramid :: ParsePuzzle Pyr.RowKropkiPyramid Pyr.PyramidSol
 kpyramid = (parseJSON, parseJSON)
 
-slither :: ParsePuzzle (SGrid (Clue Int)) Loop
+slither :: ParsePuzzle (Grid C (Clue Int)) (Loop N)
 slither = (parseClueGrid, parseEdges)
 
-slithermulti :: ParsePuzzle (SGrid (Clue Int), Int) [Edge]
+slithermulti :: ParsePuzzle (Grid C (Clue Int), Int) [Edge N]
 slithermulti = (p, parseEdges)
   where p v = (,) <$> parseFrom ["grid"] parseClueGrid v
                   <*> parseFrom ["loops"] parseJSON v
 
-newtype LSol = LSol { unLSol :: (Loop, SGrid Bool) }
+newtype LSol = LSol { unLSol :: (Loop N, Grid C Bool) }
 instance FromJSON LSol where
     parseJSON (Object v) = LSol <$> ((,) <$>
                            (parseEdges =<< v .: "loop") <*>
                            (parseShadedGrid =<< v .: "liars"))
     parseJSON _          = mzero
 
-liarslither :: ParsePuzzle (SGrid (Clue Int)) (Loop, SGrid Bool)
+liarslither :: ParsePuzzle (Grid C (Maybe Int)) (Loop N, Grid C Bool)
 liarslither = (parseClueGrid, (unLSol <$>) . parseJSON)
 
 tightfitskyscrapers :: ParsePuzzle
-                       (OutsideClues (Maybe Int), SGrid (Tightfit ()))
-                       (SGrid (Tightfit Int))
-tightfitskyscrapers = (parseTightOutside, parseTightIntGrid)
+                       (OutsideClues C (Maybe Int), Grid C (Tightfit ()))
+                       (Grid C (Tightfit Int))
+tightfitskyscrapers = (parseTightOutside, parseSpacedGrid)
 
-newtype GridWords = GW { unGW :: (CharClueGrid, [String]) }
+newtype GridWords = GW { unGW :: (Grid C (Maybe Char), [String]) }
 
 instance FromJSON GridWords where
     parseJSON (Object v) = GW <$> ((,) <$>
@@ -96,10 +97,10 @@ instance FromJSON GridWords where
                                    v .: "words")
     parseJSON _ = empty
 
-wordloop :: ParsePuzzle (CharClueGrid, [String]) CharClueGrid
+wordloop :: ParsePuzzle (Grid C (Maybe Char), [String]) (Grid C (Maybe Char))
 wordloop = ((unGW <$>) . parseJSON, parseClueGrid)
 
-newtype GridMarked = GM { unGM :: (CharClueGrid, [MarkedWord]) }
+newtype GridMarked = GM { unGM :: (Grid C (Maybe Char), [MarkedWord]) }
 
 instance FromJSON GridMarked where
     parseJSON (Object v) = GM <$> ((,) <$>
@@ -107,106 +108,107 @@ instance FromJSON GridMarked where
                                    (map unPMW <$> v .: "words"))
     parseJSON _          = mzero
 
-wordsearch :: ParsePuzzle (CharClueGrid, [String]) (CharClueGrid, [MarkedWord])
+wordsearch :: ParsePuzzle (Grid C (Maybe Char), [String])
+                          (Grid C (Maybe Char), [MarkedWord])
 wordsearch = ((unGW <$>) . parseJSON, (unGM <$>) . parseJSON)
 
-newtype Curve = Curve { unCurve :: [Edge] }
+newtype Curve = Curve { unCurve :: [Edge N] }
 
 instance FromJSON Curve where
     parseJSON v = Curve <$> parsePlainEdges v
 
-curvedata :: ParsePuzzle (SGrid (Clue [Edge])) [Edge]
+curvedata :: ParsePuzzle (Grid C (Maybe [Edge N])) [Edge C]
 curvedata = ((fmap (fmap unCurve) . unRG <$>) . parseJSON, parsePlainEdges)
 
-doubleback :: ParsePuzzle AreaGrid Loop
+doubleback :: ParsePuzzle AreaGrid (Loop C)
 doubleback = (parseGrid, parseEdges)
 
-slalom :: ParsePuzzle (SGrid (Clue Int)) (SGrid SlalomDiag)
-slalom = (parseClueGrid, \v -> rectToSGrid <$> parseJSON v)
+slalom :: ParsePuzzle (Grid N (Maybe Int)) (Grid C SlalomDiag)
+slalom = (parseClueGrid, parseGrid)
 
-compass :: ParsePuzzle (SGrid (Clue CompassC)) CharGrid
+compass :: ParsePuzzle (Grid C (Maybe CompassC)) AreaGrid
 compass = ((fmap (fmap unPCC) . unRG <$>) . parseJSON, parseGrid)
 
-boxof2or3 :: ParsePuzzle (SGrid MasyuPearl, [Edge]) ()
+boxof2or3 :: ParsePuzzle (Grid N MasyuPearl, [Edge N]) ()
 boxof2or3 = (parseNodeEdges, error "boxof2or3 parsing not implemented")
 
-afternoonskyscrapers :: ParsePuzzle (SGrid Shade) IntGrid
+afternoonskyscrapers :: ParsePuzzle (Grid C Shade) (Grid C (Maybe Int))
 afternoonskyscrapers = (parseAfternoonGrid, parseGrid)
 
 -- this should be changed to support clue numbers
-meanderingnumbers :: ParsePuzzle AreaGrid IntGrid
+meanderingnumbers :: ParsePuzzle AreaGrid (Grid C (Maybe Int))
 meanderingnumbers = (parseGrid, parseGrid)
 
-tapa :: ParsePuzzle (SGrid (Maybe TapaClue)) ShadedGrid
+tapa :: ParsePuzzle (Grid C (Maybe TapaClue)) (Grid C Bool)
 tapa = (\v -> fmap (fmap unParseTapaClue) . unRG <$> parseJSON v,
         parseShadedGrid)
 
-japanesesums :: ParsePuzzle (OutsideClues [Int], String)
-                            (SGrid (Either Black Int))
+japanesesums :: ParsePuzzle (OutsideClues C [Int], String)
+                            (Grid C (Either Black Int))
 japanesesums = (p, parseGrid)
   where
     p v@(Object o) = (,) <$> parseMultiOutsideClues v <*> o .: "digits"
     p _            = empty
 
-coral :: ParsePuzzle (OutsideClues [String]) ShadedGrid
+coral :: ParsePuzzle (OutsideClues C [String]) (Grid C Bool)
 coral = (,)
     (fmap (fmap (map unIntString)) . parseMultiOutsideClues)
     parseShadedGrid
 
-maximallengths :: ParsePuzzle (OutsideClues (Maybe Int)) Loop
+maximallengths :: ParsePuzzle (OutsideClues C (Maybe Int)) (Loop C)
 maximallengths = (\v -> fmap blankToMaybe <$> parseCharOutside v,
                   parseEdges)
 
-primeplace :: ParsePuzzle (SGrid PrimeDiag) (SGrid Int)
+primeplace :: ParsePuzzle (Grid C PrimeDiag) (Grid C Int)
 primeplace = (parseIrregGrid, parseIrregGrid)
 
-labyrinth :: ParsePuzzle (SGrid (Clue Int), [Edge]) (SGrid (Clue Int))
+labyrinth :: ParsePuzzle (Grid C (Maybe Int), [Edge N]) (Grid C (Maybe Int))
 labyrinth = (parseCellEdges, parseClueGrid')
 
-bahnhof :: ParsePuzzle (SGrid (Maybe BahnhofClue)) [Edge]
+bahnhof :: ParsePuzzle (Grid C (Maybe BahnhofClue)) [Edge C]
 bahnhof = (parseClueGrid, parseEdges)
 
-blackoutDominos :: ParsePuzzle (SGrid (Clue Int), DigitRange)
-                               (SGrid (Clue Int), AreaGrid)
+blackoutDominos :: ParsePuzzle (Grid C (Clue Int), DigitRange)
+                               (Grid C (Clue Int), AreaGrid)
 blackoutDominos = (,)
     (\v -> (,) <$> parseFrom ["grid"] parseIrregGrid v
                <*> parseFrom ["digits"] parseStringJSON v)
     (\v -> (,) <$> parseFrom ["values"] parseIrregGrid v
                <*> parseFrom ["dominos"] parseIrregGrid v)
 
-angleloop :: ParsePuzzle (SGrid (Clue Int)) VertexLoop
+angleloop :: ParsePuzzle (Grid N (Clue Int)) VertexLoop
 angleloop = (parseClueGrid, parseCoordLoop)
 
-anglers :: ParsePuzzle (OutsideClues (Maybe Int), SGrid (Maybe Fish)) [Edge]
+anglers :: ParsePuzzle (OutsideClues C (Maybe Int), Grid C (Maybe Fish)) [Edge C]
 anglers = ( parseOutsideGridMap blankToMaybe blankToMaybe'
           , parseEdgesFull )
 
-cave :: ParsePuzzle (SGrid (Clue Int)) ShadedGrid
+cave :: ParsePuzzle (Grid C (Maybe Int)) (Grid C Bool)
 cave = (parseClueGrid, parseShadedGrid)
 
 parseOut :: FromJSON a =>
-            Value -> Parser (OutsideClues (Maybe a))
+            Value -> Parser (OutsideClues k (Maybe a))
 parseOut v = fmap (blankToMaybe' . unEither') <$> parseOutside v
 
-skyscrapers :: ParsePuzzle (OutsideClues (Maybe Int)) IntGrid
+skyscrapers :: ParsePuzzle (OutsideClues C (Maybe Int)) (Grid C (Maybe Int))
 skyscrapers = (parseOut, parseClueGrid)
 
-skyscrapersStars :: ParsePuzzle (OutsideClues (Maybe Int), Int)
-                                (SGrid (Either Int Star))
+skyscrapersStars :: ParsePuzzle (OutsideClues C (Maybe Int), Int)
+                                (Grid C (Either Int Star))
 skyscrapersStars = (p, parseGrid)
   where
     p v@(Object o) = (,) <$> parseOut v <*> o .: "stars"
     p _            = empty
 
-summon :: ParsePuzzle (AreaGrid, OutsideClues (Maybe Int)) IntGrid
+summon :: ParsePuzzle (AreaGrid, OutsideClues C (Maybe Int)) (Grid C (Maybe Int))
 summon = ( \v -> (,) <$> parseFrom ["grid"] parseGrid v
                      <*> parseFrom ["outside"] parseOut v
          , parseClueGrid
          )
 
 baca :: ParsePuzzle
-            (SGrid (Maybe Char), OutsideClues [Int], OutsideClues (Maybe Char))
-            (SGrid (Either Black Char))
+            (Grid C (Maybe Char), OutsideClues C [Int], OutsideClues C (Maybe Char))
+            (Grid C (Either Black Char))
 baca = ( \v -> (,,) <$> parseFrom ["grid"] parseClueGrid v
                     <*> parseFrom ["outside"] parseTopLeft v
                     <*> parseFrom ["outside"] parseBottomRight v
@@ -225,8 +227,8 @@ baca = ( \v -> (,,) <$> parseFrom ["grid"] parseClueGrid v
         return $ fmap blankToMaybe' oc
     parseBottomRight _ = empty
 
-buchstabensalat :: ParsePuzzle (OutsideClues (Maybe Char), String)
-                               (SGrid (Maybe Char))
+buchstabensalat :: ParsePuzzle (OutsideClues C (Maybe Char), String)
+                               (Grid C (Maybe Char))
 buchstabensalat =
     ( p
     , fmap (fmap blankToMaybe') . parseGrid
@@ -236,15 +238,15 @@ buchstabensalat =
         <$> (fmap blankToMaybe <$> parseCharOutside v)
         <*> parseFrom ["letters"] parseJSON v
 
-doppelblock :: ParsePuzzle (OutsideClues (Maybe Int))
-                           (SGrid (Either Black Int))
+doppelblock :: ParsePuzzle (OutsideClues C (Maybe Int))
+                           (Grid C (Either Black Int))
 doppelblock =
     ( \v -> fmap (blankToMaybe' . unEither') <$> parseOutside v
     , parseGrid
     )
 
-sudokuDoppelblock :: ParsePuzzle (AreaGrid, OutsideClues (Maybe Int))
-                                 (SGrid (Either Black Int))
+sudokuDoppelblock :: ParsePuzzle (AreaGrid, OutsideClues C (Maybe Int))
+                                 (Grid C (Either Black Int))
 sudokuDoppelblock =
     ( \v -> (,) <$> parseFrom ["grid"] parseGrid v
                 <*> parseFrom ["outside"] parseOutInts v
@@ -253,13 +255,13 @@ sudokuDoppelblock =
   where
     parseOutInts v = fmap (blankToMaybe' . unEither') <$> parseOutside v
 
-dominos :: ParsePuzzle (SGrid (Maybe Int), DigitRange) AreaGrid
+dominos :: ParsePuzzle (Grid C (Maybe Int), DigitRange) AreaGrid
 dominos = (p, parseGrid)
   where
     p v = (,) <$> parseFrom ["grid"] parseClueGrid v
               <*> parseFrom ["digits"] parseStringJSON v
 
-dominoPills :: ParsePuzzle (SGrid (Maybe Int), DigitRange, DigitRange)
+dominoPills :: ParsePuzzle (Grid C (Maybe Int), DigitRange, DigitRange)
                            AreaGrid
 dominoPills = (p, parseGrid)
   where
@@ -267,7 +269,7 @@ dominoPills = (p, parseGrid)
                <*> parseFrom ["digits"] parseStringJSON v
                <*> parseFrom ["pills"] parseStringJSON v
 
-numberlink :: ParsePuzzle (SGrid (Maybe Int)) [Edge]
+numberlink :: ParsePuzzle (Grid C (Maybe Int)) [Edge C]
 numberlink = (p, fmap collectLines . p)
   where
     p = fmap (fmap (blankToMaybe . unEither')) . parseExtGrid

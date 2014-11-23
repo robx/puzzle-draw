@@ -13,9 +13,11 @@ module Diagrams.Puzzles.Elements where
 import Diagrams.Prelude
 import Diagrams.TwoD.Offset
 
+import qualified Data.Map as Map
+
+import Data.Puzzles.Grid
 import Data.Puzzles.Elements hiding (Loop)
-import Data.Puzzles.GridShape
-import Data.Puzzles.Grid hiding (shape)
+import Data.Puzzles.GridShape hiding (edge)
 
 import Diagrams.Puzzles.Lib
 import Diagrams.Puzzles.Style
@@ -59,10 +61,9 @@ drawCompassClue (CC n e s w) = texts <> stroke cross # lwG onepix
                   [(0,f), (f,0), (0,-f), (-f,0)]
           f = 3/10
 
--- | Draw a thermometer, given by a list of bottom-left corners
--- of square cells.
+-- | Draw a thermometer.
 thermo :: Backend' b => [P2] -> QDiagram b R2 Any
-thermo vs@(v:_) = (bulb `atop` line) # col # translate (r2 (0.5, 0.5))
+thermo vs@(v:_) = (bulb `atop` line) # col
     where bulb = circle 0.4 # moveTo v
           line = strokeLocLine (fromVertices vs)
                  # lwG 0.55 # lineCap LineCapSquare
@@ -73,7 +74,7 @@ thermo [] = error "invalid empty thermometer"
 -- | Draw a list of thermometers, given as lists of @(Int, Int)@ cell
 -- coordinates.
 drawThermos :: Backend' b => [Thermometer] -> QDiagram b R2 Any
-drawThermos = mconcat . map (thermo . map p2i)
+drawThermos = mconcat . map (thermo . map toPoint)
 
 -- | @drawTight d t@ draws the tight-fit value @t@, using @d@ to
 -- draw the components.
@@ -96,7 +97,7 @@ stackWords :: Backend' b => [String] -> QDiagram b R2 Any
 stackWords = vcat' with {_sep = 0.1} . scale 0.8 . map (alignL . text')
 
 -- | Mark a word in a grid of letters.
-drawMarkedWord :: Backend' b => MarkedWord -> QDiagram b R2 Any
+drawMarkedWord :: Backend' b => MarkedWord -> Diagram b R2
 drawMarkedWord (MW s e) = lwG onepix . stroke $ expandTrail' with {_expandCap = LineCapRound} 0.4 t
     where t = fromVertices [p2i s, p2i e] # translate (r2 (1/2,1/2))
 
@@ -134,7 +135,7 @@ drawWords ws = spread (-1.0 *^ unitY)
 
 -- | Fit a line drawing into a unit square.
 --   For example, a Curve Data clue.
-drawCurve :: Backend' b => [Edge] -> Diagram b R2
+drawCurve :: Backend' b => [Edge N] -> Diagram b R2
 drawCurve = lwG onepix . fit 0.6 . centerXY . mconcat . map (stroke . edge)
 
 -- | Draw a shadow in the style of Afternoon Skyscrapers.
@@ -196,7 +197,7 @@ drawStar :: Backend' b =>
 drawStar Star = fc black . stroke . star (StarSkip 2) $ pentagon 0.3
 
 vertexLoop :: VertexLoop -> Located (Trail' Loop R2)
-vertexLoop = mapLoc closeLine . fromVertices . map p2i
+vertexLoop = mapLoc closeLine . fromVertices . map toPoint
 
 note :: Backend' b =>
         Diagram b R2 -> Diagram b R2
@@ -207,9 +208,11 @@ placeNote :: Backend' b =>
 placeNote sz d = note d # alignBL # translatep sz # translate (r2 (0.3,0.3))
 
 miniloop :: Backend' b => Diagram b R2
-miniloop = (drawThinEdges [E (0,0) H, E (0,0) V, E (1,0) V, E (0,1) H]
-            <> grid gSlither (sizeGrid (1, 1)))
+miniloop = (drawThinEdges (map unorient outer) <> grid gSlither g)
            # centerXY # scale 0.4
+  where
+    g = sizeGrid (1, 1)
+    (outer, _) = edgesM g
 
 dominoBG :: Colour Double
 dominoBG = blend 0.2 black white
@@ -219,8 +222,16 @@ drawDomino (x, y) =
     (drawInt x ||| strutX 0.3 ||| drawInt y) # centerXY # scale 0.6
     <> stroke (rect 0.7 0.4) # lwG 0 # fc dominoBG
 
+newtype DominoC = DominoC C
+  deriving (Ord, Eq)
+
+instance ToPoint DominoC where
+    toPoint (DominoC (C x y)) = p2 ((0.8 * fromIntegral x),
+                                    (0.5 * fromIntegral y))
+
 drawDominos :: Backend' b => DigitRange -> Diagram b R2
-drawDominos = centerXY . onGrid 0.8 0.5 drawDomino . values . dominoGrid
+drawDominos = centerXY . placeGrid
+            . Map.mapKeys DominoC . fmap drawDomino . dominoGrid
 
 drawPill :: Backend' b => Int -> Diagram b R2
 drawPill x = drawInt x # scale 0.6

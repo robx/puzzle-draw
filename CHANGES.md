@@ -1,3 +1,6 @@
+* Nurikabe no longer has a spaced format; accepts multidigit
+  clues via replacements, as does Fillomino
+
 0.1.0.4: 20141115
 -----------------
 

@@ -12,20 +12,29 @@ import Diagrams.TwoD.Offset
 
 import Data.Puzzles.Util
 import Data.Puzzles.Grid
-import Data.Puzzles.GridShape hiding (dualEdge)
+import Data.Puzzles.GridShape hiding (edge)
 
 import Diagrams.Puzzles.Style
 import Diagrams.Puzzles.Lib
 import Diagrams.Puzzles.Widths
+
+class ToPoint a where
+    toPoint :: a -> P2
+
+instance ToPoint C where
+    toPoint c = p2 (1/2, 1/2) .+^ r2i (c .-. C 0 0)
+
+instance ToPoint N where
+    toPoint c = origin .+^ r2i (c .-. N 0 0)
 
 -- | Draw a small black dot with no envelope.
 dot :: Backend' b => Diagram b R2
 dot = circle 0.05 # fc black # smash
 
 grid :: Backend' b
-     => GridStyle -> SGrid a -> Diagram b R2
+     => GridStyle -> Grid C a -> Diagram b R2
 grid s g =
-    atVerticesP (const vertex) (map (\p -> (p, ())) . S.toList $ vall)
+    (placeGrid . fmap (const vertex) . nodeGrid $ g)
     <> stroke inner # linestyle (_line s)
     <> stroke outer # linestyle (_border s)
     <> frm
@@ -42,7 +51,6 @@ grid s g =
         Nothing                -> mempty
 
     (outer, inner) = irregularGridPaths g
-    (_, _, vall) = irregPathToVertices (inner, outer)
 
 outLine :: Backend' b => Double -> Path R2 -> Diagram b R2
 outLine f p = lwG 0 . stroke $ pin <> pout
@@ -74,42 +82,24 @@ gridDashing = bgdashingG dashes dashoffset white'
 -- reversePath on the immediate result does not work.
 --
 -- `inner` consists of the individual inner segments.
-irregularGridPaths :: SGrid a -> (Path R2, Path R2)
-irregularGridPaths (Grid _ m) = (toPath' (map rev outer), toPath inner)
+irregularGridPaths :: Grid C a -> (Path R2, Path R2)
+irregularGridPaths m = (toPath' (map revEdge outer), toPath inner)
   where
     (outer, inner) = edges (M.keysSet m) (`M.member` m)
     toPath  es = mconcat . map (conn . ends) $ es
-    toPath' es = case loops (map ends es) of
-        Just ls   -> mconcat . map (pathFromLoopVertices  . map p2i) $ ls
+    toPath' es = case loops (map ends' es) of
+        Just ls   -> mconcat . map (pathFromLoopVertices . map toPoint) $ ls
         Nothing   -> mempty
     pathFromLoopVertices = pathFromLocTrail
                          . mapLoc (wrapLoop . closeLine)
                          . fromVertices
-    conn (v, w) = p2i v ~~ p2i w
-    ends (E' v R) = (v, v ^+^ (1,0))
-    ends (E' v L) = (v, v ^+^ (-1,0))
-    ends (E' v U) = (v, v ^+^ (0,1))
-    ends (E' v D) = (v, v ^+^ (0,-1))
-    rev (E' v R) = E' (v ^+^ (1,0))  L
-    rev (E' v L) = E' (v ^+^ (-1,0)) R
-    rev (E' v U) = E' (v ^+^ (0,1))  D
-    rev (E' v D) = E' (v ^+^ (0,-1)) U
-
+    conn (v, w) = toPoint v ~~ toPoint w
 
 irregPathToVertices :: (Path R2, Path R2) -> (S.Set P2, S.Set P2, S.Set P2)
 irregPathToVertices (pouter, pinner) = (outer, inner S.\\ outer, inner `S.union` outer)
   where
     outer = S.fromList . mconcat . pathVertices $ pouter
     inner = S.fromList . mconcat . pathVertices $ pinner
-
--- | In a square grid, use the first argument to draw things at the centres
---   of cells given by coordinates.
-atCentres :: (Transformable a, Monoid a, V a ~ R2) =>
-             (t -> a) -> [(Coord, t)] -> a
-atCentres dc = translate (r2 (1/2, 1/2)) . atVertices dc
-
-atCentres' :: (Transformable a, V a ~ R2) => SGrid a -> [a]
-atCentres' = translate (r2 (1/2, 1/2)) . atVertices'
 
 onGrid :: (Transformable a, Monoid a, V a ~ R2) =>
           Double -> Double -> (t -> a) -> [(Coord, t)] -> a
@@ -118,29 +108,15 @@ onGrid dx dy f = mconcat . map g
     g (p, c) = f c # translate (r2coord p)
     r2coord (x, y) = r2 (dx * fromIntegral x, dy * fromIntegral y)
 
--- | In a square grid, use the first argument to draw things
---   at the given points..
-atVerticesP :: (Transformable a, Monoid a, V a ~ R2) =>
-              (t -> a) -> [(P2, t)] -> a
-atVerticesP dc = mconcat . map (\ (p, c) -> dc c # translate (p .-. origin))
+placeGrid :: (ToPoint k, HasOrigin a, Transformable a, Monoid a, V a ~ R2)
+          => Grid k a -> a
+placeGrid = M.foldMapWithKey (moveTo . toPoint)
 
--- | In a square grid, use the first argument to draw things
---   at the grid vertices given by coordinates.
-atVertices :: (Transformable a, Monoid a, V a ~ R2) =>
-              (t -> a) -> [(Coord, t)] -> a
-atVertices = onGrid 1 1
-
-atVertices' :: (Transformable a, V a ~ R2) => SGrid a -> [a]
-atVertices' g = [ (g ! c) # translatep c | c <- cells g ]
-
-edge :: Edge -> Path R2
-edge (E c d) = rule d # translate (r2i c)
+edge :: (ToPoint k) => Edge k -> Path R2
+edge (E c d) = rule d # translate (toPoint c .-. origin)
   where
-    rule V = vrule 1.0 # alignB
-    rule H = hrule 1.0 # alignL
-
-dualEdge :: Edge -> Path R2
-dualEdge = translate (r2 (1/2, 1/2)) . edge
+    rule Vert = vrule 1.0 # alignB
+    rule Horiz = hrule 1.0 # alignL
 
 edgeStyle :: (HasStyle a, V a ~ R2) => a -> a
 edgeStyle = lineCap LineCapSquare . lwG edgewidth
@@ -148,38 +124,32 @@ edgeStyle = lineCap LineCapSquare . lwG edgewidth
 thinEdgeStyle :: (HasStyle a, V a ~ R2) => a -> a
 thinEdgeStyle = lineCap LineCapSquare . lwG onepix
 
-drawEdges :: Backend' b => [Edge] -> Diagram b R2
+drawEdges :: (ToPoint k, Backend' b) => [Edge k] -> Diagram b R2
 drawEdges = edgeStyle . stroke . mconcat . map edge
 
-drawThinEdges :: Backend' b => [Edge] -> Diagram b R2
+drawThinEdges :: (ToPoint k, Backend' b) => [Edge k] -> Diagram b R2
 drawThinEdges = thinEdgeStyle . stroke . mconcat . map edge
 
-drawDualEdges :: Backend' b => [Edge] -> Diagram b R2
-drawDualEdges = edgeStyle . stroke . mconcat . map dualEdge
-
-drawThinDualEdges :: Backend' b => [Edge] -> Diagram b R2
-drawThinDualEdges = thinEdgeStyle . stroke . mconcat . map dualEdge
-
 drawAreas :: (Backend' b, Eq a) =>
-                  SGrid a -> Diagram b R2
+             Grid C a -> Diagram b R2
 drawAreas = drawEdges . borders
 
 fillBG :: Backend' b => Colour Double -> Diagram b R2
 fillBG c = square 1 # lwG onepix # fc c # lc c
 
 shadeGrid :: Backend' b =>
-              SGrid (Maybe (Colour Double)) -> Diagram b R2
-shadeGrid = mconcat . atCentres' . fmap (maybe mempty fillBG)
+             Grid C (Maybe (Colour Double)) -> Diagram b R2
+shadeGrid = placeGrid . fmap fillBG . clues
 
 drawShade :: Backend' b =>
-                  SGrid Bool -> Diagram b R2
+             Grid C Bool -> Diagram b R2
 drawShade = shadeGrid . fmap f
   where
     f True  = Just gray
     f False = Nothing
 
 drawAreasGray :: Backend' b =>
-                    SGrid Char -> Diagram b R2
+                 Grid C Char -> Diagram b R2
 drawAreasGray = drawAreas <> shadeGrid . fmap cols
   where
     cols c | isUpper c  = Just (blend 0.1 black white)
@@ -194,27 +164,3 @@ distrib base dir f xs =
         zipWith (\i d -> translate (fromIntegral i *^ dir') d) [(0 :: Int)..] xs
   where
     dir' = f *^ r2i dir
-
-outsideGen :: (Transformable c, Monoid c, V c ~ R2) =>
-              (OutsideClue [c] -> R2) -> Double -> [OutsideClue [c]] -> c
-outsideGen tobase f ocs = mconcat . map placeOC $ ocs
-  where
-    placeOC o = distrib (tobase o) (ocDir o) f (ocValue o)
-
-outsideCells :: (Transformable c, Monoid c, V c ~ R2) =>
-                Double -> [OutsideClue [c]] -> c
-outsideCells = outsideGen base
-  where
-    base (OClue (bx, by) (dx, dy) _)
-        | dx /= 0   = r2 (fromIntegral bx - 1, fromIntegral by - 1/2)
-        | dy /= 0   = r2 (fromIntegral bx - 1/2, fromIntegral by)
-        | otherwise = error "invalid outside clue"
-
-outsideVertices :: (Transformable c, Monoid c, V c ~ R2) =>
-                   Double -> [OutsideClue [c]] -> c
-outsideVertices = outsideGen base
-  where
-    base (OClue (bx, by) (dx, dy) _)
-        | dx /= 0   = r2 (fromIntegral bx, fromIntegral by)
-        | dy /= 0   = r2 (fromIntegral bx, fromIntegral by)
-        | otherwise = error "invalid outside clue"

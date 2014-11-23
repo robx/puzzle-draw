@@ -1,22 +1,84 @@
-{-# LANGUAGE TypeFamilies, FlexibleContexts #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE ConstraintKinds #-}
 
 -- | Grid shapes.
-module Data.Puzzles.GridShape where
+module Data.Puzzles.GridShape
+    (
+      Coord
+    , Size
+    , Square(..)
+    , Dir(..)
+    , Edge(..)
+    , Dir'(..)
+    , Edge'(..)
+    , Dual2D(..)
+    , Key
+    , Dual'
+    , C(..)
+    , N(..)
+    , FromCoord(..)
+    , ToCoord(..)
+
+    , edge
+    , edge'
+    , edgeBetween
+    , edgeBetween'
+    , orient
+    , ends'
+    , revEdge
+    , edges
+    , edgesM
+    , ends
+    , unorient
+    , dualE
+    , vertexNeighbours
+    , edgeNeighbours
+    ) where
 
 import Data.Foldable (Foldable)
 import qualified Data.Foldable as F
 import Data.List (partition)
 import qualified Data.Map as Map
-import Data.VectorSpace ((^+^), (^-^))
-import Control.Arrow ((***))
+import Data.AffineSpace
 
--- | The geometry of a grid.
-class Show (Cell a) => GridShape a where
-    type Cell     a :: *
-    type Vertex   a :: *
+type Coord = (Int, Int)
 
-    vertexNeighbours :: a -> Cell a -> [Cell a]
-    edgeNeighbours :: a -> Cell a -> [Cell a]
+class FromCoord a where
+    fromCoord :: Coord -> a
+
+class ToCoord a where
+    toCoord :: a -> Coord
+
+data C = C !Int !Int
+    deriving (Show, Eq, Ord)
+
+instance FromCoord C where
+    fromCoord = uncurry C
+
+instance ToCoord C where
+    toCoord (C x y) = (x, y)
+
+instance AffineSpace C where
+    type Diff C = (Int, Int)
+
+    (C x y) .-. (C x' y') = (x - x', y - y')
+    (C x y) .+^ (x',y') = C (x + x') (y + y')
+
+data N = N !Int !Int
+    deriving (Show, Eq, Ord)
+
+instance FromCoord N where
+    fromCoord = uncurry N
+
+instance ToCoord N where
+    toCoord (N x y) = (x, y)
+
+instance AffineSpace N where
+    type Diff N = (Int, Int)
+
+    (N x y) .-. (N x' y') = (x - x', y - y')
+    (N x y) .+^ (x',y') = N (x + x') (y + y')
 
 -- | A standard square grid, with cells and vertices
 --   indexed by pairs of integers in mathematical coordinates.
@@ -25,101 +87,126 @@ class Show (Cell a) => GridShape a where
 data Square = Square
     deriving (Show, Eq)
 
-squareNeighbours :: [(Int, Int)] -> Square -> Cell Square -> [Cell Square]
-squareNeighbours deltas Square c = map (c ^+^) deltas
+squareNeighbours :: [(Int,Int)] -> C -> [C]
+squareNeighbours deltas c = map (c .+^) deltas
 
-instance GridShape Square where
-    type Cell Square     = (Int, Int)
-    type Vertex Square   = (Int, Int)
+vertexNeighbours :: C -> [C]
+vertexNeighbours = squareNeighbours [ (dx, dy)
+                                    | dx <- [-1..1], dy <- [-1..1]
+                                    , dx /= 0 || dy /= 0
+                                    ]
 
-    vertexNeighbours = squareNeighbours [ (dx, dy)
-                                        | dx <- [-1..1], dy <- [-1..1]
-                                        , dx /= 0 || dy /= 0
-                                        ]
-    edgeNeighbours = squareNeighbours [ (dx, dy)
-                                      | dx <- [-1..1], dy <- [-1..1]
-                                      , dx /= 0 || dy /= 0
-                                      , dx == 0 || dy == 0
-                                      ]
+edgeNeighbours :: C -> [C]
+edgeNeighbours = squareNeighbours [ (1, 0), (-1,0), (0,1), (0,-1) ]
 
 -- | Edge direction in a square grid, vertical or horizontal.
-data Dir = V | H
+data Dir = Vert | Horiz
     deriving (Eq, Ord, Show)
 
 -- | An edge in a square grid, going up or right from the given cell
 --   centre.
-data Edge = E (Cell Square) Dir
+data Edge a = E a Dir
     deriving (Show, Eq, Ord)
 
-type Coord = Cell Square
 type Size = (Int, Int)
 
 -- | Oriented edge direction in a square grid.
 data Dir' = U | D | L | R
     deriving (Eq, Ord, Show)
 
+toDir' :: (Int, Int) -> Dir'
+toDir' ( 1, 0) = R
+toDir' ( 0, 1) = U
+toDir' (-1, 0) = L
+toDir' ( 0,-1) = D
+toDir' _       = error "non-primitive vector"
+
 -- | An oriented edge in a square grid.
---   @a@ should be @Cell Square@ or @Vertex Square@.
 data Edge' a = E' a Dir'
     deriving (Eq, Ord, Show)
 
--- | The edge between two neighbouring cells, with the first cell
---   on the left.
-orientedEdge :: Cell Square -> Cell Square -> Edge' (Vertex Square)
-orientedEdge (x,y) (x',y')
-    | x' == x && y' == y+1  = E' (x,y+1) R
-    | x' == x && y' == y-1  = E' (x+1,y) L
-    | x' == x+1 && y' == y  = E' (x+1,y+1) D
-    | x' == x-1 && y' == y  = E' (x,y) U
-    | otherwise             = error $ "not neighbours: " ++
-                                      show (x,y) ++ " " ++  show (x',y')
+edge' :: (AffineSpace a, Diff a ~ (Int, Int)) => a -> a -> Edge' a
+edge' p q = E' p (toDir' (q .-. p))
 
-dualEdge :: Cell Square -> Cell Square -> Edge
-dualEdge p q = case q ^-^ p of
-    (1, 0)  -> E p H
-    (-1,0)  -> E q H
-    (0, 1)  -> E p V
-    (0,-1)  -> E q V
-    _       -> error "non-neighbouring cells"
+edge :: (AffineSpace a, Diff a ~ (Int, Int)) => a -> a -> Edge a
+edge p q = unorient $ edge' p q
 
-forgetOrientation :: Edge' (Cell Square) -> Edge
-forgetOrientation (E' x U) = E x V
-forgetOrientation (E' x R) = E x H
-forgetOrientation (E' x D) = E (x ^-^ (0,1)) V
-forgetOrientation (E' x L) = E (x ^-^ (1,0)) H
+class Dual2D a where
+    type Dual a :: *
 
-unorientedEdge :: Cell Square -> Cell Square -> Edge
-unorientedEdge p q = forgetOrientation $ orientedEdge p q
+    dualE' :: Edge' a -> Edge' (Dual a)
+
+dualE :: Dual' a => Edge a -> Edge (Dual a)
+dualE = unorient . dualE' . orient
+
+type Key k = (AffineSpace k, Diff k ~ (Int, Int), Ord k, FromCoord k)
+type Dual' k = (Key k, Dual2D k, Key (Dual k), Dual2D (Dual k),
+                Dual (Dual k) ~ k)
+
+instance Dual2D N where
+    type Dual N = C
+
+    dualE' (E' (N x y) R) = E' (C x (y-1)) U
+    dualE' (E' (N x y) U) = E' (C x y) L
+    dualE' (E' (N x y) L) = E' (C (x-1) y) D
+    dualE' (E' (N x y) D) = E' (C (x-1) (y-1)) R
+
+instance Dual2D C where
+    type Dual C = N
+
+    dualE' (E' (C x y) R) = E' (N (x+1) y) U
+    dualE' (E' (C x y) U) = E' (N (x+1) (y+1)) L
+    dualE' (E' (C x y) L) = E' (N x (y+1)) D
+    dualE' (E' (C x y) D) = E' (N x y) R
+
+
+ends :: (AffineSpace a, Diff a ~ (Int, Int)) => Edge a -> (a, a)
+ends (E x Vert) = (x, x .+^ (0, 1))
+ends (E x Horiz) = (x, x .+^ (1, 0))
+
+ends' :: (AffineSpace a, Diff a ~ (Int, Int)) => Edge' a -> (a, a)
+ends' (E' x U) = (x, x .+^ (0, 1))
+ends' (E' x R) = (x, x .+^ (1, 0))
+ends' (E' x D) = (x, x .+^ (0, -1))
+ends' (E' x L) = (x, x .+^ (-1, 0))
+
+revEdge :: (AffineSpace a, Diff a ~ (Int, Int)) => Edge' a -> Edge' a
+revEdge = uncurry edge' . swap . ends'
+  where
+    swap (x, y) = (y, x)
+
+unorient :: (AffineSpace a, Diff a ~ (Int, Int)) => Edge' a -> Edge a
+unorient (E' x U) = E x Vert
+unorient (E' x R) = E x Horiz
+unorient (E' x D) = E (x .-^ (0,1)) Vert
+unorient (E' x L) = E (x .-^ (1,0)) Horiz
+
+orient :: Edge a -> Edge' a
+orient (E x Vert)  = E' x U
+orient (E x Horiz) = E' x R
+
+edgeBetween' :: Dual' k => k -> k -> Edge' (Dual k)
+edgeBetween' p q = dualE' (edge' p q)
+
+edgeBetween :: Dual' k => k -> k -> Edge (Dual k)
+edgeBetween p q = unorient $ edgeBetween' p q
 
 -- | @edges@ computes the outer and inner edges of a set of cells.
 --   The set is given via fold and membership predicate, the result
 --   is a pair @(outer, inner)@ of lists of edges, where the outer
 --   edges are oriented such that the outside is to the left.
-edgesPair :: Foldable f =>
-             f (Cell Square) -> (Cell Square -> Bool) ->
-             ([(Cell Square, Cell Square)],
-              [(Cell Square, Cell Square)])
-edgesPair cs isc = F.foldr f ([], []) cs
+edges :: (Dual' k, Foldable f) =>
+         f k -> (k -> Bool) ->
+         ([Edge' (Dual k)], [Edge (Dual k)])
+edges cs isc = F.foldr f ([], []) cs
   where
     f c (outer, inner) = (newout ++ outer, newin ++ inner)
       where
-        nbrs = [ c ^+^ d | d <- [(-1,0), (0,1), (1,0), (0,-1)] ]
+        nbrs = [ c .+^ d | d <- [(-1,0), (0,1), (1,0), (0,-1)] ]
         (ni, no) = partition isc nbrs
-        newout = map ((,) c) no
-        newin = map (sortPair . (,) c) . filter (c >=) $ ni
-        sortPair (x, y) = if x < y then (x, y) else (y, x)
+        newout = [ edgeBetween' q c | q <- no ]
+        newin  = [ edgeBetween q c | q <- ni, c >= q ]
 
-edgesPairM :: Map.Map (Cell Square) a ->
-              ([(Cell Square, Cell Square)],
-               [(Cell Square, Cell Square)])
-edgesPairM m = edgesPair (Map.keysSet m) (`Map.member` m)
-
--- | @edges@ computes the outer and inner edges of a set of cells.
---   The set is given via fold and membership predicate, the result
---   is a pair @(outer, inner)@ of lists of edges, where the outer
---   edges are oriented such that the outside is to the left.
-edges :: Foldable f =>
-           f (Cell Square) -> (Cell Square -> Bool) ->
-           ([Edge' (Vertex Square)], [Edge' (Vertex Square)])
-edges cs isc = map (uncurry orientedEdge) *** map (uncurry orientedEdge)
-             $ edgesPair cs isc
+edgesM :: Dual' k
+       => Map.Map k a -> ([Edge' (Dual k)], [Edge (Dual k)])
+edgesM m = edges (Map.keysSet m) (`Map.member` m)

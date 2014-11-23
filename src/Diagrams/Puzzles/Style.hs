@@ -6,6 +6,7 @@ module Diagrams.Puzzles.Style
 
     , gDefault
     , gDashed
+    , gDashedThick
     , gPlain
     , gPlainDashed
     , gSlither
@@ -37,11 +38,13 @@ data GridStyle = GridStyle
     , _vertex  :: VertexStyle
     }
 
-gDefault, gSlither, gDashed, gPlain, gPlainDashed :: GridStyle
+gDefault, gSlither, gDashed, gDashedThick, gPlain, gPlainDashed :: GridStyle
 gDefault = GridStyle LineThin LineThin
                      (Just (FrameStyle framewidthfactor black)) VertexNone
 gSlither = GridStyle LineNone LineNone Nothing VertexDot
 gDashed  = GridStyle LineDashed LineThin
                      (Just (FrameStyle framewidthfactor black)) VertexNone
+gDashedThick  = GridStyle LineDashed LineThick
+                          (Just (FrameStyle framewidthfactor black)) VertexNone
 gPlain   = GridStyle LineThin LineThin Nothing VertexNone
 gPlainDashed = GridStyle LineDashed LineDashed Nothing VertexNone
