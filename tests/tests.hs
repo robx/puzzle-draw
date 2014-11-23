@@ -15,6 +15,7 @@ import qualified Data.Puzzles.Grid as Grid
 import Data.Puzzles.Pyramid (PyramidSol(..))
 import Data.Puzzles.Grid (multiOutsideClues, OutsideClues(..))
 import Data.Puzzles.GridShape
+import Data.Puzzles.Util
 
 import Diagrams.Puzzles.PuzzleGrids
 import Diagrams.Prelude
@@ -199,8 +200,23 @@ testEdges = do
                 ((1,3),(1,2)), ((2,3),(2,2)), ((3,1),(2,1)), ((3,2),(2,2))]
     expinner' = map (uncurry dualEdge) expinner
 
+testLoops :: Assertion
+testLoops = loops es @=? Just loopsexp
+  -- rotations of the loops would be fine
+  where
+    es = [((0,0),(0,1)), ((0,1),(0,2)), ((0,2),(0,3)), ((0,3),(1,3)),
+          ((1,3),(2,3)), ((2,3),(3,3)), ((3,3),(3,2)), ((3,2),(3,1)),
+          ((3,1),(3,0)), ((3,0),(2,0)), ((2,0),(1,0)), ((1,0),(0,0)),
+          ((1,1),(2,1)), ((2,1),(2,2)), ((2,2),(1,2)), ((1,2),(1,1))]
+    loopsexp =
+        [ [(0,0), (0,1), (0,2), (0,3), (1,3), (2,3), (3,3), (3,2), (3,1),
+           (3,0), (2,0), (1,0), (0,0)]
+        , [(1,1), (2,1), (2,2), (1,2), (1,1)]
+        ]
+
 dataTests :: TestTree
 dataTests = testGroup "Generic tests for the Data modules"
     [ testCase "multiOutsideClues" testMultiOutsideClues
     , testCase "edges" testEdges
+    , testCase "loops" testLoops
     ]
