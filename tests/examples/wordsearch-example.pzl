@@ -1,0 +1,20 @@
+type: wordsearch
+puzzle:
+  grid: |
+    TTEM
+    M..T
+    E..A
+    ATEE
+  words: [AIM, EAT, IN, MAN, TIME]
+solution:
+  grid: |
+    TTEM
+    MIAT
+    ENMA
+    ATEE
+  words:
+  - 2 2 0 2
+  - 3 0 3 2
+  - 1 2 1 1
+  - 3 3 1 1
+  - 0 3 3 0

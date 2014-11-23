@@ -1,0 +1,16 @@
+type: meanderingnumbers
+source: http://maybepuzzles.wordpress.com/2014/03/26/puzzle-19-count-numbers/
+puzzle: |
+  aaabbb
+  aaacbb
+  addccc
+  ddeccf
+  ddeeff
+  ddeeff
+solution: |
+  347541
+  256132
+  178256
+  565341
+  414152
+  323243

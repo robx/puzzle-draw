@@ -1,0 +1,15 @@
+type: primeplace
+source: http://maybepuzzles.wordpress.com/2014/04/20/puzzle-24-prime-place/
+puzzle: |2
+   //.
+  // //
+  /   /
+  ./ /\
+   ./.
+solution: |2
+   124
+  11 32
+  2   3
+  43 12
+   434
+

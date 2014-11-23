@@ -1,0 +1,10 @@
+type: fillomino
+puzzle: |
+  1.2
+  2.1
+  ...
+solution: |
+  122
+  231
+  233
+

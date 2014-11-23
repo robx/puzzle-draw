@@ -1,0 +1,13 @@
+type: wordloop
+puzzle:
+  grid: |
+    ....
+    ...E
+    N...
+    ....
+  words: [AN, AUNT, TINT, WET, WIN]
+solution: |
+  AN.T
+  U.IE
+  NN.W
+  T...

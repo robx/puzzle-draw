@@ -1,0 +1,23 @@
+type: tapa
+puzzle:
+  grid: |
+    ......
+    .a..b.
+    ......
+    ......
+    ..c...
+    ......
+    .....d
+  clues:
+    a: [3, 3]
+    b: [1, 2, 2]
+    c: [1, 1, 1, 1]
+    d: [1]
+solution: |
+  X-XXX-
+  XaX-bX
+  X-XX-X
+  XX-XXX
+  X-c-X-
+  XX-XX-
+  -XXX-d

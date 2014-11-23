@@ -1,0 +1,19 @@
+type: compass
+puzzle:
+  grid: |
+    .....
+    .a.b.
+    .....
+    .c.d.
+    .....
+  clues:
+    a: 2 1 . 2
+    b: . 4 2 .
+    c: . 3 4 .
+    d: . . 1 .
+solution: |
+  aabbb
+  aaabb
+  ccccb
+  cdccb
+  cdddd

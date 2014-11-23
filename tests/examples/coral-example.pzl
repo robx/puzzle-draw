@@ -1,0 +1,12 @@
+type: coral
+source: http://wiki.logic-masters.de/index.php?title=Koralle
+puzzle:
+  left: [[1,2],[1,2],[1,2],[4],[1,1]]
+  top:  [[1,1],[4],[2],[3],[2,2]]
+solution: |
+  XX..X
+  .X.XX
+  XX.X.
+  .XXXX
+  ..X.X
+

@@ -1,0 +1,17 @@
+type: bahnhof
+source: http://wiki.logic-masters.de/index.php?title=Bahnhöfe/de
+puzzle: |
+  ........
+  .1..+...
+  ........
+  ......3.
+  ..+2.4..
+  ........
+solution: |
+  ┌┐┌┐┌──┐
+  │││└┼─┐│
+  ││└┐└┐││
+  │└┐└┐│││
+  │┌┼─┘│││
+  └┘└──┘└┘
+
