@@ -32,9 +32,10 @@ draw :: Backend' b =>
 draw (p, ms) = fmap (bg white) . d
   where
     fixup = alignPixel . border borderwidth
-    d DrawPuzzle   = Just (fixup p)
+    d DrawPuzzle   = fixup <$> Just p
     d DrawSolution = fixup <$> ms
-    d DrawExample  = ms >>= \s -> return $ fixup p ||| strutX 2.0 ||| fixup s
+    d DrawExample  = sideBySide <$> d DrawPuzzle <*> d DrawSolution
+    sideBySide x y = x ||| strutX 2.0 ||| y
 
 data Unit = Pixels | Points
 
