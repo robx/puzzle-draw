@@ -8,15 +8,9 @@ module Data.Puzzles.Compose (
     PuzzleHandler,
     handle,
     -- * Handlers
-    drawPuzzle,
-    drawPuzzleSol,
     drawPuzzleMaybeSol,
-    drawPuzzle',
-    drawSolution',
-    drawExample'
   ) where
 
-import Data.Maybe
 import Diagrams.Prelude
 import Data.Yaml (Parser, Value)
 import Data.Traversable (traverse)
@@ -71,21 +65,6 @@ handle f Labyrinth            = f R.labyrinth           D.labyrinth
 handle f Bahnhof              = f R.bahnhof             D.bahnhof
 handle f Cave                 = f R.cave                D.cave
 
--- | Handler that parses a puzzle from a YAML value, and renders.
-drawPuzzle :: PuzzleHandler b (Value -> Parser (Diagram b R2))
-drawPuzzle (pp, _) (dp, _) p = do
-    p' <- pp p
-    return $ dp p'
-
--- | Handler that parses puzzle and solution from a pair of corresponding
---   YAML values, and renders both individually.
-drawPuzzleSol :: PuzzleHandler b ((Value, Value)
-                 -> Parser (Diagram b R2, Diagram b R2))
-drawPuzzleSol (pp, ps) (dp, ds) (p, s) = do
-    p' <- pp p
-    s' <- ps s
-    return (dp p', ds (p', s'))
-
 -- | Handler that parses puzzle and an optional solution from a pair of
 --   corresponding YAML values, and renders both individually, optionally
 --   for the solution.
@@ -98,26 +77,3 @@ drawPuzzleMaybeSol (pp, ps) (dp, ds) (p, s) = do
                          Just s'' -> Just (p', s'')
     return (dp p', ds <$> mps)
 
--- | Variant of 'drawPuzzle' that accepts a pair of puzzle YAML value and
---   optional solution YAML value.
-drawPuzzle' :: PuzzleHandler b ((Value, Maybe Value) -> Parser (Diagram b R2))
-drawPuzzle' (pp, _) (dp, _) (p, _) = do
-    p' <- pp p
-    return $ dp p'
-
--- | Handler that accepts a pair of puzzle YAML value and optional solution
---   YAML value, and renders the solution, failing if the solution is not
---   provided.
-drawSolution' :: PuzzleHandler b ((Value, Maybe Value) -> Parser (Diagram b R2))
-drawSolution' (pp, ps) (_, ds) (p, ms) = do
-    p' <- pp p
-    s' <- maybe (fail "no solution provided") ps ms
-    return $ ds (p', s')
-
--- | Like 'drawSolution'', but renders puzzle and solution in example layout.
-drawExample' :: Backend' b =>
-                PuzzleHandler b ((Value, Maybe Value) -> Parser (Diagram b R2))
-drawExample' (pp, ps) (dp, ds) (p, ms) = do
-    p' <- pp p
-    s' <- maybe (fail "no solution provided") ps ms
-    return . fromJust $ draw (dp p', Just $ ds (p', s')) DrawExample
