@@ -34,9 +34,11 @@ library
                        Data.Puzzles.Sudoku
                        Data.Puzzles.Compose
                        Data.Puzzles.PuzzleTypes
+                       Data.Puzzles.Code
                        Text.Puzzles.Util
                        Text.Puzzles.Puzzle
                        Text.Puzzles.PuzzleTypes
+                       Text.Puzzles.Code
                        Diagrams.Puzzles.Style
                        Diagrams.Puzzles.Grid
                        Diagrams.Puzzles.Lib
@@ -46,6 +48,7 @@ library
                        Diagrams.Puzzles.PuzzleGrids
                        Diagrams.Puzzles.PuzzleTypes
                        Diagrams.Puzzles.Draw
+                       Diagrams.Puzzles.Code
                        Diagrams.Puzzles.CmdLine
   -- For access to the font files in the data directory.
   other-modules:       Paths_puzzle_draw
@@ -105,3 +108,19 @@ test-suite test
                        bytestring >= 0.10,
                        puzzle-draw
   ghc-options:         -Wall
+
+-- This should depend on the executable `drawpuzzle`
+-- and not the library.
+test-suite compare
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      tests
+  main-is:             compare.hs
+  build-depends:       base >= 4.7 && < 5,
+                       tasty >= 0.8,
+                       tasty-golden >= 2.0,
+                       filepath >= 1.3,
+                       process >= 1.2,
+                       puzzle-draw
+  ghc-options:         -Wall
+  if flag(cairo)
+    cpp-options: "-DCAIRO"

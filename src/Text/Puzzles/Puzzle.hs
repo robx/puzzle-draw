@@ -7,14 +7,15 @@ import Control.Applicative
 
 import Data.Puzzles.PuzzleTypes
 
-data TypedPuzzle = TP (Maybe String) Value (Maybe Value)
+data TypedPuzzle = TP (Maybe String) Value (Maybe Value) (Maybe Value)
     deriving Show
 
 instance FromJSON TypedPuzzle where
     parseJSON (Object v) = TP <$>
                            v .:? "type" <*>
                            v .:  "puzzle" <*>
-                           v .:? "solution"
+                           v .:? "solution" <*>
+                           v .:? "code"
     parseJSON _          = empty
 
 -- | A pair of parsers for a puzzle type.

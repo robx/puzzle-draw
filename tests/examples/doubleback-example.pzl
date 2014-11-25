@@ -1,0 +1,16 @@
+type: doubleback
+puzzle: |
+  aaaabc
+  aaaabc
+  ddeebc
+  ddffbc
+  ggffhc
+  ggiihc
+solution: |
+  ┌──┐┌┐
+  │┌┐│││
+  │││└┘│
+  ││└┐┌┘
+  │└┐│└┐
+  └─┘└─┘
+

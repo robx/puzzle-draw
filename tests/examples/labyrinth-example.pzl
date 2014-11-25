@@ -1,0 +1,17 @@
+type: magiclabyrinth
+puzzle: |
+  o-o-o-o-o
+  |1 . . .|
+  o o-o-o o
+  |.|. . .|
+  o o o-o-o
+  |.|. . .|
+  o o-o-o o
+  |3 .|. 2|
+  o-o-o o-o
+solution: |
+  132-
+  -231
+  21-3
+  3-12
+

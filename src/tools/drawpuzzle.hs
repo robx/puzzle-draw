@@ -7,14 +7,17 @@ import Diagrams.Prelude hiding (value, option, (<>), Result)
 import Diagrams.Puzzles.CmdLine
 
 import Text.Puzzles.Puzzle
+import Text.Puzzles.Code
 import Data.Puzzles.Compose
 import Data.Puzzles.PuzzleTypes (typeNames)
 import Diagrams.Puzzles.Draw
+import Diagrams.Puzzles.Code
 
 import Options.Applicative
 import Control.Monad
 import Data.Maybe
 import Data.List (intercalate, sort)
+import Data.Traversable (sequenceA)
 
 import System.FilePath
 import System.Environment (getProgName)
@@ -36,6 +39,7 @@ data PuzzleOpts = PuzzleOpts
     , _puzzle   :: Bool
     , _solution :: Bool
     , _example  :: Bool
+    , _code     :: Bool
     , _input    :: FilePath
     }
 
@@ -59,6 +63,9 @@ puzzleOpts = PuzzleOpts
     <*> switch
             (long "example" <> short 'e'
              <> help "Render example (to base.ext)")
+    <*> switch
+            (long "code" <> short 'c'
+             <> help "Add solution code markers")
     <*> argument str
             (metavar "INPUT"
              <> help "Puzzle file in .pzl format")
@@ -129,17 +136,29 @@ maybeSkipSolution ocs (Just v) =
     hasSol DrawExample  = True
     hasSol DrawPuzzle   = False
 
+maybeSkipCode :: PuzzleOpts -> Maybe Y.Value -> Maybe Y.Value
+maybeSkipCode opts = if _code opts then id else const Nothing
+
+parseAndDrawCode :: Y.Value -> IO (CodeDiagrams (Diagram B R2))
+parseAndDrawCode v = case parsed of
+    Left  e -> exitErr $ "solution code parse failure: " ++ e
+    Right c -> return $ drawCode c
+  where
+    parsed = Y.parseEither parseCode v
+
 main :: IO ()
 main = do
     opts <- defaultOpts puzzleOpts
     ocs <- checkOutput opts
     checkFormat (_format opts)
     mp <- readPuzzle (_input opts)
-    TP mt pv msv <- case mp of Left  e -> exitErr $
-                                          "parse failure: " ++ show e
-                               Right p -> return p
+    TP mt pv msv mc <- case mp of Left  e -> exitErr $
+                                             "parse failure: " ++ show e
+                                  Right p -> return p
     let msv' = maybeSkipSolution ocs msv
+        mc'  = maybeSkipCode opts mc
     t <- checkType $ _type opts `mplus` mt
     let ps = Y.parseEither (handle drawPuzzleMaybeSol t) (pv, msv')
-    case ps of Right ps' -> mapM_ (renderPuzzle opts (draw ps')) ocs
+    mcode <- sequenceA $ parseAndDrawCode <$> mc'
+    case ps of Right ps' -> mapM_ (renderPuzzle opts (draw mcode ps')) ocs
                Left    e -> exitErr $ "parse failure: " ++ e

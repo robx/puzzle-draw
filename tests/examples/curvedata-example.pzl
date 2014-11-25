@@ -1,0 +1,26 @@
+type: curvedata
+puzzle:
+  grid: |
+    ....
+    ..a.
+    .b..
+    ....
+  clues:
+    a: |
+      o-o o
+        | |
+        o-o
+    b: |
+      o-o-o
+          |
+      o-o o
+      |   |
+      o-o-o
+solution: |
+  o-o-o o
+      | |
+  o-o o-o
+  |      
+  o o-o-o
+  |     |
+  o-o-o-o

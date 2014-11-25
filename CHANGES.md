@@ -1,3 +1,4 @@
+* Add solution code markers.
 * Nurikabe no longer has a spaced format; accepts multidigit
   clues via replacements, as does Fillomino
 

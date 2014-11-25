@@ -1,0 +1,21 @@
+type: latintapa
+puzzle:
+  grid: |
+    .....a
+    b.....
+    ...c..
+    ..d...
+    ......
+    ......
+  clues:
+    a: [WOW]
+    b: [OR, DR]
+    c: [DW, WDRO]
+    d: [OW, WORD]
+solution: |
+  DRO-W-
+  --DROW
+  ROW--D
+  O--WDR
+  WDRO--
+  -W-DRO

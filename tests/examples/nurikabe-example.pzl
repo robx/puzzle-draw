@@ -1,0 +1,13 @@
+type: nurikabe
+puzzle: |
+  ..3..
+  ...2.
+  .....
+  .1...
+  ..3..
+solution: |
+  x-3xx
+  x-x2x
+  xxx-x
+  x1xxx
+  xx3--
