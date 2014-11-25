@@ -4,7 +4,6 @@ import Test.Tasty.HUnit
 import Data.Yaml
 import Data.List (sort)
 import qualified Data.Map as Map
-import Control.DeepSeq
 
 import Text.Puzzles.Puzzle
 import Data.Puzzles.Elements (Thermometer, MasyuPearl(..))
@@ -17,12 +16,6 @@ import Data.Puzzles.Grid
 import Data.Puzzles.GridShape
 import Data.Puzzles.Util
 
-import Diagrams.Puzzles.PuzzleGrids
-import Diagrams.Prelude
-import Diagrams.Backend.SVG
-
-import Text.Blaze.Svg.Renderer.Text (renderSvg)
-
 import Data
 import Util
 
@@ -31,7 +24,7 @@ main = defaultMain tests
 
 tests :: TestTree
 tests = testGroup "Tests"
-    [ parseUtilTests, parseTests, parseDataTests, renderTests, dataTests ]
+    [ parseUtilTests, parseTests, parseDataTests, dataTests ]
 
 testParsePzl, testParseSol, testNonparsePzl, testNonparseSol ::
     (Show a, Show b) => String -> ParsePuzzle a b -> Value -> TestTree
@@ -149,23 +142,6 @@ parseDataTests = testGroup "Parsing tests (full puzzles, result checks)"
                                             , [(4, 0), (4, 1), (3, 2)] ]
     , testCase "parse multioutsideclues" $ test_multioutside
     , testCase "parse edge grid" $ test_edge_grid
-    ]
-
--- this used to cause a rendering crash, though it's
--- caught by parsing by now
-testBreakSlalom :: Bool
-testBreakSlalom =
-    case parseMaybe (snd slalom) slalom_sol_broken of
-        Nothing -> True
-        Just s  -> let d = drawSlalomDiags s
-                       svg = renderDia SVG (SVGOptions (Width 100) Nothing) d
-                       svgt = renderSvg svg
-                   in (show svgt) `deepseq` True
-
-renderTests :: TestTree
-renderTests = testGroup "Rendering tests"
-    [ testCase "don't break rendering invalid slalom solution"
-         $ testBreakSlalom @? "just testing against errors"
     ]
 
 sorteq :: (Show a, Ord a) => [a] -> [a] -> Assertion
