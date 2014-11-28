@@ -49,7 +49,7 @@ solstyle = lc (blend 0.8 black white) . lwG (3 * onepix)
 geradeweg :: Backend' b => RenderPuzzle b (Grid C (Maybe Int)) (Loop C)
 geradeweg = (,)
     drawIntGrid
-    (drawIntClues . fst
+    (placeGrid . fmap drawInt . clues . fst
      <> solstyle . drawEdges . snd
      <> grid gDefault . fst)
 
@@ -83,8 +83,10 @@ fillominoLoop = (,)
 masyu :: Backend' b =>
          RenderPuzzle b (Grid C (Maybe MasyuPearl)) (Loop C)
 masyu = (,)
-    drawMasyuGrid
-    (solstyle . drawEdges . snd <> drawMasyuGrid . fst)
+    p
+    (solstyle . drawEdges . snd <> p . fst)
+  where
+    p = placeGrid . fmap pearl . clues <> grid gDefault
 
 nurikabe :: Backend' b =>
             RenderPuzzle b (Grid C (Maybe Int)) ShadedGrid
@@ -103,8 +105,8 @@ latintapa = (,)
 sudoku :: Backend' b =>
           RenderPuzzle b (Grid C (Maybe Int)) (Grid C (Maybe Int))
 sudoku = (,)
-    (drawIntClues <> sudokugrid)
-    ((drawIntClues <> sudokugrid) . snd)
+    (placeGrid . fmap drawInt . clues <> sudokugrid)
+    ((placeGrid . fmap drawInt . clues <> sudokugrid) . snd)
 
 thermosudoku :: Backend' b =>
                 RenderPuzzle b (Grid C (Maybe Int), [Thermometer]) (Grid C (Maybe Int))
@@ -138,7 +140,7 @@ liarslither :: Backend' b =>
                RenderPuzzle b (Grid C (Maybe Int)) (Loop N, Grid C Bool)
 liarslither = (,)
     drawSlitherGrid
-    (solstyle . drawCrosses . snd . snd
+    (placeGrid . fmap (solstyle . drawCross) . snd . snd
      <> drawSlitherGrid . fst
      <> solstyle . drawEdges . fst . snd)
 
@@ -162,13 +164,13 @@ tightfitskyscrapers = (,)
 
 wordgrid :: Backend' b =>
             Grid C (Maybe Char) -> [String] -> Diagram b R2
-wordgrid g ws = stackWords ws `besidesR` drawClueGrid g
+wordgrid g ws = stackWords ws `besidesR` drawCharGrid g
 
 wordloop :: Backend' b =>
             RenderPuzzle b (Grid C (Maybe Char), [String]) (Grid C (Maybe Char))
 wordloop = (,)
     (uncurry wordgrid)
-    (drawClueGrid . snd)
+    (drawCharGrid . snd)
 
 wordsearch :: Backend' b =>
               RenderPuzzle b (Grid C (Maybe Char), [String])
@@ -176,7 +178,7 @@ wordsearch :: Backend' b =>
 wordsearch = (,)
     (uncurry wordgrid) 
     (solstyle . drawMarkedWords . snd . snd
-     <> drawClueGrid . fst . snd)
+     <> drawCharGrid . fst . snd)
 
 curvedata :: Backend' b =>
              RenderPuzzle b (Grid C (Maybe [Edge N])) [Edge C]
@@ -197,14 +199,18 @@ doubleback = (,)
 slalom :: Backend' b =>
           RenderPuzzle b (Grid N (Maybe Int)) (Grid C SlalomDiag)
 slalom = (,)
-    drawSlalomGrid
-    (drawSlalomGrid . fst <> solstyle . drawSlalomDiags . snd)
+    p
+    (p . fst <> placeGrid . fmap (solstyle . drawSlalomDiag) . snd)
+  where
+    p = placeGrid . fmap drawSlalomClue . clues
+        <> grid gDefault . cellGrid
 
 compass :: Backend' b =>
            RenderPuzzle b (Grid C (Maybe CompassC)) AreaGrid
 compass = (,)
-    drawCompassGrid
-    (drawCompassClues . fst <> (grid gDefault <> drawAreasGray) . snd)
+    (placeGrid . fmap drawCompassClue . clues <> grid gDefault)
+    (placeGrid . fmap drawCompassClue . clues . fst
+     <> (grid gDefault <> drawAreasGray) . snd)
 
 boxof2or3 :: Backend' b =>
              RenderPuzzle b (Grid N MasyuPearl, [Edge N]) ()

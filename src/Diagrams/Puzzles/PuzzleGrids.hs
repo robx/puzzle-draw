@@ -3,7 +3,20 @@
 {-# LANGUAGE TypeFamilies              #-}
 {-# LANGUAGE ConstraintKinds           #-}
 
-module Diagrams.Puzzles.PuzzleGrids where
+module Diagrams.Puzzles.PuzzleGrids
+    (
+      drawIntGrid
+    , drawCharGrid
+    , outsideIntGrid
+    , drawSlitherGrid
+    , drawTightGrid
+    , sudokugrid
+    , drawWordsClues
+    , drawOutsideGrid
+    , drawMultiOutsideGrid
+    , drawOutsideGridN
+    , drawMultiOutsideGridN
+    ) where
 
 import Diagrams.Prelude
 
@@ -18,40 +31,19 @@ import Data.Puzzles.Sudoku
 import Diagrams.Puzzles.Lib
 import Diagrams.Puzzles.Style
 import Diagrams.Puzzles.Grid
-import Diagrams.Puzzles.Widths
 import Diagrams.Puzzles.Elements
 
-drawClueGrid :: Backend' b =>
+drawCharGrid :: Backend' b =>
                 Grid C (Maybe Char) -> Diagram b R2
-drawClueGrid = placeGrid . fmap drawChar . clues <> grid gDefault
-
-drawIntClues :: Backend' b =>
-                Grid C (Maybe Int) -> Diagram b R2
-drawIntClues = placeGrid . fmap drawInt . clues
-
-drawInts :: Backend' b =>
-            Grid C Int -> Diagram b R2
-drawInts = placeGrid . fmap drawInt
+drawCharGrid = placeGrid . fmap drawChar . clues <> grid gDefault
 
 drawIntGrid :: Backend' b =>
                Grid C (Maybe Int) -> Diagram b R2
-drawIntGrid = drawIntClues <> grid gDefault
+drawIntGrid = placeGrid . fmap drawInt . clues  <> grid gDefault
 
 drawSlitherGrid :: Backend' b =>
                    Grid C (Maybe Int) -> Diagram b R2
 drawSlitherGrid = placeGrid . fmap  drawInt . clues <> grid gSlither
-
-drawMasyuGrid :: Backend' b =>
-                 Grid C (Maybe MasyuPearl) -> Diagram b R2
-drawMasyuGrid = placeGrid . fmap pearl . clues <> grid gDefault
-
-drawCompassClues :: Backend' b =>
-                    Grid C CompassClue -> Diagram b R2
-drawCompassClues = placeGrid . fmap drawCompassClue . clues
-
-drawCompassGrid :: Backend' b =>
-                   Grid C CompassClue -> Diagram b R2
-drawCompassGrid = drawCompassClues <> grid gDefault
 
 sudokugrid :: Backend' b =>
               Grid C a -> Diagram b R2
@@ -68,25 +60,6 @@ drawTightGrid d g = (placeGrid . fmap (drawTight d) $ g)
                     <> phantom' (stroke $ p2i (-1,-1) ~~ p2i (sx + 1, sy + 1))
     where (sx, sy) = size (Map.mapKeys toCoord g)
 
-drawSlalomGrid :: Backend' b =>
-                  Grid N (Maybe Int) -> Diagram b R2
-drawSlalomGrid = placeGrid . fmap drawSlalomClue . clues
-               <> grid gDefault . cellGrid
-
-drawSlalomDiags :: Backend' b =>
-                   Grid C SlalomDiag -> Diagram b R2
-drawSlalomDiags = placeGrid . fmap diag
-    where diag SlalomForward  = stroke ur # lwG edgewidth
-          diag SlalomBackward = stroke dr # lwG edgewidth
-
-drawCrosses ::  Backend' b =>
-                 Grid C Bool -> Diagram b R2
-drawCrosses = placeGrid . fmap (if' drawCross mempty)
-  where
-    if' a b x = if x then a else b
-
---placeOutside ::
---                => OutsideClues C [String] -> Diagram b R2
 placeMultiOutside :: (Ord k, FromCoord k, ToPoint k,
                       HasOrigin a, Transformable a, V a ~ R2, Monoid a)
                   => OutsideClues k [a] -> a

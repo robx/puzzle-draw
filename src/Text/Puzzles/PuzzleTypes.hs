@@ -7,7 +7,7 @@ module Text.Puzzles.PuzzleTypes (
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, meanderingnumbers, tapa, japanesesums, coral,
     maximallengths, primeplace, labyrinth, bahnhof, blackoutDominos,
-    angleloop, anglers, cave, skyscrapers, summon, baca,
+    angleLoop, anglers, cave, skyscrapers, summon, baca,
     buchstabensalat, doppelblock, sudokuDoppelblock, dominos,
     skyscrapersStars, numberlink, slithermulti, dominoPills,
     fillominoLoop
@@ -176,8 +176,8 @@ blackoutDominos = (,)
     (\v -> (,) <$> parseFrom ["values"] parseIrregGrid v
                <*> parseFrom ["dominos"] parseIrregGrid v)
 
-angleloop :: ParsePuzzle (Grid N (Clue Int)) VertexLoop
-angleloop = (parseClueGrid, parseCoordLoop)
+angleLoop :: ParsePuzzle (Grid N (Clue Int)) VertexLoop
+angleLoop = (parseClueGrid, parseCoordLoop)
 
 anglers :: ParsePuzzle (OutsideClues C (Maybe Int), Grid C (Maybe Fish)) [Edge C]
 anglers = ( parseOutsideGridMap blankToMaybe blankToMaybe'

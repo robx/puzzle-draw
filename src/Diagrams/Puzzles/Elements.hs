@@ -48,8 +48,9 @@ cross :: Path R2
 cross = ur <> dr
 
 -- | Draw a cross.
-drawCross :: Backend' b => Diagram b R2
-drawCross = stroke cross # scale 0.8 # lwG edgewidth
+drawCross :: Backend' b => Bool -> Diagram b R2
+drawCross True = stroke cross # scale 0.8 # lwG edgewidth
+drawCross False = mempty
 
 -- | Draw a Compass clue.
 drawCompassClue :: Backend' b =>
@@ -110,6 +111,13 @@ drawSlalomClue :: (Show a, Backend' b) =>
                   a -> Diagram b R2
 drawSlalomClue x = text' (show x) # scale 0.75
                    <> circle 0.4 # fc white # lwG onepix
+
+drawSlalomDiag :: Backend' b
+               => SlalomDiag -> Diagram b R2
+drawSlalomDiag d = stroke (v d) # lwG edgewidth
+  where
+    v SlalomForward = ur
+    v SlalomBackward = dr
 
 -- | Draw text. Shouldn't be more than two characters or so to fit a cell.
 drawText :: Backend' b => String -> QDiagram b R2 Any
