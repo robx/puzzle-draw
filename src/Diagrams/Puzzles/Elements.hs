@@ -13,7 +13,7 @@ module Diagrams.Puzzles.Elements where
 import Diagrams.Prelude
 import Diagrams.TwoD.Offset
 
-import Data.Puzzles.Elements
+import Data.Puzzles.Elements hiding (Loop)
 import Data.Puzzles.GridShape hiding (edge)
 
 import Diagrams.Puzzles.Lib
@@ -191,3 +191,13 @@ drawSlalomDiag d = stroke (v d) # lwG edgewidth
   where
     v SlalomForward = ur
     v SlalomBackward = dr
+
+drawAnglePoly :: Backend' b =>
+                 Int -> Diagram b R2
+drawAnglePoly 3 = stroke (triangle 0.3) # fc black
+drawAnglePoly 4 = stroke (square 0.25) # fc gray
+drawAnglePoly 5 = stroke (pentagon 0.2) # fc white
+drawAnglePoly _ = error "expected 3..5"
+
+vertexLoop :: VertexLoop -> Located (Trail' Loop R2)
+vertexLoop = mapLoc closeLine . fromVertices . map toPoint

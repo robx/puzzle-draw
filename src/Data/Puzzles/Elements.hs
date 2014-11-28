@@ -1,7 +1,7 @@
 -- | Types for a variety of puzzle elements.
 module Data.Puzzles.Elements where
 
-import Data.Puzzles.GridShape (Coord, Edge, C)
+import Data.Puzzles.GridShape (Coord, Edge, C, N)
 
 type Clue a = Maybe a
 
@@ -35,6 +35,10 @@ data MarkedWord = MW { mwstart :: Coord, mwend :: Coord }
 
 -- | A loop of edges.
 type Loop a = [Edge a]
+
+-- | A loop consisting of straight segments of arbitrary
+-- angles between vertices.
+type VertexLoop = [N]
 
 -- | A thermometer, as a list of coordinates from bulb to end.
 --   There should be at least two entries, entries should be distinct,

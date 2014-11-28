@@ -17,7 +17,8 @@ import qualified Data.HashMap.Strict as HMap
 import Data.Traversable (traverse, sequenceA, mapM, Traversable)
 import Data.Foldable (Foldable, foldMap)
 import Data.Monoid ((<>))
-import Data.List (intersect)
+import Data.List (intersect, sortBy)
+import Data.Ord (comparing)
 
 import Data.Char (digitToInt, isAlpha, isDigit)
 import Text.Read (readMaybe)
@@ -613,3 +614,9 @@ instance FromChar PrimeDiag where
 instance FromChar Crossing where
     parseChar '+' = pure Crossing
     parseChar _   = fail "expected '+'"
+
+parseCoordLoop :: Value -> Parser VertexLoop
+parseCoordLoop v = sortCoords <$> parseClueGrid v
+  where
+    sortCoords :: Grid N (Maybe Char) -> VertexLoop
+    sortCoords = map fst . sortBy (comparing snd) . Map.toList . clues

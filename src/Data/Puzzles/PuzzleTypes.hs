@@ -43,6 +43,7 @@ data PuzzleType = LITS
                 | Labyrinth
                 | Bahnhof
                 | Cave
+                | AngleLoop
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -77,6 +78,7 @@ typeNames = [ (LITS, "lits")
             , (Labyrinth, "magiclabyrinth")
             , (Bahnhof, "bahnhof")
             , (Cave, "cave")
+            , (AngleLoop, "angleloop")
             ]
 
 -- | Look up a puzzle type by name.

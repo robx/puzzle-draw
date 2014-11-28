@@ -11,7 +11,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, meanderingnumbers, tapa, japanesesums,
     coral, maximallengths, primeplace, labyrinth, bahnhof,
-    cave
+    cave, angleLoop
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -271,3 +271,16 @@ cave = (,)
     gDashDash = GridStyle LineDashed LineDashed Nothing VertexNone
     gStyle = GridStyle LineDashed LineNone (Just $ FrameStyle 8 gray)
                        VertexNone
+
+angleLoop ::
+    Backend' b =>
+    RenderPuzzle b (Grid N (Clue Int)) VertexLoop
+angleLoop = (,)
+    (cs <> gr)
+    (cs . fst
+     <> lineJoin LineJoinBevel . solstyle . strokeLocLoop . vertexLoop . snd
+     <> gr . fst)
+  where
+    cs = placeGrid . fmap drawAnglePoly . clues
+    gr = grid gPlain . cellGrid
+
