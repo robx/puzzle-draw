@@ -36,11 +36,13 @@ draw mc (p, ms) = fmap (bg white) . d
     fixup = alignPixel . border borderwidth
     addCode x = case mc of
         Nothing                        -> x
-        Just (CodeDiagrams cleft ctop) -> 
-            (x =!= strutY 0.5 =!= ctop)
-             |!| strutX 0.5 |!| cleft
+        Just (CodeDiagrams cleft ctop) ->
+            (x =!= top ctop) |!| lft cleft
     (=!=) = beside unitY
     (|!|) = beside (negateV unitX)
+    top c = if isEmpty c then mempty else strutY 0.5 =!= c
+    lft c = if isEmpty c then mempty else strutX 0.5 |!| c
+    isEmpty c = diameter unitX c == 0
     d DrawPuzzle   = fixup . addCode <$> Just p
     d DrawSolution = fixup . addCode <$> ms
     d DrawExample  = sideBySide <$> d DrawPuzzle <*> d DrawSolution
