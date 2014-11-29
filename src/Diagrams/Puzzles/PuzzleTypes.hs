@@ -304,7 +304,7 @@ blackoutDominos = (,)
       <> drawAreas . snd
       <> shadeGrid . fmap cols . snd) . snd)
   where
-    p (g, ds) = (placeGrid . fmap drawInt . clues <> grid gDashed $ g)
+    p (g, ds) = (placeGrid . fmap drawInt . clues <> grid gDashedThick $ g)
                 `aboveT`
                 drawDominos ds
     cols 'X' = Just gray

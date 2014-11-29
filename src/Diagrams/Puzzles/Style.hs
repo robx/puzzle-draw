@@ -45,6 +45,6 @@ gSlither = GridStyle LineNone LineNone Nothing VertexDot
 gDashed  = GridStyle LineDashed LineThin
                      (Just (FrameStyle framewidthfactor black)) VertexNone
 gDashedThick  = GridStyle LineDashed LineThick
-                          (Just (FrameStyle framewidthfactor black)) VertexNone
+                          Nothing VertexNone
 gPlain   = GridStyle LineThin LineThin Nothing VertexNone
 gPlainDashed = GridStyle LineDashed LineDashed Nothing VertexNone
