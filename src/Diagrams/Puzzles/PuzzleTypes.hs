@@ -246,7 +246,7 @@ japanesesums = (,)
     (outsideIntGrid . fst <> n)
     (outsideIntGrid . fst . fst <> japcells . snd)
   where
-    n (ocs, ds) = placeNote (outsideSize ocs) (drawText ds # scale 0.8)
+    n (ocs, ds) = placeNoteTL (outsideSize ocs) (drawText ds # scale 0.8)
     japcells = placeGrid . fmap japcell
     japcell (Left Black) = fillBG gray
     japcell (Right x) = drawInt x
