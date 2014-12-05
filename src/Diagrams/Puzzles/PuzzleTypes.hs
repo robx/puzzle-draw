@@ -393,7 +393,7 @@ baca = (,)
     (inside <> outside)
     (outside . fst <> placeGrid . fmap drawVal . snd <> inside . fst)
   where
-    inside (g,_,_) = placeGrid . fmap drawChar . clues $ g
+    inside (g,_,_) = placeGrid . fmap (fc gray . drawChar) . clues $ g
     outside (g,tl,br) =
               grid gDefault g
               <> (placeGrid . fmap (scale 0.8 . drawInt)
