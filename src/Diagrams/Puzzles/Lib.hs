@@ -94,10 +94,12 @@ fit f a = scale (f / m) a
 -- into a square of size @1@.
 text' :: Backend' b => String -> Diagram b R2
 text' t = stroke (textSVG' $ TextOpts t fnt INSIDE_H KERN False 1 1)
-          # lwG 0 # fc black # scale 0.8
+          # lwG 0 # rfc black # scale 0.8
   where
     fnt = outlMap . unsafePerformIO . getDataFileName
         $ "data/fonts/gen-light.svg"
+    rfc :: (HasStyle a, V a ~ R2) => Colour Double -> a -> a
+    rfc = recommendFillColor
 
 -- text' t = text t # fontSize 0.8 # font "Helvetica" # translate (r2 (0.04, -0.07))
 --          <> phantom' (textrect t)
