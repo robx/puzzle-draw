@@ -227,19 +227,19 @@ miniloop = (drawThinEdges (map unorient outer) <> grid gSlither g)
     (outer, _) = edgesM g
 
 dominoBG :: Colour Double
-dominoBG = blend 0.2 black white
+dominoBG = blend 0.3 black white
 
 drawDomino :: Backend' b => (Int, Int) -> Diagram b R2
 drawDomino (x, y) =
-    (drawInt x ||| strutX 0.3 ||| drawInt y) # centerXY # scale 0.6
-    <> stroke (rect 0.7 0.4) # lwG 0 # fc dominoBG
+    (drawInt x # smash ||| strutX 0.65 ||| drawInt y # smash) # centerXY # scale 0.6
+    <> stroke (rect 0.8 0.5) # lwG 0 # fc dominoBG
 
 newtype DominoC = DominoC C
   deriving (Ord, Eq)
 
 instance ToPoint DominoC where
-    toPoint (DominoC (C x y)) = p2 ((0.8 * fromIntegral x),
-                                    (0.5 * fromIntegral y))
+    toPoint (DominoC (C x y)) = p2 ((1.0 * fromIntegral x),
+                                    (0.7 * fromIntegral y))
 
 drawDominos :: Backend' b => DigitRange -> Diagram b R2
 drawDominos = centerXY . placeGrid
@@ -247,10 +247,10 @@ drawDominos = centerXY . placeGrid
 
 drawPill :: Backend' b => Int -> Diagram b R2
 drawPill x = drawInt x # scale 0.6
-             <> stroke (roundedRect 0.7 0.4 0.2) # lwG 0 # fc dominoBG
+             <> stroke (roundedRect 0.8 0.5 0.2) # lwG 0 # fc dominoBG
 
 drawPills :: Backend' b => DigitRange -> Diagram b R2
-drawPills (DigitRange a b) = centerXY . onGrid 0.8 0.5 drawPill $ placed
+drawPills (DigitRange a b) = centerXY . onGrid 1.0 0.7 drawPill $ placed
   where
     n = b - a + 1
     root = head [ x | x <- [n,n-1..], x*x <= n ]
