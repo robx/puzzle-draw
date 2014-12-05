@@ -320,7 +320,7 @@ angleLoop = (,)
      <> gr . fst)
   where
     cs = placeGrid . fmap drawAnglePoly . clues
-    gr = grid gPlain . cellGrid
+    gr = grid gPlainDashed . cellGrid
 
 anglers ::
     Backend' b =>
