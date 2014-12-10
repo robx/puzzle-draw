@@ -397,9 +397,9 @@ baca = (,)
     inside (g,_,_) = placeGrid . fmap (fc gray . drawChar) . clues $ g
     outside (g,tl,br) =
               grid gDefault g
-              <> (placeGrid . fmap (scale 0.8 . drawInt)
+              <> (placeGrid . fmap drawInt
                   . multiOutsideClues $ tl)
-              <> (placeGrid . fmap (scale 0.8 . drawChar) . clues
+              <> (placeGrid . fmap drawChar . clues
                   . outsideClues $ br)
     drawVal (Right c) = drawChar c
     drawVal (Left _) = fillBG gray
@@ -409,7 +409,7 @@ buchstabensalat ::
     RenderPuzzle b (OutsideClues C (Maybe Char), String) (Grid C (Maybe Char))
 buchstabensalat = (p <> n, p . fst <> placeGrid . fmap drawChar . clues . snd)
   where
-    p = (placeGrid . fmap (scale 0.8 . drawChar) . clues . outsideClues
+    p = (placeGrid . fmap drawChar . clues . outsideClues
          <> grid gDefault . outsideGrid) . fst
     n (ocs, ls) = placeNote (outsideSize ocs) (drawText ls # scale 0.8)
 
