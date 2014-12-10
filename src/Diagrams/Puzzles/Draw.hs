@@ -35,9 +35,9 @@ draw mc (p, ms) = fmap (bg white) . d
   where
     fixup = alignPixel . border borderwidth
     addCode x = case mc of
-        Nothing                        -> x
-        Just (CodeDiagrams cleft ctop) ->
-            (x =!= top ctop) |!| lft cleft
+        Nothing                              -> x
+        Just (CodeDiagrams cleft ctop cover) ->
+            ((cover <> x) =!= top ctop) |!| lft cleft
     (=!=) = beside unitY
     (|!|) = beside (negateV unitX)
     top c = if isEmpty c then mempty else strutY 0.5 =!= c
