@@ -378,7 +378,7 @@ summon ::
     RenderPuzzle b (AreaGrid, OutsideClues C (Maybe Int)) (Grid C (Maybe Int))
 summon = (,)
     p
-    (p . fst <> placeGrid . fmap drawInt . clues . snd)
+    (placeGrid . fmap drawInt . clues . snd <> p . fst)
   where
     p (g, oc) = grid gDefault g <> drawAreasGray g
                 <> (placeGrid . fmap (scale 0.7 . drawInt)
