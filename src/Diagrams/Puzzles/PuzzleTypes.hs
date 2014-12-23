@@ -381,8 +381,10 @@ summon = (,)
     (placeGrid . fmap drawInt . clues . snd <> p . fst)
   where
     p (g, oc) = grid gDefault g <> drawAreasGray g
-                <> (placeGrid . fmap (scale 0.7 . drawInt)
-                    . clues . outsideClues $ oc)
+                <> (placeGrid . clues . outsideClues
+                    . al . fmap (fmap (scale 0.7 . drawInt)) $ oc)
+    al :: Backend' b => OutsideClues k (Maybe (Diagram b R2)) -> OutsideClues k (Maybe (Diagram b R2))
+    al (OC l r b t) = OC l (map (fmap alignL) r) b t
 
 baca ::
     Backend' b =>
