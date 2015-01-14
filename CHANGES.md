@@ -1,4 +1,4 @@
-* New puzzle type: Angle Loop.
+* New puzzle types: Angle Loop, Shikaku.
 * Add solution code markers.
 * Nurikabe no longer has a spaced format; accepts multidigit
   clues via replacements, as does Fillomino

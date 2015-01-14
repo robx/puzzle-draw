@@ -11,7 +11,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, meanderingnumbers, tapa, japanesesums,
     coral, maximallengths, primeplace, labyrinth, bahnhof,
-    cave, angleLoop
+    cave, angleLoop, shikaku
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -284,3 +284,9 @@ angleLoop = (,)
     cs = placeGrid . fmap drawAnglePoly . clues
     gr = grid gPlain . cellGrid
 
+shikaku :: Backend' b => RenderPuzzle b (Grid C (Maybe Int)) AreaGrid
+shikaku = (,)
+    p
+    (drawAreas . snd <> p . fst)
+  where
+    p = placeGrid . fmap drawInt . clues <> grid gDashed

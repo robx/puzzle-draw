@@ -1,0 +1,11 @@
+type: shikaku
+puzzle: |
+  .4.2
+  ....
+  .22.
+  .3.3
+solution: |
+  aabb
+  aacd
+  eecd
+  fffd

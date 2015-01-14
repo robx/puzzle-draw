@@ -6,7 +6,8 @@ module Text.Puzzles.PuzzleTypes (
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, meanderingnumbers, tapa, japanesesums, coral,
-    maximallengths, primeplace, labyrinth, bahnhof, cave, angleLoop
+    maximallengths, primeplace, labyrinth, bahnhof, cave, angleLoop,
+    shikaku
   ) where
 
 import Control.Applicative
@@ -159,3 +160,5 @@ cave = (parseClueGrid, parseShadedGrid)
 angleLoop :: ParsePuzzle (Grid N (Clue Int)) VertexLoop
 angleLoop = (parseClueGrid, parseCoordLoop)
 
+shikaku :: ParsePuzzle (Grid C (Maybe Int)) AreaGrid
+shikaku = (parseExtClueGrid, parseGrid)
