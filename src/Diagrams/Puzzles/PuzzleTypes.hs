@@ -14,6 +14,8 @@ module Diagrams.Puzzles.PuzzleTypes (
     cave, angleLoop, shikaku, slovaksums
   ) where
 
+import qualified Data.Map as Map
+
 import Diagrams.Prelude hiding (Loop, coral)
 
 import Diagrams.Puzzles.Style
@@ -291,9 +293,11 @@ shikaku = (,)
   where
     p = placeGrid . fmap drawInt . clues <> grid gDashed
 
-slovaksums :: Backend' b => RenderPuzzle b (Grid C (Maybe SlovakClue)) (Grid C (Maybe Int))
+slovaksums :: Backend' b => RenderPuzzle b (Grid C (Maybe SlovakClue), String) (Grid C (Maybe Int))
 slovaksums = (,)
-    p
-    (placeGrid . fmap drawInt . clues . snd <> p . fst)
+    (p . fst <> n)
+    (placeGrid . fmap drawInt . clues . snd <> p . fst . fst)
   where
-    p = grid gPlain <> placeGrid . fmap drawSlovakClue . clues
+    n (g, ds) = placeNote (size' g) (drawText ds # scale 0.8)
+    p = grid gDefault <> placeGrid . fmap drawSlovakClue . clues
+    size' = size . Map.mapKeys toCoord

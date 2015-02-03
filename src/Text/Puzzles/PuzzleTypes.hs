@@ -163,5 +163,9 @@ angleLoop = (parseClueGrid, parseCoordLoop)
 shikaku :: ParsePuzzle (Grid C (Maybe Int)) AreaGrid
 shikaku = (parseExtClueGrid, parseGrid)
 
-slovaksums :: ParsePuzzle (Grid C (Maybe SlovakClue)) (Grid C (Maybe Int))
-slovaksums = ((fmap (fmap unPSlovakClue) . unRG <$>) . parseJSON, parseClueGrid)
+slovaksums :: ParsePuzzle (Grid C (Maybe SlovakClue), String) (Grid C (Maybe Int))
+slovaksums = (p, parseClueGrid)
+  where
+    p v@(Object o) = (,) <$> g v <*> o .: "digits"
+    p _ = empty
+    g = (fmap (fmap unPSlovakClue) . unRG <$>) . parseJSON
