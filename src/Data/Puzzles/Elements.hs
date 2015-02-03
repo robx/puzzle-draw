@@ -19,6 +19,8 @@ data CompassC = CC (Maybe Int) (Maybe Int) (Maybe Int) (Maybe Int)
 
 type CompassClue = Clue CompassC
 
+data SlovakClue = SlovakClue !Int !Int
+
 -- | A cell that is optionally bisected by a diagonal
 --   (up-right or down-right).
 data Tightfit a = Single a | UR a a | DR a a

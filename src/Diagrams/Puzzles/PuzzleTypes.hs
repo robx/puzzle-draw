@@ -11,7 +11,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, meanderingnumbers, tapa, japanesesums,
     coral, maximallengths, primeplace, labyrinth, bahnhof,
-    cave, angleLoop, shikaku
+    cave, angleLoop, shikaku, slovaksums
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -290,3 +290,10 @@ shikaku = (,)
     (drawAreas . snd <> p . fst)
   where
     p = placeGrid . fmap drawInt . clues <> grid gDashed
+
+slovaksums :: Backend' b => RenderPuzzle b (Grid C (Maybe SlovakClue)) (Grid C (Maybe Int))
+slovaksums = (,)
+    p
+    (placeGrid . fmap drawInt . clues . snd <> p . fst)
+  where
+    p = grid gPlain <> placeGrid . fmap drawSlovakClue . clues

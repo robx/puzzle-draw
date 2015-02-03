@@ -58,6 +58,14 @@ drawCompassClue (CC n e s w) = texts <> stroke cross # lwG onepix
                   [(0,f), (f,0), (0,-f), (-f,0)]
           f = 3/10
 
+drawSlovakClue :: Backend' b =>
+                  SlovakClue -> Diagram b R2
+drawSlovakClue (SlovakClue s c) =
+    centerY (drawInt s === strutY 0.1 === dots c) <> fillBG gray
+  where
+    dots n = centerX $ hcat' with {_sep = 0.04} (replicate n $ d)
+    d = circle 0.1 # lwG 0.02 # fc white
+
 -- | Draw a thermometer.
 thermo :: Backend' b => [P2] -> QDiagram b R2 Any
 thermo vs@(v:_) = (bulb `atop` line) # col

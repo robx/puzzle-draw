@@ -519,6 +519,15 @@ instance FromJSON PCompassC where
               comp _            = empty
     parseJSON _          = empty
 
+newtype PSlovakClue = PSlovakClue {unPSlovakClue :: SlovakClue}
+
+instance FromJSON PSlovakClue where
+    parseJSON (String t) = svk . map T.unpack . T.words $ t
+      where
+        svk [s, c] = PSlovakClue <$> (SlovakClue <$> parseString s <*> parseString c)
+        svk _      = fail "expect two integers"
+    parseJSON _ = fail "expect string of two integers"
+
 newtype RefGrid k a = RefGrid { unRG :: Grid k (Maybe a) }
 
 hashmaptomap :: (Eq a, Hashable a, Ord a) => HMap.HashMap a b -> Map.Map a b

@@ -7,7 +7,7 @@ module Text.Puzzles.PuzzleTypes (
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, meanderingnumbers, tapa, japanesesums, coral,
     maximallengths, primeplace, labyrinth, bahnhof, cave, angleLoop,
-    shikaku
+    shikaku, slovaksums
   ) where
 
 import Control.Applicative
@@ -162,3 +162,6 @@ angleLoop = (parseClueGrid, parseCoordLoop)
 
 shikaku :: ParsePuzzle (Grid C (Maybe Int)) AreaGrid
 shikaku = (parseExtClueGrid, parseGrid)
+
+slovaksums :: ParsePuzzle (Grid C (Maybe SlovakClue)) (Grid C (Maybe Int))
+slovaksums = ((fmap (fmap unPSlovakClue) . unRG <$>) . parseJSON, parseClueGrid)

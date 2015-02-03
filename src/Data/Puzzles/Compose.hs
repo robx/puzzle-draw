@@ -66,6 +66,7 @@ handle f Bahnhof              = f R.bahnhof             D.bahnhof
 handle f Cave                 = f R.cave                D.cave
 handle f AngleLoop            = f R.angleLoop           D.angleLoop
 handle f Shikaku              = f R.shikaku             D.shikaku
+handle f SlovakSums           = f R.slovaksums          D.slovaksums
 
 -- | Handler that parses puzzle and an optional solution from a pair of
 --   corresponding YAML values, and renders both individually, optionally
