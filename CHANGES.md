@@ -1,4 +1,17 @@
-* New puzzle types: Angle Loop, Shikaku, Slovak Sums.
+* New puzzle types:
+  - Angle Loop
+  - Shikaku
+  - Slovak Sums
+  - Dominos, Blackout Dominos, Domino Pills
+  - Multiple Fences
+  - Anglers
+  - Checkered Fillomino, Loop Fillomino
+  - Numberlink
+  - Skyscrapers Star Battle
+  - Summon
+  - Baca
+  - Buchstabensalat
+  - Doppelblock, Sudoku Doppelblock
 * Add solution code markers.
 * Nurikabe no longer has a spaced format; accepts multidigit
   clues via replacements, as does Fillomino
