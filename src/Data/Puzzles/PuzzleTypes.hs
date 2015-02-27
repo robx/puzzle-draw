@@ -42,10 +42,29 @@ data PuzzleType = LITS
                 | PrimePlace
                 | Labyrinth
                 | Bahnhof
-                | Cave
+                | BlackoutDominos
+                | TwilightTapa
+                | TapaCave
+                | DominoPillen
+                | SlitherLinkMulti
                 | AngleLoop
                 | Shikaku
                 | SlovakSums
+                | Anglers
+                | Dominos
+                | FillominoCheckered
+                | FillominoLoop
+                | Cave
+                | Numberlink
+                | Skyscrapers
+                | SkyscrapersStars
+                | SkyscrapersFrac
+                | TurningFences
+                | Summon
+                | Baca
+                | Buchstabensalat
+                | Doppelblock
+                | SudokuDoppelblock
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -79,10 +98,29 @@ typeNames = [ (LITS, "lits")
             , (PrimePlace, "primeplace")
             , (Labyrinth, "magiclabyrinth")
             , (Bahnhof, "bahnhof")
-            , (Cave, "cave")
+            , (BlackoutDominos, "blackout-dominos")
+            , (TwilightTapa, "twilight-tapa")
+            , (TapaCave, "tapa-cave")
+            , (DominoPillen, "domino-pillen")
+            , (SlitherLinkMulti, "slitherlink-multi")
             , (AngleLoop, "angleloop")
             , (Shikaku, "shikaku")
             , (SlovakSums, "slovaksums")
+            , (Anglers, "anglers")
+            , (Dominos, "dominos")
+            , (FillominoCheckered, "fillomino-checkered")
+            , (FillominoLoop, "fillomino-loop")
+            , (Cave, "cave")
+            , (Numberlink, "numberlink")
+            , (Skyscrapers, "skyscrapers")
+            , (SkyscrapersStars, "skyscrapers-doppelstern")
+            , (SkyscrapersFrac, "skyscrapers-fractional")
+            , (TurningFences, "turning-fences")
+            , (Summon, "summon")
+            , (Baca, "baca")
+            , (Buchstabensalat, "buchstabensalat")
+            , (Doppelblock, "doppelblock")
+            , (SudokuDoppelblock, "sudoku-doppelblock")
             ]
 
 -- | Look up a puzzle type by name.

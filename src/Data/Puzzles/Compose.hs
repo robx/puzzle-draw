@@ -63,10 +63,29 @@ handle f MaximalLengths       = f R.maximallengths      D.maximallengths
 handle f PrimePlace           = f R.primeplace          D.primeplace
 handle f Labyrinth            = f R.labyrinth           D.labyrinth
 handle f Bahnhof              = f R.bahnhof             D.bahnhof
-handle f Cave                 = f R.cave                D.cave
+handle f BlackoutDominos      = f R.blackoutDominos     D.blackoutDominos
+handle f TwilightTapa         = f R.tapa                D.tapa
+handle f TapaCave             = f R.tapa                D.tapa
+handle f DominoPillen         = f R.dominoPills         D.dominoPills
+handle f SlitherLinkMulti     = f R.slithermulti        D.slithermulti
 handle f AngleLoop            = f R.angleLoop           D.angleLoop
 handle f Shikaku              = f R.shikaku             D.shikaku
 handle f SlovakSums           = f R.slovaksums          D.slovaksums
+handle f Anglers              = f R.anglers             D.anglers
+handle f Dominos              = f R.dominos             D.dominos
+handle f FillominoCheckered   = f R.fillomino           D.fillominoCheckered
+handle f FillominoLoop        = f R.fillominoLoop       D.fillominoLoop
+handle f Cave                 = f R.cave                D.cave
+handle f Numberlink           = f R.numberlink          D.numberlink
+handle f Skyscrapers          = f R.skyscrapers         D.skyscrapers
+handle f SkyscrapersStars     = f R.skyscrapersStars    D.skyscrapersStars
+handle f SkyscrapersFrac      = f R.tightfitskyscrapers D.tightfitskyscrapers
+handle f TurningFences        = f R.slither             D.slither
+handle f Summon               = f R.summon              D.summon
+handle f Baca                 = f R.baca                D.baca
+handle f Buchstabensalat      = f R.buchstabensalat     D.buchstabensalat
+handle f Doppelblock          = f R.doppelblock         D.doppelblock
+handle f SudokuDoppelblock    = f R.sudokuDoppelblock   D.sudokuDoppelblock
 
 -- | Handler that parses puzzle and an optional solution from a pair of
 --   corresponding YAML values, and renders both individually, optionally
@@ -79,4 +98,3 @@ drawPuzzleMaybeSol (pp, ps) (dp, ds) (p, s) = do
     let mps = case s' of Nothing  -> Nothing
                          Just s'' -> Just (p', s'')
     return (dp p', ds <$> mps)
-

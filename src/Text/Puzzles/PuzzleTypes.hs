@@ -7,7 +7,11 @@ module Text.Puzzles.PuzzleTypes (
     curvedata, doubleback, slalom, compass, boxof2or3,
     afternoonskyscrapers, meanderingnumbers, tapa, japanesesums, coral,
     maximallengths, primeplace, labyrinth, bahnhof, cave, angleLoop,
-    shikaku, slovaksums
+    shikaku, slovaksums, blackoutDominos,
+    anglers, skyscrapers, summon, baca,
+    buchstabensalat, doppelblock, sudokuDoppelblock, dominos,
+    skyscrapersStars, numberlink, slithermulti, dominoPills,
+    fillominoLoop
   ) where
 
 import Control.Applicative
@@ -34,6 +38,12 @@ geradeweg = (parseClueGrid, parseEdges)
 fillomino :: ParsePuzzle (Grid C (Maybe Int)) (Grid C Int)
 fillomino = (parseExtClueGrid, parseExtGrid)
 
+fillominoLoop :: ParsePuzzle (Grid C (Maybe Int)) (Grid C Int, Loop C)
+fillominoLoop = (,)
+    parseClueGrid
+    (\v -> (,) <$> parseFrom ["grid"] parseExtGrid v
+               <*> parseFrom ["loop"] parseEdges v)
+
 masyu :: ParsePuzzle (Grid C (Maybe MasyuPearl)) (Loop C)
 masyu = (parseClueGrid, parseEdges)
 
@@ -59,6 +69,11 @@ kpyramid = (parseJSON, parseJSON)
 
 slither :: ParsePuzzle (Grid C (Clue Int)) (Loop N)
 slither = (parseClueGrid, parseEdges)
+
+slithermulti :: ParsePuzzle (Grid C (Clue Int), Int) [Edge N]
+slithermulti = (p, parseEdges)
+  where p v = (,) <$> parseFrom ["grid"] parseClueGrid v
+                  <*> parseFrom ["loops"] parseJSON v
 
 newtype LSol = LSol { unLSol :: (Loop N, Grid C Bool) }
 instance FromJSON LSol where
@@ -154,8 +169,13 @@ labyrinth = (parseCellEdges, parseClueGrid')
 bahnhof :: ParsePuzzle (Grid C (Maybe BahnhofClue)) [Edge C]
 bahnhof = (parseClueGrid, parseEdges)
 
-cave :: ParsePuzzle (Grid C (Maybe Int)) (Grid C Bool)
-cave = (parseClueGrid, parseShadedGrid)
+blackoutDominos :: ParsePuzzle (Grid C (Clue Int), DigitRange)
+                               (Grid C (Clue Int), AreaGrid)
+blackoutDominos = (,)
+    (\v -> (,) <$> parseFrom ["grid"] parseIrregGrid v
+               <*> parseFrom ["digits"] parseStringJSON v)
+    (\v -> (,) <$> parseFrom ["values"] parseIrregGrid v
+               <*> parseFrom ["dominos"] parseIrregGrid v)
 
 angleLoop :: ParsePuzzle (Grid N (Clue Int)) VertexLoop
 angleLoop = (parseClueGrid, parseCoordLoop)
@@ -169,3 +189,98 @@ slovaksums = (p, parseClueGrid)
     p v@(Object o) = (,) <$> g v <*> o .: "digits"
     p _ = empty
     g = (fmap (fmap unPSlovakClue) . unRG <$>) . parseJSON
+
+anglers :: ParsePuzzle (OutsideClues C (Maybe Int), Grid C (Maybe Fish)) [Edge C]
+anglers = ( parseOutsideGridMap blankToMaybe blankToMaybe'
+          , parseEdgesFull )
+
+cave :: ParsePuzzle (Grid C (Maybe Int)) (Grid C Bool)
+cave = (parseClueGrid, parseShadedGrid)
+
+parseOut :: FromJSON a =>
+            Value -> Parser (OutsideClues k (Maybe a))
+parseOut v = fmap (blankToMaybe' . unEither') <$> parseOutside v
+
+skyscrapers :: ParsePuzzle (OutsideClues C (Maybe Int)) (Grid C (Maybe Int))
+skyscrapers = (parseOut, parseClueGrid)
+
+skyscrapersStars :: ParsePuzzle (OutsideClues C (Maybe Int), Int)
+                                (Grid C (Either Int Star))
+skyscrapersStars = (p, parseGrid)
+  where
+    p v@(Object o) = (,) <$> parseOut v <*> o .: "stars"
+    p _            = empty
+
+summon :: ParsePuzzle (AreaGrid, OutsideClues C (Maybe Int)) (Grid C (Maybe Int))
+summon = ( \v -> (,) <$> parseFrom ["grid"] parseGrid v
+                     <*> parseFrom ["outside"] parseOut v
+         , parseClueGrid
+         )
+
+baca :: ParsePuzzle
+            (Grid C (Maybe Char), OutsideClues C [Int], OutsideClues C (Maybe Char))
+            (Grid C (Either Black Char))
+baca = ( \v -> (,,) <$> parseFrom ["grid"] parseClueGrid v
+                    <*> parseFrom ["outside"] parseTopLeft v
+                    <*> parseFrom ["outside"] parseBottomRight v
+       , parseGrid
+       )
+  where
+    parseTopLeft (Object v) = do
+        l <- reverse <$> v .: "left"
+        t <- v .: "top"
+        return $ OC (map reverse l) [] [] (map reverse t)
+    parseTopLeft _ = empty
+    parseBottomRight (Object v) = do
+        b <- v .: "bottom"
+        r <- reverse <$> v .: "right"
+        oc <- OC [] <$> parseLine r <*> parseLine b <*> pure []
+        return $ fmap blankToMaybe' oc
+    parseBottomRight _ = empty
+
+buchstabensalat :: ParsePuzzle (OutsideClues C (Maybe Char), String)
+                               (Grid C (Maybe Char))
+buchstabensalat =
+    ( p
+    , fmap (fmap blankToMaybe') . parseGrid
+    )
+  where
+    p v = (,)
+        <$> (fmap blankToMaybe <$> parseCharOutside v)
+        <*> parseFrom ["letters"] parseJSON v
+
+doppelblock :: ParsePuzzle (OutsideClues C (Maybe Int))
+                           (Grid C (Either Black Int))
+doppelblock =
+    ( \v -> fmap (blankToMaybe' . unEither') <$> parseOutside v
+    , parseGrid
+    )
+
+sudokuDoppelblock :: ParsePuzzle (AreaGrid, OutsideClues C (Maybe Int))
+                                 (Grid C (Either Black Int))
+sudokuDoppelblock =
+    ( \v -> (,) <$> parseFrom ["grid"] parseGrid v
+                <*> parseFrom ["outside"] parseOutInts v
+    , parseGrid
+    )
+  where
+    parseOutInts v = fmap (blankToMaybe' . unEither') <$> parseOutside v
+
+dominos :: ParsePuzzle (Grid C (Maybe Int), DigitRange) AreaGrid
+dominos = (p, parseGrid)
+  where
+    p v = (,) <$> parseFrom ["grid"] parseClueGrid v
+              <*> parseFrom ["digits"] parseStringJSON v
+
+dominoPills :: ParsePuzzle (Grid C (Maybe Int), DigitRange, DigitRange)
+                           AreaGrid
+dominoPills = (p, parseGrid)
+  where
+    p v = (,,) <$> parseFrom ["grid"] parseClueGrid v
+               <*> parseFrom ["digits"] parseStringJSON v
+               <*> parseFrom ["pills"] parseStringJSON v
+
+numberlink :: ParsePuzzle (Grid C (Maybe Int)) [Edge C]
+numberlink = (p, fmap collectLines . p)
+  where
+    p = fmap (fmap (blankToMaybe . unEither')) . parseExtGrid

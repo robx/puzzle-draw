@@ -101,6 +101,13 @@ irregPathToVertices (pouter, pinner) = (outer, inner S.\\ outer, inner `S.union`
     outer = S.fromList . mconcat . pathVertices $ pouter
     inner = S.fromList . mconcat . pathVertices $ pinner
 
+onGrid :: (Transformable a, Monoid a, V a ~ R2) =>
+          Double -> Double -> (t -> a) -> [(Coord, t)] -> a
+onGrid dx dy f = mconcat . map g
+  where
+    g (p, c) = f c # translate (r2coord p)
+    r2coord (x, y) = r2 (dx * fromIntegral x, dy * fromIntegral y)
+
 placeGrid :: (ToPoint k, HasOrigin a, Transformable a, Monoid a, V a ~ R2)
           => Grid k a -> a
 placeGrid = M.foldMapWithKey (moveTo . toPoint)

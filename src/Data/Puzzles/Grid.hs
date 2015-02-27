@@ -9,12 +9,17 @@ module Data.Puzzles.Grid
     , AreaGrid
     , ShadedGrid
     , size
+    , sizeGrid
     , clues
     , nodeGrid
     , cellGrid
 
+    , dominoGrid
+
     , borders
     , edgesGen
+    , colour
+    , collectLines
 
     , OutsideClues(..)
     , outsideSize
@@ -26,7 +31,10 @@ module Data.Puzzles.Grid
 import qualified Data.Map as Map
 import Data.AffineSpace
 import Data.VectorSpace
+import Control.Monad.State
+import Control.Applicative
 
+import Data.Puzzles.Elements
 import Data.Puzzles.GridShape
 
 type Grid k a = Map.Map k a
@@ -77,6 +85,46 @@ cellGrid m = Map.fromList
     cellUpRight :: N -> C
     cellUpRight = fromCoord . toCoord
 
+-- | Colour a graph.
+colourM :: (Ord k, Eq a) => (k -> [k]) -> Map.Map k a -> Map.Map k Int
+colourM nbrs m = fmap fromRight . execState colour' $ start
+  where
+    fromRight (Right r) = r
+    fromRight (Left _)  = error "expected Right"
+
+    start = fmap (const $ Left [1..]) m
+    colour' = mapM_ pickAndFill (Map.keys m)
+
+    -- choose a colour for the given node, and spread it to
+    -- equal neighbours, removing it from unequal neighbours
+    pickAndFill x = do
+        v <- (Map.! x) <$> get
+        case v of
+            Left (c:_) -> fill (m Map.! x) c x
+            Left _     -> error "empty set of candidates"
+            Right _    -> return ()
+
+    fill a c x = do
+        v <- (Map.! x) <$> get
+        case v of
+            Left _     -> if m Map.! x == a
+                    then do modify (Map.insert x (Right c))
+                            mapM_ (fill a c) (nbrs x)
+                    else modify (del x c)
+            Right _    -> return ()
+
+    -- remove the given colour from the list of candidates
+    del x c = Map.adjust f x
+      where
+        f (Left cs) = Left $ filter (/= c) cs
+        f (Right c') = Right c'
+
+colour :: Eq a => Grid C a -> Grid C Int
+colour m = colourM edgeNeighbours' m
+  where
+    edgeNeighbours' p = [ q | q <- edgeNeighbours p
+                            , q `Map.member` m ]
+
 -- | Clues along the outside of a square grid.
 -- Ordered such that coordinates increase.
 data OutsideClues k a = OC { left :: [a], right :: [a], bottom :: [a], top :: [a] }
@@ -126,6 +174,27 @@ multiOutsideClues = Map.mapKeys fromCoord
                   . oClues
   where
     distrib (OClue o d, xs) = zip [o ^+^ i *^ d | i <- [0..]] xs
+
+dualEdgesP :: Key k
+           => (a -> a -> Bool) -> Grid k a -> [Edge k]
+dualEdgesP p m = concatMap f (Map.keys m)
+  where
+    f c = [ edge c d | d <- map (c .+^) [(0,1), (1,0)]
+                     , d `Map.member` m && p (m Map.! c) (m Map.! d) ]
+
+collectLines :: (Key k, Eq a) => Grid k (Maybe a) -> [Edge k]
+collectLines = dualEdgesP eq
+  where
+    eq (Just x) (Just y) = x == y
+    eq _        _        = False
+
+dominoGrid :: DigitRange -> Grid C (Int, Int)
+dominoGrid (DigitRange x y) =
+    Map.mapKeys fromCoord . Map.fromList $
+        [ ((a, s - b), (b + x, a + x))
+        | a <- [0..s], b <- [0..s], b <= a ]
+  where
+    s = y - x
 
 size :: Grid Coord a -> Size
 size m = foldr (both max) (0, 0) (Map.keys m) ^+^ (1, 1)

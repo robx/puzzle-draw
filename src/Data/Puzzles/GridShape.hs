@@ -13,6 +13,7 @@ module Data.Puzzles.GridShape
     , Dir'(..)
     , Edge'(..)
     , Dual2D(..)
+    , Key
     , Dual'
     , C(..)
     , N(..)
@@ -32,6 +33,7 @@ module Data.Puzzles.GridShape
     , unorient
     , dualE
     , vertexNeighbours
+    , edgeNeighbours
     ) where
 
 import Data.Foldable (Foldable)
@@ -94,6 +96,9 @@ vertexNeighbours = squareNeighbours [ (dx, dy)
                                     , dx /= 0 || dy /= 0
                                     ]
 
+edgeNeighbours :: C -> [C]
+edgeNeighbours = squareNeighbours [ (1, 0), (-1,0), (0,1), (0,-1) ]
+
 -- | Edge direction in a square grid, vertical or horizontal.
 data Dir = Vert | Horiz
     deriving (Eq, Ord, Show)
@@ -134,8 +139,9 @@ class Dual2D a where
 dualE :: Dual' a => Edge a -> Edge (Dual a)
 dualE = unorient . dualE' . orient
 
-type Dual_ a = (AffineSpace a, Diff a ~ (Int, Int), Dual2D a, Ord a)
-type Dual' a = (Dual_ a, Dual_ (Dual a), Dual (Dual a) ~ a)
+type Key k = (AffineSpace k, Diff k ~ (Int, Int), Ord k, FromCoord k)
+type Dual' k = (Key k, Dual2D k, Key (Dual k), Dual2D (Dual k),
+                Dual (Dual k) ~ k)
 
 instance Dual2D N where
     type Dual N = C

@@ -1,7 +1,7 @@
 -- | Types for a variety of puzzle elements.
 module Data.Puzzles.Elements where
 
-import Data.Puzzles.GridShape (Coord, Edge, C, N)
+import Data.Puzzles.GridShape
 
 type Clue a = Maybe a
 
@@ -68,7 +68,11 @@ newtype TapaClue = TapaClue [Int]
 newtype PrimeDiag = PrimeDiag (Bool, Bool)
 
 data Black = Black
-
+data Fish = Fish
+data Star = Star
 data Crossing = Crossing
 
 type BahnhofClue = Either Int Crossing
+
+data DigitRange = DigitRange !Int !Int
+    deriving (Show, Eq)

@@ -58,24 +58,29 @@ spread v things = cat v . interleave (repeat (strut vgap)) $ things
           gap' = (magnitude v - sum ds) / fromIntegral (length things + 1)
           vgap = (gap' / magnitude v) *^ v
 
-dmid ::  (Enveloped a, V a ~ R2) => a -> Double
-dmid a = (dtop + dbot) / 2 - dbot
+dmid ::  (Enveloped a, V a ~ R2) => R2 -> a -> Double
+dmid u a = (dtop + dbot) / 2 - dbot
     where menv v = magnitude . envelopeV v
-          dtop = menv unitY a
-          dbot = menv ((-1) *^ unitY) a
+          dtop = menv u a
+          dbot = menv ((-1) *^ u) a
 
 -- | Place the second diagram to the right of the first, aligning both
 -- vertically. The origin is the origin of the left diagram.
 besidesL :: (Backend' b, Semigroup m, Monoid m) =>
             QDiagram b R2 m -> QDiagram b R2 m -> QDiagram b R2 m
 besidesL a b = a ||| strutX 0.5 ||| b'
-    where b' = b # centerY # translate (dmid a *^ unitY)
+    where b' = b # centerY # translate (dmid unitY a *^ unitY)
 
 -- | Variant of 'besidesL' where the origin is that of the right diagram.
 besidesR :: (Backend' b, Semigroup m, Monoid m) =>
            QDiagram b R2 m -> QDiagram b R2 m -> QDiagram b R2 m
 besidesR b a =  b' ||| strutX 0.5 ||| a
-    where b' = b # centerY # translate (dmid a *^ unitY)
+    where b' = b # centerY # translate (dmid unitY a *^ unitY)
+
+aboveT :: (Backend' b, Semigroup m, Monoid m) =>
+          QDiagram b R2 m -> QDiagram b R2 m -> QDiagram b R2 m
+aboveT a b = a === strutY 0.5 === b'
+    where b' = b # centerX # translate (dmid unitX a *^ unitX)
 
 -- | @fit f a@ scales @a@ to fit into a square of size @f@.
 fit :: (Transformable t, Enveloped t, V t ~ R2) =>
@@ -89,10 +94,12 @@ fit f a = scale (f / m) a
 -- into a square of size @1@.
 text' :: Backend' b => String -> Diagram b R2
 text' t = stroke (textSVG' $ TextOpts t fnt INSIDE_H KERN False 1 1)
-          # lwG 0 # fc black # scale 0.8
+          # lwG 0 # rfc black # scale 0.8
   where
     fnt = outlMap . unsafePerformIO . getDataFileName
         $ "data/fonts/gen-light.svg"
+    rfc :: (HasStyle a, V a ~ R2) => Colour Double -> a -> a
+    rfc = recommendFillColor
 
 -- text' t = text t # fontSize 0.8 # font "Helvetica" # translate (r2 (0.04, -0.07))
 --          <> phantom' (textrect t)

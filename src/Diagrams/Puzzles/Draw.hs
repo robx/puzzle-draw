@@ -61,7 +61,7 @@ toOutputWidth u w = case u of Pixels -> fromIntegral wpix
                               Points -> wpt
   where
     wpix = round (gridresd * w) :: Int  -- grid square size 40px
-    wpt = cmtopoint (0.8 * w)     -- grid square size 0.8cm
+    wpt = cmtopoint w     -- grid square size 1.0cm
 
 alignPixel :: Backend' b => Diagram b R2 -> Diagram b R2
 alignPixel = scale (1/gridresd) . align' . scale gridresd
