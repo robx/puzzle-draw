@@ -14,6 +14,7 @@ import Data.Tuple (swap)
 -- | The list of specific puzzle types we can handle.
 data PuzzleType = LITS
                 | LITSPlus
+                | LITSSym
                 | Geradeweg
                 | Fillomino
                 | Masyu
@@ -71,6 +72,7 @@ data PuzzleType = LITS
 typeNames :: [(PuzzleType, String)]
 typeNames = [ (LITS, "lits")
             , (LITSPlus, "litsplus")
+            , (LITSSym, "lits-symmetry")
             , (Geradeweg, "geradeweg")
             , (Fillomino, "fillomino")
             , (Masyu, "masyu")
