@@ -65,6 +65,7 @@ data PuzzleType = LITS
                 | Buchstabensalat
                 | Doppelblock
                 | SudokuDoppelblock
+                | Loopki
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -121,6 +122,7 @@ typeNames = [ (LITS, "lits")
             , (Buchstabensalat, "buchstabensalat")
             , (Doppelblock, "doppelblock")
             , (SudokuDoppelblock, "sudoku-doppelblock")
+            , (Loopki, "loopki")
             ]
 
 -- | Look up a puzzle type by name.

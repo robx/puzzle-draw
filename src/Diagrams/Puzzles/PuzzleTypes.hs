@@ -15,7 +15,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     blackoutDominos, anglers, skyscrapers,
     summon, baca, buchstabensalat, doppelblock, sudokuDoppelblock,
     dominos, skyscrapersStars, fillominoCheckered, numberlink,
-    slithermulti, dominoPills, fillominoLoop
+    slithermulti, dominoPills, fillominoLoop, loopki
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -495,3 +495,11 @@ numberlink = (,)
      <> grid gDefault . fst)
   where
     drawInt' x = drawInt x <> (square 0.7 # lc white # fc white)
+
+loopki :: Backend' b =>
+          RenderPuzzle b (Grid C (Maybe MasyuPearl)) (Loop N)
+loopki = (,)
+    p
+    (solstyle . drawEdges . snd <> p . fst)
+  where
+    p = placeGrid . fmap (scale 0.5 . pearl) . clues <> grid gSlither
