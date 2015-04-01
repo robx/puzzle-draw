@@ -15,7 +15,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     blackoutDominos, anglers, skyscrapers,
     summon, baca, buchstabensalat, doppelblock, sudokuDoppelblock,
     dominos, skyscrapersStars, fillominoCheckered, numberlink,
-    slithermulti, dominoPills, fillominoLoop, loopki
+    slithermulti, dominoPills, fillominoLoop, loopki, litssym
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -43,6 +43,15 @@ lits = (,)
 
 litsplus :: Backend' b => RenderPuzzle b AreaGrid ShadedGrid
 litsplus = lits
+
+litssym :: Backend' b => RenderPuzzle b AreaGrid ShadedGrid
+litssym = (,)
+    p
+    (p . fst <> drawShade . snd)
+  where
+    p g = drawAreas g <> grid gDefault g <> translate (c g) (scale 0.5 $ smallPearl MBlack)
+    c g = let (rs, cs) = size . Map.mapKeys toCoord $ g
+          in r2 ((fromIntegral rs) / 2, (fromIntegral cs) / 2)
 
 solstyle :: (HasStyle a, V a ~ R2) => a -> a
 solstyle = lc (blend 0.8 black white) . lwG (3 * onepix)
