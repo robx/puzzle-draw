@@ -211,9 +211,10 @@ skyscrapersStars = (p, parseGrid)
     p v@(Object o) = (,) <$> parseOut v <*> o .: "stars"
     p _            = empty
 
-summon :: ParsePuzzle (AreaGrid, OutsideClues C (Maybe Int)) (Grid C (Maybe Int))
-summon = ( \v -> (,) <$> parseFrom ["grid"] parseGrid v
-                     <*> parseFrom ["outside"] parseOut v
+summon :: ParsePuzzle (AreaGrid, OutsideClues C (Maybe Int), String) (Grid C (Maybe Int))
+summon = ( \v@(Object o) -> (,,) <$> parseFrom ["grid"] parseGrid v
+                                 <*> parseFrom ["outside"] parseOut v
+                                 <*> o .: "digits"
          , parseClueGrid
          )
 

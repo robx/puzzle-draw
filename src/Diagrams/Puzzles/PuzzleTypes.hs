@@ -401,16 +401,19 @@ skyscrapersStars = (,)
 
 summon ::
     Backend' b =>
-    RenderPuzzle b (AreaGrid, OutsideClues C (Maybe Int)) (Grid C (Maybe Int))
+    RenderPuzzle b (AreaGrid, OutsideClues C (Maybe Int), String) (Grid C (Maybe Int))
 summon = (,)
-    p
+    (p <> n)
     (placeGrid . fmap drawInt . clues . snd <> p . fst)
   where
-    p (g, oc) = grid gDefault g <> drawAreasGray g
+    p (g, oc, _) = grid gDefault g <> drawAreasGray g
                 <> (placeGrid . clues . outsideClues
                     . al . fmap (fmap (scale 0.7 . drawInt)) $ oc)
     al :: Backend' b => OutsideClues k (Maybe (Diagram b R2)) -> OutsideClues k (Maybe (Diagram b R2))
     al (OC l r b t) = OC l (map (fmap alignL) r) b t
+
+    n (g, _, ds) = placeNote (size' g) (drawText ds # scale 0.7)
+    size' = size . Map.mapKeys toCoord
 
 baca ::
     Backend' b =>
