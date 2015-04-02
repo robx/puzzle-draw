@@ -15,7 +15,8 @@ module Diagrams.Puzzles.PuzzleTypes (
     blackoutDominos, anglers, skyscrapers,
     summon, baca, buchstabensalat, doppelblock, sudokuDoppelblock,
     dominos, skyscrapersStars, fillominoCheckered, numberlink,
-    slithermulti, dominoPills, fillominoLoop, loopki, litssym
+    slithermulti, dominoPills, fillominoLoop, loopki, litssym,
+    scrabble
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -515,3 +516,12 @@ loopki = (,)
     (solstyle . drawEdges . snd <> p . fst)
   where
     p = placeGrid . fmap (scale 0.5 . pearl) . clues <> grid gSlither
+
+scrabble :: Backend' b =>
+            RenderPuzzle b (Grid C Bool, [String]) (Grid C (Maybe Char))
+scrabble = (,)
+    p
+    (placeGrid . fmap drawCharFixed . clues . snd <> gr . fst . fst)
+  where
+    p (g, ws) = stackWords ws `besidesR` gr g
+    gr = grid gDefault <> drawShade

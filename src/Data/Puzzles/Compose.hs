@@ -88,6 +88,7 @@ handle f Buchstabensalat      = f R.buchstabensalat     D.buchstabensalat
 handle f Doppelblock          = f R.doppelblock         D.doppelblock
 handle f SudokuDoppelblock    = f R.sudokuDoppelblock   D.sudokuDoppelblock
 handle f Loopki               = f R.loopki              D.loopki
+handle f Scrabble             = f R.scrabble            D.scrabble
 
 -- | Handler that parses puzzle and an optional solution from a pair of
 --   corresponding YAML values, and renders both individually, optionally

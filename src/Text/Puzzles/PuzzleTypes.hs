@@ -11,7 +11,7 @@ module Text.Puzzles.PuzzleTypes (
     anglers, skyscrapers, summon, baca,
     buchstabensalat, doppelblock, sudokuDoppelblock, dominos,
     skyscrapersStars, numberlink, slithermulti, dominoPills,
-    fillominoLoop, loopki
+    fillominoLoop, loopki, scrabble
   ) where
 
 import Control.Applicative
@@ -288,3 +288,10 @@ numberlink = (p, fmap collectLines . p)
 
 loopki :: ParsePuzzle (Grid C (Maybe MasyuPearl)) (Loop N)
 loopki = (parseClueGrid, parseEdges)
+
+scrabble :: ParsePuzzle (Grid C Bool, [String]) (Grid C (Maybe Char))
+scrabble = (p, parseClueGrid)
+  where
+    p v = (,) <$> parseFrom ["grid"] parseStarGrid v
+              <*> parseFrom ["words"] parseJSON v
+    parseStarGrid v = fmap ((==) '*') <$> parseGrid v

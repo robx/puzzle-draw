@@ -103,7 +103,7 @@ drawTight d (DR x y) = stroke dr # lwG onepix
 
 -- | Stack the given words, left-justified.
 stackWords :: Backend' b => [String] -> QDiagram b R2 Any
-stackWords = vcat' with {_sep = 0.1} . scale 0.8 . map (alignL . text')
+stackWords = vcat' with {_sep = 0.1} . scale 0.8 . map (alignL . textFixed)
 
 -- | Mark a word in a grid of letters.
 drawMarkedWord :: Backend' b => MarkedWord -> Diagram b R2
@@ -131,6 +131,9 @@ drawSlalomDiag d = stroke (v d) # lwG edgewidth
 drawText :: Backend' b => String -> QDiagram b R2 Any
 drawText = text'
 
+drawTextFixed :: Backend' b => String -> QDiagram b R2 Any
+drawTextFixed = textFixed
+
 -- | Draw an @Int@.
 drawInt :: Backend' b =>
            Int -> Diagram b R2
@@ -140,6 +143,10 @@ drawInt s = drawText (show s)
 drawChar :: Backend' b =>
             Char -> Diagram b R2
 drawChar c = drawText [c]
+
+drawCharFixed :: Backend' b =>
+                 Char -> Diagram b R2
+drawCharFixed c = drawTextFixed [c]
 
 -- | Stack a list of words into a unit square. Scaled such that at least
 -- three words will fit.

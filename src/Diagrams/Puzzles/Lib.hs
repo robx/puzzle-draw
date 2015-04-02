@@ -89,17 +89,30 @@ fit f a = scale (f / m) a
     where m = max (magnitude (diameter unitX a))
                   (magnitude (diameter unitY a))
 
+type Font = (FontData, OutlineMap)
+
 -- | Write text that is centered both vertically and horizontally and that
 -- has an envelope. Sized such that single capital characters fit nicely
 -- into a square of size @1@.
-text' :: Backend' b => String -> Diagram b R2
-text' t = stroke (textSVG' $ TextOpts t fnt INSIDE_H KERN False 1 1)
-          # lwG 0 # rfc black # scale 0.8
+text'' :: Backend' b => Font -> String -> Diagram b R2
+text'' fnt t = stroke (textSVG' $ TextOpts t fnt INSIDE_H KERN False 1 1)
+             # lwG 0 # rfc black # scale 0.8
   where
-    fnt = outlMap . unsafePerformIO . getDataFileName
-        $ "data/fonts/gen-light.svg"
     rfc :: (HasStyle a, V a ~ R2) => Colour Double -> a -> a
     rfc = recommendFillColor
+
+text' :: Backend' b => String -> Diagram b R2
+text' = text'' fontGenLight
+
+textFixed :: Backend' b => String -> Diagram b R2
+textFixed = text'' fontBit
+
+fontGenLight :: Font
+fontGenLight = outlMap . unsafePerformIO . getDataFileName
+    $ "data/fonts/gen-light.svg"
+
+fontBit :: Font
+fontBit = bit
 
 -- text' t = text t # fontSize 0.8 # font "Helvetica" # translate (r2 (0.04, -0.07))
 --          <> phantom' (textrect t)
