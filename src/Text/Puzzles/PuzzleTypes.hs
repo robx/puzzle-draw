@@ -11,7 +11,7 @@ module Text.Puzzles.PuzzleTypes (
     anglers, skyscrapers, summon, baca,
     buchstabensalat, doppelblock, sudokuDoppelblock, dominos,
     skyscrapersStars, numberlink, slithermulti, dominoPills,
-    fillominoLoop, loopki, scrabble
+    fillominoLoop, loopki, scrabble, neighbors
   ) where
 
 import Control.Applicative
@@ -295,3 +295,9 @@ scrabble = (p, parseClueGrid)
     p v = (,) <$> parseFrom ["grid"] parseStarGrid v
               <*> parseFrom ["words"] parseJSON v
     parseStarGrid v = fmap ((==) '*') <$> parseGrid v
+
+neighbors :: ParsePuzzle (Grid C Bool, Grid C (Maybe Int)) (Grid C Int)
+neighbors = (p, parseGrid)
+  where
+    p v = (,) <$> parseFrom ["shading"] parseShadedGrid v
+              <*> parseFrom ["clues"] parseGrid v
