@@ -546,14 +546,27 @@ parseNWords n s | length ws == n  = pure ws
   where
     ws = words s
 
+parseDoublePair :: FromString a => Value -> Parser ((a, a), (a, a))
+parseDoublePair v = (,) <$>
+                     ((,) <$> ((!!0) <$> x) <*> ((!!1) <$> x)) <*>
+                     ((,) <$> ((!!2) <$> x) <*> ((!!3) <$> x))
+    where x = parseJSON v >>= parseNWords 4 >>= mapM parseString
+
 instance FromJSON PMarkedWord where
-    parseJSON v = PMW <$> (MW <$>
-                  ((,) <$> ((!!0) <$> x) <*> ((!!1) <$> x)) <*>
-                  ((,) <$> ((!!2) <$> x) <*> ((!!3) <$> x)))
-        where x = parseJSON v >>= parseNWords 4 >>= mapM parseString
+    parseJSON v = PMW . uncurry MW <$> parseDoublePair v
 
 instance FromString Int where
     parseString s = maybe empty pure $ readMaybe s
+
+parseMarkedLine :: FromCoord a => Value -> Parser (MarkedLine a)
+parseMarkedLine v = do
+    (s, e) <- parseDoublePair v
+    return $ MarkedLine (fromCoord s) (fromCoord e)
+
+newtype PMarkedLine a = PML {unPML :: MarkedLine a}
+
+instance FromCoord a => FromJSON (PMarkedLine a) where
+    parseJSON v = PML <$> parseMarkedLine v
 
 newtype PCompassC = PCC {unPCC :: CompassC}
 

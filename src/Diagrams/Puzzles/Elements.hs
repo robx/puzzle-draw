@@ -114,6 +114,12 @@ drawMarkedWord (MW s e) = lwG onepix . stroke $ expandTrail' with {_expandCap = 
 drawMarkedWords :: Backend' b => [MarkedWord] -> QDiagram b R2 Any
 drawMarkedWords = mconcat . map drawMarkedWord
 
+drawMarkedLine :: (ToPoint a, Backend' b) => MarkedLine a -> Diagram b R2
+drawMarkedLine (MarkedLine s e) = stroke (toPoint s ~~ toPoint e) # lwG edgewidth # lc gray
+
+drawMarkedLines :: (ToPoint a, Backend' b) => [MarkedLine a] -> Diagram b R2
+drawMarkedLines = mconcat . map drawMarkedLine
+
 -- | Draw a slalom clue.
 drawSlalomClue :: (Show a, Backend' b) =>
                   a -> Diagram b R2

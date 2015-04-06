@@ -69,6 +69,7 @@ data PuzzleType = LITS
                 | Loopki
                 | Scrabble
                 | Neighbors
+                | Starwars
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -129,6 +130,7 @@ typeNames = [ (LITS, "lits")
             , (Loopki, "loopki")
             , (Scrabble, "scrabble")
             , (Neighbors, "neighbors")
+            , (Starwars, "starwars")
             ]
 
 -- | Look up a puzzle type by name.

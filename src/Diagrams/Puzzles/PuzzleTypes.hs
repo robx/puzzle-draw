@@ -16,7 +16,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     summon, baca, buchstabensalat, doppelblock, sudokuDoppelblock,
     dominos, skyscrapersStars, fillominoCheckered, numberlink,
     slithermulti, dominoPills, fillominoLoop, loopki, litssym,
-    scrabble, neighbors
+    scrabble, neighbors, starwars
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -531,3 +531,11 @@ neighbors :: Backend' b =>
 neighbors = (,)
     (placeGrid . fmap drawInt . clues . snd <> (grid gDefault <> drawShade) . fst)
     (placeGrid . fmap drawInt . snd <> (grid gDefault <> drawShade) . fst . fst)
+
+starwars :: Backend' b =>
+            RenderPuzzle b (AreaGrid, [MarkedLine C]) (Grid C (Maybe Star))
+starwars = (,)
+    p
+    (p . fst <> placeGrid . fmap drawStar . clues . snd)
+  where
+    p = ((drawAreas <> grid gDefault) . fst <> drawMarkedLines . snd)
