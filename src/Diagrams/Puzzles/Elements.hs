@@ -242,7 +242,7 @@ placeNoteTL sz d = note d # alignBR # translatep sz # translate (r2 (-0.6,0.6))
 
 placeNoteBR :: Backend' b =>
              Size -> Diagram b R2 -> Diagram b R2
-placeNoteBR (x,y) d = note d # alignTL # translatep (x,0) # translate (r2 (0.6,-0.6))
+placeNoteBR (x,_) d = note d # alignTL # translatep (x,0) # translate (r2 (0.6,-0.6))
 
 miniloop :: Backend' b => Diagram b R2
 miniloop = (drawThinEdges (map unorient outer) <> grid gSlither g)
