@@ -413,7 +413,7 @@ summon = (,)
     al :: Backend' b => OutsideClues k (Maybe (Diagram b R2)) -> OutsideClues k (Maybe (Diagram b R2))
     al (OC l r b t) = OC l (map (fmap alignL) r) b t
 
-    n (g, _, ds) = placeNote (size' g) (drawText ds # scale 0.7)
+    n (g, _, ds) = placeNoteBR (size' g) (drawText ds # scale 0.7)
     size' = size . Map.mapKeys toCoord
 
 baca ::
