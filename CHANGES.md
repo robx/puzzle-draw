@@ -18,7 +18,8 @@
   - Starwars
 * Add solution code markers.
 * Nurikabe no longer has a spaced format; accepts multidigit
-  clues via replacements, as does Fillomino
+  clues via replacements, as does Fillomino.
+* Compass now uses a dashed grid.
 
 0.1.0.4: 20141115
 -----------------

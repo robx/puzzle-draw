@@ -219,9 +219,9 @@ slalom = (,)
 compass :: Backend' b =>
            RenderPuzzle b (Grid C (Maybe CompassC)) AreaGrid
 compass = (,)
-    (placeGrid . fmap drawCompassClue . clues <> grid gDefault)
+    (placeGrid . fmap drawCompassClue . clues <> grid gDashed)
     (placeGrid . fmap drawCompassClue . clues . fst
-     <> (grid gDefault <> drawAreasGray) . snd)
+     <> (grid gDashed <> drawAreasGray) . snd)
 
 boxof2or3 :: Backend' b =>
              RenderPuzzle b (Grid N MasyuPearl, [Edge N]) ()
