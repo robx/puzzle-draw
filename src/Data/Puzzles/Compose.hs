@@ -91,6 +91,7 @@ handle f Loopki               = f R.loopki              D.loopki
 handle f Scrabble             = f R.scrabble            D.scrabble
 handle f Neighbors            = f R.neighbors           D.neighbors
 handle f Starwars             = f R.starwars            D.starwars
+handle f Starbattle           = f R.starwars            D.starwars
 
 -- | Handler that parses puzzle and an optional solution from a pair of
 --   corresponding YAML values, and renders both individually, optionally
