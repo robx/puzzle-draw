@@ -12,7 +12,7 @@ module Text.Puzzles.PuzzleTypes (
     buchstabensalat, doppelblock, sudokuDoppelblock, dominos,
     skyscrapersStars, numberlink, slithermulti, dominoPills,
     fillominoLoop, loopki, scrabble, neighbors, starwars,
-    heyawake
+    heyawake, wormhole
   ) where
 
 import Control.Applicative
@@ -314,3 +314,8 @@ heyawake = (p, parseShadedGrid)
   where
     p v = (,) <$> parseFrom ["rooms"] parseGrid v
               <*> parseFrom ["clues"] parseClueGrid v
+
+wormhole :: ParsePuzzle (Grid C (Maybe (Either Int Char))) ()
+wormhole = (,) p (const $ return ())
+  where
+    p v = fmap (fmap unEither') <$> parseExtClueGrid v

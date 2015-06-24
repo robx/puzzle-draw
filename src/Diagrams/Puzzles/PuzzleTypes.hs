@@ -16,7 +16,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     summon, baca, buchstabensalat, doppelblock, sudokuDoppelblock,
     dominos, skyscrapersStars, fillominoCheckered, numberlink,
     slithermulti, dominoPills, fillominoLoop, loopki, litssym,
-    scrabble, neighbors, starwars, heyawake
+    scrabble, neighbors, starwars, heyawake, wormhole
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral)
@@ -548,3 +548,9 @@ heyawake = (,)
   where
     as = (drawAreas <> grid gDefault) . fst
     cs = placeGrid . fmap drawInt . clues . snd
+
+wormhole :: Backend' b =>
+            RenderPuzzle b (Grid C (Maybe (Either Int Char))) ()
+wormhole = (,)
+    (placeGrid . fmap (either drawInt drawChar) . clues <> grid gDashed)
+    mempty
