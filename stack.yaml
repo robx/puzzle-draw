@@ -1,0 +1,7 @@
+flags:
+  puzzle-draw:
+    cairo: false
+packages:
+- '.'
+extra-deps: []
+resolver: lts-2.18
