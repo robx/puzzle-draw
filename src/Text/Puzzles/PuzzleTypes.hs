@@ -12,7 +12,7 @@ module Text.Puzzles.PuzzleTypes (
     buchstabensalat, doppelblock, sudokuDoppelblock, dominos,
     skyscrapersStars, numberlink, slithermulti, dominoPills,
     fillominoLoop, loopki, scrabble, neighbors, starwars,
-    heyawake, wormhole
+    heyawake, wormhole, pentominous
   ) where
 
 import Control.Applicative
@@ -319,3 +319,6 @@ wormhole :: ParsePuzzle (Grid C (Maybe (Either Int Char))) ()
 wormhole = (,) p (const $ return ())
   where
     p v = fmap (fmap unEither') <$> parseExtClueGrid v
+
+pentominous :: ParsePuzzle (Grid C (Maybe Char)) (Grid C Char)
+pentominous = (,) parseClueGrid parseGrid

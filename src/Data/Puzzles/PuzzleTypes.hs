@@ -73,6 +73,7 @@ data PuzzleType = LITS
                 | Starbattle
                 | Heyawake
                 | Wormhole
+                | Pentominous
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -137,6 +138,7 @@ typeNames = [ (LITS, "lits")
             , (Starbattle, "starbattle")
             , (Heyawake, "heyawake")
             , (Wormhole, "wormhole")
+            , (Pentominous, "pentominous")
             ]
 
 -- | Look up a puzzle type by name.

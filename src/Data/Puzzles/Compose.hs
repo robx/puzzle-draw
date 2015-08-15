@@ -94,6 +94,7 @@ handle f Starwars             = f R.starwars            D.starwars
 handle f Starbattle           = f R.starwars            D.starwars
 handle f Heyawake             = f R.heyawake            D.heyawake
 handle f Wormhole             = f R.wormhole            D.wormhole
+handle f Pentominous          = f R.pentominous         D.pentominous
 
 -- | Handler that parses puzzle and an optional solution from a pair of
 --   corresponding YAML values, and renders both individually, optionally
