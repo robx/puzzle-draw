@@ -1,5 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses, FlexibleContexts, RankNTypes #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE TypeFamilies #-}
 
 -- |
 -- Helpers to string together parser and renderer by puzzle type.
@@ -96,11 +97,12 @@ handle f Heyawake             = f R.heyawake            D.heyawake
 handle f Wormhole             = f R.wormhole            D.wormhole
 handle f Pentominous          = f R.pentominous         D.pentominous
 
+
 -- | Handler that parses puzzle and an optional solution from a pair of
 --   corresponding YAML values, and renders both individually, optionally
 --   for the solution.
 drawPuzzleMaybeSol :: PuzzleHandler b ((Value, Maybe Value)
-                      -> Parser (Diagram b R2, Maybe (Diagram b R2)))
+                      -> Parser (Diagram b, Maybe (Diagram b)))
 drawPuzzleMaybeSol (pp, ps) (dp, ds) (p, s) = do
     p' <- pp p
     s' <- traverse ps s

@@ -19,7 +19,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     scrabble, neighbors, starwars, heyawake, wormhole, pentominous
   ) where
 
-import Diagrams.Prelude hiding (Loop, coral)
+import Diagrams.Prelude hiding (Loop, coral, size, N)
 
 import qualified Data.Map as Map
 
@@ -54,7 +54,7 @@ litssym = (,)
     c g = let (rs, cs) = size . Map.mapKeys toCoord $ g
           in r2 ((fromIntegral rs) / 2, (fromIntegral cs) / 2)
 
-solstyle :: (HasStyle a, V a ~ R2) => a -> a
+solstyle :: (HasStyle a, InSpace V2 Double a) => a -> a
 solstyle = lc (blend 0.8 black white) . lwG (3 * onepix)
 
 geradeweg :: Backend' b => RenderPuzzle b (Grid C (Maybe Int)) (Loop C)
@@ -174,7 +174,7 @@ tightfitskyscrapers = (,)
      <> drawTightGrid drawInt . snd)
 
 wordgrid :: Backend' b =>
-            Grid C (Maybe Char) -> [String] -> Diagram b R2
+            Grid C (Maybe Char) -> [String] -> Diagram b
 wordgrid g ws = stackWords ws `besidesR` drawCharGrid g
 
 wordloop :: Backend' b =>
@@ -410,7 +410,7 @@ summon = (,)
     p (g, oc, _) = grid gDefault g <> drawAreasGray g
                 <> (placeGrid . clues . outsideClues
                     . al . fmap (fmap (scale 0.7 . drawInt)) $ oc)
-    al :: Backend' b => OutsideClues k (Maybe (Diagram b R2)) -> OutsideClues k (Maybe (Diagram b R2))
+    al :: Backend' b => OutsideClues k (Maybe (Diagram b)) -> OutsideClues k (Maybe (Diagram b))
     al (OC l r b t) = OC l (map (fmap alignL) r) b t
 
     n (g, _, ds) = placeNoteBR (size' g) (drawText ds # scale 0.7)

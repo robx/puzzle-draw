@@ -90,7 +90,7 @@ toRenderOpts oc w opts = RenderOpts out w'
     base = takeBaseName (_input opts)
     out = addExtension (base ++ outputSuffix oc) f
 
-renderPuzzle :: PuzzleOpts -> (OutputChoice -> Maybe (Diagram B R2)) ->
+renderPuzzle :: PuzzleOpts -> (OutputChoice -> Maybe (Diagram B)) ->
                 (OutputChoice, Bool) -> IO ()
 renderPuzzle opts r (oc, req) = do
     let x = r oc
@@ -139,7 +139,7 @@ maybeSkipSolution ocs (Just v) =
 maybeSkipCode :: PuzzleOpts -> Maybe Y.Value -> Maybe Y.Value
 maybeSkipCode opts = if _code opts then id else const Nothing
 
-parseAndDrawCode :: Y.Value -> IO (CodeDiagrams (Diagram B R2))
+parseAndDrawCode :: Y.Value -> IO (CodeDiagrams (Diagram B))
 parseAndDrawCode v = case parsed of
     Left  e -> exitErr $ "solution code parse failure: " ++ e
     Right c -> return $ drawCode c

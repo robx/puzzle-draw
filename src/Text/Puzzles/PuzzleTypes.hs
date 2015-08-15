@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Text.Puzzles.PuzzleTypes (
     lits, litsplus, geradeweg, fillomino, masyu, nurikabe, latintapa,

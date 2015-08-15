@@ -1,5 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
 
 module Diagrams.Puzzles.Draw (
@@ -19,9 +20,9 @@ import Diagrams.Puzzles.Lib
 import Diagrams.Puzzles.Widths
 import Diagrams.Puzzles.Code
 
-type RenderPuzzle b p s = (p -> Diagram b R2, (p, s) -> Diagram b R2)
+type RenderPuzzle b p s = (p -> Diagram b, (p, s) -> Diagram b)
 
-type PuzzleSol b = (Diagram b R2, Maybe (Diagram b R2))
+type PuzzleSol b = (Diagram b, Maybe (Diagram b))
 
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
     deriving Show
@@ -29,8 +30,8 @@ data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 -- | Optionally render the puzzle, its solution, or a side-by-side
 --   example with puzzle and solution.
 draw :: Backend' b
-     => Maybe (CodeDiagrams (Diagram b R2))
-     -> PuzzleSol b -> OutputChoice -> Maybe (Diagram b R2)
+     => Maybe (CodeDiagrams (Diagram b))
+     -> PuzzleSol b -> OutputChoice -> Maybe (Diagram b)
 draw mc (p, ms) = fmap (bg white) . d
   where
     fixup = alignPixel . border borderwidth
@@ -39,7 +40,7 @@ draw mc (p, ms) = fmap (bg white) . d
         Just (CodeDiagrams cleft ctop cover) ->
             ((cover <> x) =!= top ctop) |!| lft cleft
     (=!=) = beside unitY
-    (|!|) = beside (negateV unitX)
+    (|!|) = beside (negated unitX)
     top c = if isEmpty c then mempty else strutY 0.5 =!= c
     lft c = if isEmpty c then mempty else strutX 0.5 |!| c
     isEmpty c = diameter unitX c == 0
@@ -53,7 +54,7 @@ data Unit = Pixels | Points
 cmtopoint :: Double -> Double
 cmtopoint = (* 28.3464567)
 
-diagramWidth :: Diagram b R2 -> Double
+diagramWidth :: Backend' b => Diagram b -> Double
 diagramWidth = fst . unr2 . boxExtents . boundingBox
 
 toOutputWidth :: Unit -> Double -> Double
@@ -63,7 +64,7 @@ toOutputWidth u w = case u of Pixels -> fromIntegral wpix
     wpix = round (gridresd * w) :: Int  -- grid square size 40px
     wpt = cmtopoint w     -- grid square size 1.0cm
 
-alignPixel :: Backend' b => Diagram b R2 -> Diagram b R2
+alignPixel :: Backend' b => Diagram b -> Diagram b
 alignPixel = scale (1/gridresd) . align' . scale gridresd
   where
     align' d = maybe id grow (getCorners $ boundingBox d) d
@@ -74,6 +75,6 @@ alignPixel = scale (1/gridresd) . align' . scale gridresd
     phantoml p q = phantom' $ p ~~ q
 
 -- | Add a phantom border of the given width around a diagram.
-border :: Backend' b => Double -> Diagram b R2 -> Diagram b R2
+border :: Backend' b => Double -> Diagram b -> Diagram b
 border w = extrudeEnvelope (w *^ unitX) . extrudeEnvelope (-w *^ unitX)
          . extrudeEnvelope (w *^ unitY) . extrudeEnvelope (-w *^ unitY)

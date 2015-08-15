@@ -30,7 +30,7 @@ import qualified Data.Yaml as Y
 
 data RenderOpts = RenderOpts { _file :: FilePath, _w :: Double }
 
-renderB :: FilePath -> SizeSpec2D -> Diagram B R2 -> IO ()
+renderB :: FilePath -> SizeSpec V2 Double -> Diagram B -> IO ()
 renderB =
 #ifdef CAIRO
     renderCairo
@@ -38,8 +38,8 @@ renderB =
     renderSVG
 #endif
 
-renderToFile :: RenderOpts -> Diagram B R2 -> IO ()
-renderToFile ropts = renderB (_file ropts) (Width $ _w ropts)
+renderToFile :: RenderOpts -> Diagram B -> IO ()
+renderToFile ropts = renderB (_file ropts) (mkWidth $ _w ropts)
 
 formats :: [String]
 #ifdef CAIRO
