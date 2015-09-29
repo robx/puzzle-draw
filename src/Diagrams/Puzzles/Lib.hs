@@ -5,6 +5,7 @@
 
 module Diagrams.Puzzles.Lib where
 
+import Diagrams.Path (pathPoints)
 import Diagrams.Prelude
 
 import Graphics.SVGFonts.Text (TextOpts(..), Mode(..), Spacing(..), textSVG')
@@ -136,3 +137,17 @@ fontBit = bit
 -- | Variant of 'phantom' that forces the argument backend type.
 phantom' :: Backend' b => Diagram b -> Diagram b
 phantom' = phantom
+
+debugPath :: Backend' b => Path V2 Double -> Diagram b
+debugPath p = mconcat . map draw $ prts'
+  where
+    prts = zip (pathVertices p) ['a'..]
+    prts' = concatMap (\(ps,c) -> zipWith (\pt d -> (pt, c:d:[])) ps ['0'..]) prts
+    draw (pt, l) = moveTo pt $ text' l
+
+debugPath' :: Backend' b => Path V2 Double -> Diagram b
+debugPath' p = mconcat . map draw $ prts'
+  where
+    prts = zip (pathPoints p) ['a'..]
+    prts' = concatMap (\(ps,c) -> zipWith (\pt d -> (pt, c:d:[])) ps ['0'..]) prts
+    draw (pt, l) = moveTo pt $ text' l
