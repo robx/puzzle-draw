@@ -8,6 +8,7 @@ module Data.Puzzles.Grid
       Grid
     , AreaGrid
     , ShadedGrid
+    , nodes
     , size
     , sizeGrid
     , clues
@@ -29,6 +30,7 @@ module Data.Puzzles.Grid
     ) where
 
 import qualified Data.Map as Map
+import qualified Data.Set as Set
 import Data.AffineSpace
 import Data.VectorSpace
 import Control.Monad.State
@@ -58,6 +60,10 @@ edgesGen p n m = filter (uncurry p' . ends . dualE) es
     p'' (Just e) Nothing  = n e
     p'' Nothing (Just e)  = n e
     p'' _        _        = False
+
+
+nodes :: Grid N a -> Set.Set N
+nodes = Map.keysSet
 
 -- | The inner edges of a grid that separate unequal cells.
 borders :: Eq a => Grid C a -> [Edge N]

@@ -98,7 +98,9 @@ test-suite test
   main-is:             tests.hs
   build-depends:       base >= 4.7 && < 5,
                        tasty >= 0.8,
+                       tasty-hspec,
                        tasty-hunit >= 0.8,
+                       hspec,
                        yaml >= 0.8.4,
                        text >= 1.1,
                        deepseq >= 1.3,

@@ -1,4 +1,5 @@
 import Test.Tasty
+import Test.Tasty.Hspec
 import Test.Tasty.HUnit
 
 import Data.Yaml
@@ -16,15 +17,22 @@ import Data.Puzzles.Grid
 import Data.Puzzles.GridShape
 import Data.Puzzles.Util
 
+
 import Data
 import Util
+import qualified Data.Puzzles.GridSpec
 
 main :: IO ()
-main = defaultMain tests
+main = do
+    ss <- specs
+    defaultMain . testGroup "Tests" $ tests ++ ss
 
-tests :: TestTree
-tests = testGroup "Tests"
-    [ parseUtilTests, parseTests, parseDataTests, dataTests ]
+specs :: IO [TestTree]
+specs = mapM (uncurry testSpec)
+            [ ("Data.Puzzles.Grid", Data.Puzzles.GridSpec.spec) ]
+
+tests :: [TestTree]
+tests = [ parseUtilTests, parseTests, parseDataTests, dataTests ]
 
 testParsePzl, testParseSol, testNonparsePzl, testNonparseSol ::
     (Show a, Show b) => String -> ParsePuzzle a b -> Value -> TestTree
