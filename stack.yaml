@@ -1,6 +1,6 @@
 flags:
   puzzle-draw:
-    cairo: false
+    cairo: true
 ghc-options:
   puzzle-draw: -Werror
 packages:
