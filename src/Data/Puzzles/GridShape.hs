@@ -36,7 +36,6 @@ module Data.Puzzles.GridShape
     , edgeNeighbours
     ) where
 
-import Data.Foldable (Foldable)
 import qualified Data.Foldable as F
 import Data.List (partition)
 import qualified Data.Map as Map

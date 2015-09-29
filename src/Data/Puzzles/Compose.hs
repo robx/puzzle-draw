@@ -14,7 +14,6 @@ module Data.Puzzles.Compose (
 
 import Diagrams.Prelude
 import Data.Yaml (Parser, Value)
-import Data.Traversable (traverse)
 
 import Text.Puzzles.Puzzle
 import Diagrams.Puzzles.Draw

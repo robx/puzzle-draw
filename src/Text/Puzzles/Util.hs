@@ -18,8 +18,7 @@ import Data.Either (isRight)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 import qualified Data.HashMap.Strict as HMap
-import Data.Traversable (traverse, sequenceA, mapM, Traversable)
-import Data.Foldable (Foldable, foldMap)
+import Data.Traversable (mapM)
 import Data.Monoid ((<>))
 
 import Data.Char (digitToInt, isAlpha, isDigit)

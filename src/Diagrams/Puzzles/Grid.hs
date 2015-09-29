@@ -88,11 +88,11 @@ gridDashing = bgdashingG dashes dashoffset white'
 --
 -- `inner` consists of the individual inner segments.
 irregularGridPaths :: Grid C a -> (Path V2 Double, Path V2 Double)
-irregularGridPaths m = (toPath' (map revEdge outer), toPath inner)
+irregularGridPaths m = (path' (map revEdge outer), path inner)
   where
     (outer, inner) = edges (M.keysSet m) (`M.member` m)
-    toPath  es = mconcat . map (conn . ends) $ es
-    toPath' es = case loops (map ends' es) of
+    path  es = mconcat . map (conn . ends) $ es
+    path' es = case loops (map ends' es) of
         Just ls   -> mconcat . map (pathFromLoopVertices . map toPoint) $ ls
         Nothing   -> mempty
     pathFromLoopVertices = pathFromLocTrail

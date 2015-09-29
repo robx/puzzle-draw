@@ -17,7 +17,6 @@ import Options.Applicative
 import Control.Monad
 import Data.Maybe
 import Data.List (intercalate, sort)
-import Data.Traversable (sequenceA)
 
 import System.FilePath
 import System.Environment (getProgName)

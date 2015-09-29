@@ -14,7 +14,6 @@ module Diagrams.Puzzles.Draw (
   ) where
 
 import Diagrams.Prelude
-import Diagrams.BoundingBox
 
 import Diagrams.Puzzles.Lib
 import Diagrams.Puzzles.Widths

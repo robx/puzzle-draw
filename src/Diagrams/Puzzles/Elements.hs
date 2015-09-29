@@ -245,11 +245,11 @@ placeNoteBR :: Backend' b =>
 placeNoteBR (x,_) d = note d # alignTL # translatep (x,0) # translate (r2 (0.6,-0.6))
 
 miniloop :: Backend' b => Diagram b
-miniloop = (drawThinEdges (map unorient outer) <> grid gSlither g)
+miniloop = (drawThinEdges (map unorient out) <> grid gSlither g)
            # centerXY # scale 0.4
   where
     g = sizeGrid (1, 1)
-    (outer, _) = edgesM g
+    (out, _) = edgesM g
 
 dominoBG :: Colour Double
 dominoBG = blend 0.3 black white

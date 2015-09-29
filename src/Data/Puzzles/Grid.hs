@@ -32,7 +32,6 @@ import qualified Data.Map as Map
 import Data.AffineSpace
 import Data.VectorSpace
 import Control.Monad.State
-import Control.Applicative
 
 import Data.Puzzles.Elements
 import Data.Puzzles.GridShape
@@ -151,7 +150,7 @@ sizeGrid (w, h) = Map.mapKeys fromCoord
 
 data OClue = OClue
     { ocBase :: (Int, Int)
-    , ocDir  :: (Int, Int)
+    , _ocDir :: (Int, Int)
     }
   deriving (Show, Eq, Ord)
 

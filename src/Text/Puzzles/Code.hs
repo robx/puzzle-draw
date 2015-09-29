@@ -7,8 +7,6 @@ import Text.Puzzles.Util
 
 import Data.Yaml
 
-import Control.Applicative
-import Data.Traversable (sequenceA)
 import Data.Maybe (catMaybes)
 
 parseCode :: Value -> Parser [CodePart]
