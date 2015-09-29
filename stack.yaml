@@ -1,6 +1,8 @@
 flags:
   puzzle-draw:
     cairo: false
+ghc-options:
+  puzzle-draw: -Werror
 packages:
 - '.'
 extra-deps: []
