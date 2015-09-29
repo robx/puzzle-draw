@@ -8,8 +8,6 @@ import Test.Tasty.Golden
 import System.Process
 import System.FilePath
 
-import Control.Applicative
-
 main :: IO ()
 main = tests >>= defaultMain
 
