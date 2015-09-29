@@ -13,7 +13,7 @@ module Text.Puzzles.PuzzleTypes (
     buchstabensalat, doppelblock, sudokuDoppelblock, dominos,
     skyscrapersStars, numberlink, slithermulti, dominoPills,
     fillominoLoop, loopki, scrabble, neighbors, starwars,
-    heyawake, wormhole, pentominous
+    heyawake, wormhole, pentominous, starbattle
   ) where
 
 import Control.Applicative
@@ -309,6 +309,13 @@ starwars = (p, parseClueGrid)
   where
     p v = (,) <$> parseFrom ["grid"] parseGrid v
               <*> (map unPML <$> parseFrom ["lines"] parseJSON v)
+
+starbattle :: ParsePuzzle (AreaGrid, Int) (Grid C (Maybe Star))
+starbattle = (p, parseClueGrid)
+  where
+    p v@(Object o) = (,) <$> parseFrom ["grid"] parseGrid v
+                         <*> o .: "stars"
+    p _            = empty
 
 heyawake :: ParsePuzzle (AreaGrid, Grid C (Maybe Int)) (Grid C Bool)
 heyawake = (p, parseShadedGrid)

@@ -16,7 +16,8 @@ module Diagrams.Puzzles.PuzzleTypes (
     summon, baca, buchstabensalat, doppelblock, sudokuDoppelblock,
     dominos, skyscrapersStars, fillominoCheckered, numberlink,
     slithermulti, dominoPills, fillominoLoop, loopki, litssym,
-    scrabble, neighbors, starwars, heyawake, wormhole, pentominous
+    scrabble, neighbors, starwars, heyawake, wormhole, pentominous,
+    starbattle
   ) where
 
 import Diagrams.Prelude hiding (Loop, coral, size, N)
@@ -539,6 +540,17 @@ starwars = (,)
     (p . fst <> placeGrid . fmap drawStar . clues . snd)
   where
     p = ((drawAreas <> grid gDefault) . fst <> drawMarkedLines . snd)
+
+starbattle :: Backend' b =>
+              RenderPuzzle b (AreaGrid, Int) (Grid C (Maybe Star))
+starbattle = (,)
+    (p <> n)
+    ((p <> n) . fst <> placeGrid . fmap drawStar . clues . snd)
+  where
+    p = (drawAreas <> grid gDefault) . fst
+    n (g, k) = placeNote (size' g)
+                         (drawInt k ||| strutX 0.2 ||| drawStar Star)
+    size' = size . Map.mapKeys toCoord
 
 heyawake :: Backend' b =>
             RenderPuzzle b (AreaGrid, Grid C (Maybe Int)) (Grid C Bool)
