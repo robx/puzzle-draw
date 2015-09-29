@@ -14,7 +14,7 @@ main :: IO ()
 main = tests >>= defaultMain
 
 drawpuzzle :: FilePath
-drawpuzzle = "dist/build/drawpuzzle/drawpuzzle"
+drawpuzzle = ".stack-work/install/x86_64-osx/nightly-2015-08-14/7.10.2/bin/drawpuzzle"
 
 render :: FilePath -> IO ()
 render fp = callProcess drawpuzzle [ "-e", "-c", "-f",  "png", fp ]
