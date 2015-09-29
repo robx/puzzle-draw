@@ -3,7 +3,7 @@ module Data.Puzzles.GridSpec where
 import qualified Data.Set as Set
 import Test.Hspec (Spec, describe, it, shouldBe)
 
-import Data.Puzzles.Grid (nodes, sizeGrid)
+import Data.Puzzles.Grid
 import Data.Puzzles.GridShape (N(..))
 
 spec :: Spec
@@ -16,3 +16,7 @@ spec = do
             nodes (sizeGrid (0, 0)) `shouldBe` Set.empty
             nodes (sizeGrid (2, 0)) `shouldBe` Set.empty
             nodes (sizeGrid (2, 1)) `shouldBe ` Set.fromList [N 0 0, N 1 0]
+
+    describe "nodeGrid" $ do
+        it "creates the grid of nodes from a rectangular grid of cells" $ do
+            nodes (nodeGrid (sizeGrid (2, 1))) `shouldBe` nodes (sizeGrid (3, 2))
