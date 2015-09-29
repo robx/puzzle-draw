@@ -96,7 +96,8 @@ test-suite test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      tests
   main-is:             tests.hs
-  other-modules:       Data.Puzzles.GridSpec
+  other-modules:       Data.Puzzles.GridSpec,
+                       Diagrams.Puzzles.GridSpec
   build-depends:       base >= 4.7 && < 5,
                        tasty >= 0.8,
                        tasty-hspec,

@@ -21,6 +21,7 @@ import Data.Puzzles.Util
 import Data
 import Util
 import qualified Data.Puzzles.GridSpec
+import qualified Diagrams.Puzzles.GridSpec
 
 main :: IO ()
 main = do
@@ -29,7 +30,9 @@ main = do
 
 specs :: IO [TestTree]
 specs = mapM (uncurry testSpec)
-            [ ("Data.Puzzles.Grid", Data.Puzzles.GridSpec.spec) ]
+            [ ("Data.Puzzles.Grid",     Data.Puzzles.GridSpec.spec)
+            , ("Diagrams.Puzzles.Grid", Diagrams.Puzzles.GridSpec.spec)
+            ]
 
 tests :: [TestTree]
 tests = [ parseUtilTests, parseTests, parseDataTests, dataTests ]
