@@ -20,7 +20,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     starbattle
   ) where
 
-import Diagrams.Prelude hiding (Loop, coral, size, N)
+import Diagrams.Prelude hiding (Loop, N, coral, inside, size)
 
 import qualified Data.Map as Map
 
