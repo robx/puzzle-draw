@@ -96,7 +96,7 @@ handle f Heyawake             = f R.heyawake            D.heyawake
 handle f Wormhole             = f R.wormhole            D.wormhole
 handle f Pentominous          = f R.pentominous         D.pentominous
 handle f ColorAkari           = f R.colorakari          D.colorakari
-
+handle f PersistenceOfMemory  = f R.persistenceOfMemory D.persistenceOfMemory
 
 -- | Handler that parses puzzle and an optional solution from a pair of
 --   corresponding YAML values, and renders both individually, optionally

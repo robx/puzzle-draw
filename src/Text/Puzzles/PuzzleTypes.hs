@@ -13,7 +13,8 @@ module Text.Puzzles.PuzzleTypes (
     buchstabensalat, doppelblock, sudokuDoppelblock, dominos,
     skyscrapersStars, numberlink, slithermulti, dominoPills,
     fillominoLoop, loopki, scrabble, neighbors, starwars,
-    heyawake, wormhole, pentominous, starbattle, colorakari
+    heyawake, wormhole, pentominous, starbattle, colorakari,
+    persistenceOfMemory
   ) where
 
 import Control.Applicative
@@ -333,3 +334,13 @@ pentominous = (,) parseClueGrid parseGrid
 
 colorakari :: ParsePuzzle (Grid C (Maybe Char)) (Grid C (Maybe Char))
 colorakari = (,) parseClueGrid parseClueGrid
+
+persistenceOfMemory :: ParsePuzzle (AreaGrid, Grid C (Maybe MEnd)) (Loop C)
+persistenceOfMemory = (p, parseEdgesFull)
+  where
+    p v = do g <- parseGrid v
+             return (areas g, ends_ g)
+    areas = fmap (\c -> case c of 'o' -> '.'
+                                  _   -> c)
+    ends_ = fmap (\c -> case c of 'o' -> Just MEnd
+                                  _   -> Nothing)

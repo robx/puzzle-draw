@@ -75,6 +75,7 @@ data PuzzleType = LITS
                 | Wormhole
                 | Pentominous
                 | ColorAkari
+                | PersistenceOfMemory
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -141,6 +142,7 @@ typeNames = [ (LITS, "lits")
             , (Wormhole, "wormhole")
             , (Pentominous, "pentominous")
             , (ColorAkari, "color-akari")
+            , (PersistenceOfMemory, "persistenceofmemory")
             ]
 
 -- | Look up a puzzle type by name.

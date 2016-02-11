@@ -79,3 +79,5 @@ type BahnhofClue = Either Int Crossing
 
 data DigitRange = DigitRange !Int !Int
     deriving (Show, Eq)
+
+data MEnd = MEnd

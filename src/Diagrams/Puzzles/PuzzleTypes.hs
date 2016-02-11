@@ -17,11 +17,12 @@ module Diagrams.Puzzles.PuzzleTypes (
     dominos, skyscrapersStars, fillominoCheckered, numberlink,
     slithermulti, dominoPills, fillominoLoop, loopki, litssym,
     scrabble, neighbors, starwars, heyawake, wormhole, pentominous,
-    starbattle, colorakari
+    starbattle, colorakari, persistenceOfMemory
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
 
+import Data.Char (isUpper)
 import qualified Data.Map as Map
 
 import Diagrams.Puzzles.Style
@@ -594,3 +595,15 @@ colorakari = (,)
                       'M' -> Just magenta
                       'W' -> Just white
                       _   -> Nothing
+
+persistenceOfMemory ::
+    Backend' b =>
+    RenderPuzzle b (AreaGrid, (Grid C (Maybe MEnd))) (Loop C)
+persistenceOfMemory = (,)
+    (ends_ <> areas)
+    (ends_ . fst <> solstyle . drawEdges . snd <> areas . fst)
+  where
+    ends_ = placeGrid . fmap drawEnd . clues . snd
+    areas = (drawAreas <> grid gDashed <> shadeGrid . fmap cols) . fst
+    cols c | isUpper c  = Just (blend 0.1 black white)
+           | otherwise  = Nothing

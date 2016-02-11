@@ -444,6 +444,10 @@ instance FromChar Dirs' where
     parseChar '─' = pure . Dirs' $ [L, R]
     parseChar '┌' = pure . Dirs' $ [D, R]
     parseChar '┐' = pure . Dirs' $ [L, D]
+    parseChar '╶' = pure . Dirs' $ [R]
+    parseChar '╴' = pure . Dirs' $ [L]
+    parseChar '╷' = pure . Dirs' $ [D]
+    parseChar '╵' = pure . Dirs' $ [U]
     parseChar _   = pure . Dirs' $ []
 
 parseEdgesFull :: Key k => Value -> Parser [Edge k]
