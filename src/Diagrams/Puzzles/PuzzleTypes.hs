@@ -17,7 +17,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     dominos, skyscrapersStars, fillominoCheckered, numberlink,
     slithermulti, dominoPills, fillominoLoop, loopki, litssym,
     scrabble, neighbors, starwars, heyawake, wormhole, pentominous,
-    starbattle
+    starbattle, colorakari
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
@@ -573,3 +573,24 @@ pentominous ::
 pentominous = (,)
     (placeGrid . fmap drawChar . clues <> grid gDashed)
     ((placeGrid . fmap drawChar <> grid gDashed) . snd)
+
+colorakari ::
+    Backend' b =>
+    RenderPuzzle b (Grid C (Maybe Char)) (Grid C (Maybe Char))
+colorakari = (,)
+    (placeGrid . fmap drawColorClue . clues <> grid gDefault)
+    (error "color akari solution not implemented")
+  where
+    drawColorClue 'X' = fillBG black
+    drawColorClue c = case col c of Nothing -> error "invalid color"
+                                    Just c' -> drawText [c] # scale 0.5
+                                               <> circle (1/3) # fc c'
+                                               <> fillBG black
+    col c = case c of 'R' -> Just red
+                      'G' -> Just green
+                      'B' -> Just blue
+                      'Y' -> Just yellow
+                      'C' -> Just cyan
+                      'M' -> Just magenta
+                      'W' -> Just white
+                      _   -> Nothing

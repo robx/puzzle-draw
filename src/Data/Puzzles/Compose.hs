@@ -95,6 +95,7 @@ handle f Starbattle           = f R.starbattle          D.starbattle
 handle f Heyawake             = f R.heyawake            D.heyawake
 handle f Wormhole             = f R.wormhole            D.wormhole
 handle f Pentominous          = f R.pentominous         D.pentominous
+handle f ColorAkari           = f R.colorakari          D.colorakari
 
 
 -- | Handler that parses puzzle and an optional solution from a pair of
