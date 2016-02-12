@@ -346,11 +346,14 @@ persistenceOfMemory = (p, parseEdgesFull)
     ends_ = fmap (\c -> case c of 'o' -> Just MEnd
                                   _   -> Nothing)
 
-abctje :: ParsePuzzle [(String, Int)] [Char]
-abctje = (,) pl undefined
+abctje :: ParsePuzzle [(String, Int)] [(Int, Char)]
+abctje = (,) pl (\v -> pl v >>= sequence . map x)
   where
-    pl :: Value -> Parser [(String, Int)]
-    pl v = do l <- parseJSON v
-              sequence (map p l)
-    p :: M.Map String Int -> Parser (String, Int)
-    p m = if M.size m == 1 then return (head (M.toList m)) else empty
+    pl :: FromJSON b => Value -> Parser [(String, b)]
+    pl v = parseJSON v >>= sequence . map pair
+
+    x :: FromString a => (String, b) -> Parser (a, b)
+    x (k, v) = (\k' -> (k',v)) <$> parseString k
+
+    pair :: M.Map a b -> Parser (a, b)
+    pair m = if M.size m == 1 then (return . head . M.toList $ m) else empty

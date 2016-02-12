@@ -18,10 +18,16 @@ parse p t = decode t >>= parseMaybe p
 spec :: Spec
 spec = do
     describe "abctje" $ do
-        it "parses a list of mappings to a list of pairs" $ do
+        it "parses a list of clues" $ do
             let (p, _) = abctje
                 y = packLines [ "- HELLO: 15"
                               , "- WORLD: 20"
                               , "- weird stuff, too!: 100"
                               ]
             parse p y `shouldBe` Just [("HELLO", 15), ("WORLD", 20), ("weird stuff, too!", 100)]
+        it "parses a solution" $ do
+            let (_, p) = abctje
+                y = packLines [ "- 1: A"
+                              , "- 100: C"
+                              ]
+            parse p y `shouldBe` Just [(1, 'A'), (100, 'C')]

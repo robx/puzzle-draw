@@ -610,5 +610,5 @@ persistenceOfMemory = (,)
 
 abctje ::
     Backend' b =>
-    RenderPuzzle b [(String, Int)] [Char]
+    RenderPuzzle b [(String, Int)] [(Int, Char)]
 abctje = undefined
