@@ -346,8 +346,11 @@ persistenceOfMemory = (p, parseEdgesFull)
     ends_ = fmap (\c -> case c of 'o' -> Just MEnd
                                   _   -> Nothing)
 
-abctje :: ParsePuzzle [(String, Int)] [(Int, Char)]
-abctje = (,) pl (\v -> pl v >>= sequence . map x)
+abctje :: ParsePuzzle (DigitRange, [(String, Int)]) [(Int, Char)]
+abctje = (,)
+    (\v -> (,) <$> parseFrom ["numbers"] parseStringJSON v
+               <*> parseFrom ["clues"] pl v)
+    (\v -> pl v >>= sequence . map x)
   where
     pl :: FromJSON b => Value -> Parser [(String, b)]
     pl v = parseJSON v >>= sequence . map pair

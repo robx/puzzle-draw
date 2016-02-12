@@ -610,16 +610,17 @@ persistenceOfMemory = (,)
 
 abctje ::
     Backend' b =>
-    RenderPuzzle b [(String, Int)] [(Int, Char)]
+    RenderPuzzle b (DigitRange, [(String, Int)]) [(Int, Char)]
 abctje = (,)
     p
     (b . g . snd)
   where
-    p cs = stackWords (map f cs)
+    p (ds, cs) = stackWords' (map f cs) `besidesR` (b . g $ ps)
       where
         m1 = maximum . map (length . fst) $ cs
         m2 = maximum . map (length . show . snd) $ cs
         f (w, v) = w ++ replicate (m1 - length w + 1 + m2 - length (show v)) ' ' ++ show v
+        ps = [ (x, ' ') | x <- digitList ds ]
     b = placeGrid . fmap drawText <> grid gPlain
     g ps = Map.fromList $
                [ (C 0 (l-i-1), x) | (i, x) <- zip [0..] c1 ] ++

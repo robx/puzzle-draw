@@ -7,6 +7,7 @@ import qualified Data.Text as T
 
 import Test.Hspec (Spec, describe, it, shouldBe)
 
+import Data.Puzzles.Elements (DigitRange(..))
 import Text.Puzzles.PuzzleTypes (abctje)
 
 packLines :: [String] -> B.ByteString
@@ -20,11 +21,13 @@ spec = do
     describe "abctje" $ do
         it "parses a list of clues" $ do
             let (p, _) = abctje
-                y = packLines [ "- HELLO: 15"
+                y = packLines [ "numbers: 1-10"
+                              , "clues:"
+                              , "- HELLO: 15"
                               , "- WORLD: 20"
                               , "- weird stuff, too!: 100"
                               ]
-            parse p y `shouldBe` Just [("HELLO", 15), ("WORLD", 20), ("weird stuff, too!", 100)]
+            parse p y `shouldBe` Just (DigitRange 1 10, [("HELLO", 15), ("WORLD", 20), ("weird stuff, too!", 100)])
         it "parses a solution" $ do
             let (_, p) = abctje
                 y = packLines [ "- 1: A"

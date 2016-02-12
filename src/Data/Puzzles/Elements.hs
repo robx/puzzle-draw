@@ -80,4 +80,7 @@ type BahnhofClue = Either Int Crossing
 data DigitRange = DigitRange !Int !Int
     deriving (Show, Eq)
 
+digitList :: DigitRange -> [Int]
+digitList (DigitRange a b) = [a..b]
+
 data MEnd = MEnd

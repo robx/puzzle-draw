@@ -109,6 +109,10 @@ drawTight d (DR x y) = stroke dr # lwG onepix
 stackWords :: Backend' b => [String] -> Diagram b
 stackWords = vcat' with {_sep = 0.1} . scale 0.8 . map (alignL . textFixed)
 
+-- | Stack the given words, left-justified, a bit more generous
+stackWords' :: Backend' b => [String] -> Diagram b
+stackWords' = vcat' with {_sep = 0.3} . map (alignL . textFixed)
+
 -- | Mark a word in a grid of letters.
 drawMarkedWord :: Backend' b => MarkedWord -> Diagram b
 drawMarkedWord (MW s e) = lwG onepix . stroke $ expandTrail' with {_expandCap = LineCapRound} 0.4 t
