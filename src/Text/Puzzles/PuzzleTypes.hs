@@ -14,12 +14,13 @@ module Text.Puzzles.PuzzleTypes (
     skyscrapersStars, numberlink, slithermulti, dominoPills,
     fillominoLoop, loopki, scrabble, neighbors, starwars,
     heyawake, wormhole, pentominous, starbattle, colorakari,
-    persistenceOfMemory
+    persistenceOfMemory, abctje
   ) where
 
 import Control.Applicative
 import Control.Monad
 
+import qualified Data.Map.Strict as M
 import Data.Yaml
 
 import Text.Puzzles.Util
@@ -344,3 +345,12 @@ persistenceOfMemory = (p, parseEdgesFull)
                                   _   -> c)
     ends_ = fmap (\c -> case c of 'o' -> Just MEnd
                                   _   -> Nothing)
+
+abctje :: ParsePuzzle [(String, Int)] [Char]
+abctje = (,) pl undefined
+  where
+    pl :: Value -> Parser [(String, Int)]
+    pl v = do l <- parseJSON v
+              sequence (map p l)
+    p :: M.Map String Int -> Parser (String, Int)
+    p m = if M.size m == 1 then return (head (M.toList m)) else empty

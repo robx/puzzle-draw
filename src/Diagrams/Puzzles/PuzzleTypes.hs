@@ -17,7 +17,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     dominos, skyscrapersStars, fillominoCheckered, numberlink,
     slithermulti, dominoPills, fillominoLoop, loopki, litssym,
     scrabble, neighbors, starwars, heyawake, wormhole, pentominous,
-    starbattle, colorakari, persistenceOfMemory
+    starbattle, colorakari, persistenceOfMemory, abctje
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
@@ -607,3 +607,8 @@ persistenceOfMemory = (,)
     areas = (drawAreas <> grid gDashed <> shadeGrid . fmap cols) . fst
     cols c | isUpper c  = Just (blend 0.1 black white)
            | otherwise  = Nothing
+
+abctje ::
+    Backend' b =>
+    RenderPuzzle b [(String, Int)] [Char]
+abctje = undefined
