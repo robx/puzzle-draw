@@ -128,9 +128,10 @@ test_multioutside = Right oc @=? res
          :: OutsideClues Coord [Int]
 
 test_edge_grid :: Assertion
-test_edge_grid = Right (gn, gc, es) @=? res
+test_edge_grid = Right (gn, gc, sort es) @=? res'
   where
     res = parseEither parseEdgeGrid edgeGrid_1
+    res' = fmap (\(x, y, e) -> (x, y, sort e)) res
     gn :: Grid.Grid N (Maybe MasyuPearl)
     gn = Map.mapKeys fromCoord . Map.fromList $
         [((0,0),Just MBlack),((0,1),Just MWhite),((1,0),Just MWhite),((1,1),Just MBlack),
