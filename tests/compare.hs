@@ -12,7 +12,7 @@ main :: IO ()
 main = tests >>= defaultMain
 
 drawpuzzle :: FilePath
-drawpuzzle = ".stack-work/install/x86_64-osx/nightly-2015-08-14/7.10.2/bin/drawpuzzle"
+drawpuzzle = ".stack-work/install/x86_64-osx/lts-5.2/7.10.3/bin/drawpuzzle"
 
 render :: FilePath -> IO ()
 render fp = callProcess drawpuzzle [ "-e", "-c", "-f",  "png", fp ]
