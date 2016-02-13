@@ -1,5 +1,6 @@
 module Diagrams.Puzzles.GridSpec where
 
+import Diagrams.Prelude (p2)
 import Diagrams.Path (pathPoints)
 import Test.Hspec (Spec, describe, it, shouldBe, shouldSatisfy)
 
@@ -21,3 +22,11 @@ spec = do
             opts `shouldSatisfy` elem (p2i (2, 0))
             opts `shouldSatisfy` elem (p2i (2, 3))
             opts `shouldSatisfy` elem (p2i (0, 3))
+
+    describe "midPoint" $ do
+        it "gives the center of a node edge" $ do
+            let e = E (N 0 1) Horiz
+            midPoint e `shouldBe` p2 (0.5, 1.0)
+        it "gives the center of a cell edge" $ do
+            let e = E (C 0 0) Vert
+            midPoint e `shouldBe` p2 (0.5, 1.0)

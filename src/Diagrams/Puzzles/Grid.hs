@@ -123,6 +123,13 @@ edge (E c d) = rule d # translate (toPoint c .-. origin)
     rule Vert = vrule 1.0 # alignB
     rule Horiz = hrule 1.0 # alignL
 
+midPoint :: (AS.AffineSpace k, AS.Diff k ~ (Int, Int), ToPoint k) => Edge k -> P2 Double
+midPoint e = c .+^ 0.5 *^ (d .-. c)
+  where
+    (a, b) = ends e
+    c = toPoint a
+    d = toPoint b
+
 edgeStyle :: (HasStyle a, InSpace V2 Double a) => a -> a
 edgeStyle = lineCap LineCapSquare . lwG edgewidth
 
