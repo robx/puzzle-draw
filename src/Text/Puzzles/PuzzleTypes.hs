@@ -14,7 +14,7 @@ module Text.Puzzles.PuzzleTypes (
     skyscrapersStars, numberlink, slithermulti, dominoPills,
     fillominoLoop, loopki, scrabble, neighbors, starwars,
     heyawake, wormhole, pentominous, starbattle, colorakari,
-    persistenceOfMemory, abctje
+    persistenceOfMemory, abctje, kropki
   ) where
 
 import Control.Applicative
@@ -360,3 +360,6 @@ abctje = (,)
 
     pair :: M.Map a b -> Parser (a, b)
     pair m = if M.size m == 1 then (return . head . M.toList $ m) else empty
+
+kropki :: ParsePuzzle (M.Map (Edge N) KropkiDot) (Grid C Int)
+kropki = (,) parseAnnotatedEdges parseGrid

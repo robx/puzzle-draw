@@ -697,3 +697,9 @@ instance FromString DigitRange where
 instance FromChar Crossing where
     parseChar '+' = pure Crossing
     parseChar _   = fail "expected '+'"
+
+instance FromChar KropkiDot where
+    parseChar '*' = pure KBlack
+    parseChar 'o' = pure KWhite
+    parseChar ' ' = pure KNone
+    parseChar _   = fail "expected '*o '"

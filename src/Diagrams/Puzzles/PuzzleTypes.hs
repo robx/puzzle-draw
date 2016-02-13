@@ -17,7 +17,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     dominos, skyscrapersStars, fillominoCheckered, numberlink,
     slithermulti, dominoPills, fillominoLoop, loopki, litssym,
     scrabble, neighbors, starwars, heyawake, wormhole, pentominous,
-    starbattle, colorakari, persistenceOfMemory, abctje
+    starbattle, colorakari, persistenceOfMemory, abctje, kropki
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
@@ -629,3 +629,13 @@ abctje = (,)
         l = length ps
         c1 = map (show . fst) $ ps
         c2 = map ((:[]) . snd) $ ps
+
+kropki ::
+    Backend' b =>
+    RenderPuzzle b (Map.Map (Edge N) KropkiDot) (Grid C Int)
+kropki = (,)
+    p
+    (placeGrid . fmap drawInt . snd <> p . fst)
+  where
+    p = placeGrid' . Map.mapKeys midPoint . fmap kropkiDot <> grid gDefault . sizeGrid . sz
+    sz m = edgeSize (Map.keys m)

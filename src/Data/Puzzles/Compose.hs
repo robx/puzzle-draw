@@ -98,6 +98,7 @@ handle f Pentominous          = f R.pentominous         D.pentominous
 handle f ColorAkari           = f R.colorakari          D.colorakari
 handle f PersistenceOfMemory  = f R.persistenceOfMemory D.persistenceOfMemory
 handle f ABCtje               = f R.abctje              D.abctje
+handle f Kropki               = f R.kropki              D.kropki
 
 -- | Handler that parses puzzle and an optional solution from a pair of
 --   corresponding YAML values, and renders both individually, optionally

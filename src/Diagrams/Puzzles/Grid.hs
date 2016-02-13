@@ -117,6 +117,10 @@ placeGrid :: (ToPoint k, HasOrigin a, Transformable a, Monoid a, InSpace V2 Doub
           => Grid k a -> a
 placeGrid = M.foldMapWithKey (moveTo . toPoint)
 
+placeGrid' :: (HasOrigin a, Transformable a, Monoid a, InSpace V2 Double a)
+          => Grid (P2 Double) a -> a
+placeGrid' = M.foldMapWithKey moveTo
+
 edge :: (ToPoint k) => Edge k -> Path V2 Double
 edge (E c d) = rule d # translate (toPoint c .-. origin)
   where

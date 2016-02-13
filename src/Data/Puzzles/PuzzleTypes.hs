@@ -77,6 +77,7 @@ data PuzzleType = LITS
                 | ColorAkari
                 | PersistenceOfMemory
                 | ABCtje
+                | Kropki
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -145,6 +146,7 @@ typeNames = [ (LITS, "lits")
             , (ColorAkari, "color-akari")
             , (PersistenceOfMemory, "persistenceofmemory")
             , (ABCtje, "abctje")
+            , (Kropki, "kropki")
             ]
 
 -- | Look up a puzzle type by name.
