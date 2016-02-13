@@ -30,6 +30,7 @@ module Data.Puzzles.GridShape
     , edges
     , edgesM
     , ends
+    , edgeSize
     , unorient
     , dualE
     , vertexNeighbours
@@ -168,6 +169,13 @@ ends' (E' x U) = (x, x .+^ (0, 1))
 ends' (E' x R) = (x, x .+^ (1, 0))
 ends' (E' x D) = (x, x .+^ (0, -1))
 ends' (E' x L) = (x, x .+^ (-1, 0))
+
+edgeSize :: [Edge N] -> Size
+edgeSize es = (maximum (map fst ps), maximum (map snd ps))
+  where
+      ps = map toCoord
+         . concatMap ((\(x, y) -> [x, y]) . ends)
+         $ es
 
 revEdge :: (AffineSpace a, Diff a ~ (Int, Int)) => Edge' a -> Edge' a
 revEdge = uncurry edge' . swap . ends'
