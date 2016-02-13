@@ -12,7 +12,7 @@ import Control.Monad hiding (mapM)
 
 import Data.Hashable
 import Data.List (sortBy, intersect)
-import Data.Maybe (catMaybes, fromMaybe)
+import Data.Maybe (catMaybes, fromMaybe, isJust, fromJust)
 import Data.Ord (comparing)
 import Data.Either (isRight)
 import qualified Data.Map as Map
@@ -340,29 +340,23 @@ parseIrregGrid v = fromCoordGrid . rectToIrregGrid <$> parseJSON v
 --    | |
 --    o-o
 parsePlainEdges :: Key k => Value -> Parser [Edge k]
-parsePlainEdges v = fromCoordEdges . readEdges <$> parseCoordGrid v
-
-readEdges :: Grid Coord Char -> [Edge Coord]
-readEdges m = horiz ++ vert
+parsePlainEdges v = fromCoordEdges
+                  . Map.keys
+                  . Map.filterWithKey p
+                  . readEdges
+                  <$> parseCoordGrid v
   where
-    horiz = [ E (x, y) Horiz
-            | (x, y) <- map div2
-                      . Map.keys
-                      . Map.filterWithKey
-                           (\(x, y) c -> x `mod` 2 == 1
-                                      && y `mod` 2 == 0
-                                      && c == '-')
-                      $ m
-            ]
-    vert  = [ E (x, y) Vert
-            | (x, y) <- map div2
-                      . Map.keys
-                      . Map.filterWithKey
-                           (\(x, y) c -> x `mod` 2 == 0
-                                      && y `mod` 2 == 1
-                                      && c == '|')
-                      $ m
-            ]
+    p (E _ Horiz) '-' = True
+    p (E _ Vert)  '|' = True
+    p _           _   = False
+
+readEdges :: Grid Coord Char -> Map.Map (Edge Coord) Char
+readEdges = Map.mapKeysMonotonic fromJust . Map.filterWithKey (const . isJust) . Map.mapKeys toEdge
+  where
+    toEdge c@(x, y) = case (x `mod` 2, y `mod` 2) of
+                        (1, 0) -> Just $ E (div2 c) Horiz
+                        (0, 1) -> Just $ E (div2 c) Vert
+                        _      -> Nothing
     div2 (x', y') = (x' `div` 2, y' `div` 2)
 
 parseGridChars :: FromChar a => Grid k Char -> Parser (Grid k a)
