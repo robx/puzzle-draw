@@ -23,6 +23,7 @@ import Util
 import qualified Data.Puzzles.GridSpec
 import qualified Diagrams.Puzzles.GridSpec
 import qualified Text.Puzzles.PuzzleTypesSpec
+import qualified Text.Puzzles.UtilSpec
 
 main :: IO ()
 main = do
@@ -34,6 +35,7 @@ specs = mapM (uncurry testSpec)
             [ ("Data.Puzzles.Grid",        Data.Puzzles.GridSpec.spec)
             , ("Diagrams.Puzzles.Grid",    Diagrams.Puzzles.GridSpec.spec)
             , ("Text.Puzzles.PuzzleTypes", Text.Puzzles.PuzzleTypesSpec.spec)
+            , ("Text.Puzzles.Util",        Text.Puzzles.UtilSpec.spec)
             ]
 
 tests :: [TestTree]

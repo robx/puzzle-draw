@@ -350,6 +350,11 @@ parsePlainEdges v = fromCoordEdges
     p (E _ Vert)  '|' = True
     p _           _   = False
 
+parseAnnotatedEdges :: (Key k, FromChar a) => Value -> Parser (Map.Map (Edge k) a)
+parseAnnotatedEdges v = do
+    g <- readEdges <$> parseCoordGrid v
+    Map.mapKeys fromCoordEdge <$> traverse parseChar g
+
 readEdges :: Grid Coord Char -> Map.Map (Edge Coord) Char
 readEdges = Map.mapKeysMonotonic fromJust . Map.filterWithKey (const . isJust) . Map.mapKeys toEdge
   where
