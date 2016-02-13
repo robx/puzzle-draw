@@ -294,3 +294,10 @@ drawCrossing = const $ drawChar '+'
 
 drawBahnhofClue :: Backend' b => BahnhofClue -> Diagram b
 drawBahnhofClue = either drawInt drawCrossing
+
+kropkiDot :: Backend' b => KropkiDot -> Diagram b
+kropkiDot KNone = mempty
+kropkiDot c = circle 0.1 # lwG 0.03 # fc (col c) # smash
+    where col KWhite = white
+          col KBlack = blend 0.98 black white
+          col KNone  = error "can't reach"
