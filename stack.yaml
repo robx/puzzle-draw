@@ -5,6 +5,7 @@ ghc-options:
   puzzle-draw: -Werror
 packages:
 - '.'
+- '../diagrams-lib'
 extra-deps:
 - SVGFonts-1.5.0.0
 - tuple-0.3.0.2
