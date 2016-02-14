@@ -151,7 +151,7 @@ drawAreas :: (Backend' b, Eq a) =>
 drawAreas = drawEdges . borders
 
 fillBG :: Backend' b => Colour Double -> Diagram b
-fillBG c = square 1 # lwG 0 # fc c
+fillBG c = square 1 # lwG onepix # fc c # lc c
 
 shadeGrid :: Backend' b =>
              Grid C (Maybe (Colour Double)) -> Diagram b
