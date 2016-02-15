@@ -77,8 +77,18 @@ checkABCtje (pv, sv) = do
     p <- fst T.abctje $ pv
     s <- snd T.abctje $ sv
     return . catMaybes . map (\c -> c p s) $
-        [ solutionKeys ]
+        [ solutionKeys, values ]
   where
     solutionKeys (ds, _) s = let have = sort (digitList ds)
                                  want = sort (map fst (s))
                              in if have /= want then Just "unequal digit lists" else Nothing
+    values (_, ws) vs = (\es -> case es of [] -> Nothing
+                                           _  -> Just $ intercalate ", " es)
+                      . catMaybes
+                      . map (\(w, v) -> if val w == v
+                                            then Nothing
+                                            else Just (w ++ " should be " ++ show (val w)))
+                      $ ws
+      where
+        l c = fromMaybe 0 . lookup c . map (\(x, y) -> (y, x)) $ vs
+        val = sum . map l
