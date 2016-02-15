@@ -1,4 +1,4 @@
-language: c
+language: haskell
 
 # explicitly request container-based infrastructure
 sudo: false
