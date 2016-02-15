@@ -35,6 +35,7 @@ library
                        Data.Puzzles.Compose
                        Data.Puzzles.PuzzleTypes
                        Data.Puzzles.Code
+                       Data.Puzzles.CmdLine
                        Text.Puzzles.Util
                        Text.Puzzles.Puzzle
                        Text.Puzzles.PuzzleTypes

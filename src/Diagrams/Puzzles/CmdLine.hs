@@ -6,27 +6,19 @@ module Diagrams.Puzzles.CmdLine
     , RenderOpts(..)
     , formats
     , checkFormat
-    , checkType
-    , exitErr
-    , readPuzzle
     )
   where
 
+import Data.Puzzles.CmdLine (exitErr)
+
 import Diagrams.Prelude hiding (value, option, (<>), Result)
+import Control.Monad (unless)
 
 #ifdef CAIRO
 import Diagrams.Backend.Cairo (B, renderCairo)
 #else
 import Diagrams.Backend.SVG (B, renderSVG)
 #endif
-
-import Text.Puzzles.Puzzle
-import Data.Puzzles.PuzzleTypes
-
-import System.Exit
-
-import Control.Monad (unless)
-import qualified Data.Yaml as Y
 
 data RenderOpts = RenderOpts { _file :: FilePath, _w :: Double }
 
@@ -51,17 +43,3 @@ formats = ["svg"]
 checkFormat :: String -> IO ()
 checkFormat f = unless (f `elem` formats) $
                     exitErr $ "unknown format: " ++ f
-
-checkType :: Maybe String -> IO PuzzleType
-checkType mt = do
-    t <- maybe errno return mt
-    maybe (errunk t) return (lookupType t)
-  where
-    errno    = exitErr "no puzzle type given"
-    errunk t = exitErr $ "unknown puzzle type: " ++ t
-
-readPuzzle :: FilePath -> IO (Either Y.ParseException TypedPuzzle)
-readPuzzle = Y.decodeFileEither
-
-exitErr :: String -> IO a
-exitErr e = putStrLn e >> exitFailure

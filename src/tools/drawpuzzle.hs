@@ -4,6 +4,7 @@ module Main where
 
 import Diagrams.Prelude hiding (value, option, (<>), Result)
 
+import Data.Puzzles.CmdLine
 import Diagrams.Puzzles.CmdLine
 
 import Text.Puzzles.Puzzle
