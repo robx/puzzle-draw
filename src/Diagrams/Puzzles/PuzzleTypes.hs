@@ -615,11 +615,10 @@ abctje = (,)
     p
     (b . g . snd)
   where
-    p (ds, cs) = stackWords' (map f cs) `besidesR` (b . g $ ps)
+    p (ds, cs) = (stackWordsLeft ws ||| strutX 1.0 ||| stackWordsRight ns) `besidesR` (strutX 3.0 ||| (b . g $ ps))
       where
-        m1 = maximum . map (length . fst) $ cs
-        m2 = maximum . map (length . show . snd) $ cs
-        f (w, v) = w ++ replicate (m1 - length w + 1 + m2 - length (show v)) ' ' ++ show v
+        ws = map fst cs
+        ns = map (show . snd) cs
         ps = [ (x, ' ') | x <- digitList ds ]
     b = placeGrid . fmap drawText <> grid gPlain
     g ps = Map.fromList $
