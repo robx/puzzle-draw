@@ -52,7 +52,7 @@ library
                        Diagrams.Puzzles.CmdLine
   -- For access to the font files in the data directory.
   other-modules:       Paths_puzzle_draw
-  build-depends:       base >= 4.7 && < 5,
+  build-depends:       base >= 4.8 && < 5,
                        diagrams-lib >= 1.3.1,
                        parsec >= 3.1,
                        yaml >= 0.8.4,
@@ -78,7 +78,7 @@ library
 executable drawpuzzle
   main-is:          drawpuzzle.hs
   hs-source-dirs:   src/tools
-  build-depends:       base >= 4.7 && < 5,
+  build-depends:       base >= 4.8 && < 5,
                        puzzle-draw,
                        diagrams-lib >= 1.3,
                        yaml >= 0.8.4,
@@ -103,7 +103,7 @@ test-suite test
                        Diagrams.Puzzles.GridSpec,
                        Text.Puzzles.PuzzleTypesSpec,
                        Text.Puzzles.UtilSpec
-  build-depends:       base >= 4.7 && < 5,
+  build-depends:       base >= 4.8 && < 5,
                        tasty >= 0.8,
                        tasty-hspec,
                        tasty-hunit >= 0.8,
@@ -125,7 +125,7 @@ test-suite compare
   type:                exitcode-stdio-1.0
   hs-source-dirs:      tests
   main-is:             compare.hs
-  build-depends:       base >= 4.7 && < 5,
+  build-depends:       base >= 4.8 && < 5,
                        tasty >= 0.8,
                        tasty-golden >= 2.0,
                        filepath >= 1.3,
