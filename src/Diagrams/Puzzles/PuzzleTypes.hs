@@ -20,7 +20,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     starbattle, colorakari, persistenceOfMemory, abctje, kropki
   ) where
 
-import Diagrams.Prelude hiding (Loop, N, coral, inside, size)
+import Diagrams.Prelude hiding (Loop, N, coral, size)
 
 import Data.Char (isUpper)
 import qualified Data.Map as Map
