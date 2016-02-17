@@ -605,7 +605,7 @@ persistenceOfMemory = (,)
   where
     ends_ = placeGrid . fmap drawEnd . clues . snd
     areas = (drawAreas <> grid gDashed <> shadeGrid . fmap cols) . fst
-    cols c | isUpper c  = Just (blend 0.1 black white)
+    cols c | isUpper c  = Just (blend 0.25 black white)
            | otherwise  = Nothing
 
 abctje ::
