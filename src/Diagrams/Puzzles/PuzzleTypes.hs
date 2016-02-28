@@ -41,7 +41,7 @@ import qualified Data.Puzzles.Pyramid as Pyr
 
 lits :: Backend' b => RenderPuzzle b AreaGrid ShadedGrid
 lits = (,)
-    (drawAreas <> grid gDefault)
+    (grid gDefault <> drawAreasGray)
     ((drawAreas <> grid gDefault) . fst <> drawShade . snd)
 
 litsplus :: Backend' b => RenderPuzzle b AreaGrid ShadedGrid
