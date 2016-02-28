@@ -23,6 +23,7 @@ module Diagrams.Puzzles.PuzzleTypes (
 import Diagrams.Prelude hiding (Loop, N, coral, size)
 
 import Data.Char (isUpper)
+import Data.List (nub, sort, sortOn)
 import qualified Data.Map as Map
 
 import Diagrams.Puzzles.Style
@@ -613,21 +614,24 @@ abctje ::
     RenderPuzzle b (DigitRange, [(String, Int)]) [(Int, Char)]
 abctje = (,)
     p
-    (b . g . snd)
+    (b . g . h . snd)
   where
-    p (ds, cs) = (stackWordsLeft ws ||| strutX 1.0 ||| stackWordsRight ns) `besidesR` (strutX 3.0 ||| (b . g $ ps))
+    p (ds, cs) = (digNote ds `aboveT` (stackWordsLeft ws ||| strutX 1.0 ||| stackWordsRight ns)) `besidesR` (strutX 3.0 ||| (b . g $ ps))
       where
         ws = map fst cs
         ns = map (show . snd) cs
-        ps = [ (x, ' ') | x <- digitList ds ]
+        ls = nub . sort . concatMap fst $ cs
+        ps = [ (x:[], "") | x <- ls ]
+    digNote (DigitRange x y) = note . drawText $ show x ++ "-" ++ show y
     b = placeGrid . fmap drawText <> grid gPlain
+    h = sortOn fst . map (\(x, y) -> (y:[], show x))
     g ps = Map.fromList $
                [ (C 0 (l-i-1), x) | (i, x) <- zip [0..] c1 ] ++
                [ (C 1 (l-i-1), x) | (i, x) <- zip [0..] c2 ]
       where
         l = length ps
-        c1 = map (show . fst) $ ps
-        c2 = map ((:[]) . snd) $ ps
+        c1 = map fst ps
+        c2 = map snd ps
 
 kropki ::
     Backend' b =>
