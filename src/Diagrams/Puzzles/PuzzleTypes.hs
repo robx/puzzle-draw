@@ -614,17 +614,20 @@ abctje ::
     RenderPuzzle b (DigitRange, [(String, Int)]) [(Int, Char)]
 abctje = (,)
     p
-    (b . g . h . snd)
+    ((b . g . h  ||| const (strutX 1.0) ||| b . g . h') . snd)
   where
-    p (ds, cs) = (digNote ds `aboveT` (stackWordsLeft ws ||| strutX 1.0 ||| stackWordsRight ns)) `besidesR` (strutX 3.0 ||| (b . g $ ps))
+    p (ds, cs) = (digNote ds `aboveT` (stackWordsLeft ws ||| strutX 1.0 ||| stackWordsRight ns))
+                 `besidesR` (strutX 2.0 ||| (b . g $ ps) ||| strutX 1.0 ||| (b . g $ ps'))
       where
         ws = map fst cs
         ns = map (show . snd) cs
         ls = nub . sort . concatMap fst $ cs
         ps = [ (x:[], "") | x <- ls ]
+        ps' = [ (show x, "") | x <- digitList ds ]
     digNote (DigitRange x y) = note . drawText $ show x ++ "-" ++ show y
     b = placeGrid . fmap drawText <> grid gPlain
     h = sortOn fst . map (\(x, y) -> (y:[], show x))
+    h' = map (\(x, y) -> (show x, y:[]))
     g ps = Map.fromList $
                [ (C 0 (l-i-1), x) | (i, x) <- zip [0..] c1 ] ++
                [ (C 1 (l-i-1), x) | (i, x) <- zip [0..] c2 ]
