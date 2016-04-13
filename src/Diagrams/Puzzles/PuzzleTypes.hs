@@ -17,7 +17,8 @@ module Diagrams.Puzzles.PuzzleTypes (
     dominos, skyscrapersStars, fillominoCheckered, numberlink,
     slithermulti, dominoPills, fillominoLoop, loopki, litssym,
     scrabble, neighbors, starwars, heyawake, wormhole, pentominous,
-    starbattle, colorakari, persistenceOfMemory, abctje, kropki
+    starbattle, colorakari, persistenceOfMemory, abctje, kropki,
+    statuepark
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
@@ -574,7 +575,8 @@ pentominous ::
     RenderPuzzle b (Grid C (Maybe Char)) (Grid C Char)
 pentominous = (,)
     (placeGrid . fmap drawChar . clues <> grid gDashed)
-    ((placeGrid . fmap drawChar <> grid gDashed) . snd)
+    (placeGrid . fmap drawChar . clues . fst <>
+     (drawAreas <> grid gDashed) . snd)
 
 colorakari ::
     Backend' b =>
@@ -645,3 +647,12 @@ kropki = (,)
   where
     p = placeGrid' . Map.mapKeys midPoint . fmap kropkiDot <> grid gDefault . sizeGrid . sz
     sz m = edgeSize (Map.keys m)
+
+statuepark ::
+    Backend' b =>
+    RenderPuzzle b (Grid C (Maybe MasyuPearl)) (Grid C Bool)
+statuepark = (,)
+    p
+    (p . fst <> drawShade . snd)
+  where
+    p = placeGrid . fmap pearl . clues <> grid gDashed
