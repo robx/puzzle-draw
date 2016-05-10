@@ -14,7 +14,7 @@ module Text.Puzzles.PuzzleTypes (
     skyscrapersStars, numberlink, slithermulti, dominoPills,
     fillominoLoop, loopki, scrabble, neighbors, starwars,
     heyawake, wormhole, pentominous, starbattle, colorakari,
-    persistenceOfMemory, abctje, kropki, statuepark
+    persistenceOfMemory, abctje, kropki, statuepark, pentominousBorders
   ) where
 
 import Control.Applicative
@@ -366,3 +366,6 @@ kropki = (,) parseAnnotatedEdges parseGrid
 
 statuepark :: ParsePuzzle (Grid C (Maybe MasyuPearl)) (Grid C Bool)
 statuepark = (\v -> parseFrom ["grid"] parseClueGrid v, parseShadedGrid)
+
+pentominousBorders :: ParsePuzzle (Grid C (), [Edge N]) (Grid C Char)
+pentominousBorders = (,) parseCellEdges parseGrid

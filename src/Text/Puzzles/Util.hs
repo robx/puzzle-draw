@@ -152,6 +152,11 @@ instance FromString a => FromJSON (SpacedRect a) where
         p = mapM (mapM (parseString . T.unpack)) ls
     parseJSON _          = empty
 
+instance FromChar () where
+    parseChar '.' = pure ()
+    parseChar ' ' = pure ()
+    parseChar _   = empty
+
 data Space = Space
 
 instance FromChar Space where

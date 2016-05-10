@@ -79,6 +79,7 @@ data PuzzleType = LITS
                 | ABCtje
                 | Kropki
                 | StatuePark
+                | PentominousBorders
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -149,6 +150,7 @@ typeNames = [ (LITS, "lits")
             , (ABCtje, "abctje")
             , (Kropki, "kropki")
             , (StatuePark, "statuepark")
+            , (PentominousBorders, "pentominous-borders")
             ]
 
 -- | Look up a puzzle type by name.

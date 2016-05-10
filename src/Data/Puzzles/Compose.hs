@@ -100,6 +100,8 @@ handle f PersistenceOfMemory  = f R.persistenceOfMemory D.persistenceOfMemory
 handle f ABCtje               = f R.abctje              D.abctje
 handle f Kropki               = f R.kropki              D.kropki
 handle f StatuePark           = f R.statuepark          D.statuepark
+handle f PentominousBorders   = f R.pentominousBorders  D.pentominousBorders
+
 
 -- | Handler that parses puzzle and an optional solution from a pair of
 --   corresponding YAML values, and renders both individually, optionally
