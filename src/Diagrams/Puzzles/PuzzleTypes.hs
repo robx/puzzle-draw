@@ -18,7 +18,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     slithermulti, dominoPills, fillominoLoop, loopki, litssym,
     scrabble, neighbors, starwars, heyawake, wormhole, pentominous,
     starbattle, colorakari, persistenceOfMemory, abctje, kropki,
-    statuepark, pentominousBorders,
+    statuepark, pentominousBorders, nanroSignpost,
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
@@ -663,3 +663,12 @@ pentominousBorders ::
 pentominousBorders = (,)
     (drawEdges . snd <> grid gDashed . fst)
     ((drawAreas <> grid gDashed) . snd)
+
+nanroSignpost ::
+    Backend' b =>
+    RenderPuzzle b (AreaGrid, Grid C (Maybe Int)) (Grid C Int)
+nanroSignpost = (,)
+    p
+    (placeGrid . fmap drawInt . snd <> p . fst)
+  where
+    p = ((drawAreas <> grid gDashed) . fst <> placeGrid . fmap hintTL . clues . snd)
