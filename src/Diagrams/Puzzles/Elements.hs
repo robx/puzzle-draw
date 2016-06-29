@@ -166,8 +166,8 @@ drawCharFixed :: Backend' b =>
                  Char -> Diagram b
 drawCharFixed c = drawTextFixed [c]
 
-hintTL :: Backend' b => Int -> Diagram b
-hintTL = moveTo (p2 (-0.2,0.2)) . scale 0.7 . drawInt
+hintTL :: Backend' b => String -> Diagram b
+hintTL = moveTo (p2 (-0.4,0.4)) . scale 0.5 . alignTL . drawText
 
 -- | Stack a list of words into a unit square. Scaled such that at least
 -- three words will fit.

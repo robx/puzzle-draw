@@ -18,7 +18,8 @@ module Diagrams.Puzzles.PuzzleTypes (
     slithermulti, dominoPills, fillominoLoop, loopki, litssym,
     scrabble, neighbors, starwars, heyawake, wormhole, pentominous,
     starbattle, colorakari, persistenceOfMemory, abctje, kropki,
-    statuepark, pentominousBorders, nanroSignpost,
+    statuepark, pentominousBorders, nanroSignpost, tomTom,
+    horseSnake,
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
@@ -671,4 +672,22 @@ nanroSignpost = (,)
     p
     (placeGrid . fmap drawInt . snd <> p . fst)
   where
+    p = ((drawAreas <> grid gDashed) . fst <> placeGrid . fmap hintTL . fmap show . clues . snd)
+
+tomTom ::
+    Backend' b =>
+    RenderPuzzle b (AreaGrid, Grid C (Maybe String)) (Grid C Int)
+tomTom = (,)
+    p
+    (placeGrid . fmap drawInt . snd <> p . fst)
+  where
     p = ((drawAreas <> grid gDashed) . fst <> placeGrid . fmap hintTL . clues . snd)
+
+horseSnake ::
+    Backend' b =>
+    RenderPuzzle b (Grid C (Maybe (Either MEnd Int))) [Edge C]
+horseSnake = (,)
+    p
+    (solstyle . drawEdges . snd <> p . fst)
+  where
+    p = (placeGrid . fmap (either drawEnd drawInt) . clues <> grid gDashed)

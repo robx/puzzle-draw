@@ -15,7 +15,7 @@ module Text.Puzzles.PuzzleTypes (
     fillominoLoop, loopki, scrabble, neighbors, starwars,
     heyawake, wormhole, pentominous, starbattle, colorakari,
     persistenceOfMemory, abctje, kropki, statuepark, pentominousBorders,
-    nanroSignpost,
+    nanroSignpost, tomTom, horseSnake,
   ) where
 
 import Control.Applicative
@@ -375,3 +375,11 @@ nanroSignpost :: ParsePuzzle (AreaGrid, Grid C (Maybe Int)) (Grid C Int)
 nanroSignpost = (,)
     (\v -> (,) <$> parseFrom ["rooms"] parseGrid v <*> parseFrom ["clues"] parseGrid v)
     parseGrid
+
+tomTom :: ParsePuzzle (AreaGrid, Grid C (Maybe String)) (Grid C Int)
+tomTom = (,)
+    (\v -> (,) <$> parseFrom ["rooms"] parseGrid v <*> parseFrom ["clues"] ((unRG <$>) . parseJSON) v)
+    parseGrid
+
+horseSnake :: ParsePuzzle (Grid C (Maybe (Either MEnd Int))) [Edge C]
+horseSnake = (parseGrid, parseEdgesFull)

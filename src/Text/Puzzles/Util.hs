@@ -226,6 +226,11 @@ instance FromChar Star where
     parseChar '*' = pure Star
     parseChar _   = empty
 
+instance FromChar MEnd where
+    parseChar 'o' = pure MEnd
+    parseChar '*' = pure MEnd
+    parseChar _   = empty
+
 instance (FromChar a, FromChar b) => FromChar (Either a b) where
     parseChar c = Left <$> parseChar c <|> Right <$> parseChar c
 

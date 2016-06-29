@@ -102,6 +102,8 @@ handle f Kropki               = f R.kropki              D.kropki
 handle f StatuePark           = f R.statuepark          D.statuepark
 handle f PentominousBorders   = f R.pentominousBorders  D.pentominousBorders
 handle f NanroSignpost        = f R.nanroSignpost       D.nanroSignpost
+handle f TomTom               = f R.tomTom              D.tomTom
+handle f HorseSnake           = f R.horseSnake          D.horseSnake
 
 
 -- | Handler that parses puzzle and an optional solution from a pair of
