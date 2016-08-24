@@ -85,6 +85,7 @@ data PuzzleType = LITS
                 | HorseSnake
                 | Illumination
                 | Pentopia
+                | PentominoPipes
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -161,6 +162,7 @@ typeNames = [ (LITS, "lits")
             , (HorseSnake, "horsesnake")
             , (Illumination, "illumination")
             , (Pentopia, "pentopia")
+            , (PentominoPipes, "pentomino-pipes")
             ]
 
 -- | Look up a puzzle type by name.

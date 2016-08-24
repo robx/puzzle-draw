@@ -723,4 +723,5 @@ instance FromChar KropkiDot where
     parseChar '*' = pure KBlack
     parseChar 'o' = pure KWhite
     parseChar ' ' = pure KNone
+    parseChar '.' = pure KNone
     parseChar _   = fail "expected '*o '"

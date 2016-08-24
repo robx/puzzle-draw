@@ -16,6 +16,7 @@ module Text.Puzzles.PuzzleTypes (
     heyawake, wormhole, pentominous, starbattle, colorakari,
     persistenceOfMemory, abctje, kropki, statuepark, pentominousBorders,
     nanroSignpost, tomTom, horseSnake, illumination, pentopia,
+    pentominoPipes,
   ) where
 
 import Control.Applicative
@@ -402,3 +403,8 @@ pentopia :: ParsePuzzle (Grid C (Maybe Myopia)) (Grid C Bool)
 pentopia = (,)
     (fmap (fmap (fmap unMyo)) . fmap unRG . parseJSON)
     parseShadedGrid
+
+pentominoPipes :: ParsePuzzle (Grid N Char) (Grid N KropkiDot, [Edge N])
+pentominoPipes = (,)
+    parseGrid
+    parseNodeEdges

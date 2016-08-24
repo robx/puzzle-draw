@@ -20,6 +20,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     starbattle, colorakari, persistenceOfMemory, abctje, kropki,
     statuepark, pentominousBorders, nanroSignpost, tomTom,
     horseSnake, illumination, pentopia,
+    pentominoPipes,
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
@@ -711,3 +712,12 @@ pentopia = (,)
     (p . fst <> drawShade . snd)
   where
     p = placeGrid . fmap drawMyopia . clues <> grid gDefault
+
+pentominoPipes ::
+    Backend' b =>
+    RenderPuzzle b (Grid N Char) (Grid N KropkiDot, [Edge N])
+pentominoPipes = (,)
+    (placeGrid . fmap drawCharOpaque <> grid gSlither . cellGrid)
+    ((placeGrid . fmap kropkiDot . fst
+      <> drawEdges . snd) . snd
+     <> grid gSlither . cellGrid . fst)

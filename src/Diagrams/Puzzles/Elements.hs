@@ -166,6 +166,10 @@ drawCharFixed :: Backend' b =>
                  Char -> Diagram b
 drawCharFixed c = drawTextFixed [c]
 
+drawCharOpaque :: Backend' b =>
+                  Char -> Diagram b
+drawCharOpaque c = drawChar c <> circle 0.5 # lwG 0 # fc white
+
 hintTL :: Backend' b => String -> Diagram b
 hintTL = moveTo (p2 (-0.4,0.4)) . scale 0.5 . alignTL . drawText
 
