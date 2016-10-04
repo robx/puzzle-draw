@@ -368,13 +368,14 @@ cave = (,)
 
 skyscrapers ::
     Backend' b =>
-    RenderPuzzle b (OutsideClues C (Maybe Int)) (Grid C (Maybe Int))
+    RenderPuzzle b (OutsideClues C (Maybe Int), String) (Grid C (Maybe Int))
 skyscrapers = (,)
-    g
-    (g . fst <> placeGrid . fmap drawInt . clues . snd)
+    (g . fst <> n)
+    (g . fst . fst <> placeGrid . fmap drawInt . clues . snd)
   where
     g = placeGrid . fmap drawInt . clues . outsideClues
         <> grid gDefault . outsideGrid
+    n (oc, s) = placeNote (outsideSize oc) (drawText s)
 
 shikaku :: Backend' b => RenderPuzzle b (Grid C (Maybe Int)) AreaGrid
 shikaku = (,)
