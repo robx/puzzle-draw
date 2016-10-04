@@ -199,8 +199,6 @@ instance FromString Blank where
     parseString "." = pure Blank
     parseString _   = empty
 
-data PlainNode = PlainNode
-
 instance FromChar PlainNode where
     parseChar 'o' = pure PlainNode
     parseChar _   = empty

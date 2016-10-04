@@ -83,6 +83,7 @@ data PuzzleType = LITS
                 | NanroSignpost
                 | TomTom
                 | HorseSnake
+                | Illumination
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -157,6 +158,7 @@ typeNames = [ (LITS, "lits")
             , (NanroSignpost, "nanro-signpost")
             , (TomTom, "tomtom")
             , (HorseSnake, "horsesnake")
+            , (Illumination, "illumination")
             ]
 
 -- | Look up a puzzle type by name.

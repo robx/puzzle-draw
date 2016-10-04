@@ -104,6 +104,7 @@ handle f PentominousBorders   = f R.pentominousBorders  D.pentominousBorders
 handle f NanroSignpost        = f R.nanroSignpost       D.nanroSignpost
 handle f TomTom               = f R.tomTom              D.tomTom
 handle f HorseSnake           = f R.horseSnake          D.horseSnake
+handle f Illumination         = f R.illumination        D.illumination
 
 
 -- | Handler that parses puzzle and an optional solution from a pair of

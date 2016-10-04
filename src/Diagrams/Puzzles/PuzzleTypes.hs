@@ -19,7 +19,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     scrabble, neighbors, starwars, heyawake, wormhole, pentominous,
     starbattle, colorakari, persistenceOfMemory, abctje, kropki,
     statuepark, pentominousBorders, nanroSignpost, tomTom,
-    horseSnake,
+    horseSnake, illumination,
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
@@ -692,3 +692,13 @@ horseSnake = (,)
     (solstyle . drawEdges . snd <> p . fst)
   where
     p = (placeGrid . fmap (either drawEnd drawInt) . clues <> grid gDashed)
+
+illumination ::
+    Backend' b =>
+    RenderPuzzle b (OutsideClues C (Maybe Fraction)) (Grid N (Maybe PlainNode), [Edge N])
+illumination = (,)
+    p
+    ((placeGrid . fmap (const (smallPearl MWhite)) . clues . fst <> drawEdges . snd) . snd <> p . fst)
+  where
+    p = placeGrid . fmap drawFraction . clues . outsideClues
+        <> grid gDashed . outsideGrid

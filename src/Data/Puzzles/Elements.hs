@@ -89,3 +89,5 @@ data Fraction =
     FComp String String String  -- a b/c
   | FFrac String String         -- a/b
   | FInt String                 -- a
+
+data PlainNode = PlainNode

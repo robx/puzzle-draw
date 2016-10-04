@@ -15,7 +15,7 @@ module Text.Puzzles.PuzzleTypes (
     fillominoLoop, loopki, scrabble, neighbors, starwars,
     heyawake, wormhole, pentominous, starbattle, colorakari,
     persistenceOfMemory, abctje, kropki, statuepark, pentominousBorders,
-    nanroSignpost, tomTom, horseSnake,
+    nanroSignpost, tomTom, horseSnake, illumination,
   ) where
 
 import Control.Applicative
@@ -386,3 +386,8 @@ tomTom = (,)
 
 horseSnake :: ParsePuzzle (Grid C (Maybe (Either MEnd Int))) [Edge C]
 horseSnake = (parseGrid, parseEdgesFull)
+
+illumination :: ParsePuzzle (OutsideClues C (Maybe Fraction)) (Grid N (Maybe PlainNode), [Edge N])
+illumination = (,)
+    (fmap (fmap (fmap unPFraction)) . parseOut)
+    parseNodeEdges
