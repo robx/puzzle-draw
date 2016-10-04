@@ -31,6 +31,8 @@ import Data.Puzzles.Grid
 import Data.Puzzles.GridShape
 import Data.Puzzles.Elements
 
+import Text.Puzzles.Parsec
+
 type Path = [String]
 
 field :: Path -> Value -> Parser Value
@@ -703,6 +705,11 @@ instance FromString DigitRange where
         b' <- case b of ('-':cs) -> pure cs
                         _        -> fail "exected '-' in range"
         DigitRange <$> parseString a <*> parseString b'
+
+newtype PFraction = PFraction { unPFraction :: Fraction }
+
+instance FromJSON PFraction where
+    parseJSON v = PFraction <$> toStringParser fraction v
 
 instance FromChar Crossing where
     parseChar '+' = pure Crossing

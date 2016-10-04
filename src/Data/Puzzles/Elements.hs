@@ -84,3 +84,8 @@ digitList :: DigitRange -> [Int]
 digitList (DigitRange a b) = [a..b]
 
 data MEnd = MEnd
+
+data Fraction =
+    FComp String String String  -- a b/c
+  | FFrac String String         -- a/b
+  | FInt String                 -- a

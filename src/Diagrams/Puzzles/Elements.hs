@@ -308,3 +308,17 @@ kropkiDot c = circle 0.1 # lwG 0.03 # fc (col c) # smash
     where col KWhite = white
           col KBlack = blend 0.98 black white
           col KNone  = error "can't reach"
+
+drawFraction :: Backend' b => Fraction -> Diagram b
+drawFraction f = centerX $ case f of
+    FInt a      -> drawText a # scale 0.8
+    FFrac a b   -> frac a b
+    FComp a b c -> (drawText a # scale 0.8) ||| strutX (1/10) ||| frac b c
+  where
+    frac b c = stroke slash # scale (1/4) # lwG onepix
+               <> drawText b # scale s # translate (r2 (-t,t))
+               <> drawText c # scale s # translate (r2 (t,-t))
+      where t = 1/6
+            s = 1/2
+            slash :: Path V2 Double
+            slash = fromVertices [p2 (-1/3,-1/2), p2 (1/3,1/2)]
