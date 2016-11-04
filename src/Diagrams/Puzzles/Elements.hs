@@ -322,3 +322,13 @@ drawFraction f = centerX $ case f of
             s = 1/2
             slash :: Path V2 Double
             slash = fromVertices [p2 (-1/3,-1/2), p2 (1/3,1/2)]
+
+drawMyopia :: Backend' b => Myopia -> Diagram b
+drawMyopia = foldMap d'
+  where
+    d' = lwG onepix . scale (1/3) . d
+    d U = a (0, 0) (0, 1)
+    d R = a (0, 0) (1, 0)
+    d D = a (0, 0) (0, -1)
+    d L = a (0, 0) (-1, 0)
+    a p q = arrowBetween' (with & arrowHead .~ tri & lengths .~ verySmall) (p2 p) (p2 q)

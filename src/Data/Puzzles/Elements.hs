@@ -91,3 +91,5 @@ data Fraction =
   | FInt String                 -- a
 
 data PlainNode = PlainNode
+
+type Myopia = [Dir']

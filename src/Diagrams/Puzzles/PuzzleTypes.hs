@@ -19,7 +19,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     scrabble, neighbors, starwars, heyawake, wormhole, pentominous,
     starbattle, colorakari, persistenceOfMemory, abctje, kropki,
     statuepark, pentominousBorders, nanroSignpost, tomTom,
-    horseSnake, illumination,
+    horseSnake, illumination, pentopia,
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
@@ -702,3 +702,12 @@ illumination = (,)
   where
     p = placeGrid . fmap drawFraction . clues . outsideClues
         <> grid gDashed . outsideGrid
+
+pentopia ::
+    Backend' b =>
+    RenderPuzzle b (Grid C (Maybe Myopia)) (Grid C Bool)
+pentopia = (,)
+    p
+    (p . fst <> drawShade . snd)
+  where
+    p = placeGrid . fmap drawMyopia . clues <> grid gDefault

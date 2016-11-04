@@ -444,6 +444,13 @@ parseEdges v = do
     m <- fmap unHalfDirs <$> parseGrid v
     return [ E p d | (p, ds) <- Map.toList m, d <- ds ]
 
+instance FromChar Dir' where
+    parseChar 'u' = pure U
+    parseChar 'd' = pure D
+    parseChar 'r' = pure R
+    parseChar 'l' = pure L
+    parseChar _   = fail "expected 'udrl'"
+
 newtype Dirs' = Dirs' { unDirs' :: [Dir'] }
 
 instance FromChar Dirs' where

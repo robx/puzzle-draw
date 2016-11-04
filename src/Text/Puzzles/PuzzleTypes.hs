@@ -15,7 +15,7 @@ module Text.Puzzles.PuzzleTypes (
     fillominoLoop, loopki, scrabble, neighbors, starwars,
     heyawake, wormhole, pentominous, starbattle, colorakari,
     persistenceOfMemory, abctje, kropki, statuepark, pentominousBorders,
-    nanroSignpost, tomTom, horseSnake, illumination,
+    nanroSignpost, tomTom, horseSnake, illumination, pentopia,
   ) where
 
 import Control.Applicative
@@ -391,3 +391,14 @@ illumination :: ParsePuzzle (OutsideClues C (Maybe Fraction)) (Grid N (Maybe Pla
 illumination = (,)
     (fmap (fmap (fmap unPFraction)) . parseOut)
     parseNodeEdges
+
+newtype Myo = Myo { unMyo :: Myopia }
+instance FromJSON Myo where
+    parseJSON v = do
+        s <- parseJSON v
+        fmap Myo . sequence . map parseChar $ s
+
+pentopia :: ParsePuzzle (Grid C (Maybe Myopia)) (Grid C Bool)
+pentopia = (,)
+    (fmap (fmap (fmap unMyo)) . fmap unRG . parseJSON)
+    parseShadedGrid
