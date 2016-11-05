@@ -34,6 +34,9 @@ import Text.Puzzles.Parsec
 
 type Path = [String]
 
+impossible :: a
+impossible = error "impossible"
+
 field :: Path -> Value -> Parser Value
 field = field' . map T.pack
   where
@@ -44,11 +47,16 @@ field = field' . map T.pack
 parseFrom :: Path -> (Value -> Parser b) -> Value -> Parser b
 parseFrom fs p v = field fs v >>= p
 
+chars :: [Char] -> Char -> Parser Char
+chars cs c = if c `elem` cs
+                 then pure c
+                 else (fail $ "got '" ++ [c] ++ "', expected '" ++ cs ++ "'")
+
+char :: Char -> Char -> Parser Char
+char c = chars [c]
+
 class FromChar a where
     parseChar :: Char -> Parser a
-
-failChar :: Char -> String -> Parser a
-failChar c expect = fail $ "got '" ++ [c] ++ "', expected " ++ expect
 
 instance FromChar Char where
     parseChar = pure
@@ -154,15 +162,12 @@ instance FromString a => FromJSON (SpacedRect a) where
     parseJSON _          = empty
 
 instance FromChar () where
-    parseChar '.' = pure ()
-    parseChar ' ' = pure ()
-    parseChar _   = fail "expected '. '"
+    parseChar = fmap (const ()) . chars ['.', ' ']
 
 data Space = Space
 
 instance FromChar Space where
-    parseChar ' ' = pure Space
-    parseChar _   = fail "expected ' '"
+    parseChar = fmap (const Space) . char ' '
 
 data Blank = Blank
 data Blank' = Blank'
@@ -170,8 +175,7 @@ data Blank'' = Blank''
 data Empty = Empty
 
 instance FromChar Blank where
-    parseChar '.' = pure Blank
-    parseChar _   = fail "expected '.'"
+    parseChar = fmap (const Blank) . char '.'
 
 parseCharJSON :: FromChar a => Value -> Parser a
 parseCharJSON v = do
@@ -182,9 +186,7 @@ instance FromJSON Blank where
    parseJSON = parseCharJSON
 
 instance FromChar Blank' where
-    parseChar '.' = pure Blank'
-    parseChar '-' = pure Blank'
-    parseChar _   = fail "expected '.-'"
+    parseChar = fmap (const Blank') . chars ['.', '-']
 
 instance FromJSON Blank' where
     parseJSON (String ".") = pure Blank'
@@ -192,28 +194,24 @@ instance FromJSON Blank' where
     parseJSON _            = fail "expected '.-'"
 
 instance FromChar Blank'' where
-    parseChar '.' = pure Blank''
-    parseChar ' ' = pure Blank''
-    parseChar '-' = pure Blank''
-    parseChar '|' = pure Blank''
-    parseChar _   = fail "expected '.-| '"
+    parseChar = fmap (const Blank'') . chars ['.', ' ', '-', '|']
 
 instance FromChar Empty where
-    parseChar ' ' = pure Empty
-    parseChar _   = fail "expected ' '"
+    parseChar = fmap (const Empty) . char ' '
 
 instance FromString Blank where
     parseString "." = pure Blank
     parseString _   = fail "expected '.'"
 
 instance FromChar PlainNode where
-    parseChar 'o' = pure PlainNode
-    parseChar _   = fail "expected 'o'"
+    parseChar = fmap (const PlainNode) . char 'o'
 
 instance FromChar MasyuPearl where
-    parseChar '*' = pure MBlack
-    parseChar 'o' = pure MWhite
-    parseChar c   = failChar c "'*' or 'o'"
+    parseChar = fmap f . chars ['*', 'o']
+      where
+        f '*' = MBlack
+        f 'o' = MWhite
+        f _   = impossible
 
 instance FromChar SlalomDiag where
     parseChar '/'  = pure SlalomForward
@@ -221,26 +219,19 @@ instance FromChar SlalomDiag where
     parseChar _    = empty
 
 instance FromChar Black where
-    parseChar 'X' = pure Black
-    parseChar 'x' = pure Black
-    parseChar _   = empty
+    parseChar = fmap (const Black) . chars "xX"
 
 instance FromChar Fish where
-    parseChar '*' = pure Fish
-    parseChar _   = empty
+    parseChar = fmap (const Fish) . char '*'
 
 instance FromChar Star where
-    parseChar '*' = pure Star
-    parseChar _   = empty
+    parseChar = fmap (const Star) . char '*'
 
 instance FromChar MEnd where
-    parseChar 'o' = pure MEnd
-    parseChar '*' = pure MEnd
-    parseChar _   = empty
+    parseChar = fmap (const MEnd) . chars "o*"
 
 instance FromChar GalaxyCentre where
-    parseChar 'o' = pure GalaxyCentre
-    parseChar _   = empty
+    parseChar = fmap (const GalaxyCentre) . char 'o'
 
 instance (FromChar a, FromChar b) => FromChar (Either a b) where
     parseChar c = Left <$> parseChar c <|> Right <$> parseChar c
@@ -283,7 +274,7 @@ rectToIrregGrid :: Rect (Either Empty a) -> Grid Coord a
 rectToIrregGrid = fmap fromRight . Map.filter isRight . rectToCoordGrid
   where
     fromRight (Right r) = r
-    fromRight _         = error "no way"
+    fromRight _         = impossible
 
 newtype Shaded = Shaded { unShaded :: Bool }
 
@@ -534,7 +525,7 @@ parseThermoGrid (Rect _ _ ls) = (,) ints
     ints = either (const Nothing) (either Just (const Nothing)) <$> m
     alphas = fmap fromRight . Map.filter isRight
            . fmap fromRight . Map.filter isRight $ m
-    fromRight (Left _) = error "not right"
+    fromRight (Left _) = impossible
     fromRight (Right x) = x
 
 parseOutsideGrid :: Key k =>
