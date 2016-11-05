@@ -8,7 +8,8 @@ import qualified Data.Text as T
 import Test.Hspec (Spec, describe, it, shouldBe)
 
 import Data.Puzzles.GridShape (Edge(..), N(..), Dir(..))
-import Text.Puzzles.Util (parseCoordGrid, parseAnnotatedEdges)
+import Data.Puzzles.Elements (Relation(..))
+import Text.Puzzles.Util (parseCoordGrid, parseAnnotatedEdges, parseGreaterClue)
 
 packLines :: [String] -> Value
 packLines = String . T.pack . unlines
@@ -44,3 +45,24 @@ spec = do
                            ]
                 parseNonempty v = Map.filter ((/=) ' ') <$> parseAnnotatedEdges v
             parseMaybe parseNonempty y `shouldBe` Just want
+
+    describe "parseGreaterClue" $ do
+        it "parses an empty line" $ do
+            let y = []
+                want = []
+            parseMaybe parseGreaterClue y `shouldBe` Just want
+
+        it "parses a single dot" $ do
+            let y = ['.']
+                want = [RUndetermined]
+            parseMaybe parseGreaterClue y `shouldBe` Just want
+
+        it "parses a single dot" $ do
+            let y = ['.']
+                want = [RUndetermined]
+            parseMaybe parseGreaterClue y `shouldBe` Just want
+
+        it "parses a mixed line" $ do
+            let y = ['.', '<', '.', ' ', '.', '=', '.']
+                want = [RUndetermined, RLess, RUndetermined, REqual]
+            parseMaybe parseGreaterClue y `shouldBe` Just want

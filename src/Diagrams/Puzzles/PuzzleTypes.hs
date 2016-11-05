@@ -20,7 +20,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     starbattle, colorakari, persistenceOfMemory, abctje, kropki,
     statuepark, pentominousBorders, nanroSignpost, tomTom,
     horseSnake, illumination, pentopia,
-    pentominoPipes,
+    pentominoPipes, greaterWall
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
@@ -721,3 +721,23 @@ pentominoPipes = (,)
     ((placeGrid . fmap kropkiDot . fst
       <> drawEdges . snd) . snd
      <> grid gSlither . cellGrid . fst)
+
+greaterWall ::
+    Backend' b =>
+    RenderPuzzle b ([GreaterClue], [GreaterClue]) (Grid C Bool)
+greaterWall = (,)
+    ((plc <> grid gDefault . outsideGrid) . munge)
+    undefined
+  where
+    munge (rs,cs) = OC (map (reverse . greaterClue) (reverse rs)) [] []
+                       (map (map (rotateBy (-1/4))) . map (reverse . greaterClue) $ cs)
+    plc ocs = placeGrid' . Map.mapKeys toPt . multiOutsideClues $ ocs
+      where
+        OC l _ _ _ = ocs
+        h = length l
+        h' = fromIntegral h
+        -- toPoint c = p2 (1/2, 1/2) .+^ r2i (c .--. C 0 0)
+        -- terrible hack
+        toPt c@(C x y) | x < 0  = let p = toPoint c in scaleX 0.7 p .+^ r2 (-1/2, 0)
+                       | y >= h = let p = toPoint c in scaleY 0.7 (p .-^ r2 (0,h')) .+^ r2 (0, 1/2 + h')
+        toPt c = toPoint c

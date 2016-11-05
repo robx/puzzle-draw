@@ -93,3 +93,8 @@ data Fraction =
 data PlainNode = PlainNode
 
 type Myopia = [Dir']
+
+data Relation = RGreater | RLess | REqual | RUndetermined
+    deriving (Show, Eq)
+
+type GreaterClue = [Relation]

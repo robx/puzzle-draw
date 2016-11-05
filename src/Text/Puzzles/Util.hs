@@ -725,3 +725,27 @@ instance FromChar KropkiDot where
     parseChar ' ' = pure KNone
     parseChar '.' = pure KNone
     parseChar _   = fail "expected '*o '"
+
+instance FromChar Relation where
+    parseChar '<' = pure RLess
+    parseChar '>' = pure RGreater
+    parseChar '=' = pure REqual
+    parseChar ' ' = pure RUndetermined
+    parseChar _   = fail "expected '<>= '"
+
+parseGreaterClues :: Value -> Parser [GreaterClue]
+parseGreaterClues v = do
+    Rect _ _ ls <- parseJSON v
+    mapM parseGreaterClue ls
+
+parseGreaterClue :: [Char] -> Parser GreaterClue
+parseGreaterClue [] = pure []
+parseGreaterClue xs = p RUndetermined xs
+  where
+    p rel ('.':cs) = (rel:) <$> q cs
+    p _   (' ':_)  = pure [] -- Rect fills the lines up with spaces...
+    p _   _        = fail "expected '.'"
+    q [] = pure []
+    q (r:cs) = do
+        rel <- parseChar r
+        p rel cs

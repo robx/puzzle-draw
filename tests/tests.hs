@@ -210,6 +210,10 @@ testEdges = do
 testLoops :: Assertion
 testLoops = loops es @=? Just loopsexp
   -- rotations of the loops would be fine
+  -- inside and outside of:
+  --   xxx
+  --   x x
+  --   xxx
   where
     es = [((0,0),(0,1)), ((0,1),(0,2)), ((0,2),(0,3)), ((0,3),(1,3)),
           ((1,3),(2,3)), ((2,3),(3,3)), ((3,3),(3,2)), ((3,2),(3,1)),

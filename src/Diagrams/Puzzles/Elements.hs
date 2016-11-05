@@ -336,3 +336,15 @@ drawMyopia = foldMap d'
     d D = a (0, 0) (0, -1)
     d L = a (0, 0) (-1, 0)
     a p q = arrowBetween' (with & arrowHead .~ tri & lengths .~ verySmall) (p2 p) (p2 q)
+
+greaterClue :: Backend' b => GreaterClue -> [Diagram b]
+greaterClue [] = mempty
+greaterClue (_:rs) = g rs
+  where
+    g [] = [placeholder]
+    g (r:rs') = placeholder : drawRel r : g rs'
+    drawRel RUndetermined = mempty
+    drawRel RLess = drawText "<"
+    drawRel RGreater = drawText ">"
+    drawRel REqual = drawText "="
+    placeholder = circle 0.35 # lwG onepix # dashingG [0.05, 0.05] 0

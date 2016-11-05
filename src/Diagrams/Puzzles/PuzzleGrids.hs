@@ -16,6 +16,7 @@ module Diagrams.Puzzles.PuzzleGrids
     , drawMultiOutsideGrid
     , drawOutsideGridN
     , drawMultiOutsideGridN
+    , placeMultiOutside
     ) where
 
 import Diagrams.Prelude hiding (size, N)

@@ -16,7 +16,7 @@ module Text.Puzzles.PuzzleTypes (
     heyawake, wormhole, pentominous, starbattle, colorakari,
     persistenceOfMemory, abctje, kropki, statuepark, pentominousBorders,
     nanroSignpost, tomTom, horseSnake, illumination, pentopia,
-    pentominoPipes,
+    pentominoPipes, greaterWall
   ) where
 
 import Control.Applicative
@@ -408,3 +408,9 @@ pentominoPipes :: ParsePuzzle (Grid N Char) (Grid N KropkiDot, [Edge N])
 pentominoPipes = (,)
     parseGrid
     parseNodeEdges
+
+greaterWall :: ParsePuzzle ([GreaterClue], [GreaterClue]) (Grid C Bool)
+greaterWall = (,)
+    (\v -> (,) <$> parseFrom ["rows"] parseGreaterClues v
+               <*> parseFrom ["columns"] parseGreaterClues v)
+    parseShadedGrid
