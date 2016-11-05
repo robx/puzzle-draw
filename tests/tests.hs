@@ -9,7 +9,7 @@ import qualified Data.Map as Map
 import Text.Puzzles.Puzzle
 import Data.Puzzles.Elements (Thermometer, MasyuPearl(..))
 import Text.Puzzles.Util
-    (parseChar, parseMultiOutsideClues, parseEdgeGrid)
+    (parseChar, parseMultiOutsideClues, parsePlainEdgeGrid)
 import Text.Puzzles.PuzzleTypes
 import qualified Data.Puzzles.Grid as Grid
 import Data.Puzzles.Pyramid (PyramidSol(..))
@@ -137,10 +137,10 @@ test_multioutside = Right oc @=? res
     oc = OC [[3], [1, 2]] [[1, 0], []] [[0, 0, 1]] [[1, -1]]
          :: OutsideClues Coord [Int]
 
-test_edge_grid :: Assertion
-test_edge_grid = Right (gn, gc, sort es) @=? res'
+test_plain_edge_grid :: Assertion
+test_plain_edge_grid = Right (gn, gc, sort es) @=? res'
   where
-    res = parseEither parseEdgeGrid edgeGrid_1
+    res = parseEither parsePlainEdgeGrid edgeGrid_1
     res' = fmap (\(x, y, e) -> (x, y, sort e)) res
     gn :: Grid.Grid N (Maybe MasyuPearl)
     gn = Map.mapKeys fromCoord . Map.fromList $
@@ -165,7 +165,7 @@ parseDataTests = testGroup "Parsing tests (full puzzles, result checks)"
                                             , [(0, 2), (1, 3), (2, 4)]
                                             , [(4, 0), (4, 1), (3, 2)] ]
     , testCase "parse multioutsideclues" $ test_multioutside
-    , testCase "parse edge grid" $ test_edge_grid
+    , testCase "parse edge grid" $ test_plain_edge_grid
     ]
 
 sorteq :: (Show a, Ord a) => [a] -> [a] -> Assertion

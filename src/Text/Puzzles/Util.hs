@@ -349,9 +349,10 @@ parseIrregGrid v = fromCoordGrid . rectToIrregGrid <$> parseJSON v
 --    | |
 --    o-o
 parsePlainEdges :: Key k => Value -> Parser [Edge k]
-parsePlainEdges v = Map.keys
-                  . Map.filterWithKey p
-                  <$> parseAnnotatedEdges v
+parsePlainEdges v = filterPlainEdges <$> parseAnnotatedEdges v
+
+filterPlainEdges :: Map.Map (Edge k) Char -> [Edge k]
+filterPlainEdges = Map.keys . Map.filterWithKey p
   where
     p (E _ Horiz) '-' = True
     p (E _ Vert)  '|' = True
@@ -379,12 +380,12 @@ parseGridChars = traverse parseChar
 -- E.g. o-*-*-o
 --      |1|2 3
 --      *-o
--- to a grid of masyu pearls, a grid of integers, and some edges.
-parseEdgeGrid :: (FromChar a, FromChar b) =>
-                 Value -> Parser (Grid N a, Grid C b, [Edge N])
+-- to a grid of masyu pearls, a grid of integers, and some annotated edges.
+parseEdgeGrid :: (FromChar a, FromChar b, FromChar c) =>
+                 Value -> Parser (Grid N a, Grid C b, Map.Map (Edge N) c)
 parseEdgeGrid v = uncurry (,,) <$>
                   parseBoth <*>
-                  parsePlainEdges v
+                  parseAnnotatedEdges v
   where
     parseBoth = do
         g <- parseCoordGrid v
@@ -400,6 +401,10 @@ parseEdgeGrid v = uncurry (,,) <$>
         mcell = Map.filterWithKey (const . uncurry (&&) . both odd)  m
         divkeys = Map.mapKeys (both (`div` 2))
 
+parsePlainEdgeGrid :: (FromChar a, FromChar b) =>
+                 Value -> Parser (Grid N a, Grid C b, [Edge N])
+parsePlainEdgeGrid v = (\(a,b,c) -> (a, b, filterPlainEdges c)) <$> parseEdgeGrid v
+
 -- | Parse a grid of edges with values at the nodes.
 --
 -- E.g. o-*-*-o
@@ -408,7 +413,7 @@ parseEdgeGrid v = uncurry (,,) <$>
 -- to a grid of masyu pearls and some edges.
 parseNodeEdges :: FromChar a =>
                   Value -> Parser (Grid N a, [Edge N])
-parseNodeEdges v = proj13 <$> parseEdgeGrid v
+parseNodeEdges v = proj13 <$> parsePlainEdgeGrid v
   where
     proj13 :: (Grid N a, Grid C Char, [Edge N])
               -> (Grid N a, [Edge N])
@@ -416,7 +421,7 @@ parseNodeEdges v = proj13 <$> parseEdgeGrid v
 
 parseCellEdges :: FromChar a =>
                   Value -> Parser (Grid C a, [Edge N])
-parseCellEdges v = proj23 <$> parseEdgeGrid v
+parseCellEdges v = proj23 <$> parsePlainEdgeGrid v
   where
     proj23 :: (Grid N Char, Grid C a, [Edge N])
               -> (Grid C a, [Edge N])
@@ -638,7 +643,7 @@ instance (Key k, FromJSON a) => FromJSON (RefGrid k a) where
 
 parseAfternoonGrid :: Value -> Parser (Grid C Shade)
 parseAfternoonGrid v = do
-    (_, _, es) <- parseEdgeGrid v
+    (_, _, es) <- parsePlainEdgeGrid v
                   :: Parser (Grid N Char, Grid C Char, [Edge N])
     return . toMap $ es
   where
