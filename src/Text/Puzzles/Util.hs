@@ -349,11 +349,9 @@ parseIrregGrid v = fromCoordGrid . rectToIrregGrid <$> parseJSON v
 --    | |
 --    o-o
 parsePlainEdges :: Key k => Value -> Parser [Edge k]
-parsePlainEdges v = fromCoordEdges
-                  . Map.keys
+parsePlainEdges v = Map.keys
                   . Map.filterWithKey p
-                  . readEdges
-                  <$> parseCoordGrid v
+                  <$> parseAnnotatedEdges v
   where
     p (E _ Horiz) '-' = True
     p (E _ Vert)  '|' = True
