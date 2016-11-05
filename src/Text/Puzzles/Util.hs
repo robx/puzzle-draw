@@ -156,13 +156,13 @@ instance FromString a => FromJSON (SpacedRect a) where
 instance FromChar () where
     parseChar '.' = pure ()
     parseChar ' ' = pure ()
-    parseChar _   = empty
+    parseChar _   = fail "expected '. '"
 
 data Space = Space
 
 instance FromChar Space where
     parseChar ' ' = pure Space
-    parseChar _   = empty
+    parseChar _   = fail "expected ' '"
 
 data Blank = Blank
 data Blank' = Blank'
@@ -170,7 +170,7 @@ data Empty = Empty
 
 instance FromChar Blank where
     parseChar '.' = pure Blank
-    parseChar _   = empty
+    parseChar _   = fail "expected '.'"
 
 parseCharJSON :: FromChar a => Value -> Parser a
 parseCharJSON v = do
@@ -183,12 +183,12 @@ instance FromJSON Blank where
 instance FromChar Blank' where
     parseChar '.' = pure Blank'
     parseChar '-' = pure Blank'
-    parseChar _   = empty
+    parseChar _   = fail "expected '.-'"
 
 instance FromJSON Blank' where
     parseJSON (String ".") = pure Blank'
     parseJSON (String "-") = pure Blank'
-    parseJSON _            = empty
+    parseJSON _            = fail "expected '.-'"
 
 instance FromChar Empty where
     parseChar ' ' = pure Empty
@@ -196,11 +196,11 @@ instance FromChar Empty where
 
 instance FromString Blank where
     parseString "." = pure Blank
-    parseString _   = empty
+    parseString _   = fail "expected '.'"
 
 instance FromChar PlainNode where
     parseChar 'o' = pure PlainNode
-    parseChar _   = empty
+    parseChar _   = fail "expected 'o'"
 
 instance FromChar MasyuPearl where
     parseChar '*' = pure MBlack
