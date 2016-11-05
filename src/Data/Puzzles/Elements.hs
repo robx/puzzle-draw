@@ -98,3 +98,5 @@ data Relation = RGreater | RLess | REqual | RUndetermined
     deriving (Show, Eq)
 
 type GreaterClue = [Relation]
+
+data GalaxyCentre = GalaxyCentre

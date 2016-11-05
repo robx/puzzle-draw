@@ -108,6 +108,7 @@ handle f Illumination         = f R.illumination        D.illumination
 handle f Pentopia             = f R.pentopia            D.pentopia
 handle f PentominoPipes       = f R.pentominoPipes      D.pentominoPipes
 handle f GreaterWall          = f R.greaterWall         D.greaterWall
+handle f Galaxies             = f R.galaxies            D.galaxies
 
 -- | Handler that parses puzzle and an optional solution from a pair of
 --   corresponding YAML values, and renders both individually, optionally

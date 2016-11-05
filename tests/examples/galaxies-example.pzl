@@ -1,0 +1,19 @@
+type: galaxies
+puzzle: |
+  . . . . . .
+       o  
+  . . . . . .
+    o  o
+  . . . . . .
+  
+  . . o . .o.
+  
+  . . . . . .
+       o
+  . . . . . .
+solution: |
+  aaaaa
+  bbcde
+  dddde
+  dddde
+  dfffe

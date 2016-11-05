@@ -238,6 +238,10 @@ instance FromChar MEnd where
     parseChar '*' = pure MEnd
     parseChar _   = empty
 
+instance FromChar GalaxyCentre where
+    parseChar 'o' = pure GalaxyCentre
+    parseChar _   = empty
+
 instance (FromChar a, FromChar b) => FromChar (Either a b) where
     parseChar c = Left <$> parseChar c <|> Right <$> parseChar c
 

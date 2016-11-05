@@ -20,7 +20,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     starbattle, colorakari, persistenceOfMemory, abctje, kropki,
     statuepark, pentominousBorders, nanroSignpost, tomTom,
     horseSnake, illumination, pentopia,
-    pentominoPipes, greaterWall
+    pentominoPipes, greaterWall, galaxies
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
@@ -741,3 +741,17 @@ greaterWall = (,)
         toPt c@(C x y) | x < 0  = let p = toPoint c in scaleX 0.7 p .+^ r2 (-1/2, 0)
                        | y >= h = let p = toPoint c in scaleY 0.7 (p .-^ r2 (0,h')) .+^ r2 (0, 1/2 + h')
         toPt c = toPoint c
+
+galaxies ::
+    Backend' b =>
+    RenderPuzzle b (Grid C (), Grid N (), Grid C (), Map.Map (Edge N) ()) AreaGrid
+galaxies = (,)
+    p
+    (p . fst <> drawAreas . snd)
+  where
+    p = (gals <> grid gDashed . fst4)
+    gal = const (kropkiDot KWhite)
+    gals (_, a,b,c) = (placeGrid . fmap gal $ a)
+                   <> (placeGrid . fmap gal $ b)
+                   <> (placeGrid' . fmap gal . Map.mapKeys midPoint $ c)
+    fst4 (a,_,_,_) = a

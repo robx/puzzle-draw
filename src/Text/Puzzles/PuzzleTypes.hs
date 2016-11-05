@@ -16,7 +16,7 @@ module Text.Puzzles.PuzzleTypes (
     heyawake, wormhole, pentominous, starbattle, colorakari,
     persistenceOfMemory, abctje, kropki, statuepark, pentominousBorders,
     nanroSignpost, tomTom, horseSnake, illumination, pentopia,
-    pentominoPipes, greaterWall
+    pentominoPipes, greaterWall, galaxies
   ) where
 
 import Control.Applicative
@@ -414,3 +414,12 @@ greaterWall = (,)
     (\v -> (,) <$> parseFrom ["rows"] parseGreaterClues v
                <*> parseFrom ["columns"] parseGreaterClues v)
     parseShadedGrid
+
+galaxies :: ParsePuzzle (Grid C (), Grid N (), Grid C (), M.Map (Edge N) ()) AreaGrid
+galaxies = (,)
+    (\v -> do (a,b,c) <- parseEdgeGrid v
+              return $ (fmap (const ()) b, f a, f b, f c))
+    parseGrid
+  where
+    toUnit GalaxyCentre = ()
+    f = fmap toUnit . M.mapMaybe id . fmap blankToMaybe''
