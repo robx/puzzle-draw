@@ -6,4 +6,4 @@ cabal-dev
 *.chs.h
 .virthualenv
 examples/*.svg
-
+.stack-work
