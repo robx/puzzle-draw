@@ -113,11 +113,11 @@ onGrid dx dy f = mconcat . map g
     g (p, c) = f c # translate (r2coord p)
     r2coord (x, y) = r2 (dx * fromIntegral x, dy * fromIntegral y)
 
-placeGrid :: (ToPoint k, HasOrigin a, Transformable a, Monoid a, InSpace V2 Double a)
+placeGrid :: (ToPoint k, HasOrigin a, Monoid a, InSpace V2 Double a)
           => Grid k a -> a
 placeGrid = M.foldMapWithKey (moveTo . toPoint)
 
-placeGrid' :: (HasOrigin a, Transformable a, Monoid a, InSpace V2 Double a)
+placeGrid' :: (HasOrigin a, Monoid a, InSpace V2 Double a)
           => Grid (P2 Double) a -> a
 placeGrid' = M.foldMapWithKey moveTo
 

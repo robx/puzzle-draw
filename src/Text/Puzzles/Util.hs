@@ -10,7 +10,6 @@ import Control.Applicative
 import Control.Arrow
 import Control.Monad hiding (mapM)
 
-import Data.Hashable
 import Data.List (sortBy, intersect)
 import Data.Maybe (catMaybes, fromMaybe, isJust, fromJust)
 import Data.Ord (comparing)
@@ -289,7 +288,7 @@ parseGrid :: (Key k, FromChar a)
           => Value -> Parser (Grid k a)
 parseGrid v = fromCoordGrid <$> parseCoordGrid v
 
-parseGridWith :: (Key k, FromChar a)
+parseGridWith :: Key k
               => (Char -> Parser a) -> Value -> Parser (Grid k a)
 parseGridWith pChar v = traverse pChar =<< parseGrid v
 
@@ -307,7 +306,7 @@ parseCharMap v = do
     guard . all (\k -> length k == 1) . Map.keys $ m
     return $ Map.mapKeys head m
 
-parseExtGrid' :: (Key k, FromChar a, FromJSON a, FromChar b)
+parseExtGrid' :: (Key k, FromJSON a, FromChar b)
               => (a -> b) -> Value -> Parser (Grid k b)
 parseExtGrid' _ v@(String _) = parseGrid v
 parseExtGrid' f v = do
@@ -413,16 +412,16 @@ parseNodeEdges :: FromChar a =>
                   Value -> Parser (Grid N a, [Edge N])
 parseNodeEdges v = proj13 <$> parseEdgeGrid v
   where
-    proj13 :: FromChar a => (Grid N a, Grid C Char, [Edge N])
-                         -> (Grid N a, [Edge N])
+    proj13 :: (Grid N a, Grid C Char, [Edge N])
+              -> (Grid N a, [Edge N])
     proj13 (x,_,z) = (x,z)
 
 parseCellEdges :: FromChar a =>
                   Value -> Parser (Grid C a, [Edge N])
 parseCellEdges v = proj23 <$> parseEdgeGrid v
   where
-    proj23 :: FromChar a => (Grid N Char, Grid C a, [Edge N])
-                         -> (Grid C a, [Edge N])
+    proj23 :: (Grid N Char, Grid C a, [Edge N])
+              -> (Grid C a, [Edge N])
     proj23 (_,y,z) = (y,z)
 
 data HalfDirs = HalfDirs {unHalfDirs :: [Dir]}
@@ -608,10 +607,10 @@ instance FromJSON PSlovakClue where
 
 newtype RefGrid k a = RefGrid { unRG :: Grid k (Maybe a) }
 
-hashmaptomap :: (Eq a, Hashable a, Ord a) => HMap.HashMap a b -> Map.Map a b
+hashmaptomap :: Ord a => HMap.HashMap a b -> Map.Map a b
 hashmaptomap = Map.fromList . HMap.toList
 
-compose :: (Ord a, Ord b) => Map.Map a b -> Map.Map b c -> Maybe (Map.Map a c)
+compose :: Ord b => Map.Map a b -> Map.Map b c -> Maybe (Map.Map a c)
 compose m1 m2 = mapM (`Map.lookup` m2) m1
 
 newtype MaybeMap k a = MM { unMaybeMap :: Map.Map k (Maybe a) }
@@ -625,9 +624,9 @@ instance Foldable (MaybeMap k) where
 instance Traversable (MaybeMap k) where
     traverse f m = MM <$> traverse (traverse f) (unMaybeMap m)
 
-compose' :: (Ord a, Ord b) => Map.Map a (Maybe b)
-                           -> Map.Map b c
-                           -> Maybe (Map.Map a (Maybe c))
+compose' :: Ord b => Map.Map a (Maybe b)
+                  -> Map.Map b c
+                  -> Maybe (Map.Map a (Maybe c))
 compose' m1 m2 = unMaybeMap <$> mapM (`Map.lookup` m2) (MM m1)
 
 instance (Key k, FromJSON a) => FromJSON (RefGrid k a) where

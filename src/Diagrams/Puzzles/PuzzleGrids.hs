@@ -61,13 +61,13 @@ drawTightGrid d g = (placeGrid . fmap (drawTight d) $ g)
     where (sx, sy) = size (Map.mapKeys toCoord g)
 
 placeMultiOutside :: (Ord k, FromCoord k, ToPoint k,
-                      HasOrigin a, Transformable a, Monoid a,
+                      HasOrigin a, Monoid a,
                       InSpace V2 Double a)
                   => OutsideClues k [a] -> a
 placeMultiOutside = placeGrid . multiOutsideClues
 
 placeOutside :: (Ord k, FromCoord k, ToPoint k,
-                 HasOrigin a, Transformable a, Monoid a,
+                 HasOrigin a, Monoid a,
                  InSpace V2 Double a)
              => OutsideClues k (Maybe a) -> a
 placeOutside = placeMultiOutside . fmap maybeToList
