@@ -43,14 +43,20 @@ specs = mapM (uncurry testSpec)
 tests :: [TestTree]
 tests = [ parseUtilTests, parseTests, parseDataTests, dataTests ]
 
-testParsePzl, testParseSol, testNonparsePzl, testNonparseSol ::
-    (Show a, Show b) => String -> ParsePuzzle a b -> Value -> TestTree
+testParsePzl ::
+    Show a => String -> ParsePuzzle a b -> Value -> TestTree
 testParsePzl name parser yaml =
     testCase ("parse " ++ name) $ testParse (fst parser) yaml
+testParseSol ::
+    Show b => String -> ParsePuzzle a b -> Value -> TestTree
 testParseSol name parser yaml =
     testCase ("parse " ++ name ++ " (sol)") $ testParse (snd parser) yaml
+testNonparsePzl ::
+    Show a => String -> ParsePuzzle a b -> Value -> TestTree
 testNonparsePzl name parser yaml =
     testCase ("don't parse broken " ++ name) $ testNonparse (fst parser) yaml
+testNonparseSol ::
+    Show b => String -> ParsePuzzle a b -> Value -> TestTree
 testNonparseSol name parser yaml =
     testCase ("don't parse broken " ++ name ++ " (sol)") $
         testNonparse (snd parser) yaml
