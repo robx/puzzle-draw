@@ -166,6 +166,7 @@ instance FromChar Space where
 
 data Blank = Blank
 data Blank' = Blank'
+data Blank'' = Blank''
 data Empty = Empty
 
 instance FromChar Blank where
@@ -189,6 +190,13 @@ instance FromJSON Blank' where
     parseJSON (String ".") = pure Blank'
     parseJSON (String "-") = pure Blank'
     parseJSON _            = fail "expected '.-'"
+
+instance FromChar Blank'' where
+    parseChar '.' = pure Blank''
+    parseChar ' ' = pure Blank''
+    parseChar '-' = pure Blank''
+    parseChar '|' = pure Blank''
+    parseChar _   = fail "expected '.-| '"
 
 instance FromChar Empty where
     parseChar ' ' = pure Empty
@@ -263,6 +271,9 @@ blankToMaybe = either (const Nothing) Just
 
 blankToMaybe' :: Either Blank' a -> Maybe a
 blankToMaybe' = either (const Nothing) Just
+
+blankToMaybe'' :: Either Blank'' a -> Maybe a
+blankToMaybe'' = either (const Nothing) Just
 
 rectToIrregGrid :: Rect (Either Empty a) -> Grid Coord a
 rectToIrregGrid = fmap fromRight . Map.filter isRight . rectToCoordGrid
