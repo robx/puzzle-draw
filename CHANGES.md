@@ -1,27 +1,9 @@
-* New puzzle types:
-  - Angle Loop
-  - Shikaku
-  - Slovak Sums
-  - Dominos, Blackout Dominos, Domino Pills
-  - Multiple Fences
-  - Anglers
-  - Checkered Fillomino, Loop Fillomino
-  - Numberlink
-  - Skyscrapers Star Battle
-  - Summon
-  - Baca
-  - Buchstabensalat
-  - Doppelblock, Sudoku Doppelblock
-  - Loopki
-  - Scrabble
-  - Neighbors
-  - Starwars
-  - Heyawake
-  - Pentominous
+0.2.0.0: 20161211
+-----------------
+
+* Upgrade diagrams version.
+* Add various new puzzle types.
 * Add solution code markers.
-* Nurikabe no longer has a spaced format; accepts multidigit
-  clues via replacements, as does Fillomino.
-* Compass now uses a dashed grid.
 
 0.1.0.4: 20141115
 -----------------
