@@ -18,5 +18,9 @@ parseCode (Object v) = fmap catMaybes . sequenceA $
     , fmap (LabelsN . fmap (fmap unAlpha . blankToMaybe)) <$> (do
         v' <- v .:? "node_labels"
         sequenceA (parseGrid <$> v'))
+    , fmap LRows'   <$> (v .:? "cell_rows_bottom_labeled" >>= traverse parseCharMap)
+    , fmap LCols    <$> (v .:? "cell_cols_labeled" >>= traverse parseCharMap)
+    , fmap LRowsN'  <$> (v .:? "node_rows_bottom_labeled" >>= traverse parseCharMap)
+    , fmap LColsN   <$> (v .:? "node_cols_labeled" >>= traverse parseCharMap)
     ] 
 parseCode _          = fail "expected object"
