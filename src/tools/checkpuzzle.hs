@@ -12,6 +12,7 @@ import qualified Text.Puzzles.PuzzleTypes as T
 import Options.Applicative
 import Control.Monad
 import Data.Maybe
+import Data.Monoid
 import Data.List (intercalate, sort)
 
 import System.Exit

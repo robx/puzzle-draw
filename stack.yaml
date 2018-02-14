@@ -1,3 +1,6 @@
+nix:
+  enable: true
+  shell-file: stack-shell.nix
 flags:
   puzzle-draw:
     cairo: true
@@ -6,4 +9,4 @@ ghc-options:
 packages:
 - '.'
 #- '../diagrams-lib'
-resolver: lts-7.7
+resolver: lts-8.24
