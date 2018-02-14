@@ -20,7 +20,7 @@ module Diagrams.Puzzles.PuzzleTypes (
     starbattle, colorakari, persistenceOfMemory, abctje, kropki,
     statuepark, pentominousBorders, nanroSignpost, tomTom,
     horseSnake, illumination, pentopia,
-    pentominoPipes, greaterWall, galaxies
+    pentominoPipes, greaterWall, galaxies, mines
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
@@ -755,3 +755,12 @@ galaxies = (,)
                    <> (placeGrid . fmap gal $ b)
                    <> (placeGrid' . fmap gal . Map.mapKeys midPoint $ c)
     fst4 (a,_,_,_) = a
+
+mines ::
+    Backend' b =>
+    RenderPuzzle b (Grid C (Maybe Int)) ShadedGrid
+mines = (,)
+    p
+    (p . fst <> placeGrid . fmap (const (pearl MBlack)) . Map.filter id . snd)
+  where
+    p = placeGrid . fmap drawInt . clues <> grid gDefault

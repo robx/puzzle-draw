@@ -109,6 +109,7 @@ handle f Pentopia             = f R.pentopia            D.pentopia
 handle f PentominoPipes       = f R.pentominoPipes      D.pentominoPipes
 handle f GreaterWall          = f R.greaterWall         D.greaterWall
 handle f Galaxies             = f R.galaxies            D.galaxies
+handle f Mines                = f R.mines               D.mines
 
 -- | Handler that parses puzzle and an optional solution from a pair of
 --   corresponding YAML values, and renders both individually, optionally

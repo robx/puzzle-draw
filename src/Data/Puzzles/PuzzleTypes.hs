@@ -88,6 +88,7 @@ data PuzzleType = LITS
                 | PentominoPipes
                 | GreaterWall
                 | Galaxies
+                | Mines
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -167,6 +168,7 @@ typeNames = [ (LITS, "lits")
             , (PentominoPipes, "pentomino-pipes")
             , (GreaterWall, "greaterwall")
             , (Galaxies, "galaxies")
+            , (Mines, "mines")
             ]
 
 -- | Look up a puzzle type by name.

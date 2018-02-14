@@ -16,7 +16,7 @@ module Text.Puzzles.PuzzleTypes (
     heyawake, wormhole, pentominous, starbattle, colorakari,
     persistenceOfMemory, abctje, kropki, statuepark, pentominousBorders,
     nanroSignpost, tomTom, horseSnake, illumination, pentopia,
-    pentominoPipes, greaterWall, galaxies
+    pentominoPipes, greaterWall, galaxies, mines
   ) where
 
 import Control.Applicative
@@ -423,3 +423,6 @@ galaxies = (,)
   where
     toUnit GalaxyCentre = ()
     f = fmap toUnit . M.mapMaybe id . fmap blankToMaybe''
+
+mines :: ParsePuzzle (Grid C (Maybe Int)) (Grid C Bool)
+mines = (parseClueGrid, parseShadedGrid)
