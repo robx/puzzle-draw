@@ -16,5 +16,5 @@ in haskell.lib.buildStackProject {
   inherit ghc;
   buildInputs = native_libs;
   name = "puzzleDrawBuildEnv";
-  src = ./.;
+  src = null;
 }
