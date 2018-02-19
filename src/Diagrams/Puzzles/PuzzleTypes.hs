@@ -777,9 +777,13 @@ tents = (,)
         <> placeGrid . fmap drawTree . clues . snd
         <> grid gDashed . snd
 
-pentominoSums :: Backend' b => RenderPuzzle b (OutsideClues C [String]) ()
+pentominoSums :: Backend' b => RenderPuzzle b (OutsideClues C [String], String) ()
 pentominoSums =
-    (fst coral, unimplemented "pentomino sums solution")
+    (p, unimplemented "pentomino sums solution")
+  where
+    p = fst coral . fst <> n
+    n (ocs, ds) = placeNoteTL (0, h ocs) (drawText ds # scale 0.8)
+    h = snd . outsideSize
 
 coralLits :: Backend' b => RenderPuzzle b (OutsideClues C [String]) ()
 coralLits = (fst coral, unimplemented "coral lits solution")

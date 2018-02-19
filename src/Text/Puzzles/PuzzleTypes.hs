@@ -438,8 +438,11 @@ tents =
         <$> parseFrom ["clues"] parseOut v
         <*> parseFrom ["grid"] parseClueGrid v
 
-pentominoSums :: ParsePuzzle (OutsideClues C [String]) ()
-pentominoSums = (fst coral, \_ -> pure ())
+pentominoSums :: ParsePuzzle (OutsideClues C [String], String) ()
+pentominoSums = (p, \_ -> pure ())
+  where
+    p v@(Object o) = (,) <$> (fst coral) v <*> o .: "digits"
+    p _ = empty
 
 coralLits :: ParsePuzzle (OutsideClues C [String]) ()
 coralLits = (fst coral, \_ -> pure ())
