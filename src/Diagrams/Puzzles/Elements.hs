@@ -245,7 +245,16 @@ drawStar :: Backend' b =>
 drawStar Star = fc black . stroke . star (StarSkip 2) $ pentagon 0.3
 
 drawTree :: Backend' b => Tree -> Diagram b
-drawTree Tree = drawChar 'B'
+drawTree Tree =
+    fit 0.5 $ centerXY $ scaleY 0.5 $ fc black $ mconcat
+        [ rect 0.1 0.6 # moveTo (p2 (0.5, 0.7))
+        , circle 0.1   # moveTo (p2 (0.4, 0.9))
+        , circle 0.2   # moveTo (p2 (0.6, 1.0))
+        , circle 0.2   # moveTo (p2 (0.4, 1.2))
+        , circle 0.16  # moveTo (p2 (0.6, 1.3))
+        , circle 0.15  # moveTo (p2 (0.45, 1.45))
+        , circle 0.1   # moveTo (p2 (0.7, 1.4))
+        ]
 
 drawTent :: Backend' b => Tent -> Diagram b
 drawTent Tent = drawChar 'Z'
