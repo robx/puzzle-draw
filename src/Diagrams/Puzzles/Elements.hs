@@ -39,6 +39,10 @@ drawEnd :: Backend' b =>
        MEnd -> Diagram b
 drawEnd MEnd = smallPearl MBlack
 
+drawBigEnd :: Backend' b =>
+       MEnd -> Diagram b
+drawBigEnd MEnd = pearl MBlack
+
 -- | The up-right diagonal of a centered unit square.
 ur :: Path V2 Double
 ur = fromVertices [p2 (-1/2,-1/2), p2 (1/2,1/2)]

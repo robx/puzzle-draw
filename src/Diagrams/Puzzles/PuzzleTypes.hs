@@ -693,7 +693,7 @@ horseSnake = (,)
     p
     (solstyle . drawEdges . snd <> p . fst)
   where
-    p = (placeGrid . fmap (either drawEnd drawInt) . clues <> grid gDashed)
+    p = (placeGrid . fmap (either drawBigEnd drawInt) . clues <> grid gDashed)
 
 illumination ::
     Backend' b =>
@@ -792,7 +792,7 @@ snake = (,)
     p
     (unimplemented "snake solution")
   where
-    p = placeGrid . fmap drawEnd . clues . snd
+    p = placeGrid . fmap drawBigEnd . clues . snd
         <> placeGrid . fmap drawInt . clues . outsideClues . fst
         <> grid gDefault . snd
 
