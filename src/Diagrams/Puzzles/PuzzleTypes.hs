@@ -764,7 +764,7 @@ mines = (,)
     p
     (p . fst <> placeGrid . fmap (const (pearl MBlack)) . Map.filter id . snd)
   where
-    p = placeGrid . fmap drawInt . clues <> grid gDefault
+    p = grid gDefault <> placeGrid . fmap (\i -> drawInt i <> fillBG lightgray) . clues
 
 tents ::
     Backend' b =>
