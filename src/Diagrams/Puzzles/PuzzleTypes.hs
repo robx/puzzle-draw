@@ -20,7 +20,8 @@ module Diagrams.Puzzles.PuzzleTypes (
     starbattle, colorakari, persistenceOfMemory, abctje, kropki,
     statuepark, pentominousBorders, nanroSignpost, tomTom,
     horseSnake, illumination, pentopia,
-    pentominoPipes, greaterWall, galaxies, mines
+    pentominoPipes, greaterWall, galaxies, mines, tents,
+    pentominoSums, coralLits, coralLitso, snake, countryRoad
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
@@ -764,3 +765,43 @@ mines = (,)
     (p . fst <> placeGrid . fmap (const (pearl MBlack)) . Map.filter id . snd)
   where
     p = placeGrid . fmap drawInt . clues <> grid gDefault
+
+tents ::
+    Backend' b =>
+    RenderPuzzle b (OutsideClues C (Maybe Int), Grid C (Maybe Tree)) (Grid C (Maybe Tent))
+tents = (,)
+    p
+    (p . fst <> placeGrid . fmap drawTent . clues . snd)
+  where
+    p = placeGrid . fmap drawInt . clues . outsideClues . fst
+        <> placeGrid . fmap drawTree . clues . snd
+        <> grid gDefault . snd
+
+pentominoSums :: Backend' b => RenderPuzzle b (OutsideClues C [String]) ()
+pentominoSums =
+    (fst coral, unimplemented "pentomino sums solution")
+
+coralLits :: Backend' b => RenderPuzzle b (OutsideClues C [String]) ()
+coralLits = (fst coral, unimplemented "coral lits solution")
+
+coralLitso :: Backend' b => RenderPuzzle b (OutsideClues C [String]) ()
+coralLitso = (fst coral, unimplemented "coral litso solution")
+
+snake :: Backend' b => RenderPuzzle b (OutsideClues C (Maybe Int), Grid C (Maybe MEnd)) ()
+snake = (,)
+    p
+    (unimplemented "snake solution")
+  where
+    p = placeGrid . fmap drawEnd . clues . snd
+        <> placeGrid . fmap drawInt . clues . outsideClues . fst
+        <> grid gDefault . snd
+
+countryRoad ::
+    Backend' b =>
+    RenderPuzzle b (AreaGrid, Grid C (Maybe Int)) ()
+countryRoad =
+    (fst nanroSignpost, unimplemented "country road solution")
+
+unimplemented :: String -> a
+unimplemented x = error (x ++ " unimplemented")
+

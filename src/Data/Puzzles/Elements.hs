@@ -100,3 +100,7 @@ data Relation = RGreater | RLess | REqual | RUndetermined
 type GreaterClue = [Relation]
 
 data GalaxyCentre = GalaxyCentre
+
+data Tent = Tent
+
+data Tree = Tree

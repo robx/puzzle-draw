@@ -110,6 +110,13 @@ handle f PentominoPipes       = f R.pentominoPipes      D.pentominoPipes
 handle f GreaterWall          = f R.greaterWall         D.greaterWall
 handle f Galaxies             = f R.galaxies            D.galaxies
 handle f Mines                = f R.mines               D.mines
+handle f Tents                = f R.tents               D.tents
+handle f PentominoSums        = f R.pentominoSums       D.pentominoSums
+handle f CoralLITS            = f R.coralLits           D.coralLits
+handle f CoralLITSO           = f R.coralLitso          D.coralLitso
+handle f Snake                = f R.snake               D.snake
+handle f CountryRoad          = f R.countryRoad         D.countryRoad
+
 
 -- | Handler that parses puzzle and an optional solution from a pair of
 --   corresponding YAML values, and renders both individually, optionally

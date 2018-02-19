@@ -16,7 +16,8 @@ module Text.Puzzles.PuzzleTypes (
     heyawake, wormhole, pentominous, starbattle, colorakari,
     persistenceOfMemory, abctje, kropki, statuepark, pentominousBorders,
     nanroSignpost, tomTom, horseSnake, illumination, pentopia,
-    pentominoPipes, greaterWall, galaxies, mines
+    pentominoPipes, greaterWall, galaxies, mines, tents,
+    pentominoSums, coralLits, coralLitso, snake, countryRoad
   ) where
 
 import Control.Applicative
@@ -426,3 +427,32 @@ galaxies = (,)
 
 mines :: ParsePuzzle (Grid C (Maybe Int)) (Grid C Bool)
 mines = (parseClueGrid, parseShadedGrid)
+
+tents :: ParsePuzzle (OutsideClues C (Maybe Int), Grid C (Maybe Tree)) (Grid C (Maybe Tent))
+tents =
+    ( p
+    , parseClueGrid
+    )
+  where
+    p v = (,)
+        <$> parseFrom ["clues"] parseOut v
+        <*> parseFrom ["grid"] parseClueGrid v
+
+pentominoSums :: ParsePuzzle (OutsideClues C [String]) ()
+pentominoSums = (fst coral, \_ -> pure ())
+
+coralLits :: ParsePuzzle (OutsideClues C [String]) ()
+coralLits = (fst coral, \_ -> pure ())
+
+coralLitso :: ParsePuzzle (OutsideClues C [String]) ()
+coralLitso = (fst coral, \_ -> pure ())
+
+snake :: ParsePuzzle (OutsideClues C (Maybe Int), Grid C (Maybe MEnd)) ()
+snake = (p, \_ -> pure ())
+  where
+    p v = (,)
+        <$> parseFrom ["clues"] parseOut v
+        <*> parseFrom ["grid"] parseClueGrid v
+
+countryRoad :: ParsePuzzle (AreaGrid, Grid C (Maybe Int)) ()
+countryRoad = (,) (fst nanroSignpost) (\_ -> pure ())

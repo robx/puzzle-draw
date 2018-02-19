@@ -244,6 +244,12 @@ drawStar :: Backend' b =>
             Star -> Diagram b
 drawStar Star = fc black . stroke . star (StarSkip 2) $ pentagon 0.3
 
+drawTree :: Backend' b => Tree -> Diagram b
+drawTree Tree = drawChar 'B'
+
+drawTent :: Backend' b => Tent -> Diagram b
+drawTent Tent = drawChar 'Z'
+
 vertexLoop :: VertexLoop -> Located (Trail' Loop V2 Double)
 vertexLoop = mapLoc closeLine . fromVertices . map toPoint
 

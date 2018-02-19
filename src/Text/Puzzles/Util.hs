@@ -233,6 +233,12 @@ instance FromChar MEnd where
 instance FromChar GalaxyCentre where
     parseChar = fmap (const GalaxyCentre) . char 'o'
 
+instance FromChar Tree where
+    parseChar = fmap (const Tree) . char '*'
+
+instance FromChar Tent where
+    parseChar = fmap (const Tent) . char 'o'
+
 instance (FromChar a, FromChar b) => FromChar (Either a b) where
     parseChar c = Left <$> parseChar c <|> Right <$> parseChar c
 
