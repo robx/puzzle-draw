@@ -775,7 +775,7 @@ tents = (,)
   where
     p = placeGrid . fmap drawInt . clues . outsideClues . fst
         <> placeGrid . fmap drawTree . clues . snd
-        <> grid gDefault . snd
+        <> grid gDashed . snd
 
 pentominoSums :: Backend' b => RenderPuzzle b (OutsideClues C [String]) ()
 pentominoSums =
