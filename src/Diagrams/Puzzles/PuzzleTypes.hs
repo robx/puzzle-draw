@@ -44,6 +44,9 @@ import Data.Puzzles.GridShape
 import Data.Puzzles.Elements
 import qualified Data.Puzzles.Pyramid as Pyr
 
+unimplemented :: String -> a
+unimplemented x = error (x ++ " unimplemented")
+
 lits :: Backend' b => RenderPuzzle b AreaGrid ShadedGrid
 lits = (,)
     (grid gDefault <> drawAreasGray)
@@ -791,21 +794,23 @@ coralLits = (fst coral, unimplemented "coral lits solution")
 coralLitso :: Backend' b => RenderPuzzle b (OutsideClues C [String]) ()
 coralLitso = (fst coral, unimplemented "coral litso solution")
 
-snake :: Backend' b => RenderPuzzle b (OutsideClues C (Maybe Int), Grid C (Maybe MEnd)) ()
-snake = (,)
-    p
-    (unimplemented "snake solution")
+snake ::
+    Backend' b =>
+    RenderPuzzle b (OutsideClues C (Maybe Int), Grid C (Maybe MEnd))
+                   (Grid C (Maybe (Either MEnd Black)))
+snake = (p,s)
   where
-    p = placeGrid . fmap drawBigEnd . clues . snd
-        <> placeGrid . fmap drawInt . clues . outsideClues . fst
+    cs = placeGrid . fmap drawInt . clues . outsideClues . fst
+    p = cs
+        <> placeGrid . fmap drawBigEnd . clues . snd
         <> grid gDefault . snd
+    s = cs . fst
+        <> grid gDefault . snd
+        <> placeGrid . fmap (either (drawBigEnd <> gr) gr) . clues . snd
+    gr = const (fillBG gray)
 
 countryRoad ::
     Backend' b =>
     RenderPuzzle b (AreaGrid, Grid C (Maybe Int)) ()
 countryRoad =
     (fst nanroSignpost, unimplemented "country road solution")
-
-unimplemented :: String -> a
-unimplemented x = error (x ++ " unimplemented")
-

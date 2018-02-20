@@ -450,8 +450,8 @@ coralLits = (fst coral, \_ -> pure ())
 coralLitso :: ParsePuzzle (OutsideClues C [String]) ()
 coralLitso = (fst coral, \_ -> pure ())
 
-snake :: ParsePuzzle (OutsideClues C (Maybe Int), Grid C (Maybe MEnd)) ()
-snake = (p, \_ -> pure ())
+snake :: ParsePuzzle (OutsideClues C (Maybe Int), Grid C (Maybe MEnd)) (Grid C (Maybe (Either MEnd Black)))
+snake = (p, parseClueGrid)
   where
     p v = (,)
         <$> parseFrom ["clues"] parseOut v
