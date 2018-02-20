@@ -428,12 +428,15 @@ galaxies = (,)
 mines :: ParsePuzzle (Grid C (Maybe Int)) (Grid C Bool)
 mines = (parseClueGrid, parseShadedGrid)
 
-tents :: ParsePuzzle (OutsideClues C (Maybe Int), Grid C (Maybe Tree)) (Grid C (Maybe Tent))
+tents :: ParsePuzzle (OutsideClues C (Maybe Int), Grid C (Maybe Tree)) (Grid C (Maybe PlacedTent))
 tents =
     ( p
-    , parseClueGrid
+    , fmap (fmap fromTentOrTree) . parseClueGrid
     )
   where
+    fromTentOrTree :: Maybe (Either Tree PlacedTent) -> Maybe PlacedTent
+    fromTentOrTree = maybe Nothing (either (const Nothing) Just)
+
     p v = (,)
         <$> parseFrom ["clues"] parseOut v
         <*> parseFrom ["grid"] parseClueGrid v

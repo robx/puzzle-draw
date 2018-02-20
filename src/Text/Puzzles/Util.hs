@@ -236,8 +236,8 @@ instance FromChar GalaxyCentre where
 instance FromChar Tree where
     parseChar = fmap (const Tree) . char '*'
 
-instance FromChar Tent where
-    parseChar = fmap (const Tent) . char 'o'
+instance FromChar PlacedTent where
+    parseChar = fmap Tent . parseChar
 
 instance (FromChar a, FromChar b) => FromChar (Either a b) where
     parseChar c = Left <$> parseChar c <|> Right <$> parseChar c
@@ -460,10 +460,14 @@ parseEdges v = do
 
 instance FromChar Dir' where
     parseChar 'u' = pure U
+    parseChar 'U' = pure U
     parseChar 'd' = pure D
+    parseChar 'D' = pure D
     parseChar 'r' = pure R
+    parseChar 'R' = pure R
     parseChar 'l' = pure L
-    parseChar _   = fail "expected 'udrl'"
+    parseChar 'L' = pure L
+    parseChar _   = fail "expected 'uUdDrRlL'"
 
 newtype Dirs' = Dirs' { unDirs' :: [Dir'] }
 

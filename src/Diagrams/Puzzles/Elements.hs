@@ -260,8 +260,24 @@ drawTree Tree =
         , circle 0.1   # moveTo (p2 (0.7, 1.4))
         ]
 
-drawTent :: Backend' b => Tent -> Diagram b
-drawTent Tent = drawChar 'Z'
+drawTent :: Backend' b => PlacedTent -> Diagram b
+drawTent (Tent d) = tent <> lwG gridwidth (stroke conn)
+  where
+    conn :: Path V2 Double
+    conn = p2 (0, 0) ~~ p2 (case d of
+        U -> (0, 1)
+        R -> (1, 0)
+        D -> (0, -1)
+        L -> (-1, 0))
+
+    tent = fit 0.7 $ centerXY $ lwG 0 $ mconcat
+        [ rect 10 (1/4) # fc black
+        , shape [(-2, 0), (0, 4), (2, 0), (-2, 0)] # fc white
+        , shape [(-4, 0), (0, 8), (4, 0), (-4, 0)] # fc black
+        , shape [(0, 8), (-1/2, 8 + 1), (-1, 8 + 1 - 1/4), (0, 8 + 1 - 1/4 - 2), (0, 8) ] # fc black
+        , shape [(0, 8), (1/2, 8 + 1), (1, 8 + 1 - 1/4), (0, 8 + 1 - 1/4 - 2), (0, 8) ] # fc black
+        ]
+    shape = strokeLocLoop . fromVertices . map p2
 
 vertexLoop :: VertexLoop -> Located (Trail' Loop V2 Double)
 vertexLoop = mapLoc closeLine . fromVertices . map toPoint

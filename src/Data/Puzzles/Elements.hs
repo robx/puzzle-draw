@@ -101,6 +101,6 @@ type GreaterClue = [Relation]
 
 data GalaxyCentre = GalaxyCentre
 
-data Tent = Tent
+data PlacedTent = Tent Dir'
 
 data Tree = Tree

@@ -771,7 +771,7 @@ mines = (,)
 
 tents ::
     Backend' b =>
-    RenderPuzzle b (OutsideClues C (Maybe Int), Grid C (Maybe Tree)) (Grid C (Maybe Tent))
+    RenderPuzzle b (OutsideClues C (Maybe Int), Grid C (Maybe Tree)) (Grid C (Maybe PlacedTent))
 tents = (,)
     p
     (p . fst <> placeGrid . fmap drawTent . clues . snd)
