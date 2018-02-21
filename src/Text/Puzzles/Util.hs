@@ -81,7 +81,7 @@ newtype Alpha = Alpha { unAlpha :: Char }
 instance FromChar Alpha where
     parseChar c
         | isAlpha c  = Alpha <$> parseChar c
-        | otherwise  = empty
+        | otherwise  = fail $ "expected a letter"
 
 -- | Helper to parse strings from number-formatted YAML fields.
 --   Somewhat dodgy.

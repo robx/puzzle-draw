@@ -447,8 +447,10 @@ pentominoSums = (p, \_ -> pure ())
     p v@(Object o) = (,) <$> (fst coral) v <*> o .: "digits"
     p _ = empty
 
-coralLits :: ParsePuzzle (OutsideClues C [String]) ()
-coralLits = (fst coral, \_ -> pure ())
+coralLits :: ParsePuzzle (OutsideClues C [String]) (Grid C (Maybe Char))
+coralLits = (,)
+    (fst coral)
+    (fmap (fmap (fmap unAlpha)) . parseClueGrid)
 
 coralLitso :: ParsePuzzle (OutsideClues C [String]) ()
 coralLitso = (fst coral, \_ -> pure ())

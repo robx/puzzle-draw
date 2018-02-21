@@ -18,6 +18,7 @@ module Data.Puzzles.Grid
     , dominoGrid
 
     , borders
+    , skeletons
     , edgesGen
     , colour
     , collectLines
@@ -61,13 +62,16 @@ edgesGen p n m = filter (uncurry p' . ends . dualE) es
     p'' Nothing (Just e)  = n e
     p'' _        _        = False
 
-
 nodes :: Grid N a -> Set.Set N
 nodes = Map.keysSet
 
 -- | The inner edges of a grid that separate unequal cells.
 borders :: Eq a => Grid C a -> [Edge N]
 borders = edgesGen (/=) (const False)
+
+-- | The skeletons of connected equal cells.
+skeletons :: Eq a => Grid C a -> [Edge C]
+skeletons = map dualE . edgesGen (==) (const False)
 
 corners :: C -> [N]
 corners c = map (.+^ (c .-. C 0 0)) [N 0 0, N 1 0, N 0 1, N 1 1]

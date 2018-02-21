@@ -788,8 +788,16 @@ pentominoSums =
     n (ocs, ds) = placeNoteTL (0, h ocs) (drawText ds # scale 0.8)
     h = snd . outsideSize
 
-coralLits :: Backend' b => RenderPuzzle b (OutsideClues C [String]) ()
-coralLits = (fst coral, unimplemented "coral lits solution")
+coralLits ::
+    Backend' b =>
+    RenderPuzzle b (OutsideClues C [String]) (Grid C (Maybe Char))
+coralLits = (,)
+    (fst coral)
+    (skeletonStyle . drawEdges . skeletons . clues . snd
+     <> fst coral . fst
+     <> placeGrid . fmap (const (fillBG gray)) . clues . snd)
+  where
+    skeletonStyle = lc white . lwG (3 * onepix)
 
 coralLitso :: Backend' b => RenderPuzzle b (OutsideClues C [String]) ()
 coralLitso = (fst coral, unimplemented "coral litso solution")
