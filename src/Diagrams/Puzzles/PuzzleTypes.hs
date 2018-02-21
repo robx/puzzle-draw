@@ -799,8 +799,18 @@ coralLits = (,)
   where
     skeletonStyle = lc white . lwG (3 * onepix)
 
-coralLitso :: Backend' b => RenderPuzzle b (OutsideClues C [String]) ()
-coralLitso = (fst coral, unimplemented "coral litso solution")
+coralLitso ::
+    Backend' b =>
+    RenderPuzzle b (OutsideClues C [String]) (Grid C (Either Black Char))
+coralLitso = (,)
+    (fst coral)
+    (fst coral . fst
+     <> skeletonStyle . drawEdges . skeletons . rights . snd
+     <> placeGrid . fmap (const (fillBG gray)) . lefts . snd)
+  where
+    skeletonStyle = solstyle
+    lefts = clues . fmap (either Just (const Nothing))
+    rights = clues . fmap (either (const Nothing) Just)
 
 snake ::
     Backend' b =>

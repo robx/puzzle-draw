@@ -452,8 +452,10 @@ coralLits = (,)
     (fst coral)
     (fmap (fmap (fmap unAlpha)) . parseClueGrid)
 
-coralLitso :: ParsePuzzle (OutsideClues C [String]) ()
-coralLitso = (fst coral, \_ -> pure ())
+coralLitso :: ParsePuzzle (OutsideClues C [String]) (Grid C (Either Black Char))
+coralLitso = (,)
+    (fst coral)
+    (fmap (fmap (fmap unAlpha)) . parseGrid)
 
 snake :: ParsePuzzle (OutsideClues C (Maybe Int), Grid C (Maybe MEnd)) (Grid C (Maybe (Either MEnd Black)))
 snake = (p, parseClueGrid)
