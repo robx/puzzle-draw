@@ -441,8 +441,9 @@ tents =
         <$> parseFrom ["clues"] parseOut v
         <*> parseFrom ["grid"] parseClueGrid v
 
-pentominoSums :: ParsePuzzle (OutsideClues C [String], String) ()
-pentominoSums = (p, \_ -> pure ())
+pentominoSums :: ParsePuzzle (OutsideClues C [String], String)
+                             (Grid C (Either Black Int))
+pentominoSums = (p, parseGrid)
   where
     p v@(Object o) = (,) <$> (fst coral) v <*> o .: "digits"
     p _ = empty
@@ -464,5 +465,5 @@ snake = (p, parseClueGrid)
         <$> parseFrom ["clues"] parseOut v
         <*> parseFrom ["grid"] parseClueGrid v
 
-countryRoad :: ParsePuzzle (AreaGrid, Grid C (Maybe Int)) ()
-countryRoad = (,) (fst nanroSignpost) (\_ -> pure ())
+countryRoad :: ParsePuzzle (AreaGrid, Grid C (Maybe Int)) (Loop C)
+countryRoad = (,) (fst nanroSignpost) parseEdges

@@ -238,7 +238,7 @@ boxof2or3 :: Backend' b =>
 boxof2or3 = (,)
     (placeGrid . fmap smallPearl . fst
      <> drawThinEdges . snd)
-    (error "boxof2or3 solution not implemented")
+    (unimplemented "boxof2or3 solution")
 
 afternoonskyscrapers :: Backend' b =>
                         RenderPuzzle b (Grid C Shade) (Grid C (Maybe Int))
@@ -590,7 +590,7 @@ colorakari ::
     RenderPuzzle b (Grid C (Maybe Char)) (Grid C (Maybe Char))
 colorakari = (,)
     (placeGrid . fmap drawColorClue . clues <> grid gDefault)
-    (error "color akari solution not implemented")
+    (unimplemented "color akari solution")
   where
     drawColorClue 'X' = fillBG black
     drawColorClue c = case col c of Nothing -> error "invalid color"
@@ -671,14 +671,17 @@ pentominousBorders = (,)
     (drawEdges . snd <> grid gDashed . fst)
     ((drawAreas <> grid gDashed) . snd)
 
+smallHintRooms ::
+    Backend' b =>
+    (AreaGrid, Grid C (Maybe Int)) -> Diagram b
+smallHintRooms = ((drawAreas <> grid gDashed) . fst <> placeGrid . fmap hintTL . fmap show . clues . snd)
+
 nanroSignpost ::
     Backend' b =>
     RenderPuzzle b (AreaGrid, Grid C (Maybe Int)) (Grid C Int)
 nanroSignpost = (,)
-    p
-    (placeGrid . fmap drawInt . snd <> p . fst)
-  where
-    p = ((drawAreas <> grid gDashed) . fst <> placeGrid . fmap hintTL . fmap show . clues . snd)
+    smallHintRooms
+    (placeGrid . fmap drawInt . snd <> smallHintRooms . fst)
 
 tomTom ::
     Backend' b =>
@@ -780,13 +783,17 @@ tents = (,)
         <> placeGrid . fmap drawTree . clues . snd
         <> grid gDashed . snd
 
-pentominoSums :: Backend' b => RenderPuzzle b (OutsideClues C [String], String) ()
-pentominoSums =
-    (p, unimplemented "pentomino sums solution")
+pentominoSums :: Backend' b => RenderPuzzle b (OutsideClues C [String], String)
+                               (Grid C (Either Black Int))
+pentominoSums = (,)
+    (fst coral . fst <> n)
+    (fst coral . fst . fst <> japcells . snd)
   where
-    p = fst coral . fst <> n
     n (ocs, ds) = placeNoteTL (0, h ocs) (drawText ds # scale 0.8)
     h = snd . outsideSize
+    japcells = placeGrid . fmap japcell
+    japcell (Left Black) = fillBG gray
+    japcell (Right x) = drawInt x
 
 coralLits ::
     Backend' b =>
@@ -829,6 +836,7 @@ snake = (p,s)
 
 countryRoad ::
     Backend' b =>
-    RenderPuzzle b (AreaGrid, Grid C (Maybe Int)) ()
-countryRoad =
-    (fst nanroSignpost, unimplemented "country road solution")
+    RenderPuzzle b (AreaGrid, Grid C (Maybe Int)) (Loop C)
+countryRoad = (,)
+    smallHintRooms
+    (solstyle . drawEdges . snd <> smallHintRooms . fst)
