@@ -28,6 +28,7 @@ module Data.Puzzles.Grid
     , outsideClues
     , multiOutsideClues
     , outsideGrid
+    , outsideValues
     ) where
 
 import qualified Data.Map as Map
@@ -138,6 +139,9 @@ colour m = colourM edgeNeighbours' m
 -- Ordered such that coordinates increase.
 data OutsideClues k a = OC { left :: [a], right :: [a], bottom :: [a], top :: [a] }
     deriving (Show, Eq)
+
+outsideValues :: OutsideClues k a -> [a]
+outsideValues (OC l r b t) = l ++ r ++ b ++ t
 
 instance Functor (OutsideClues k) where
     fmap f (OC l r b t) = OC (fmap f l) (fmap f r) (fmap f b) (fmap f t)

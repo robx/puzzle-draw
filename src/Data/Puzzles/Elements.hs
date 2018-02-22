@@ -71,9 +71,16 @@ newtype TapaClue = TapaClue [Int]
 newtype PrimeDiag = PrimeDiag (Bool, Bool)
 
 data Black = Black
+    deriving Eq
+
 data Fish = Fish
+    deriving Eq
+
 data Star = Star
+    deriving Eq
+
 data Crossing = Crossing
+    deriving Eq
 
 type BahnhofClue = Either Int Crossing
 
@@ -104,3 +111,6 @@ data GalaxyCentre = GalaxyCentre
 data PlacedTent = Tent Dir'
 
 data Tree = Tree
+
+data Pentomino = Pentomino Char
+    deriving (Show, Eq)

@@ -64,6 +64,10 @@ instance FromChar Char where
 class FromString a where
     parseString :: String -> Parser a
 
+instance FromString Char where
+    parseString [c] = pure c
+    parseString s = fail $ "expected a single character, got `" ++ s ++ "`"
+
 parseStringJSON :: FromString a => Value -> Parser a
 parseStringJSON v = parseJSON v >>= parseString
 
@@ -238,6 +242,13 @@ instance FromChar Tree where
 
 instance FromChar PlacedTent where
     parseChar = fmap Tent . parseChar
+
+instance FromChar Pentomino where
+    parseChar c =
+        if c `elem` ("FILNPTUVWXYZ" :: String) then
+            pure (Pentomino c)
+        else
+            fail "expected FILNPTUVWXYZ"
 
 instance (FromChar a, FromChar b) => FromChar (Either a b) where
     parseChar c = Left <$> parseChar c <|> Right <$> parseChar c

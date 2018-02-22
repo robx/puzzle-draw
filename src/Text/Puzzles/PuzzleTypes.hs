@@ -352,6 +352,13 @@ persistenceOfMemory = (p, parseEdgesFull)
     ends_ = fmap (\c -> case c of 'o' -> Just MEnd
                                   _   -> Nothing)
 
+{-
+  parsing the mappings in order, from something like
+
+  - 1: A
+  - 3: B
+  - 2: X
+-}
 abctje :: ParsePuzzle (DigitRange, [(String, Int)]) [(Int, Char)]
 abctje = (,)
     (\v -> (,) <$> parseFrom ["numbers"] parseStringJSON v
@@ -442,11 +449,16 @@ tents =
         <*> parseFrom ["grid"] parseClueGrid v
 
 pentominoSums :: ParsePuzzle (OutsideClues C [String], String)
-                             (Grid C (Either Black Int))
-pentominoSums = (p, parseGrid)
+                             (Grid C (Either Pentomino Int), [(Char, Int)], OutsideClues C [String])
+pentominoSums = (p, s)
   where
     p v@(Object o) = (,) <$> (fst coral) v <*> o .: "digits"
     p _ = empty
+    s v = (,,) <$> parseFrom ["grid"] parseGrid v
+               <*> parseFrom ["values"] values v
+               <*> fst coral v
+    values v = parseJSON v >>= sequence . map parseKey . M.toList
+    parseKey (k, v) = (,) <$> parseString k <*> pure v
 
 coralLits :: ParsePuzzle (OutsideClues C [String]) (Grid C (Maybe Char))
 coralLits = (,)

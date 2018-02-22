@@ -618,25 +618,10 @@ persistenceOfMemory = (,)
     cols c | isUpper c  = Just (blend 0.25 black white)
            | otherwise  = Nothing
 
-abctje ::
-    Backend' b =>
-    RenderPuzzle b (DigitRange, [(String, Int)]) [(Int, Char)]
-abctje = (,)
-    p
-    ((b . g . h  ||| const (strutX 1.0) ||| b . g . h') . snd)
+mappingTable :: Backend' b => [(String, String)] -> Diagram b
+mappingTable = b . g
   where
-    p (ds, cs) = (digNote ds `aboveT` (stackWordsLeft ws ||| strutX 1.0 ||| stackWordsRight ns))
-                 `besidesR` (strutX 2.0 ||| (b . g $ ps) ||| strutX 1.0 ||| (b . g $ ps'))
-      where
-        ws = map fst cs
-        ns = map (show . snd) cs
-        ls = nub . sort . concatMap fst $ cs
-        ps = [ (x:[], "") | x <- ls ]
-        ps' = [ (show x, "") | x <- digitList ds ]
-    digNote (DigitRange x y) = note . drawText $ show x ++ "-" ++ show y
     b = placeGrid . fmap drawText <> grid gPlain
-    h = sortOn fst . map (\(x, y) -> (y:[], show x))
-    h' = map (\(x, y) -> (show x, y:[]))
     g ps = Map.fromList $
                [ (C 0 (l-i-1), x) | (i, x) <- zip [0..] c1 ] ++
                [ (C 1 (l-i-1), x) | (i, x) <- zip [0..] c2 ]
@@ -644,6 +629,25 @@ abctje = (,)
         l = length ps
         c1 = map fst ps
         c2 = map snd ps
+
+abctje ::
+    Backend' b =>
+    RenderPuzzle b (DigitRange, [(String, Int)]) [(Int, Char)]
+abctje = (,)
+    p
+    ((mappingTable . h  ||| const (strutX 1.0) ||| mappingTable . h') . snd)
+  where
+    p (ds, cs) = (digNote ds `aboveT` (stackWordsLeft ws ||| strutX 1.0 ||| stackWordsRight ns))
+                 `besidesR` (strutX 2.0 ||| mappingTable ps ||| strutX 1.0 ||| mappingTable ps')
+      where
+        ws = map fst cs
+        ns = map (show . snd) cs
+        ls = nub . sort . concatMap fst $ cs
+        ps = [ (x:[], "") | x <- ls ]
+        ps' = [ (show x, "") | x <- digitList ds ]
+    digNote (DigitRange x y) = note . drawText $ show x ++ "-" ++ show y
+    h = sortOn fst . map (\(x, y) -> (y:[], show x))
+    h' = map (\(x, y) -> (show x, y:[]))
 
 kropki ::
     Backend' b =>
@@ -784,16 +788,31 @@ tents = (,)
         <> grid gDashed . snd
 
 pentominoSums :: Backend' b => RenderPuzzle b (OutsideClues C [String], String)
-                               (Grid C (Either Black Int))
+                               (Grid C (Either Pentomino Int), [(Char, Int)], OutsideClues C [String])
 pentominoSums = (,)
-    (fst coral . fst <> n)
-    (fst coral . fst . fst <> japcells . snd)
+    ((fst coral . fst <> n) ||| const (strutX 1.0) ||| emptyTable . fst)
+    (solgrid ||| const (strutX 1.0) ||| table)
   where
     n (ocs, ds) = placeNoteTL (0, h ocs) (drawText ds # scale 0.8)
     h = snd . outsideSize
-    japcells = placeGrid . fmap japcell
-    japcell (Left Black) = fillBG gray
-    japcell (Right x) = drawInt x
+    emptyTable = mappingTable . emptys
+    emptys = map (\k -> (k, "")) . nub . sort . concat . outsideValues
+    solgrid =
+        skel . fst3 . snd
+        <> fst coral . trd3 . snd
+        <> cells . fst3 . snd
+    fst3 (x,_,_) = x
+    trd3 (_,_,z) = z
+    skel = skeletonStyle . drawEdges . skeletons . lefts
+    skeletonStyle = lc white . lwG (3 * onepix)
+    lefts = clues . fmap (either Just (const Nothing))
+    cells = placeGrid . fmap (\v -> case v of
+        Left _  -> fillBG gray
+        Right x -> drawInt x)
+    table ((cs, _), (_, m, _)) = mappingTable m'
+      where
+        m' = Map.toList (Map.union (Map.fromList a) (Map.fromList (emptys cs)))
+        a = map (\(k, v) -> ([k], show v)) m
 
 coralLits ::
     Backend' b =>
