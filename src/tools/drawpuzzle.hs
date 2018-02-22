@@ -4,15 +4,15 @@ module Main where
 
 import Diagrams.Prelude hiding (value, option, (<>), Result)
 
-import Data.Puzzles.CmdLine
-import Diagrams.Puzzles.CmdLine
+import Data.CmdLine
+import Draw.CmdLine
 
-import Text.Puzzles.Puzzle
-import Text.Puzzles.Code
-import Data.Puzzles.Compose
-import Data.Puzzles.PuzzleTypes (typeNames)
-import Diagrams.Puzzles.Draw
-import Diagrams.Puzzles.Code
+import Parse.Puzzle
+import Parse.Code
+import Data.Compose
+import Data.PuzzleTypes (typeNames)
+import Draw.Draw
+import Draw.Code
 
 import Options.Applicative
 import Control.Monad

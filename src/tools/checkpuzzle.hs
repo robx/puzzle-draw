@@ -2,12 +2,12 @@
 
 module Main where
 
-import Text.Puzzles.Puzzle
-import Data.Puzzles.PuzzleTypes (typeNames, PuzzleType(..))
-import Data.Puzzles.CmdLine (exitErr, readPuzzle, checkType)
+import Parse.Puzzle
+import Data.PuzzleTypes (typeNames, PuzzleType(..))
+import Data.CmdLine (exitErr, readPuzzle, checkType)
 
-import Data.Puzzles.Elements (digitList)
-import qualified Text.Puzzles.PuzzleTypes as T
+import Data.Elements (digitList)
+import qualified Parse.PuzzleTypes as T
 
 import Options.Applicative
 import Control.Monad

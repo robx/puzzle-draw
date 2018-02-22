@@ -6,25 +6,25 @@ import Data.Yaml
 import Data.List (sort)
 import qualified Data.Map as Map
 
-import Text.Puzzles.Puzzle
-import Data.Puzzles.Elements (Thermometer, MasyuPearl(..))
-import Text.Puzzles.Util
+import Parse.Puzzle
+import Data.Elements (Thermometer, MasyuPearl(..))
+import Parse.Util
     (parseChar, parseMultiOutsideClues, parsePlainEdgeGrid)
-import Text.Puzzles.PuzzleTypes
-import qualified Data.Puzzles.Grid as Grid
-import Data.Puzzles.Pyramid (PyramidSol(..))
-import Data.Puzzles.Grid
-import Data.Puzzles.GridShape
-import Data.Puzzles.Util
+import Parse.PuzzleTypes
+import qualified Data.Grid as Grid
+import Data.Pyramid (PyramidSol(..))
+import Data.Grid
+import Data.GridShape
+import Data.Util
 
 
 import Data
 import Util
-import qualified Data.Puzzles.GridSpec
-import qualified Data.Puzzles.GridShapeSpec
-import qualified Diagrams.Puzzles.GridSpec
-import qualified Text.Puzzles.PuzzleTypesSpec
-import qualified Text.Puzzles.UtilSpec
+import qualified Data.GridSpec
+import qualified Data.GridShapeSpec
+import qualified Draw.GridSpec
+import qualified Parse.PuzzleTypesSpec
+import qualified Parse.UtilSpec
 
 main :: IO ()
 main = do
@@ -33,11 +33,11 @@ main = do
 
 specs :: IO [TestTree]
 specs = mapM (uncurry testSpec)
-            [ ("Data.Puzzles.Grid",        Data.Puzzles.GridSpec.spec)
-            , ("Data.Puzzles.GridShape",   Data.Puzzles.GridShapeSpec.spec)
-            , ("Diagrams.Puzzles.Grid",    Diagrams.Puzzles.GridSpec.spec)
-            , ("Text.Puzzles.PuzzleTypes", Text.Puzzles.PuzzleTypesSpec.spec)
-            , ("Text.Puzzles.Util",        Text.Puzzles.UtilSpec.spec)
+            [ ("Data.Grid",        Data.GridSpec.spec)
+            , ("Data.GridShape",   Data.GridShapeSpec.spec)
+            , ("Draw.Grid",    Draw.GridSpec.spec)
+            , ("Parse.PuzzleTypes", Parse.PuzzleTypesSpec.spec)
+            , ("Parse.Util",        Parse.UtilSpec.spec)
             ]
 
 tests :: [TestTree]

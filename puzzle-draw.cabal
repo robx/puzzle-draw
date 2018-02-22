@@ -26,32 +26,32 @@ flag cairo
   default:     False
 
 library
-  exposed-modules:     Data.Puzzles.Grid
-                       Data.Puzzles.GridShape
-                       Data.Puzzles.Util
-                       Data.Puzzles.Elements
-                       Data.Puzzles.Pyramid
-                       Data.Puzzles.Sudoku
-                       Data.Puzzles.Compose
-                       Data.Puzzles.PuzzleTypes
-                       Data.Puzzles.Code
-                       Data.Puzzles.CmdLine
-                       Text.Puzzles.Util
-                       Text.Puzzles.Parsec
-                       Text.Puzzles.Puzzle
-                       Text.Puzzles.PuzzleTypes
-                       Text.Puzzles.Code
-                       Diagrams.Puzzles.Style
-                       Diagrams.Puzzles.Grid
-                       Diagrams.Puzzles.Lib
-                       Diagrams.Puzzles.Elements
-                       Diagrams.Puzzles.Widths
-                       Diagrams.Puzzles.Pyramid
-                       Diagrams.Puzzles.PuzzleGrids
-                       Diagrams.Puzzles.PuzzleTypes
-                       Diagrams.Puzzles.Draw
-                       Diagrams.Puzzles.Code
-                       Diagrams.Puzzles.CmdLine
+  exposed-modules:     Data.Grid
+                       Data.GridShape
+                       Data.Util
+                       Data.Elements
+                       Data.Pyramid
+                       Data.Sudoku
+                       Data.Compose
+                       Data.PuzzleTypes
+                       Data.Code
+                       Data.CmdLine
+                       Parse.Util
+                       Parse.Parsec
+                       Parse.Puzzle
+                       Parse.PuzzleTypes
+                       Parse.Code
+                       Draw.Style
+                       Draw.Grid
+                       Draw.Lib
+                       Draw.Elements
+                       Draw.Widths
+                       Draw.Pyramid
+                       Draw.PuzzleGrids
+                       Draw.PuzzleTypes
+                       Draw.Draw
+                       Draw.Code
+                       Draw.CmdLine
   -- For access to the font files in the data directory.
   other-modules:       Paths_puzzle_draw
   build-depends:       base >= 4.8 && < 5,
@@ -111,11 +111,11 @@ test-suite test
   main-is:             tests.hs
   other-modules:       Data,
                        Util,
-                       Data.Puzzles.GridSpec,
-                       Data.Puzzles.GridShapeSpec,
-                       Diagrams.Puzzles.GridSpec,
-                       Text.Puzzles.PuzzleTypesSpec,
-                       Text.Puzzles.UtilSpec
+                       Data.GridSpec,
+                       Data.GridShapeSpec,
+                       Draw.GridSpec,
+                       Parse.PuzzleTypesSpec,
+                       Parse.UtilSpec
   build-depends:       base >= 4.8 && < 5,
                        tasty >= 0.8,
                        tasty-hspec,
