@@ -27,7 +27,7 @@ import qualified Draw.PuzzleTypes as D
 --   In @PuzzleHandler b a@, @b@ is the rendering backend type, while @a@ is
 --   the result type of the composition.
 type PuzzleHandler b a = forall p q.
-                         ParsePuzzle p q -> RenderPuzzle b p q -> a
+                         ParsePuzzle p q -> Drawers b p q -> a
 
 -- | @handle h t@ composes the parser and renderer for the puzzle
 --   type @t@ with the handler @h@.
@@ -123,9 +123,9 @@ handle f CountryRoad          = f R.countryRoad         D.countryRoad
 --   for the solution.
 drawPuzzleMaybeSol :: PuzzleHandler b ((Value, Maybe Value)
                       -> Parser (Diagram b, Maybe (Diagram b)))
-drawPuzzleMaybeSol (pp, ps) (Render dp ds) (p, s) = do
+drawPuzzleMaybeSol (pp, ps) (Drawers dp ds) (p, s) = do
     p' <- pp p
     s' <- traverse ps s
     let mps = case s' of Nothing  -> Nothing
                          Just s'' -> Just (p', s'')
-    return (dp p', ds <$> mps)
+    return (dp p' (), ds <$> mps <*> pure ())

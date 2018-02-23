@@ -2,7 +2,7 @@
 
 module Main where
 
-import Diagrams.Prelude hiding (value, option, (<>), Result)
+import Diagrams.Prelude hiding (value, option, (<>), Result, render)
 
 import Data.CmdLine
 import Draw.CmdLine
@@ -161,5 +161,5 @@ main = do
     t <- checkType $ _type opts `mplus` mt
     let ps = Y.parseEither (handle drawPuzzleMaybeSol t) (pv, msv')
     mcode <- sequenceA $ parseAndDrawCode <$> mc'
-    case ps of Right ps' -> mapM_ (renderPuzzle opts (draw mcode ps')) ocs
+    case ps of Right ps' -> mapM_ (renderPuzzle opts (render mcode ps')) ocs
                Left    e -> exitErr $ "parse failure: " ++ e

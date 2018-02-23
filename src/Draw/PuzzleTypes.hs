@@ -47,16 +47,16 @@ import qualified Data.Pyramid as Pyr
 unimplemented :: String -> a
 unimplemented x = error (x ++ " unimplemented")
 
-lits :: Backend' b => RenderPuzzle b AreaGrid ShadedGrid
-lits = Render
+lits :: Backend' b => Drawers b AreaGrid ShadedGrid
+lits = drawers
     (grid gDefault <> drawAreasGray)
     ((drawAreas <> grid gDefault) . fst <> drawShade . snd)
 
-litsplus :: Backend' b => RenderPuzzle b AreaGrid ShadedGrid
+litsplus :: Backend' b => Drawers b AreaGrid ShadedGrid
 litsplus = lits
 
-litssym :: Backend' b => RenderPuzzle b AreaGrid ShadedGrid
-litssym = Render
+litssym :: Backend' b => Drawers b AreaGrid ShadedGrid
+litssym = drawers
     p
     (p . fst <> drawShade . snd)
   where
@@ -67,20 +67,20 @@ litssym = Render
 solstyle :: (HasStyle a, InSpace V2 Double a) => a -> a
 solstyle = lc (blend 0.8 black white) . lwG (3 * onepix)
 
-geradeweg :: Backend' b => RenderPuzzle b (Grid C (Maybe Int)) (Loop C)
-geradeweg = Render
+geradeweg :: Backend' b => Drawers b (Grid C (Maybe Int)) (Loop C)
+geradeweg = drawers
     drawIntGrid
     (placeGrid . fmap drawInt . clues . fst
      <> solstyle . drawEdges . snd
      <> grid gDefault . fst)
 
-fillomino :: Backend' b => RenderPuzzle b (Grid C (Maybe Int)) (Grid C Int)
-fillomino = Render
+fillomino :: Backend' b => Drawers b (Grid C (Maybe Int)) (Grid C Int)
+fillomino = drawers
     (placeGrid . fmap drawInt . clues <> grid gDashed)
     ((placeGrid . fmap drawInt <> drawEdges . borders <> grid gDashed) . snd)
 
-fillominoCheckered :: Backend' b => RenderPuzzle b (Grid C (Maybe Int)) (Grid C Int)
-fillominoCheckered = Render
+fillominoCheckered :: Backend' b => Drawers b (Grid C (Maybe Int)) (Grid C Int)
+fillominoCheckered = drawers
     (placeGrid . fmap  drawInt . clues <> grid gDashed)
     ((placeGrid . fmap drawInt
       <> drawEdges . borders
@@ -92,82 +92,82 @@ fillominoCheckered = Render
     pickColour 2 = Just gray
     pickColour _ = Just red
 
-fillominoLoop :: Backend' b => RenderPuzzle b (Grid C (Maybe Int))
+fillominoLoop :: Backend' b => Drawers b (Grid C (Maybe Int))
                                               (Grid C Int, Loop C)
-fillominoLoop = Render
-    (puzzle fillomino)
+fillominoLoop = drawers
+    (placeGrid . fmap drawInt . clues <> grid gDashed)
     ((placeGrid . fmap drawInt . fst
       <> solstyle . drawEdges . snd
       <> drawEdges . borders . fst
       <> grid gDashed . fst) . snd)
 
 masyu :: Backend' b =>
-         RenderPuzzle b (Grid C (Maybe MasyuPearl)) (Loop C)
-masyu = Render
+         Drawers b (Grid C (Maybe MasyuPearl)) (Loop C)
+masyu = drawers
     p
     (solstyle . drawEdges . snd <> p . fst)
   where
     p = placeGrid . fmap pearl . clues <> grid gDefault
 
 nurikabe :: Backend' b =>
-            RenderPuzzle b (Grid C (Maybe Int)) ShadedGrid
-nurikabe = Render
+            Drawers b (Grid C (Maybe Int)) ShadedGrid
+nurikabe = drawers
     drawIntGrid
     (drawIntGrid . fst <> drawShade . snd)
 
 latintapa :: Backend' b =>
-             RenderPuzzle b (Grid C (Maybe [String])) (Grid C (Maybe Char))
-latintapa = Render
+             Drawers b (Grid C (Maybe [String])) (Grid C (Maybe Char))
+latintapa = drawers
     l
     (l . fst <> placeGrid . fmap drawChar . clues . snd)
   where
     l = grid gDefault <> drawWordsClues
 
 sudoku :: Backend' b =>
-          RenderPuzzle b (Grid C (Maybe Int)) (Grid C (Maybe Int))
-sudoku = Render
+          Drawers b (Grid C (Maybe Int)) (Grid C (Maybe Int))
+sudoku = drawers
     (placeGrid . fmap drawInt . clues <> sudokugrid)
     ((placeGrid . fmap drawInt . clues <> sudokugrid) . snd)
 
 thermosudoku :: Backend' b =>
-                RenderPuzzle b (Grid C (Maybe Int), [Thermometer]) (Grid C (Maybe Int))
-thermosudoku = Render
+                Drawers b (Grid C (Maybe Int), [Thermometer]) (Grid C (Maybe Int))
+thermosudoku = drawers
     (placeGrid . fmap drawInt . clues . fst <> sudokugrid . fst <> drawThermos . snd)
     (placeGrid . fmap drawInt . clues . snd <> sudokugrid . snd <> drawThermos . snd . fst)
 
 pyramid :: Backend' b =>
-    RenderPuzzle b Pyr.Pyramid Pyr.PyramidSol
-pyramid = Render
+    Drawers b Pyr.Pyramid Pyr.PyramidSol
+pyramid = drawers
     DPyr.pyramid
     (DPyr.pyramid . merge)
   where
     merge (p, q) = Pyr.mergepyramidsol p q
 
 kpyramid :: Backend' b =>
-    RenderPuzzle b Pyr.RowKropkiPyramid Pyr.PyramidSol
-kpyramid = Render
+    Drawers b Pyr.RowKropkiPyramid Pyr.PyramidSol
+kpyramid = drawers
     DPyr.kpyramid
     (DPyr.kpyramid . merge)
   where
     merge (p, q) = Pyr.mergekpyramidsol p q
 
 slither :: Backend' b =>
-           RenderPuzzle b (Grid C (Maybe Int)) (Loop N)
-slither = Render
+           Drawers b (Grid C (Maybe Int)) (Loop N)
+slither = drawers
     drawSlitherGrid
     (drawSlitherGrid . fst <> solstyle . drawEdges . snd)
 
 liarslither :: Backend' b =>
-               RenderPuzzle b (Grid C (Maybe Int)) (Loop N, Grid C Bool)
-liarslither = Render
+               Drawers b (Grid C (Maybe Int)) (Loop N, Grid C Bool)
+liarslither = drawers
     drawSlitherGrid
     (placeGrid . fmap (solstyle . drawCross) . snd . snd
      <> drawSlitherGrid . fst
      <> solstyle . drawEdges . fst . snd)
 
 slithermulti :: Backend' b =>
-                RenderPuzzle b (Grid C (Maybe Int), Int) [Edge N]
-slithermulti = Render
+                Drawers b (Grid C (Maybe Int), Int) [Edge N]
+slithermulti = drawers
     (drawSlitherGrid . fst <> n)
     (drawSlitherGrid . fst . fst <> solstyle . drawEdges . snd)
   where
@@ -175,9 +175,9 @@ slithermulti = Render
     size' = size . Map.mapKeys toCoord
 
 tightfitskyscrapers :: Backend' b =>
-                       RenderPuzzle b (OutsideClues C (Maybe Int), Grid C (Tightfit ()))
+                       Drawers b (OutsideClues C (Maybe Int), Grid C (Tightfit ()))
                                       (Grid C (Tightfit Int))
-tightfitskyscrapers = Render
+tightfitskyscrapers = drawers
     (placeGrid . fmap drawInt . clues . outsideClues . fst
      <> drawTightGrid (const mempty) . snd)
     (placeGrid . fmap drawInt . clues . outsideClues . fst . fst
@@ -188,38 +188,38 @@ wordgrid :: Backend' b =>
 wordgrid g ws = stackWords ws `besidesR` drawCharGrid g
 
 wordloop :: Backend' b =>
-            RenderPuzzle b (Grid C (Maybe Char), [String]) (Grid C (Maybe Char))
-wordloop = Render
+            Drawers b (Grid C (Maybe Char), [String]) (Grid C (Maybe Char))
+wordloop = drawers
     (uncurry wordgrid)
     (drawCharGrid . snd)
 
 wordsearch :: Backend' b =>
-              RenderPuzzle b (Grid C (Maybe Char), [String])
+              Drawers b (Grid C (Maybe Char), [String])
                              (Grid C (Maybe Char), [MarkedWord])
-wordsearch = Render
+wordsearch = drawers
     (uncurry wordgrid) 
     (solstyle . drawMarkedWords . snd . snd
      <> drawCharGrid . fst . snd)
 
 curvedata :: Backend' b =>
-             RenderPuzzle b (Grid C (Maybe [Edge N])) [Edge C]
-curvedata = Render
+             Drawers b (Grid C (Maybe [Edge N])) [Edge C]
+curvedata = drawers
     cd
     ((solstyle . drawEdges . snd) <> cd . fst)
   where
     cd = placeGrid . fmap drawCurve . clues <> grid gDefault
 
 doubleback :: Backend' b =>
-              RenderPuzzle b AreaGrid (Loop C)
-doubleback = Render
+              Drawers b AreaGrid (Loop C)
+doubleback = drawers
     p
     (solstyle . drawEdges . snd <> p . fst)
   where
     p = grid gDefault <> drawAreasGray
 
 slalom :: Backend' b =>
-          RenderPuzzle b (Grid N (Maybe Int)) (Grid C SlalomDiag)
-slalom = Render
+          Drawers b (Grid N (Maybe Int)) (Grid C SlalomDiag)
+slalom = drawers
     p
     (p . fst <> placeGrid . fmap (solstyle . drawSlalomDiag) . snd)
   where
@@ -227,43 +227,43 @@ slalom = Render
         <> grid gDefault . cellGrid
 
 compass :: Backend' b =>
-           RenderPuzzle b (Grid C (Maybe CompassC)) AreaGrid
-compass = Render
+           Drawers b (Grid C (Maybe CompassC)) AreaGrid
+compass = drawers
     (placeGrid . fmap drawCompassClue . clues <> grid gDashed)
     (placeGrid . fmap drawCompassClue . clues . fst
      <> (grid gDashed <> drawAreasGray) . snd)
 
 boxof2or3 :: Backend' b =>
-             RenderPuzzle b (Grid N MasyuPearl, [Edge N]) ()
-boxof2or3 = Render
+             Drawers b (Grid N MasyuPearl, [Edge N]) ()
+boxof2or3 = drawers
     (placeGrid . fmap smallPearl . fst
      <> drawThinEdges . snd)
     (unimplemented "boxof2or3 solution")
 
 afternoonskyscrapers :: Backend' b =>
-                        RenderPuzzle b (Grid C Shade) (Grid C (Maybe Int))
-afternoonskyscrapers = Render
+                        Drawers b (Grid C Shade) (Grid C (Maybe Int))
+afternoonskyscrapers = drawers
     (grid gDefault <> placeGrid . fmap drawShadow)
     (drawIntGrid . snd <> placeGrid . fmap drawShadow . fst)
 
 meanderingnumbers :: Backend' b =>
-                        RenderPuzzle b AreaGrid (Grid C (Maybe Int))
-meanderingnumbers = Render
+                        Drawers b AreaGrid (Grid C (Maybe Int))
+meanderingnumbers = drawers
     (grid gDefault <> drawAreas)
     (drawIntGrid . snd <> drawAreas . fst)
 
 tapa :: Backend' b =>
-        RenderPuzzle b (Grid C (Maybe TapaClue)) ShadedGrid
-tapa = Render
+        Drawers b (Grid C (Maybe TapaClue)) ShadedGrid
+tapa = drawers
     tapaGrid
     (tapaGrid . fst <> drawShade . snd)
   where
     tapaGrid = placeGrid . fmap drawTapaClue . clues <> grid gDefault
 
 japanesesums :: Backend' b =>
-                RenderPuzzle b (OutsideClues C [Int], String)
+                Drawers b (OutsideClues C [Int], String)
                                (Grid C (Either Black Int))
-japanesesums = Render
+japanesesums = drawers
     (outsideIntGrid . fst <> n)
     (outsideIntGrid . fst . fst <> japcells . snd)
   where
@@ -274,14 +274,14 @@ japanesesums = Render
     h = snd . outsideSize
 
 coral :: Backend' b =>
-          RenderPuzzle b (OutsideClues C [String]) ShadedGrid
-coral = Render
+          Drawers b (OutsideClues C [String]) ShadedGrid
+coral = drawers
     drawMultiOutsideGrid
     (drawMultiOutsideGrid . fst <> drawShade . snd)
 
 maximallengths :: Backend' b =>
-                  RenderPuzzle b (OutsideClues C (Maybe Int)) (Loop C)
-maximallengths = Render
+                  Drawers b (OutsideClues C (Maybe Int)) (Loop C)
+maximallengths = drawers
     g
     (solstyle . drawEdges . snd <> g . fst)
   where
@@ -289,8 +289,8 @@ maximallengths = Render
         <> grid gDefault . outsideGrid
 
 primeplace :: Backend' b =>
-              RenderPuzzle b (Grid C PrimeDiag) (Grid C Int)
-primeplace = Render
+              Drawers b (Grid C PrimeDiag) (Grid C Int)
+primeplace = drawers
     g
     (placeGrid . fmap drawInt . snd <> g . fst)
   where
@@ -299,16 +299,16 @@ primeplace = Render
     gStyle = GridStyle LineThin LineThick Nothing VertexNone
 
 labyrinth :: Backend' b =>
-             RenderPuzzle b (Grid C (Maybe Int), [Edge N]) (Grid C (Maybe Int))
-labyrinth = Render
+             Drawers b (Grid C (Maybe Int), [Edge N]) (Grid C (Maybe Int))
+labyrinth = drawers
     (placeGrid . fmap drawInt . clues . fst <> g)
     (placeGrid . fmap drawInt . clues . snd <> g . fst)
   where
     g = drawEdges . snd <> grid gPlain . fst
 
 bahnhof :: Backend' b =>
-            RenderPuzzle b (Grid C (Maybe BahnhofClue)) [Edge C]
-bahnhof = Render
+            Drawers b (Grid C (Maybe BahnhofClue)) [Edge C]
+bahnhof = drawers
     (placeGrid . fmap drawBahnhofClue . clues <> grid gDefault)
     (placeGrid . fmap drawBahnhofStation . clues . fst
      <> solstyle . drawEdges . snd
@@ -317,9 +317,9 @@ bahnhof = Render
     drawBahnhofStation = either drawInt (const mempty)
 
 blackoutDominos :: Backend' b =>
-                   RenderPuzzle b (Grid C (Clue Int), DigitRange)
+                   Drawers b (Grid C (Clue Int), DigitRange)
                                   (Grid C (Clue Int), AreaGrid)
-blackoutDominos = Render
+blackoutDominos = drawers
     p
     ((placeGrid . fmap drawInt . clues . fst
       <> grid gDashedThick . fst 
@@ -334,8 +334,8 @@ blackoutDominos = Render
 
 angleLoop ::
     Backend' b =>
-    RenderPuzzle b (Grid N (Clue Int)) VertexLoop
-angleLoop = Render
+    Drawers b (Grid N (Clue Int)) VertexLoop
+angleLoop = drawers
     (cs <> gr)
     (cs . fst
      <> lineJoin LineJoinBevel . solstyle . strokeLocLoop . vertexLoop . snd
@@ -346,8 +346,8 @@ angleLoop = Render
 
 anglers ::
     Backend' b =>
-    RenderPuzzle b (OutsideClues C (Clue Int), Grid C (Maybe Fish)) [Edge C]
-anglers = Render
+    Drawers b (OutsideClues C (Clue Int), Grid C (Maybe Fish)) [Edge C]
+anglers = drawers
     (p <> g)
     (p . fst <> solstyle . drawEdges . snd <> g . fst)
   where
@@ -359,8 +359,8 @@ anglers = Render
 
 cave ::
     Backend' b =>
-    RenderPuzzle b (Grid C (Maybe Int)) ShadedGrid
-cave = Render
+    Drawers b (Grid C (Maybe Int)) ShadedGrid
+cave = drawers
     (grid gDashDash <> placeGrid . fmap drawInt . clues)
     (drawEdges . edgesGen (/=) not . snd
      <> placeGrid . fmap drawInt . clues . fst
@@ -373,8 +373,8 @@ cave = Render
 
 skyscrapers ::
     Backend' b =>
-    RenderPuzzle b (OutsideClues C (Maybe Int), String) (Grid C (Maybe Int))
-skyscrapers = Render
+    Drawers b (OutsideClues C (Maybe Int), String) (Grid C (Maybe Int))
+skyscrapers = drawers
     (g . fst <> n)
     (g . fst . fst <> placeGrid . fmap drawInt . clues . snd)
   where
@@ -382,15 +382,15 @@ skyscrapers = Render
         <> grid gDefault . outsideGrid
     n (oc, s) = placeNote (outsideSize oc) (drawText s)
 
-shikaku :: Backend' b => RenderPuzzle b (Grid C (Maybe Int)) AreaGrid
-shikaku = Render
+shikaku :: Backend' b => Drawers b (Grid C (Maybe Int)) AreaGrid
+shikaku = drawers
     p
     (drawAreas . snd <> p . fst)
   where
     p = placeGrid . fmap drawInt . clues <> grid gDashed
 
-slovaksums :: Backend' b => RenderPuzzle b (Grid C (Maybe SlovakClue), String) (Grid C (Maybe Int))
-slovaksums = Render
+slovaksums :: Backend' b => Drawers b (Grid C (Maybe SlovakClue), String) (Grid C (Maybe Int))
+slovaksums = drawers
     (p . fst <> n)
     (placeGrid . fmap drawInt . clues . snd <> p . fst . fst)
   where
@@ -400,9 +400,9 @@ slovaksums = Render
 
 skyscrapersStars ::
     Backend' b =>
-    RenderPuzzle b (OutsideClues C (Maybe Int), Int)
+    Drawers b (OutsideClues C (Maybe Int), Int)
                    (Grid C (Either Int Star))
-skyscrapersStars = Render
+skyscrapersStars = drawers
     (g <> n)
     (g . fst <> placeGrid . fmap (either drawInt drawStar) . snd)
   where
@@ -413,8 +413,8 @@ skyscrapersStars = Render
 
 summon ::
     Backend' b =>
-    RenderPuzzle b (AreaGrid, OutsideClues C (Maybe Int), String) (Grid C (Maybe Int))
-summon = Render
+    Drawers b (AreaGrid, OutsideClues C (Maybe Int), String) (Grid C (Maybe Int))
+summon = drawers
     (p <> n)
     (placeGrid . fmap drawInt . clues . snd <> p . fst)
   where
@@ -429,11 +429,11 @@ summon = Render
 
 baca ::
     Backend' b =>
-    RenderPuzzle b (Grid C (Maybe Char),
+    Drawers b (Grid C (Maybe Char),
                     OutsideClues C [Int],
                     OutsideClues C (Maybe Char))
                    (Grid C (Either Black Char))
-baca = Render
+baca = drawers
     (inside <> outside)
     (outside . fst <> placeGrid . fmap drawVal . snd <> inside . fst)
   where
@@ -449,8 +449,8 @@ baca = Render
 
 buchstabensalat ::
     Backend' b =>
-    RenderPuzzle b (OutsideClues C (Maybe Char), String) (Grid C (Maybe Char))
-buchstabensalat = Render
+    Drawers b (OutsideClues C (Maybe Char), String) (Grid C (Maybe Char))
+buchstabensalat = drawers
     (p <> n)
     (p . fst <> placeGrid . fmap drawChar . clues . snd)
   where
@@ -460,9 +460,9 @@ buchstabensalat = Render
 
 doppelblock ::
     Backend' b =>
-    RenderPuzzle b (OutsideClues C (Maybe Int))
+    Drawers b (OutsideClues C (Maybe Int))
                    (Grid C (Either Black Int))
-doppelblock = Render
+doppelblock = drawers
     p
     (p . fst <> placeGrid . fmap drawVal . snd)
   where
@@ -473,9 +473,9 @@ doppelblock = Render
 
 sudokuDoppelblock ::
     Backend' b =>
-    RenderPuzzle b (AreaGrid, OutsideClues C (Maybe Int))
+    Drawers b (AreaGrid, OutsideClues C (Maybe Int))
                    (Grid C (Either Black Int))
-sudokuDoppelblock = Render
+sudokuDoppelblock = drawers
     p
     (p . fst <> placeGrid . fmap drawVal . snd)
   where
@@ -486,8 +486,8 @@ sudokuDoppelblock = Render
 
 dominos ::
     Backend' b =>
-    RenderPuzzle b (Grid C (Clue Int), DigitRange) AreaGrid
-dominos = Render
+    Drawers b (Grid C (Clue Int), DigitRange) AreaGrid
+dominos = drawers
     p
     (placeGrid . fmap drawInt . clues . fst . fst
      <> (grid gDashed <> drawAreasGray) . snd)
@@ -499,8 +499,8 @@ dominos = Render
 
 dominoPills ::
     Backend' b =>
-    RenderPuzzle b (Grid C (Clue Int), DigitRange, DigitRange) AreaGrid
-dominoPills = Render
+    Drawers b (Grid C (Clue Int), DigitRange, DigitRange) AreaGrid
+dominoPills = drawers
     p
     (placeGrid . fmap drawInt . clues . fst3 . fst
      <> (grid gDashed <> drawAreasGray) . snd)
@@ -513,8 +513,8 @@ dominoPills = Render
 
 numberlink ::
     Backend' b =>
-    RenderPuzzle b (Grid C (Maybe Int)) [Edge C]
-numberlink = Render
+    Drawers b (Grid C (Maybe Int)) [Edge C]
+numberlink = drawers
     drawIntGrid
     (placeGrid . fmap drawInt' . clues . fst
      <> solstyle . drawEdges . snd
@@ -523,16 +523,16 @@ numberlink = Render
     drawInt' x = drawInt x <> (square 0.7 # lc white # fc white)
 
 loopki :: Backend' b =>
-          RenderPuzzle b (Grid C (Maybe MasyuPearl)) (Loop N)
-loopki = Render
+          Drawers b (Grid C (Maybe MasyuPearl)) (Loop N)
+loopki = drawers
     p
     (solstyle . drawEdges . snd <> p . fst)
   where
     p = placeGrid . fmap (scale 0.5 . pearl) . clues <> grid gSlither
 
 scrabble :: Backend' b =>
-            RenderPuzzle b (Grid C Bool, [String]) (Grid C (Maybe Char))
-scrabble = Render
+            Drawers b (Grid C Bool, [String]) (Grid C (Maybe Char))
+scrabble = drawers
     p
     (placeGrid . fmap drawCharFixed . clues . snd <> gr . fst . fst)
   where
@@ -540,22 +540,22 @@ scrabble = Render
     gr = grid gDefault <> drawShade
 
 neighbors :: Backend' b =>
-             RenderPuzzle b (Grid C Bool, Grid C (Maybe Int)) (Grid C Int)
-neighbors = Render
+             Drawers b (Grid C Bool, Grid C (Maybe Int)) (Grid C Int)
+neighbors = drawers
     (placeGrid . fmap drawInt . clues . snd <> (grid gDefault <> drawShade) . fst)
     (placeGrid . fmap drawInt . snd <> (grid gDefault <> drawShade) . fst . fst)
 
 starwars :: Backend' b =>
-            RenderPuzzle b (AreaGrid, [MarkedLine C]) (Grid C (Maybe Star))
-starwars = Render
+            Drawers b (AreaGrid, [MarkedLine C]) (Grid C (Maybe Star))
+starwars = drawers
     p
     (p . fst <> placeGrid . fmap drawStar . clues . snd)
   where
     p = ((drawAreas <> grid gDefault) . fst <> drawMarkedLines . snd)
 
 starbattle :: Backend' b =>
-              RenderPuzzle b (AreaGrid, Int) (Grid C (Maybe Star))
-starbattle = Render
+              Drawers b (AreaGrid, Int) (Grid C (Maybe Star))
+starbattle = drawers
     (p <> n)
     ((p <> n) . fst <> placeGrid . fmap drawStar . clues . snd)
   where
@@ -565,8 +565,8 @@ starbattle = Render
     size' = size . Map.mapKeys toCoord
 
 heyawake :: Backend' b =>
-            RenderPuzzle b (AreaGrid, Grid C (Maybe Int)) (Grid C Bool)
-heyawake = Render
+            Drawers b (AreaGrid, Grid C (Maybe Int)) (Grid C Bool)
+heyawake = drawers
     (as <> cs)
     (as . fst <> drawShade . snd <> cs . fst)
   where
@@ -574,23 +574,23 @@ heyawake = Render
     cs = placeGrid . fmap drawInt . clues . snd
 
 wormhole :: Backend' b =>
-            RenderPuzzle b (Grid C (Maybe (Either Int Char))) ()
-wormhole = Render
+            Drawers b (Grid C (Maybe (Either Int Char))) ()
+wormhole = drawers
     (placeGrid . fmap (either drawInt drawChar) . clues <> grid gDashed)
     mempty
 
 pentominous ::
     Backend' b =>
-    RenderPuzzle b (Grid C (Maybe Char)) (Grid C Char)
-pentominous = Render
+    Drawers b (Grid C (Maybe Char)) (Grid C Char)
+pentominous = drawers
     (placeGrid . fmap drawChar . clues <> grid gDashed)
     (placeGrid . fmap drawChar . clues . fst <>
      (drawAreas <> grid gDashed) . snd)
 
 colorakari ::
     Backend' b =>
-    RenderPuzzle b (Grid C (Maybe Char)) (Grid C (Maybe Char))
-colorakari = Render
+    Drawers b (Grid C (Maybe Char)) (Grid C (Maybe Char))
+colorakari = drawers
     (placeGrid . fmap drawColorClue . clues <> grid gDefault)
     (unimplemented "color akari solution")
   where
@@ -610,8 +610,8 @@ colorakari = Render
 
 persistenceOfMemory ::
     Backend' b =>
-    RenderPuzzle b (AreaGrid, (Grid C (Maybe MEnd))) (Loop C)
-persistenceOfMemory = Render
+    Drawers b (AreaGrid, (Grid C (Maybe MEnd))) (Loop C)
+persistenceOfMemory = drawers
     (ends_ <> areas)
     (ends_ . fst <> solstyle . drawEdges . snd <> areas . fst)
   where
@@ -634,8 +634,8 @@ mappingTable = b . g
 
 abctje ::
     Backend' b =>
-    RenderPuzzle b (DigitRange, [(String, Int)]) [(Int, Char)]
-abctje = Render
+    Drawers b (DigitRange, [(String, Int)]) [(Int, Char)]
+abctje = drawers
     p
     ((mappingTable . h  ||| const (strutX 1.0) ||| mappingTable . h') . snd)
   where
@@ -653,8 +653,8 @@ abctje = Render
 
 kropki ::
     Backend' b =>
-    RenderPuzzle b (Map.Map (Edge N) KropkiDot) (Grid C Int)
-kropki = Render
+    Drawers b (Map.Map (Edge N) KropkiDot) (Grid C Int)
+kropki = drawers
     p
     (placeGrid . fmap drawInt . snd <> p . fst)
   where
@@ -663,8 +663,8 @@ kropki = Render
 
 statuepark ::
     Backend' b =>
-    RenderPuzzle b (Grid C (Maybe MasyuPearl)) (Grid C Bool)
-statuepark = Render
+    Drawers b (Grid C (Maybe MasyuPearl)) (Grid C Bool)
+statuepark = drawers
     p
     (p . fst <> drawShade . snd)
   where
@@ -672,8 +672,8 @@ statuepark = Render
 
 pentominousBorders ::
     Backend' b =>
-    RenderPuzzle b (Grid C (), [Edge N]) (Grid C Char)
-pentominousBorders = Render
+    Drawers b (Grid C (), [Edge N]) (Grid C Char)
+pentominousBorders = drawers
     (drawEdges . snd <> grid gDashed . fst)
     ((drawAreas <> grid gDashed) . snd)
 
@@ -684,15 +684,15 @@ smallHintRooms = ((drawAreas <> grid gDashed) . fst <> placeGrid . fmap hintTL .
 
 nanroSignpost ::
     Backend' b =>
-    RenderPuzzle b (AreaGrid, Grid C (Maybe Int)) (Grid C Int)
-nanroSignpost = Render
+    Drawers b (AreaGrid, Grid C (Maybe Int)) (Grid C Int)
+nanroSignpost = drawers
     smallHintRooms
     (placeGrid . fmap drawInt . snd <> smallHintRooms . fst)
 
 tomTom ::
     Backend' b =>
-    RenderPuzzle b (AreaGrid, Grid C (Maybe String)) (Grid C Int)
-tomTom = Render
+    Drawers b (AreaGrid, Grid C (Maybe String)) (Grid C Int)
+tomTom = drawers
     p
     (placeGrid . fmap drawInt . snd <> p . fst)
   where
@@ -700,8 +700,8 @@ tomTom = Render
 
 horseSnake ::
     Backend' b =>
-    RenderPuzzle b (Grid C (Maybe (Either MEnd Int))) [Edge C]
-horseSnake = Render
+    Drawers b (Grid C (Maybe (Either MEnd Int))) [Edge C]
+horseSnake = drawers
     p
     (solstyle . drawEdges . snd <> p . fst)
   where
@@ -709,8 +709,8 @@ horseSnake = Render
 
 illumination ::
     Backend' b =>
-    RenderPuzzle b (OutsideClues C (Maybe Fraction)) (Grid N (Maybe PlainNode), [Edge N])
-illumination = Render
+    Drawers b (OutsideClues C (Maybe Fraction)) (Grid N (Maybe PlainNode), [Edge N])
+illumination = drawers
     p
     ((placeGrid . fmap (const (smallPearl MWhite)) . clues . fst <> drawEdges . snd) . snd <> p . fst)
   where
@@ -719,8 +719,8 @@ illumination = Render
 
 pentopia ::
     Backend' b =>
-    RenderPuzzle b (Grid C (Maybe Myopia)) (Grid C Bool)
-pentopia = Render
+    Drawers b (Grid C (Maybe Myopia)) (Grid C Bool)
+pentopia = drawers
     p
     (p . fst <> drawShade . snd)
   where
@@ -728,8 +728,8 @@ pentopia = Render
 
 pentominoPipes ::
     Backend' b =>
-    RenderPuzzle b (Grid N Char) (Grid N KropkiDot, [Edge N])
-pentominoPipes = Render
+    Drawers b (Grid N Char) (Grid N KropkiDot, [Edge N])
+pentominoPipes = drawers
     (placeGrid . fmap drawCharOpaque <> grid gSlither . cellGrid)
     ((placeGrid . fmap kropkiDot . fst
       <> drawEdges . snd) . snd
@@ -737,8 +737,8 @@ pentominoPipes = Render
 
 greaterWall ::
     Backend' b =>
-    RenderPuzzle b ([GreaterClue], [GreaterClue]) (Grid C Bool)
-greaterWall = Render
+    Drawers b ([GreaterClue], [GreaterClue]) (Grid C Bool)
+greaterWall = drawers
     ((plc <> grid gDefault . outsideGrid) . munge)
     undefined
   where
@@ -757,8 +757,8 @@ greaterWall = Render
 
 galaxies ::
     Backend' b =>
-    RenderPuzzle b (Grid C (), Grid N (), Grid C (), Map.Map (Edge N) ()) AreaGrid
-galaxies = Render
+    Drawers b (Grid C (), Grid N (), Grid C (), Map.Map (Edge N) ()) AreaGrid
+galaxies = drawers
     p
     (p . fst <> drawAreas . snd)
   where
@@ -771,8 +771,8 @@ galaxies = Render
 
 mines ::
     Backend' b =>
-    RenderPuzzle b (Grid C (Maybe Int)) ShadedGrid
-mines = Render
+    Drawers b (Grid C (Maybe Int)) ShadedGrid
+mines = drawers
     p
     (p . fst <> placeGrid . fmap (const (pearl MBlack)) . Map.filter id . snd)
   where
@@ -780,8 +780,8 @@ mines = Render
 
 tents ::
     Backend' b =>
-    RenderPuzzle b (OutsideClues C (Maybe Int), Grid C (Maybe Tree)) (Grid C (Maybe PlacedTent))
-tents = Render
+    Drawers b (OutsideClues C (Maybe Int), Grid C (Maybe Tree)) (Grid C (Maybe PlacedTent))
+tents = drawers
     p
     (p . fst <> placeGrid . fmap drawTent . clues . snd)
   where
@@ -789,10 +789,10 @@ tents = Render
         <> placeGrid . fmap drawTree . clues . snd
         <> grid gDashed . snd
 
-pentominoSums :: Backend' b => RenderPuzzle b (OutsideClues C [String], String)
+pentominoSums :: Backend' b => Drawers b (OutsideClues C [String], String)
                                (Grid C (Either Pentomino Int), [(Char, Int)], OutsideClues C [String])
-pentominoSums = Render
-    ((puzzle coral . fst <> n) ||| const (strutX 1.0) ||| emptyTable . fst)
+pentominoSums = drawers
+    ((drawMultiOutsideGrid . fst <> n) ||| const (strutX 1.0) ||| emptyTable . fst)
     (solgrid ||| const (strutX 1.0) ||| table)
   where
     n (ocs, ds) = placeNoteTL (0, h ocs) (drawText ds # scale 0.8)
@@ -801,7 +801,7 @@ pentominoSums = Render
     emptys = map (\k -> (k, "")) . nub . sort . concat . outsideValues
     solgrid =
         skel . fst3 . snd
-        <> puzzle coral . trd3 . snd
+        <> drawMultiOutsideGrid . trd3 . snd
         <> cells . fst3 . snd
     fst3 (x,_,_) = x
     trd3 (_,_,z) = z
@@ -818,21 +818,21 @@ pentominoSums = Render
 
 coralLits ::
     Backend' b =>
-    RenderPuzzle b (OutsideClues C [String]) (Grid C (Maybe Char))
-coralLits = Render
-    (puzzle coral)
+    Drawers b (OutsideClues C [String]) (Grid C (Maybe Char))
+coralLits = drawers
+    drawMultiOutsideGrid
     (skeletonStyle . drawEdges . skeletons . clues . snd
-     <> puzzle coral . fst
+     <> drawMultiOutsideGrid . fst
      <> placeGrid . fmap (const (fillBG gray)) . clues . snd)
   where
     skeletonStyle = lc white . lwG (3 * onepix)
 
 coralLitso ::
     Backend' b =>
-    RenderPuzzle b (OutsideClues C [String]) (Grid C (Either Black Char))
-coralLitso = Render
-    (puzzle coral)
-    (puzzle coral . fst
+    Drawers b (OutsideClues C [String]) (Grid C (Either Black Char))
+coralLitso = drawers
+    drawMultiOutsideGrid
+    (drawMultiOutsideGrid . fst
      <> skeletonStyle . drawEdges . skeletons . rights . snd
      <> placeGrid . fmap (const (fillBG gray)) . lefts . snd)
   where
@@ -842,9 +842,9 @@ coralLitso = Render
 
 snake ::
     Backend' b =>
-    RenderPuzzle b (OutsideClues C (Maybe Int), Grid C (Maybe MEnd))
+    Drawers b (OutsideClues C (Maybe Int), Grid C (Maybe MEnd))
                    (Grid C (Maybe (Either MEnd Black)))
-snake = Render p s
+snake = drawers p s
   where
     cs = placeGrid . fmap drawInt . clues . outsideClues . fst
     p = cs
@@ -857,7 +857,7 @@ snake = Render p s
 
 countryRoad ::
     Backend' b =>
-    RenderPuzzle b (AreaGrid, Grid C (Maybe Int)) (Loop C)
-countryRoad = Render
+    Drawers b (AreaGrid, Grid C (Maybe Int)) (Loop C)
+countryRoad = drawers
     smallHintRooms
     (solstyle . drawEdges . snd <> smallHintRooms . fst)

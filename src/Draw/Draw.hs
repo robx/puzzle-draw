@@ -5,25 +5,31 @@
 
 module Draw.Draw (
     PuzzleSol,
-    RenderPuzzle(..),
+    Drawers(..),
+    drawers,
     OutputChoice(..),
-    draw,
+    render,
     Unit(..),
     diagramWidth,
     toOutputWidth,
   ) where
 
-import Diagrams.Prelude
+import Diagrams.Prelude hiding (render)
 
 import Draw.Lib
 import Draw.Widths
 import Draw.Code
 
-data RenderPuzzle b p s =
-    Render
-        { puzzle :: p -> Diagram b
-        , solution :: (p, s) -> Diagram b
+type Config = ()
+
+data Drawers b p s =
+    Drawers
+        { puzzle :: p -> Config -> Diagram b
+        , solution :: (p, s) -> Config -> Diagram b
         }
+
+drawers :: (p -> Diagram b) -> ((p, s) -> Diagram b) -> Drawers b p s
+drawers p s = Drawers (const . p) (const . s)
 
 type PuzzleSol b = (Diagram b, Maybe (Diagram b))
 
@@ -32,10 +38,10 @@ data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
 -- | Optionally render the puzzle, its solution, or a side-by-side
 --   example with puzzle and solution.
-draw :: Backend' b
+render :: Backend' b
      => Maybe (CodeDiagrams (Diagram b))
      -> PuzzleSol b -> OutputChoice -> Maybe (Diagram b)
-draw mc (p, ms) = fmap (bg white) . d
+render mc (p, ms) = fmap (bg white) . d
   where
     fixup = alignPixel . border borderwidth
     addCode x = case mc of
