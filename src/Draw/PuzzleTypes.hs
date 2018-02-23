@@ -698,7 +698,7 @@ pentominousBorders = drawers
 
 smallHintRooms ::
     Backend' b =>
-    (AreaGrid, Grid C (Maybe Int)) -> Diagram b
+    (AreaGrid, Grid C (Maybe Int)) -> Drawing b
 smallHintRooms = ((drawAreas <> grid gDashed) . fst <> placeGrid . fmap hintTL . fmap show . clues . snd)
 
 nanroSignpost ::
@@ -880,6 +880,6 @@ snake = drawers p s
 countryRoad ::
     Backend' b =>
     Drawers b (AreaGrid, Grid C (Maybe Int)) (Loop C)
-countryRoad = drawers
+countryRoad = Drawers
     smallHintRooms
-    (solstyle . drawEdges . snd <> smallHintRooms . fst)
+    (draw . solstyle . drawEdges . snd <> smallHintRooms . fst)

@@ -19,13 +19,6 @@ import Diagrams.Prelude
 
 import qualified Data.Map as Map
 
-data CodeDiagrams a = CodeDiagrams { _cdLeft :: a, _cdTop :: a, _cdOver :: a }
-
-instance Monoid a => Monoid (CodeDiagrams a) where
-    mempty = CodeDiagrams mempty mempty mempty
-    (CodeDiagrams x y z) `mappend` (CodeDiagrams x' y' z') =
-        CodeDiagrams (x `mappend` x') (y `mappend` y') (z `mappend` z')
-
 drawCode :: Backend' b => Code -> CodeDiagrams (Diagram b)
 drawCode cs = mconcat (map drawCodePart cs)
 

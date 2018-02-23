@@ -2,34 +2,61 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Draw.Draw (
     PuzzleSol,
     Drawers(..),
-    drawers,
+    QDrawing(..),
+    Drawing,
+    draw,
     OutputChoice(..),
     render,
     Unit(..),
     diagramWidth,
     toOutputWidth,
+    CodeDiagrams(..),
+    centerX',
+    centerY',
+    centerXY',
+    smash',
+    alignBL',
+    alignBR',
+    alignTL',
+    alignTR',
+    fit',
+    spread'
   ) where
 
 import Diagrams.Prelude hiding (render)
 
 import Draw.Lib
 import Draw.Widths
-import Draw.Code
 
 type Config = ()
 
+newtype QDrawing b v n m = Drawing { fromDrawing :: Config -> QDiagram b v n m }
+    deriving (Monoid, Semigroup, HasStyle, Juxtaposable)
+
+type instance V (QDrawing b v n m) = v
+type instance N (QDrawing b v n m) = n
+
+instance (Metric v, OrderedField n, Semigroup m) => HasOrigin (QDrawing b v n m) where
+    moveOriginTo p (Drawing f) = Drawing (moveOriginTo p . f)
+
+instance (Metric v, OrderedField n, Semigroup m) => Transformable (QDrawing b v n m) where
+    transform t (Drawing f) = Drawing (transform t . f)
+
+draw :: QDiagram b v n m -> QDrawing b v n m
+draw = Drawing . const
+
+type Drawing b = QDrawing b (V b) (N b) Any
+
 data Drawers b p s =
     Drawers
-        { puzzle :: p -> Config -> Diagram b
-        , solution :: (p, s) -> Config -> Diagram b
+        { puzzle :: p -> Drawing b
+        , solution :: (p, s) -> Drawing b
         }
-
-drawers :: (p -> Diagram b) -> ((p, s) -> Diagram b) -> Drawers b p s
-drawers p s = Drawers (const . p) (const . s)
 
 type PuzzleSol b = (Diagram b, Maybe (Diagram b))
 
@@ -87,3 +114,41 @@ alignPixel = scale (1/gridresd) . align' . scale gridresd
 border :: Backend' b => Double -> Diagram b -> Diagram b
 border w = extrudeEnvelope (w *^ unitX) . extrudeEnvelope (-w *^ unitX)
          . extrudeEnvelope (w *^ unitY) . extrudeEnvelope (-w *^ unitY)
+
+data CodeDiagrams a = CodeDiagrams { _cdLeft :: a, _cdTop :: a, _cdOver :: a }
+
+instance Monoid a => Monoid (CodeDiagrams a) where
+    mempty = CodeDiagrams mempty mempty mempty
+    (CodeDiagrams x y z) `mappend` (CodeDiagrams x' y' z') =
+        CodeDiagrams (x `mappend` x') (y `mappend` y') (z `mappend` z')
+
+
+centerX' :: Backend' b => Drawing b -> Drawing b
+centerX' (Drawing d) = Drawing (\c -> centerX (d c))
+
+centerY' :: Backend' b => Drawing b -> Drawing b
+centerY' (Drawing d) = Drawing (\c -> centerY (d c))
+
+centerXY' :: Backend' b => Drawing b -> Drawing b
+centerXY' (Drawing d) = Drawing (\c -> centerXY (d c))
+
+smash' :: Backend' b => Drawing b -> Drawing b
+smash' (Drawing d) = Drawing (\c -> smash (d c))
+
+alignBL' :: Backend' b => Drawing b -> Drawing b
+alignBL' (Drawing d) = Drawing (\c -> alignBL (d c))
+
+alignBR' :: Backend' b => Drawing b -> Drawing b
+alignBR' (Drawing d) = Drawing (\c -> alignBR (d c))
+
+alignTL' :: Backend' b => Drawing b -> Drawing b
+alignTL' (Drawing d) = Drawing (\c -> alignTL (d c))
+
+alignTR' :: Backend' b => Drawing b -> Drawing b
+alignTR' (Drawing d) = Drawing (\c -> alignTR (d c))
+
+fit' :: Backend' b => Double -> Drawing b -> Drawing b
+fit' f (Drawing d) = Drawing (\c -> fit f (d c))
+
+spread' :: Backend' b => V2 Double -> [Drawing b] -> Drawing b
+spread' v ds = Drawing (\c -> spread v $ map (\d -> fromDrawing d c) ds)

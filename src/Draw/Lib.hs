@@ -151,11 +151,3 @@ debugPath' p = mconcat . map draw $ prts'
     prts = zip (pathPoints p) ['a'..]
     prts' = concatMap (\(ps,c) -> zipWith (\pt d -> (pt, c:d:[])) ps ['0'..]) prts
     draw (pt, l) = moveTo pt $ text' l
-
-{-
-opaque :: Backend' b => Diagram b -> Diagram b
-opaque x = x <> bRect x # stroke # scale 1.1 # lwG 0 # fc white
- where
-    bRect :: Backend' b => Diagram b -> Path V2 Double
-    bRect = boundingRect
--}
