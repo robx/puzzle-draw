@@ -5,7 +5,7 @@
 
 module Draw.Draw (
     PuzzleSol,
-    RenderPuzzle,
+    RenderPuzzle(..),
     OutputChoice(..),
     draw,
     Unit(..),
@@ -19,7 +19,11 @@ import Draw.Lib
 import Draw.Widths
 import Draw.Code
 
-type RenderPuzzle b p s = (p -> Diagram b, (p, s) -> Diagram b)
+data RenderPuzzle b p s =
+    Render
+        { puzzle :: p -> Diagram b
+        , solution :: (p, s) -> Diagram b
+        }
 
 type PuzzleSol b = (Diagram b, Maybe (Diagram b))
 

@@ -123,7 +123,7 @@ handle f CountryRoad          = f R.countryRoad         D.countryRoad
 --   for the solution.
 drawPuzzleMaybeSol :: PuzzleHandler b ((Value, Maybe Value)
                       -> Parser (Diagram b, Maybe (Diagram b)))
-drawPuzzleMaybeSol (pp, ps) (dp, ds) (p, s) = do
+drawPuzzleMaybeSol (pp, ps) (Render dp ds) (p, s) = do
     p' <- pp p
     s' <- traverse ps s
     let mps = case s' of Nothing  -> Nothing
