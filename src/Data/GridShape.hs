@@ -35,10 +35,11 @@ module Data.GridShape
     , dualE
     , vertexNeighbours
     , edgeNeighbours
+    , rows
     ) where
 
 import qualified Data.Foldable as F
-import Data.List (partition)
+import Data.List (partition, groupBy, sortOn)
 import qualified Data.Map as Map
 import Data.AffineSpace
 
@@ -217,3 +218,14 @@ edges cs isc = F.foldr f ([], []) cs
 edgesM :: Dual' k
        => Map.Map k a -> ([Edge' (Dual k)], [Edge (Dual k)])
 edgesM m = edges (Map.keysSet m) (`Map.member` m)
+
+rows :: Map.Map C a -> [[a]]
+rows g = map (map snd) $
+    grouped byRow (Map.toList g) ++ grouped byCol (Map.toList g)
+  where
+    byRow (C _ y, _) = y
+    byCol (C x _, _) = x
+    grouped :: (Ord b, Eq b) => (a -> b) -> [a] -> [[a]]
+    grouped f = map (map snd) . groupOn fst . sortOn fst . map (\x -> (f x, x))
+    groupOn :: Eq b => (a -> b) -> [a] -> [[a]]
+    groupOn f = groupBy (\x y -> f x == f y)

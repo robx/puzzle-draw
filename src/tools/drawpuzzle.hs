@@ -41,6 +41,7 @@ data PuzzleOpts = PuzzleOpts
     , _solution :: Bool
     , _example  :: Bool
     , _code     :: Bool
+    , _scale    :: Double
     , _input    :: FilePath
     }
 
@@ -67,6 +68,11 @@ puzzleOpts = PuzzleOpts
     <*> switch
             (long "code" <> short 'c'
              <> help "Add solution code markers")
+    <*> option auto
+            (long "scale"
+             <> value 1.0
+             <> metavar "FACTOR"
+             <> help "Scale the size by this factor")
     <*> argument str
             (metavar "INPUT"
              <> help "Puzzle file in .pzl format")
@@ -87,7 +93,7 @@ toRenderOpts oc w opts = RenderOpts out w'
     f = _format opts
     u = case f of "png" -> Pixels
                   _     -> Points
-    w' = toOutputWidth u w
+    w' = toOutputWidth u w * (_scale opts)
     base = takeBaseName (_input opts)
     out = addExtension (base ++ outputSuffix oc) f
 

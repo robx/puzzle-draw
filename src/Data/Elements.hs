@@ -62,7 +62,7 @@ data Shade = Shade Bool Bool
     deriving Show
 
 data KropkiDot = KNone | KBlack | KWhite
-    deriving Show
+    deriving (Show, Eq, Ord)
 
 newtype TapaClue = TapaClue [Int]
     deriving Show

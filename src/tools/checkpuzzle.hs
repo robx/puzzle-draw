@@ -6,12 +6,15 @@ import Parse.Puzzle
 import Data.PuzzleTypes (typeNames, PuzzleType(..))
 import Data.CmdLine (exitErr, readPuzzle, checkType)
 
-import Data.Elements (digitList)
+import Data.Elements (KropkiDot(..), digitList)
+import Data.GridShape (Edge, N, C, rows, edgesM, unorient, ends, dualE)
+import Data.Grid (Grid)
 import qualified Parse.PuzzleTypes as T
 
 import Options.Applicative
 import Control.Monad
 import Data.Maybe
+import qualified Data.Map as Map
 import Data.Monoid
 import Data.List (intercalate, sort)
 
@@ -71,6 +74,7 @@ check :: PuzzleType -> (Y.Value, Y.Value) -> Y.Parser [String]
 check t (pv, sv) =
     case t of
         ABCtje -> checkABCtje (pv, sv)
+        Kropki -> checkKropki (pv, sv)
         _      -> return []
 
 checkABCtje :: (Y.Value, Y.Value) -> Y.Parser [String]
@@ -93,3 +97,45 @@ checkABCtje (pv, sv) = do
       where
         l c = fromMaybe 0 . lookup c . map (\(x, y) -> (y, x)) $ vs
         val = sum . map l
+
+checkKropki :: (Y.Value, Y.Value) -> Y.Parser [String]
+checkKropki (pv, sv) = do
+    p <- fst T.kropki $ pv
+    s <- snd T.kropki $ sv
+    return . catMaybes . map (\c -> c p s) $
+        [ match, latin, dots ]
+  where
+    match :: Map.Map (Edge N) KropkiDot -> Grid C Int -> Maybe String
+    match p s = if solEdges == puzEdges then
+                    Nothing
+                else
+                    Just "puzzle and solution shape don't match"
+      where
+        solEdges = let
+            (outer, inner) = edgesM s
+          in
+            sort (inner ++ map unorient outer)
+        puzEdges = sort (Map.keys p)
+    latin _ s = either Just (const Nothing) . mapM_ latinRow . rows $ s
+    latinRow ds = if sort ds == [1 .. length ds] then
+                      Right ()
+                  else
+                      Left $ "row not 1..N: " ++ show ds
+    dots p s = either Just (const Nothing) . mapM_ (checkEdge s) . Map.toList $ p
+    checkEdge :: Grid C Int -> (Edge N, KropkiDot) -> Either String ()
+    checkEdge s (e, d) =
+      let
+        (a, b) = ends (dualE e)
+        okDot x y =
+          let
+            white = x - y == 1 || x - y == -1
+            black = x == y * 2 || y == x * 2
+          in
+            case d of
+                KBlack -> black
+                KWhite -> white
+                KNone  -> not black && not white
+      in
+        case (Map.lookup a s, Map.lookup b s) of
+            (Just x, Just y) -> if okDot x y then Right () else Left ("bad dot between: " ++ show a ++ "," ++ show b)
+            _                -> if d == KNone then Right () else Left "dot on the edge"

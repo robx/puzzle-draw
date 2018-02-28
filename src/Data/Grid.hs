@@ -16,12 +16,16 @@ module Data.Grid
     , cellGrid
 
     , dominoGrid
+    , litsGrid
+    , litsoGrid
+    , pentominoGrid
 
     , borders
     , skeletons
     , edgesGen
     , colour
     , collectLines
+    , rows
 
     , OutsideClues(..)
     , outsideSize
@@ -213,3 +217,98 @@ size :: Grid Coord a -> Size
 size m = foldr (both max) (0, 0) (Map.keys m) ^+^ (1, 1)
   where
     both f (x, y) (x', y') = (f x x', f y y')
+
+polyominoGrid :: [ ((Int, Int), Char) ] -> [ (Int,Int) ] -> Grid C (Maybe Char)
+polyominoGrid ls ps = Map.mapKeys fromCoord . Map.fromList $
+    [ (a, Just c) | (a, c) <- ls ] ++
+    [ (a, Nothing) | a <- ps ]
+
+{-
+A grid with (Just p) for the capital letters,
+Nothing for the lowercase letters.
+
+    Vvv..N.L..X...Ff.Zz..W
+    v...nn.l.xxx.ff..z..ww
+    v...n..l..x...f.zz.ww.
+    ..T.n.ll..............
+    ttt.......U.u..Y...Pp.
+    ..t.Iiiii.uuu.yyyy.ppp
+-}
+pentominoGrid :: Grid C (Maybe Char)
+pentominoGrid = polyominoGrid ls ps
+  where
+    ls = [ ((0,5), 'V')
+         , ((5,5), 'N')
+         , ((7,5), 'L')
+         , ((10,5), 'X')
+         , ((14,5), 'F')
+         , ((17,5), 'Z')
+         , ((21,5), 'W')
+         , ((2,2), 'T')
+         , ((4,0), 'I')
+         , ((10,1), 'U')
+         , ((15,1), 'Y')
+         , ((19,1), 'P')
+         ]
+    ps = [ (1,5), (2,5), (0,4), (0,3)
+         , (0,1), (1,1), (2,1), (2,0)
+         , (5,0), (6,0), (7,0), (8,0)
+         , (10,0), (11,0), (12,0), (12,1)
+         , (14,0), (15,0), (16,0), (17,0)
+         , (19,0), (20,0), (20,1), (21,0)
+         , (4,2), (4,3), (4,4), (5,4)
+         , (6,2), (7,2), (7,3), (7,4)
+         , (9,4), (10,4), (11,4), (10,3)
+         , (13,4), (14,4), (14,3), (15,5)
+         , (18,5), (17,4), (16,3), (17,3)
+         , (19,3), (20,3), (20,4), (21,4)
+         ]
+
+
+{-
+A grid with (Just p) for the capital letters,
+Nothing for the lowercase letters.
+
+    L  I
+    l  i Ttt  Ss Oo
+    ll i  t  ss  oo
+       i
+-}
+litsoGrid :: Grid C (Maybe Char)
+litsoGrid = polyominoGrid ls ps
+  where
+    ls = [ ((0,3), 'L')
+         , ((3,3), 'I')
+         , ((5,2), 'T')
+         , ((10,2), 'S')
+         , ((13,2), 'O')
+         ]
+    ps = [ (0,1), (0,2), (1,1)
+         , (3,0), (3,1), (3,2)
+         , (6,2), (6,1), (7,2)
+         , (9,1), (10,1), (11,2)
+         , (13,1), (14,1), (14,2)
+         ]
+
+{-
+A grid with (Just p) for the capital letters,
+Nothing for the lowercase letters.
+
+    L  I
+    l  i Ttt  Ss
+    ll i  t  ss
+       i
+-}
+litsGrid :: Grid C (Maybe Char)
+litsGrid = polyominoGrid ls ps
+  where
+    ls = [ ((0,3), 'L')
+         , ((3,3), 'I')
+         , ((5,2), 'T')
+         , ((10,2), 'S')
+         ]
+    ps = [ (0,1), (0,2), (1,1)
+         , (3,0), (3,1), (3,2)
+         , (6,2), (6,1), (7,2)
+         , (9,1), (10,1), (11,2)
+         ]

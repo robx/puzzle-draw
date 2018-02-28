@@ -171,7 +171,7 @@ slithermulti = drawers
     (drawSlitherGrid . fst <> n)
     (drawSlitherGrid . fst . fst <> solstyle . drawEdges . snd)
   where
-    n (g, l) = placeNote (size' g) (drawInt l ||| strutX 0.2 ||| miniloop)
+    n (g, l) = placeNoteTR (size' g) (drawInt l ||| strutX 0.2 ||| miniloop)
     size' = size . Map.mapKeys toCoord
 
 tightfitskyscrapers :: Backend' b =>
@@ -204,10 +204,11 @@ wordsearch = drawers
 curvedata :: Backend' b =>
              Drawers b (Grid C (Maybe [Edge N])) [Edge C]
 curvedata = drawers
-    cd
-    ((solstyle . drawEdges . snd) <> cd . fst)
-  where
-    cd = placeGrid . fmap drawCurve . clues <> grid gDefault
+    (placeGrid . fmap drawCurve . clues
+     <> grid gDefault)
+    (placeGrid . fmap drawCurve . clues . fst
+     <> solstyle . drawEdges . snd
+     <> grid gDefault . fst)
 
 doubleback :: Backend' b =>
               Drawers b AreaGrid (Loop C)
@@ -380,7 +381,7 @@ skyscrapers = drawers
   where
     g = placeGrid . fmap drawInt . clues . outsideClues
         <> grid gDefault . outsideGrid
-    n (oc, s) = placeNote (outsideSize oc) (drawText s)
+    n (oc, s) = placeNoteTR (outsideSize oc) (drawText s)
 
 shikaku :: Backend' b => Drawers b (Grid C (Maybe Int)) AreaGrid
 shikaku = drawers
@@ -394,7 +395,7 @@ slovaksums = drawers
     (p . fst <> n)
     (placeGrid . fmap drawInt . clues . snd <> p . fst . fst)
   where
-    n (g, ds) = placeNote (size' g) (drawText ds # scale 0.8)
+    n (g, ds) = placeNoteTR (size' g) (drawText ds # scale 0.8)
     p = grid gDefault <> placeGrid . fmap drawSlovakClue . clues
     size' = size . Map.mapKeys toCoord
 
@@ -408,7 +409,7 @@ skyscrapersStars = drawers
   where
     g = (placeGrid . fmap drawInt . clues . outsideClues
          <> grid gDefault . outsideGrid) . fst
-    n (oc, s) = placeNote (outsideSize oc)
+    n (oc, s) = placeNoteTR (outsideSize oc)
                           (drawInt s ||| strutX 0.2 ||| drawStar Star)
 
 summon ::
@@ -456,18 +457,22 @@ buchstabensalat = drawers
   where
     p = (placeGrid . fmap drawChar . clues . outsideClues
          <> grid gDefault . outsideGrid) . fst
-    n (ocs, ls) = placeNote (outsideSize ocs) (drawText ls # scale 0.8)
+    n (ocs, ls) = placeNoteTR (outsideSize ocs) (drawText ls # scale 0.8)
 
 doppelblock ::
     Backend' b =>
     Drawers b (OutsideClues C (Maybe Int))
-                   (Grid C (Either Black Int))
+              (Grid C (Either Black Int))
 doppelblock = drawers
-    p
+    (p <> n)
     (p . fst <> placeGrid . fmap drawVal . snd)
   where
     p = placeGrid . fmap (scale 0.8 . drawInt) . clues . outsideClues
         <> grid gDefault . outsideGrid
+    n ocs = placeNoteTL (0, h) (drawText ds # scale 0.8)
+      where
+        h = snd (outsideSize ocs)
+        ds = "1-" ++ show (h - 2)
     drawVal (Right c) = drawInt c
     drawVal (Left _) = fillBG gray
 
@@ -560,7 +565,7 @@ starbattle = drawers
     ((p <> n) . fst <> placeGrid . fmap drawStar . clues . snd)
   where
     p = (drawAreas <> grid gDefault) . fst
-    n (g, k) = placeNote (size' g)
+    n (g, k) = placeNoteTR (size' g)
                          (drawInt k ||| strutX 0.2 ||| drawStar Star)
     size' = size . Map.mapKeys toCoord
 
@@ -655,10 +660,14 @@ kropki ::
     Backend' b =>
     Drawers b (Map.Map (Edge N) KropkiDot) (Grid C Int)
 kropki = drawers
-    p
+    (p <> n)
     (placeGrid . fmap drawInt . snd <> p . fst)
   where
     p = placeGrid' . Map.mapKeys midPoint . fmap kropkiDot <> grid gDefault . sizeGrid . sz
+    n g = placeNoteTR (w, h) (drawText ds # scale 0.8)
+      where
+        (w, h) = sz g
+        ds = "1-" ++ show h
     sz m = edgeSize (Map.keys m)
 
 statuepark ::
@@ -792,9 +801,12 @@ tents = drawers
 pentominoSums :: Backend' b => Drawers b (OutsideClues C [String], String)
                                (Grid C (Either Pentomino Int), [(Char, Int)], OutsideClues C [String])
 pentominoSums = drawers
-    ((drawMultiOutsideGrid . fst <> n) ||| const (strutX 1.0) ||| emptyTable . fst)
+    p
     (solgrid ||| const (strutX 1.0) ||| table)
   where
+    p (ocs, ds) =
+        (((drawMultiOutsideGrid ocs <> n (ocs, ds)) ||| strutX 1.0 ||| emptyTable ocs)
+        `aboveT` drawPentominos)
     n (ocs, ds) = placeNoteTL (0, h ocs) (drawText ds # scale 0.8)
     h = snd . outsideSize
     emptyTable = mappingTable . emptys
@@ -820,7 +832,7 @@ coralLits ::
     Backend' b =>
     Drawers b (OutsideClues C [String]) (Grid C (Maybe Char))
 coralLits = drawers
-    drawMultiOutsideGrid
+    (\ocs -> drawMultiOutsideGrid ocs `aboveT` drawLITS)
     (skeletonStyle . drawEdges . skeletons . clues . snd
      <> drawMultiOutsideGrid . fst
      <> placeGrid . fmap (const (fillBG gray)) . clues . snd)
@@ -831,7 +843,7 @@ coralLitso ::
     Backend' b =>
     Drawers b (OutsideClues C [String]) (Grid C (Either Black Char))
 coralLitso = drawers
-    drawMultiOutsideGrid
+    (\ocs -> drawMultiOutsideGrid ocs `aboveT` drawLITSO)
     (drawMultiOutsideGrid . fst
      <> skeletonStyle . drawEdges . skeletons . rights . snd
      <> placeGrid . fmap (const (fillBG gray)) . lefts . snd)

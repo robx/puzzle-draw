@@ -286,9 +286,9 @@ note :: Backend' b =>
         Diagram b -> Diagram b
 note d = d # frame 0.2 # bg (blend 0.2 black white)
 
-placeNote :: Backend' b =>
+placeNoteTR :: Backend' b =>
              Size -> Diagram b -> Diagram b
-placeNote sz d = note d # alignBL # translatep sz # translate (r2 (0.6,0.6))
+placeNoteTR sz d = note d # alignBL # translatep sz # translate (r2 (0.6,0.6))
 
 placeNoteTL :: Backend' b =>
              Size -> Diagram b -> Diagram b
@@ -334,6 +334,21 @@ drawPills (DigitRange a b) = centerXY . onGrid 1.0 0.7 drawPill $ placed
     n = b - a + 1
     root = head [ x | x <- [n,n-1..], x*x <= n ]
     placed = zip [(x, y) | x <- [0..root], y <- [root,root-1..0]] [a..b]
+
+polyominoGrid :: Backend' b => Grid C (Maybe Char) -> Diagram b
+polyominoGrid = placeGrid . fmap (scale 0.8) . fmap
+    (\x -> case x of
+        Nothing -> fillBG black
+        Just c -> (drawText [c] # fc white # lc white) <> fillBG black)
+
+drawPentominos :: Backend' b => Diagram b
+drawPentominos = centerXY . scale 0.5 . polyominoGrid $ pentominoGrid
+
+drawLITS :: Backend' b => Diagram b
+drawLITS = centerXY . scale 0.5 . polyominoGrid $ litsGrid
+
+drawLITSO :: Backend' b => Diagram b
+drawLITSO = centerXY . scale 0.5 . polyominoGrid $ litsoGrid
 
 drawCrossing :: Backend' b => Crossing -> Diagram b
 drawCrossing = const $ drawChar '+'
