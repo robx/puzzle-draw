@@ -59,13 +59,13 @@ drawCodePart (LColsN  cs) = CodeDiagrams mempty (placeGrid g # centerY) mempty
     g = Map.fromList [ (N c 0, arrowDownL l)  | (l, c) <- Map.toList cs ]
 
 arrowDown :: Backend' b => Diagram b
-arrowDown = triangle 0.7 # lwG 0 # fc (blend 0.7 white black) # rotateBy (1/2)
+arrowDown = triangle 0.5 # lwG 0 # fc black # rotateBy (1/2)
 
 arrowDownL :: Backend' b => Char -> Diagram b
-arrowDownL c = drawChar c # scale 0.7 <> arrowDown # scale 1.2
+arrowDownL c = drawChar c # fc white # scale 0.5 <> arrowDown # scale 1.2
 
 arrowRight :: Backend' b => Diagram b
 arrowRight = arrowDown # rotateBy (1/4)
 
 arrowRightL :: Backend' b => Char -> Diagram b
-arrowRightL c = drawChar c # scale 0.7 <> arrowRight # scale 1.2
+arrowRightL c = drawChar c # fc white # scale 0.5 # translate (r2 (-0.05,0)) <> arrowRight # scale 1.2
