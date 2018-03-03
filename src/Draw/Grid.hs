@@ -1,11 +1,13 @@
-{-# LANGUAGE MultiParamTypeClasses, FlexibleContexts, TypeFamilies #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
 
 module Draw.Grid where
 
+import Data.Maybe (catMaybes)
 import Data.Char (isUpper)
 import qualified Data.Map as M
-import qualified Data.Set as S
 
 import Diagrams.Prelude hiding (size, E, N, dot, outer)
 import Diagrams.TwoD.Offset (offsetPath)
@@ -100,6 +102,30 @@ irregularGridPaths m = (path' (map revEdge outer), path inner)
                          . fromVertices
     conn (v, w) = toPoint v ~~ toPoint w
 
+offsetBorder :: Double -> [C] -> Path V2 Double
+offsetBorder off cs =
+    pathFromLoopVertices . map offsetCorner . corners . map toPoint $ loop
+  where
+    pathFromLoopVertices = pathFromLocTrail
+                         . mapLoc (wrapLoop . closeLine)
+                         . fromVertices
+    outer :: [Edge' N]
+    (outer, _) = edges cs (`elem` cs)
+    loop :: [N]
+    loop = case loops (map ends' outer) of
+        Just [l] -> tail l
+        _        -> error "broken cage"
+    corners :: [P2 Double] -> [(P2 Double, P2 Double, P2 Double)]
+    corners vs = catMaybes $ zipWith3
+        (\ a b c -> if b .-. a == c .-. b then Nothing else Just (a, b, c))
+        vs (tail vs ++ vs) (tail (tail vs) ++ vs)
+    offsetCorner :: (P2 Double, P2 Double, P2 Double) -> P2 Double
+    offsetCorner (a, b, c) =
+      let
+        dir = perp (normalize (b .-. a)) ^+^ perp (normalize (c .-. b))
+      in
+        b .+^ (off *^ dir)
+
 onGrid :: (Transformable a, Monoid a, InSpace V2 Double a) =>
           Double -> Double -> (t -> a) -> [(Coord, t)] -> a
 onGrid dx dy f = mconcat . map g
@@ -143,6 +169,10 @@ drawThinEdges = thinEdgeStyle . stroke . mconcat . map edge
 drawAreas :: (Backend' b, Eq a) =>
              Grid C a -> Diagram b
 drawAreas = drawEdges . borders
+
+cage :: Backend' b => [C] -> Diagram b
+cage cs = dashingG dashes dashoffset
+        . lwG onepix . stroke . offsetBorder (-4 * onepix) $ cs
 
 fillBG :: Backend' b => Colour Double -> Diagram b
 fillBG c = square 1 # lwG onepix # fc c # lc c

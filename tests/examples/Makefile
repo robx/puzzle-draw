@@ -1,17 +1,23 @@
 .PHONY: all examples clean
 
 PUZZLES = $(wildcard *.pzl)
-PUZZLETARGETS = $(patsubst %.pzl,%.png,$(PUZZLES))
+PNGTARGETS = $(patsubst %.pzl,%.png,$(PUZZLES))
+PDFTARGETS = $(patsubst %.pzl,%.pdf,$(PUZZLES))
 
-all: examples
+all: pngs
 
-examples: $(PUZZLETARGETS)
+pngs: $(PNGTARGETS)
+
+pdfs: $(PDFTARGETS)
 
 clean:
-	rm -f $(PUZZLETARGETS)
+	rm -f $(PNGTARGETS) $(PDFTARGETS)
 
 solution-%.png: solution-%.pzl
 	stack exec drawpuzzle -- -c -e -f png $<
 
 %.png: %.pzl
 	stack exec drawpuzzle -- -e -f png $<
+
+%.pdf: %.pzl
+	stack exec drawpuzzle -- -e -f pdf $<

@@ -17,7 +17,8 @@ module Parse.PuzzleTypes (
     persistenceOfMemory, abctje, kropki, statuepark, pentominousBorders,
     nanroSignpost, tomTom, horseSnake, illumination, pentopia,
     pentominoPipes, greaterWall, galaxies, mines, tents,
-    pentominoSums, coralLits, coralLitso, snake, countryRoad
+    pentominoSums, coralLits, coralLitso, snake, countryRoad,
+    killersudoku
   ) where
 
 import Control.Applicative
@@ -67,6 +68,13 @@ sudoku = (parseClueGrid, parseClueGrid)
 thermosudoku :: ParsePuzzle (Grid C (Maybe Int), [Thermometer])
                             (Grid C (Maybe Int))
 thermosudoku = ((parseThermoGrid =<<) . parseJSON, parseClueGrid)
+
+killersudoku :: ParsePuzzle (AreaGrid, M.Map Char Int) (Grid C Int)
+killersudoku = (,)
+    (\v -> (,)
+         <$> parseFrom ["cages"] parseGrid v
+         <*> parseFrom ["clues"] parseCharMap v)
+    parseGrid
 
 pyramid :: ParsePuzzle Pyr.Pyramid Pyr.PyramidSol
 pyramid = (parseJSON, parseJSON)

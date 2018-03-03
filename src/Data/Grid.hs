@@ -74,10 +74,6 @@ nodes = Map.keysSet
 borders :: Eq a => Grid C a -> [Edge N]
 borders = edgesGen (/=) (const False)
 
--- | The skeletons of connected equal cells.
-skeletons :: Eq a => Grid C a -> [Edge C]
-skeletons = map dualE . edgesGen (==) (const False)
-
 corners :: C -> [N]
 corners c = map (.+^ (c .-. C 0 0)) [N 0 0, N 1 0, N 0 1, N 1 1]
 
@@ -204,6 +200,10 @@ collectLines = dualEdgesP eq
   where
     eq (Just x) (Just y) = x == y
     eq _        _        = False
+
+-- | The skeletons of connected equal cells.
+skeletons :: Eq a => Grid C a -> [Edge C]
+skeletons = map dualE . edgesGen (==) (const False)
 
 dominoGrid :: DigitRange -> Grid C (Int, Int)
 dominoGrid (DigitRange x y) =

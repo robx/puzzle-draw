@@ -14,6 +14,7 @@ import Diagrams.Prelude hiding (N)
 import Diagrams.TwoD.Offset
 
 import qualified Data.Map as Map
+import Data.List (groupBy, sortOn)
 
 import Data.Grid
 import Data.Elements hiding (Loop)
@@ -174,8 +175,11 @@ drawCharOpaque :: Backend' b =>
                   Char -> Diagram b
 drawCharOpaque c = drawChar c <> circle 0.5 # lwG 0 # fc white
 
+placeTL :: Backend' b => Diagram b -> Diagram b
+placeTL = moveTo (p2 (-0.4,0.4)) . scale 0.5 . alignTL
+
 hintTL :: Backend' b => String -> Diagram b
-hintTL = moveTo (p2 (-0.4,0.4)) . scale 0.5 . alignTL . drawText
+hintTL = placeTL . drawText
 
 -- | Stack a list of words into a unit square. Scaled such that at least
 -- three words will fit.
@@ -398,3 +402,23 @@ greaterClue (_:rs) = g rs
     drawRel RGreater = drawText ">"
     drawRel REqual = drawText "="
     placeholder = circle 0.35 # lwG onepix # dashingG [0.05, 0.05] 0
+
+drawCages :: (Backend' b, Eq a, Ord a) =>
+             Grid C a -> Map.Map a (Diagram b) -> Diagram b
+drawCages g m =
+    hints <> (mconcat . map cage . Map.elems) byChar
+  where
+    hints = placeGrid . fmap (bgFrame 0.05 white . placeTL) . clues
+          . fmap (flip Map.lookup m . head) . invertMap . fmap tl $ byChar
+    tl = head . sortOn (\ (C x y) -> (-y, x))
+    byChar = invertMap g
+
+invertMap :: (Eq a, Ord a) => Map.Map k a -> Map.Map a [k]
+invertMap
+        = Map.fromList
+        . map (\ l -> (fst (head l), map snd l))
+        . groupBy (\ x y -> fst x == fst y)
+        . sortOn fst
+        . map (\ (x,y) -> (y,x))
+        . Map.toList
+

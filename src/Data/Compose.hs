@@ -116,6 +116,7 @@ handle f CoralLITS            = f R.coralLits           D.coralLits
 handle f CoralLITSO           = f R.coralLitso          D.coralLitso
 handle f Snake                = f R.snake               D.snake
 handle f CountryRoad          = f R.countryRoad         D.countryRoad
+handle f KillerSudoku         = f R.killersudoku        D.killersudoku
 
 
 -- | Handler that parses puzzle and an optional solution from a pair of

@@ -1,0 +1,26 @@
+type: killersudoku
+puzzle:
+  cages: |
+    ab.cc.
+    abd...
+    .dd..e
+    f....e
+    fg.h..
+    .g.hii
+  clues:
+    a: 7
+    b: 11
+    c: 8
+    d: 6
+    e: 11
+    f: 6
+    g: 7
+    h: 3
+    i: 10
+solution: |
+  462531
+  351642
+  623415
+  514326
+  146253
+  235164

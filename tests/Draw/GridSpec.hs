@@ -30,3 +30,29 @@ spec = do
         it "gives the center of a cell edge" $ do
             let e = E (C 0 0) Vert
             midPoint e `shouldBe` p2 (0.5, 1.0)
+
+    describe "offsetBorder" $ do
+        it "gives the corners of a square cell" $ do
+            let b = offsetBorder 0 [C 0 0]
+                [vs] = pathPoints b
+            length vs `shouldBe` 4
+            vs `shouldSatisfy` elem (p2i (0, 0))
+            vs `shouldSatisfy` elem (p2i (1, 0))
+            vs `shouldSatisfy` elem (p2i (0, 1))
+            vs `shouldSatisfy` elem (p2i (1, 1))
+        it "omits in-between nodes of a rectangle" $ do
+            let b = offsetBorder 0 [C 0 0, C 1 0]
+                [vs] = pathPoints b
+            length vs `shouldBe` 4
+            vs `shouldSatisfy` elem (p2i (0, 0))
+            vs `shouldSatisfy` elem (p2i (2, 0))
+            vs `shouldSatisfy` elem (p2i (0, 1))
+            vs `shouldSatisfy` elem (p2i (2, 1))
+        it "offsets inside for negative offset" $ do
+            let b = offsetBorder (-0.5) [C 0 0, C 1 0, C 1 1, C 0 1]
+                [vs] = pathPoints b
+            length vs `shouldBe` 4
+            vs `shouldSatisfy` elem (p2 (0.5, 0.5))
+            vs `shouldSatisfy` elem (p2 (0.5, 1.5))
+            vs `shouldSatisfy` elem (p2 (1.5, 1.5))
+            vs `shouldSatisfy` elem (p2 (1.5, 0.5))

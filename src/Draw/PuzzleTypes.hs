@@ -21,7 +21,8 @@ module Draw.PuzzleTypes (
     statuepark, pentominousBorders, nanroSignpost, tomTom,
     horseSnake, illumination, pentopia,
     pentominoPipes, greaterWall, galaxies, mines, tents,
-    pentominoSums, coralLits, coralLitso, snake, countryRoad
+    pentominoSums, coralLits, coralLitso, snake, countryRoad,
+    killersudoku
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
@@ -134,6 +135,15 @@ thermosudoku :: Backend' b =>
 thermosudoku = drawers
     (placeGrid . fmap drawInt . clues . fst <> sudokugrid . fst <> drawThermos . snd)
     (placeGrid . fmap drawInt . clues . snd <> sudokugrid . snd <> drawThermos . snd . fst)
+
+killersudoku :: Backend' b =>
+                Drawers b (AreaGrid, Map.Map Char Int) (Grid C Int)
+killersudoku = drawers
+    p
+    (placeGrid . fmap drawInt . snd <> p . fst)
+  where
+    p = cages <> sudokugrid . fst
+    cages (g, m) = drawCages (Map.filter (/= '.') g) (Map.map drawInt m)
 
 pyramid :: Backend' b =>
     Drawers b Pyr.Pyramid Pyr.PyramidSol

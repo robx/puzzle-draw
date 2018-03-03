@@ -95,6 +95,7 @@ data PuzzleType = LITS
                 | CoralLITSO
                 | Snake
                 | CountryRoad
+                | KillerSudoku
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -181,6 +182,7 @@ typeNames = [ (LITS, "lits")
             , (CoralLITSO, "coral+litso")
             , (Snake, "snake")
             , (CountryRoad, "country-road")
+            , (KillerSudoku, "killersudoku")
             ]
 
 -- | Look up a puzzle type by name.
