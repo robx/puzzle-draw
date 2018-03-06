@@ -1,4 +1,4 @@
-DRAW=../../dist/build/drawpuzzle/drawpuzzle
+.PHONY: all examples clean
 
 PUZZLES = $(wildcard *.pzl)
 PUZZLETARGETS = $(patsubst %.pzl,%.png,$(PUZZLES))
@@ -8,7 +8,10 @@ all: examples
 examples: $(PUZZLETARGETS)
 
 clean:
-	rm -f $(EXAMPLETARGETS)
+	rm -f $(PUZZLETARGETS)
 
-%.png: %.pzl $(DRAW)
-	$(DRAW) -e -f png $<
+solution-%.png: solution-%.pzl
+	drawpuzzle -c -e -f png $<
+
+%.png: %.pzl
+	drawpuzzle -e -f png $<
