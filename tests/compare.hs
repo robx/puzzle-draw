@@ -24,4 +24,4 @@ testFile fp = goldenVsFile ("comparing " ++ fp)
 
 tests :: IO TestTree
 tests = testGroup "compare to old output" . map testFile
-        <$> findByExtension [".pzl"] "tests/examples"
+        <$> findByExtension [".pzl"] "../tests/examples"

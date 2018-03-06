@@ -7,4 +7,4 @@ cabal-dev
 .virthualenv
 examples/*.svg
 .stack-work
-gallery.html
+compare
