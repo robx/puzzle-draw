@@ -7,12 +7,18 @@ puzzle: |
   .2.32.
   1.1..1
 solution: |
-  ...┌─┐.
-  .┌┐│┌┘.
-  ┌┘││└┐.
-  └┐└┘.└┐
-  ┌┘┌─┐┌┘
-  └─┘┌┘│.
-  ...└─┘.
+  o o o o-o-o o
+   . . .|. .|. 
+  o o-o o o-o o
+   .|.|.|.|. . 
+  o-o o o o-o o
+  |. .|.|. .|. 
+  o-o o-o o o-o
+   .|. . . . .|
+  o-o o-o-o o-o
+  |. .|. .|.|. 
+  o-o-o o-o o o
+   . . .|. .|. 
+  o o o o-o-o o
 code:
   cell_rows_bottom: [0,2]

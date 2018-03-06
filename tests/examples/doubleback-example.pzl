@@ -7,10 +7,15 @@ puzzle: |
   ggffhc
   ggiihc
 solution: |
-  ┌──┐┌┐
-  │┌┐│││
-  │││└┘│
-  ││└┐┌┘
-  │└┐│└┐
-  └─┘└─┘
+  o-o-o-o o-o
+  |. . .|.|.|
+  o o-o o o o
+  |.|.|.|.|.|
+  o o o o-o o
+  |.|.|. . .|
+  o o o-o o-o
+  |.|. .|.|. 
+  o o-o o o-o
+  |. .|.|. .|
+  o-o-o o-o-o
 
