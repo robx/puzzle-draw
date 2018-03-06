@@ -464,10 +464,13 @@ instance FromChar HalfDirs where
 --  │└─┘│
 --  └──┐│
 --     └┘
-parseEdges :: Key k => Value -> Parser [Edge k]
-parseEdges v = do
+parseBoxEdges :: Key k => Value -> Parser [Edge k]
+parseBoxEdges v = do
     m <- fmap unHalfDirs <$> parseGrid v
     return [ E p d | (p, ds) <- Map.toList m, d <- ds ]
+
+parseEdges :: Key k => Value -> Parser [Edge k]
+parseEdges v = parsePlainEdges v <|> parseBoxEdges v
 
 instance FromChar Dir' where
     parseChar 'u' = pure U
