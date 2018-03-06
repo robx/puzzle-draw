@@ -11,7 +11,7 @@ clean:
 	rm -f $(PUZZLETARGETS)
 
 solution-%.png: solution-%.pzl
-	drawpuzzle -c -e -f png $<
+	stack exec drawpuzzle -- -c -e -f png $<
 
 %.png: %.pzl
-	drawpuzzle -e -f png $<
+	stack exec drawpuzzle -- -e -f png $<
