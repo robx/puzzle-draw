@@ -57,23 +57,12 @@ Installing
 ----------
 
 This is a brief overview of how to install the command line tool.
-You'll need to get a Haskell environment, by installing the
-[Haskell Platform][platform]. Then install `puzzle-draw` with cabal:
+The easiest way right now is to get [stack](https://www.stackage.org/),
+clone this repository, and install using
 
 ```
-$ cabal install puzzle-draw
+$ stack install
 ```
-
-This will compile puzzle-draw against the SVG backend, and install
-a binary `drawpuzzle` that formats puzzles to SVG. Alternatively,
-you can compile against the Cairo backend by passing `-fcairo`:
-
-```
-$ cabal install -fcairo puzzle-draw
-```
-
-This will enable PDF and PNG output. Be warned that getting Cairo
-installed can be tricky on non-Linux platforms.
 
 Running
 -------

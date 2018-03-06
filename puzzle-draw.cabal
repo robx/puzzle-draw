@@ -21,10 +21,6 @@ source-repository head
   type:     git
   location: http://github.com/robx/puzzle-draw.git
 
-flag cairo
-  description: Build against Cairo backend
-  default:     False
-
 library
   exposed-modules:     Data.Grid
                        Data.GridShape

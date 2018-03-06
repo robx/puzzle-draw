@@ -1,12 +1,5 @@
-nix:
-  enable: true
-  shell-file: stack-shell.nix
-flags:
-  puzzle-draw:
-    cairo: true
 ghc-options:
   puzzle-draw: -Werror
 packages:
 - '.'
-#- '../diagrams-lib'
 resolver: lts-8.24
