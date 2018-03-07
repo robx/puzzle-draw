@@ -13,10 +13,14 @@ puzzle:
     ...2.
     .....
 solution: |
-  ┌──┐
-  └┐ └┐
-   │┌┐│
-  ┌┘│└┘
-  └─┘
+  o-o-o-o
+  |. . .|
+  o-o o o-o
+   .|. . .|
+  o o o-o o
+   .|.|.|.|
+  o-o o o-o
+  |. .|. . 
+  o-o-o
 code:
   cell_rows_bottom: [2,3]

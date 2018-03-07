@@ -5,9 +5,13 @@ puzzle: |
   oo*oo
   *.***
 solution: |
-  ┌┐
-  │└─┐
-  │┌┐│┌┐
-  └┘│└┘│
-    └──┘
+  o-o
+  |.|
+  o o-o-o
+  |. . .|
+  o o-o o o-o
+  |.|.|.|.|.|
+  o-o o o-o o
+   . .|. . .|
+  o o o-o-o-o
 

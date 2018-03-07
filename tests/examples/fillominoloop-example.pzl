@@ -11,9 +11,12 @@ solution:
     2524
     5524
   loop: |
-    ┌──┐
-    │┌┐│
-    ││││
-    └┘└┘
+    o-o-o-o
+    |. . .|
+    o o-o o
+    |.|.|.|
+    o o o o
+    |.|.|.|
+    o-o o-o
 code:
   cell_rows_bottom: [1,2]
