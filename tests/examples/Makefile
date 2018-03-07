@@ -13,11 +13,8 @@ pdfs: $(PDFTARGETS)
 clean:
 	rm -f $(PNGTARGETS) $(PDFTARGETS)
 
-solution-%.png: solution-%.pzl
-	stack exec drawpuzzle -- -c -e -f png $<
-
 %.png: %.pzl
-	stack exec drawpuzzle -- -e -f png $<
+	stack exec drawpuzzle -- -e -c -f png $<
 
 %.pdf: %.pzl
-	stack exec drawpuzzle -- -e -f pdf $<
+	stack exec drawpuzzle -- -e -c -f pdf $<
