@@ -1,0 +1,22 @@
+type: country-road
+puzzle:
+  rooms: |
+    abbbb
+    ccddd
+    cceed
+    fffgg
+    fffgg
+  clues: |
+    .3...
+    3....
+    .....
+    ...2.
+    .....
+solution: |
+  ┌──┐
+  └┐ └┐
+   │┌┐│
+  ┌┘│└┘
+  └─┘
+code:
+  cell_rows_bottom: [2,3]

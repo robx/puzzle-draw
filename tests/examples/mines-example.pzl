@@ -1,0 +1,15 @@
+type: mines
+puzzle: |
+  23.2.
+  .....
+  3..1.
+  ..1..
+  0..2.
+solution: |
+  ..X.X
+  XX...
+  .X...
+  ....X
+  X...X
+code:
+  cell_rows_bottom: [1,3]

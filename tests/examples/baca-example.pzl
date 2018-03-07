@@ -1,0 +1,21 @@
+type: baca
+puzzle:
+  grid: |
+    A..B.
+    .A..B
+    ..B..
+    C..C.
+    .A..C
+  outside:
+    left:   [[], [], [1,1], [], []]
+    top:    [[], [1,1], [], [], [2]]
+    right:  ---C-
+    bottom: -AC--
+solution: |
+  ABXXC
+  CXAXB
+  XCXBA
+  XABCX
+  BXCAX
+code:
+  cell_rows_bottom: [1,3]

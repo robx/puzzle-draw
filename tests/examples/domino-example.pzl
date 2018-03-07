@@ -1,0 +1,12 @@
+type: dominos
+puzzle:
+  digits: 1-3
+  grid: |
+    1221
+    3231
+    3213
+solution: |
+  aabc
+  debc
+  deff
+

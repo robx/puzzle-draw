@@ -1,0 +1,13 @@
+type: fillomino-checkered
+puzzle: |
+  31..
+  ....
+  ....
+  ..24
+solution: |
+  3122
+  3344
+  4424
+  4424
+code:
+  cell_rows_bottom: [1,2]

@@ -1,0 +1,12 @@
+type: doppelblock
+puzzle:
+  top: [-,6,-,3,4]
+  left: [-,1,0,-,-]
+solution: |
+  3X21X
+  X1X23
+  23XX1
+  X213X
+  1X3X2
+code:
+  cell_rows_bottom: [2,4]

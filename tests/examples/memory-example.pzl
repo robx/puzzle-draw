@@ -1,0 +1,18 @@
+type: persistenceofmemory
+puzzle: |
+  A..B.o.
+  CCCBBAA
+  AA...A.
+  A..BBC.
+  ...B.C.
+  .AAA...
+  o....AA
+solution: |2
+  ┌─┐  ╷
+  │ └┐ │
+  │  │ │
+  │  │ └┐
+  └┐ │  │
+   │ └┐ │
+  ╶┘  └─┘
+

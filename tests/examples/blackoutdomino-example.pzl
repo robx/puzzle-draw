@@ -1,0 +1,27 @@
+type: blackout-dominos
+puzzle:
+  digits: 1-4
+  grid: |2
+      4   
+      ....
+       .3
+    ......
+    ..2. .
+    1...
+solution:
+  values: |2
+      4
+      3332
+       33
+    444X11
+    4X22 1
+    1122  
+  dominos: |2
+      a
+      abcc
+       bd
+    eefXdg
+    hXfi g
+    hjji
+code:
+  cell_rows_bottom: [1,2]

@@ -1,0 +1,28 @@
+type: coral+litso
+puzzle:
+  left:
+    - [3,3]
+    - []
+    - [1,1,2]
+    - []
+    - []
+    - []
+    - []
+  top:
+    - []
+    - [4]
+    - [1,1,2]
+    - []
+    - []
+    - []
+    - []
+solution: |
+  XXXsXXX
+  iXssXlX
+  iXsXXlX
+  iXXXllX
+  illlooX
+  ooXlooX
+  ooXXXXX
+code:
+  cell_rows_bottom: [1,4]

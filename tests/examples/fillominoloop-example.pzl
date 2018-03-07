@@ -1,0 +1,19 @@
+type: fillomino-loop
+puzzle: |
+  .2.4
+  2...
+  ....
+  5...
+solution:
+  grid: |
+    1224
+    2554
+    2524
+    5524
+  loop: |
+    ┌──┐
+    │┌┐│
+    ││││
+    └┘└┘
+code:
+  cell_rows_bottom: [1,2]

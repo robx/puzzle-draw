@@ -1,0 +1,15 @@
+type: anglers
+puzzle: |2
+   ----
+  -....4
+  7.**.-
+  -...*-
+  -....-
+   --3-
+solution: |
+  .┌──
+  ┐**.
+  │┌┘*
+  └┘┌┘
+code:
+  cell_rows_bottom: [1,2]

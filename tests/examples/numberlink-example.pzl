@@ -1,0 +1,15 @@
+type: numberlink
+puzzle: |
+  ..12
+  .2..
+  .3.3
+  ..1.
+solution: |
+  1112
+  1222
+  1333
+  111.
+code:
+  cell_rows_bottom: [0, 2]
+  value: "1222,111-"
+

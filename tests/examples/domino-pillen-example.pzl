@@ -1,0 +1,14 @@
+type: domino-pillen
+author: silke
+puzzle:
+  digits: 1-3
+  pills:  4-6
+  grid: |
+    3321133
+    3221122
+    1111132
+solution: |
+  aabCCCd
+  efbGGGd
+  efhhIII
+

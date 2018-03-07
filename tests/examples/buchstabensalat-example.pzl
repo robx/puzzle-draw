@@ -1,0 +1,16 @@
+type: buchstabensalat
+puzzle:
+  letters: A-C
+  top:    ..A.A
+  left:   CCC.B
+  bottom: ..B..
+  right:  .AA..
+solution: |
+  CBA..
+  ..CBA
+  .CBA.
+  A..CB
+  BA..C
+code:
+  cell_rows_bottom: [1,3]
+

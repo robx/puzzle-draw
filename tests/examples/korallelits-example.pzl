@@ -1,0 +1,25 @@
+type: coral+lits
+puzzle:
+  top:
+    - [1,1,1]
+    - []
+    - []
+    - []
+    - [1,1]
+    - []
+  left:
+    - [1,4]
+    - [1,3]
+    - [1,2]
+    - []
+    - [1]
+    - []
+solution: |
+  iiii.l
+  .t.lll
+  tt.t..
+  .t.tt.
+  ...t..
+  iiii..
+code:
+  cell_rows_bottom: [1,4]

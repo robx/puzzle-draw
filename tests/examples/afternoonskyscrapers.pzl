@@ -1,0 +1,22 @@
+type: afternoonskyscrapers
+puzzle: |
+  o o o o o o o
+   .|. . .|.|.
+  o o-o-o o-o-o
+   . . .|. .|.
+  o-o o o-o o-o
+   .|. . .|. .
+  o-o-o o o o o
+   .|.|. .|. .
+  o o-o-o o-o-o
+   . .|.|. . .
+  o-o o-o-o o o
+   .|. .|.|. .
+  o o o o o o o
+solution: |
+  423651
+  145362
+  214536
+  651423
+  362145
+  536214

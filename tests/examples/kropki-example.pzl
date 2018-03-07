@@ -1,0 +1,21 @@
+type: kropki
+puzzle: |
+  + + + + + +
+   .o.*.o. .
+  + +o+*+o+ +
+   . .o.*.o.
+  +*+ + +o+o+
+   .o. . .o.
+  + + + +o+o+
+   .o. .o.o.
+  +o+o+ +o+o+
+   .o. . .*.
+  + + + + + +
+solution: |
+  32451
+  13245
+  21534
+  54123
+  45312
+code:
+  cell_rows_bottom: [1,3]

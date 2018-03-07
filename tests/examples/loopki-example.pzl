@@ -1,0 +1,13 @@
+type: loopki
+puzzle: |
+  oo*o*
+  .**.*
+  oo*oo
+  *.***
+solution: |
+  ┌┐
+  │└─┐
+  │┌┐│┌┐
+  └┘│└┘│
+    └──┘
+

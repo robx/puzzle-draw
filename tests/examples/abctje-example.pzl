@@ -1,0 +1,14 @@
+type: abctje
+puzzle:
+  numbers: 1-6
+  clues:
+  - BEISPIEL: 24
+  - LIBELLE: 25
+  - EIS: 8
+solution:
+  - 1: E
+  - 2: I
+  - 3: B
+  - 4: P
+  - 5: S
+  - 6: L
