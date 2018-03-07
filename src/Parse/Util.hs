@@ -673,18 +673,17 @@ instance (Key k, FromJSON a) => FromJSON (RefGrid k a) where
 
 parseAfternoonGrid :: Value -> Parser (Grid C Shade)
 parseAfternoonGrid v = do
-    (_, _, es) <- parsePlainEdgeGrid v
+    (_, g, es) <- parsePlainEdgeGrid v
                   :: Parser (Grid N Char, Grid C Char, [Edge N])
-    return . toMap $ es
+    return $ toMap g es
   where
     toShade Vert  = Shade False True
     toShade Horiz = Shade True  False
-    merge (Shade a b) (Shade c d)
-        | a && c || b && d  = error "shading collision"
-        | otherwise         = Shade (a || c) (b || d)
-    toMap es = Map.fromListWith
+    merge (Shade a b) (Shade c d) = Shade (a || c) (b || d)
+    toMap g es = Map.fromListWith
         merge
-        [(fromCoord . toCoord $ p, toShade d) | E p d <- es]
+        ([(fromCoord . toCoord $ p, toShade d) | E p d <- es]
+         ++ [(p, Shade False False) | p <- Map.keys g])
 
 newtype ParseTapaClue = ParseTapaClue { unParseTapaClue :: TapaClue }
 
