@@ -100,12 +100,6 @@ irregularGridPaths m = (path' (map revEdge outer), path inner)
                          . fromVertices
     conn (v, w) = toPoint v ~~ toPoint w
 
-irregPathToVertices :: (Path V2 Double, Path V2 Double) -> (S.Set (P2 Double), S.Set (P2 Double), S.Set (P2 Double))
-irregPathToVertices (pouter, pinner) = (outer, inner S.\\ outer, inner `S.union` outer)
-  where
-    outer = S.fromList . mconcat . pathVertices $ pouter
-    inner = S.fromList . mconcat . pathVertices $ pinner
-
 onGrid :: (Transformable a, Monoid a, InSpace V2 Double a) =>
           Double -> Double -> (t -> a) -> [(Coord, t)] -> a
 onGrid dx dy f = mconcat . map g
