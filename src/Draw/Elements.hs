@@ -241,7 +241,7 @@ fish :: Double -> Angle Double -> Trail' Loop V2 Double
 fish off startAngle = closeLine $ half <> half # reverseLine # reflectY
   where
     half = arc (angleDir startAngle) endAngle # translateY (-off)
-    endAngle = acosA off ^+^ (90 @@ deg)
+    endAngle = ((180 @@ deg) ^-^ acosA off ^-^ startAngle)
 
 drawFish :: Backend' b =>
             Fish -> Diagram b
