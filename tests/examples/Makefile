@@ -27,13 +27,13 @@ compare:
 	rm -f cur/*.png diff/*.png
 	mkdir -p cur diff
 	for f in $(EXAMPLES); do \
-		$(DRAW) -d compare -e -c -f png $$f ; \
+		$(DRAW) -d cur -e -c -f png $$f ; \
 	done
 	for f in $(PUZZLES); do \
-		$(DRAW) -d compare -p -f png $$f ; \
+		$(DRAW) -d cur -p -f png $$f ; \
 	done
 	for f in *.png; do \
-		diff $$f compare/$$f > /dev/null || compare $$f cur/$$f diff/$$f; \
+		diff $$f cur/$$f > /dev/null || compare $$f cur/$$f diff/$$f; \
 	done
 	sh gallery.sh > gallery.html
 	! ls diff/*.png
