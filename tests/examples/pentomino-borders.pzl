@@ -1,0 +1,23 @@
+type: pentominous-borders
+puzzle: |
+  o o o o o o o o o o o
+    
+  o o o-o o-o-o-o-o o o
+      |             
+  o o-o o-o o o-o o o o
+      | |   |   | 
+  o o o o o-o-o o o o o
+    |   |   |   | 
+  o o o-o o o o-o o o o
+    |     |
+  o o-o o o-o-o o o o o
+    |   | |         |
+  o o o-o o o o o o o o
+      |     |       |
+  o o o o o-o-o o-o-o o
+    | | |   |
+  o o o o-o o o o o o o
+    |     |         |
+  o o-o-o o-o o-o-o-o o
+
+  o o o o o o o o o o o

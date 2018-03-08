@@ -1,0 +1,19 @@
+type: slovaksums
+puzzle:
+  digits: 1-4
+  grid: |
+    a....
+    ...b.
+    .....
+    .....
+    ..c..
+  clues:
+    a: 7 2
+    b: 13 4
+    c: 5 3
+solution: |
+  .4231
+  314.2
+  1234.
+  4.123
+  23.14

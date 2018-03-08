@@ -1,0 +1,33 @@
+type: tomtom
+puzzle:
+  rooms: |
+    aaaxdef
+    bbxxxef
+    cxxzxxf
+    xxzzzxx
+    gxxzxxj
+    ghxxxkk
+    ghixlll
+  clues:
+    grid: |
+      a...def
+      b......
+      c..z...
+      .......
+      g.....j
+      .h...k.
+      ..i.l..
+    clues:
+      a: "9"
+      b: "10"
+      c: "4"
+      d: "7"
+      e: "8"
+      f: "8"
+      g: "18"
+      h: "18"
+      i: "2"
+      j: "5"
+      k: "12"
+      l: "18"
+      z: "360"

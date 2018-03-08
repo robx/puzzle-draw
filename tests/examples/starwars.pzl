@@ -1,0 +1,17 @@
+type: starwars
+puzzle:
+  grid: |
+    aaabbbccc
+    aaabbbccc
+    aaabbbccc
+    bbbcccaaa
+    bbbcccaaa
+    bbbcccaaa
+    aaabbbccc
+    aaabbbccc
+    aaabbbccc
+  lines:
+    - 3 2 8 7
+    - 4 2 8 6
+    - 5 0 8 3
+

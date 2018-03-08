@@ -1,0 +1,18 @@
+type: summon
+puzzle:
+  digits: 1,2,3
+  grid: |
+    aaaa
+    bcca
+    bcca
+    bbbb
+  outside:
+    bottom: [-,-,23,-]
+    right:  [5,2,32,-]
+solution: |
+  3.2.
+  .1.1
+  .32.
+  2.13
+code:
+  cell_rows_bottom: [0,2]

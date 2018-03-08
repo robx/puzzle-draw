@@ -1,0 +1,24 @@
+type: starbattle
+puzzle:
+  stars: 2
+  grid: |
+    laaaiasbb
+    lllaiassb
+    aaaaiaasb
+    jjaaiabbb
+    ajaaaabbt
+    ajannabtt
+    aaabnnbct
+    aacbbbbcc
+    acccccccc
+solution: |
+  ....*.*..
+  *.*......
+  ....*..*.
+  *.*......
+  ......*.*
+  .*.*.....
+  .....*..*
+  .*.*.....
+  .....*.*.
+  

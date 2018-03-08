@@ -1,0 +1,21 @@
+type: statuepark
+puzzle:
+  grid: |
+    ..*..o..
+    .*.*..o.
+    o.*..*.*
+    ......o.
+    .*......
+    *.o..o.*
+    .*..*.*.
+    ..o..o..
+  shapes: [I,L,L,U,X]
+solution: |
+  ..X.....
+  .XXX.X.X
+  ..X..X.X
+  .....X.X
+  XX..XX.X
+  X..X...X
+  XX.XXXX.
+  ........

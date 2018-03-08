@@ -1,0 +1,15 @@
+type: skyscrapers-doppelstern
+puzzle:
+  stars:  1
+  top:    [1,-,-,-,-]
+  right:  [-,3,-,-,-]
+  left:   [4,-,4,-,-]
+  bottom: [3,-,-,-,-]
+solution: |
+  *1234
+  43*12
+  1234*
+  3*421
+  241*3
+code:
+  cell_rows_bottom: [0,3]

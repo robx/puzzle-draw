@@ -1,0 +1,21 @@
+type: heyawake
+puzzle:
+  rooms: |
+    aabcc
+    ddbee
+    ddffg
+    ddffg
+    hhffg
+  clues: |
+    .....
+    3....
+    ....1
+    .....
+    .....
+solution: |
+  ...X.
+  .X...
+  X...X
+  .X...
+  ...X.
+

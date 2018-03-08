@@ -1,0 +1,25 @@
+type: nanro-signpost
+puzzle:
+  rooms: |
+    pptwyyyyuu
+    pptwwypppu
+    ptttwwppuu
+    uuxnnnzzpp
+    uxxxynnzpp
+    uuxyyyyzzp
+    iiiiijjjjj
+    vkkkkkppuu
+    vyyyyzpppu
+    vvvyzzzzuu
+  clues: |
+    3.333...3.
+    ..........
+    ..........
+    2..1..1.2.
+    ....4.....
+    ..........
+    4....2....
+    41....1.1.
+    .1...3....
+    ..........
+

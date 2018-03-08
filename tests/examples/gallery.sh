@@ -9,9 +9,9 @@ for file in "$@"; do
     typ=`basename $file .png`
 
     cat <<HERE
-<a href="tests/examples/$typ.pzl">$typ</a><br>
-<img src="$file" title="$file new"><br>
-<img src="../tests/examples/$file" title="$file golden"><br>
+<a href="$typ.pzl">$typ</a><br>
+<img src="cur/$file" title="$file new"><br>
+<img src="$file" title="$file golden"><br>
 <img src="diff/$file" title="$file diff"><br>
 <hr>
 HERE

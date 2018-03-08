@@ -1,0 +1,14 @@
+type: turning-fences
+puzzle: |
+  3...
+  4..2
+  ...1
+  33.3
+solution: |
+  .┌─┐.
+  ┌┘.└┐
+  └┐..│
+  ┌┘┌┐│
+  └─┘└┘
+code:
+  cell_rows_bottom: [0,2]
