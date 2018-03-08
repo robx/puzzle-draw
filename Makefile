@@ -1,11 +1,7 @@
-.PHONY: test test-compare compare
+.PHONY: test compare
 
 test:
 	stack test
-
-test-compare:
-	mkdir -p compare
-	cd compare && stack exec test-compare
 
 compare:
 	mkdir -p compare/diff
