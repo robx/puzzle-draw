@@ -1,0 +1,26 @@
+type: slitherlink-multi
+puzzle:
+  loops: 3
+  grid: |
+    3.2.20
+    ..4...
+    2..1..
+    12....
+    ...3.1
+    11..1.
+solution: |
+  o-o-o-o-o o o
+  |. . . .|. . 
+  o-o o-o o-o o
+   .|.|.|. .|. 
+  o-o o-o o o-o
+  |. . . . . .|
+  o o o-o-o-o o
+  |. .|. . .|.|
+  o o-o o-o o-o
+  |.|. .|.|. . 
+  o-o o-o o o o
+   . .|. .|. . 
+  o o o-o-o o o
+code:
+  cell_rows_bottom: [3, 4]

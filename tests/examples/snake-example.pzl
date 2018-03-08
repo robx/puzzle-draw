@@ -1,0 +1,21 @@
+type: snake
+puzzle:
+  clues:
+    top: [1,5,-,-,-,-]
+    left: [3,-,-,3,-,-]
+  grid: |
+    ......
+    *....*
+    ......
+    ......
+    ......
+    ......
+solution: |
+  ...XXX
+  *X.X.*
+  .X.X..
+  .X.XX.
+  .X..X.
+  .XXXX.
+code:
+  cell_rows_bottom: [0,4]

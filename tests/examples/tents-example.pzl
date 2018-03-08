@@ -1,0 +1,20 @@
+type: tents
+puzzle:
+  clues:
+    top: [1,-,0,-,-]
+    left: [-,-,-,-,-]
+  grid: |
+    .....
+    .*...
+    *....
+    ...*.
+    ..*..
+solution: |
+  .D...
+  .*...
+  *..D.
+  U..*.
+  ..*L.
+code:
+  cell_rows_bottom: [1,3]
+

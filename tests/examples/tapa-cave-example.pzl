@@ -1,0 +1,23 @@
+type: tapa-cave
+puzzle:
+  grid: |
+    .b..c.
+    ....b.
+    ..ab..
+    ......
+    d....c
+    .....d
+  clues:
+    a: [3,3]
+    b: [3]
+    c: [4]
+    d: [2]
+solution: |
+  X....X
+  XX.XXX
+  .X.X..
+  .X.XXX
+  XX..X.
+  .XXXX.
+code:
+  cell_rows_bottom: [0,4]

@@ -1,0 +1,24 @@
+type: twilight-tapa
+puzzle:
+  grid: |
+    a...e
+    .gf..
+    b..d.
+    .....
+    ...c.
+  clues:
+    a: [3]
+    b: [2, 2]
+    c: [1, 1]
+    d: [1, 1, 3]
+    e: [2]
+    f: [6]
+    g: [1, 4]
+solution: |
+  -XXX-
+  XX-X-
+  ---XX
+  XX-X-
+  -XXXX
+code:
+  cell_rows_bottom: [0,3]
