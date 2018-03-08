@@ -1,5 +1,7 @@
 .PHONY: all puzzles examples clean compare
 
+DRAW = stack exec drawpuzzle --
+
 EXAMPLES = $(wildcard *-example.pzl)
 PUZZLES = $(filter-out $(EXAMPLES), $(wildcard *.pzl))
 
@@ -16,19 +18,19 @@ clean:
 	rm -f $(PUZZLETARGETS) $(EXAMPLETARGETS)
 
 $(EXAMPLETARGETS): %.png: %.pzl
-	stack exec drawpuzzle -- -e -c -f png $<
+	$(DRAW) -e -c -f png $<
 
 $(PUZZLETARGETS): %.png: %.pzl
-	stack exec drawpuzzle -- -p -f png $<
+	$(DRAW) -p -f png $<
 
 compare:
 	rm -f cur/*.png diff/*.png
 	mkdir -p cur diff
 	for f in $(EXAMPLES); do \
-		stack exec drawpuzzle -- -d compare -e -c -f png $$f ; \
+		$(DRAW) -d compare -e -c -f png $$f ; \
 	done
 	for f in $(PUZZLES); do \
-		stack exec drawpuzzle -- -d compare -p -f png $$f ; \
+		$(DRAW) -d compare -p -f png $$f ; \
 	done
 	for f in *.png; do \
 		diff $$f compare/$$f > /dev/null || compare $$f cur/$$f diff/$$f; \
