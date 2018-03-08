@@ -4,7 +4,5 @@ cabal-dev
 *.hi
 *.chi
 *.chs.h
-.virthualenv
-examples/*.svg
 .stack-work
-compare
+tests/examples/gallery.html
