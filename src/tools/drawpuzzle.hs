@@ -37,6 +37,7 @@ optListTypes =
 data PuzzleOpts = PuzzleOpts
     { _format   :: String
     , _type     :: Maybe String
+    , _dir      :: FilePath
     , _puzzle   :: Bool
     , _solution :: Bool
     , _example  :: Bool
@@ -56,6 +57,11 @@ puzzleOpts = PuzzleOpts
             (long "type" <> short 't'
              <> metavar "TYPE"
              <> help "Puzzle type, overriding type in input file"))
+    <*> strOption
+            (long "directory" <> short 'd'
+             <> value "."
+             <> metavar "DIR"
+             <> help "Output directory")
     <*> switch
             (long "puzzle" <> short 'p'
              <> help "Render puzzle (to base.ext)")
@@ -95,7 +101,7 @@ toRenderOpts oc w opts = RenderOpts out w'
                   _     -> Points
     w' = toOutputWidth u w * (_scale opts)
     base = takeBaseName (_input opts)
-    out = addExtension (base ++ outputSuffix oc) f
+    out = _dir opts </> (base ++ outputSuffix oc) <.> f
 
 renderPuzzle :: PuzzleOpts -> (OutputChoice -> Maybe (Diagram B)) ->
                 (OutputChoice, Bool) -> IO ()
