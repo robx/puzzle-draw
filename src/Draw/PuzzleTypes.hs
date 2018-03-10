@@ -137,13 +137,15 @@ thermosudoku = drawers
     (placeGrid . fmap drawInt . clues . snd <> sudokugrid . snd <> drawThermos . snd . fst)
 
 killersudoku :: Backend' b =>
-                Drawers b (AreaGrid, Map.Map Char Int) (Grid C Int)
+                Drawers b (AreaGrid, Map.Map Char Int, Grid C (Maybe Int)) (Grid C Int)
 killersudoku = drawers
-    p
+    (p <> placeGrid . fmap drawInt . clues . trd3)
     (placeGrid . fmap drawInt . snd <> p . fst)
   where
-    p = cages <> sudokugrid . fst
-    cages (g, m) = drawCages (Map.filter (/= '.') g) (Map.map drawInt m)
+    fst3 (x,_,_) = x
+    trd3 (_,_,z) = z
+    p = cages <> sudokugrid . fst3
+    cages (g, m, _) = drawCages (Map.filter (/= '.') g) (Map.map drawInt m)
 
 pyramid :: Backend' b =>
     Drawers b Pyr.Pyramid Pyr.PyramidSol

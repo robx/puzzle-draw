@@ -69,11 +69,12 @@ thermosudoku :: ParsePuzzle (Grid C (Maybe Int), [Thermometer])
                             (Grid C (Maybe Int))
 thermosudoku = ((parseThermoGrid =<<) . parseJSON, parseClueGrid)
 
-killersudoku :: ParsePuzzle (AreaGrid, M.Map Char Int) (Grid C Int)
+killersudoku :: ParsePuzzle (AreaGrid, M.Map Char Int, Grid C (Maybe Int)) (Grid C Int)
 killersudoku = (,)
-    (\v -> (,)
+    (\v -> (,,)
          <$> parseFrom ["cages"] parseGrid v
-         <*> parseFrom ["clues"] parseCharMap v)
+         <*> parseFrom ["clues"] parseCharMap v
+         <*> parseFrom ["grid"] parseClueGrid v)
     parseGrid
 
 pyramid :: ParsePuzzle Pyr.Pyramid Pyr.PyramidSol
