@@ -74,7 +74,7 @@ killersudoku = (,)
     (\v -> (,,)
          <$> parseFrom ["cages"] parseGrid v
          <*> parseFrom ["clues"] parseCharMap v
-         <*> parseFrom ["grid"] parseClueGrid v)
+         <*> (parseFrom ["grid"] parseClueGrid v <|> pure M.empty))
     parseGrid
 
 pyramid :: ParsePuzzle Pyr.Pyramid Pyr.PyramidSol
