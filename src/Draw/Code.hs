@@ -17,7 +17,7 @@ import Draw.Elements
 
 import Diagrams.Prelude
 
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 
 data CodeDiagrams a = CodeDiagrams { _cdLeft :: a, _cdTop :: a, _cdOver :: a }
 

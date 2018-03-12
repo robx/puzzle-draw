@@ -1,7 +1,7 @@
 module Parse.PuzzleTypesSpec where
 
 import Data.Maybe (isJust)
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 import Data.Yaml
 import Data.Text.Encoding (encodeUtf8)
 import qualified Data.ByteString as B

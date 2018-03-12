@@ -29,7 +29,7 @@ import Diagrams.Prelude hiding (Loop, N, coral, size)
 
 import Data.Char (isUpper)
 import Data.List (nub, sort, sortOn)
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 
 import Draw.Style
 import Draw.PuzzleGrids

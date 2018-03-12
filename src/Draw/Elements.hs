@@ -13,7 +13,7 @@ module Draw.Elements where
 import Diagrams.Prelude hiding (N)
 import Diagrams.TwoD.Offset
 
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 import Data.List (groupBy, sortOn)
 
 import Data.Grid

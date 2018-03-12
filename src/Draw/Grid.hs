@@ -7,7 +7,7 @@ module Draw.Grid where
 
 import Data.Maybe (catMaybes)
 import Data.Char (isUpper)
-import qualified Data.Map as M
+import qualified Data.Map.Strict as Map
 
 import Diagrams.Prelude hiding (size, E, N, dot, outer)
 import Diagrams.TwoD.Offset (offsetPath)
@@ -92,7 +92,7 @@ gridDashing = bgdashingG dashes dashoffset white'
 irregularGridPaths :: Grid C a -> (Path V2 Double, Path V2 Double)
 irregularGridPaths m = (path' (map revEdge outer), path inner)
   where
-    (outer, inner) = edges (M.keysSet m) (`M.member` m)
+    (outer, inner) = edges (Map.keysSet m) (`Map.member` m)
     path  es = mconcat . map (conn . ends) $ es
     path' es = case loops (map ends' es) of
         Just ls   -> mconcat . map (pathFromLoopVertices . map toPoint) $ ls
@@ -135,11 +135,11 @@ onGrid dx dy f = mconcat . map g
 
 placeGrid :: (ToPoint k, HasOrigin a, Monoid a, InSpace V2 Double a)
           => Grid k a -> a
-placeGrid = M.foldMapWithKey (moveTo . toPoint)
+placeGrid = Map.foldMapWithKey (moveTo . toPoint)
 
 placeGrid' :: (HasOrigin a, Monoid a, InSpace V2 Double a)
           => Grid (P2 Double) a -> a
-placeGrid' = M.foldMapWithKey moveTo
+placeGrid' = Map.foldMapWithKey moveTo
 
 edge :: (ToPoint k) => Edge k -> Path V2 Double
 edge (E c d) = rule d # translate (toPoint c .-. origin)

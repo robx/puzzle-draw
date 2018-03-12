@@ -24,7 +24,8 @@ module Parse.PuzzleTypes (
 import Control.Applicative
 import Control.Monad
 
-import qualified Data.Map.Strict as M
+import qualified Data.Map.Strict as Map
+import Data.Map.Strict (Map)
 import Data.Yaml
 
 import Parse.Util
@@ -69,12 +70,12 @@ thermosudoku :: ParsePuzzle (Grid C (Maybe Int), [Thermometer])
                             (Grid C (Maybe Int))
 thermosudoku = ((parseThermoGrid =<<) . parseJSON, parseClueGrid)
 
-killersudoku :: ParsePuzzle (AreaGrid, M.Map Char Int, Grid C (Maybe Int)) (Grid C Int)
+killersudoku :: ParsePuzzle (AreaGrid, Map Char Int, Grid C (Maybe Int)) (Grid C Int)
 killersudoku = (,)
     (\v -> (,,)
          <$> parseFrom ["cages"] parseGrid v
          <*> parseFrom ["clues"] parseCharMap v
-         <*> (parseFrom ["grid"] parseClueGrid v <|> pure M.empty))
+         <*> (parseFrom ["grid"] parseClueGrid v <|> pure Map.empty))
     parseGrid
 
 pyramid :: ParsePuzzle Pyr.Pyramid Pyr.PyramidSol
@@ -380,10 +381,10 @@ abctje = (,)
     x :: FromString a => (String, b) -> Parser (a, b)
     x (k, v) = (\k' -> (k',v)) <$> parseString k
 
-    pair :: M.Map a b -> Parser (a, b)
-    pair m = if M.size m == 1 then (return . head . M.toList $ m) else empty
+    pair :: Map a b -> Parser (a, b)
+    pair m = if Map.size m == 1 then (return . head . Map.toList $ m) else empty
 
-kropki :: ParsePuzzle (M.Map (Edge N) KropkiDot) (Grid C Int)
+kropki :: ParsePuzzle (Map (Edge N) KropkiDot) (Grid C Int)
 kropki = (,) parseAnnotatedEdges parseGrid
 
 statuepark :: ParsePuzzle (Grid C (Maybe MasyuPearl)) (Grid C Bool)
@@ -432,14 +433,14 @@ greaterWall = (,)
                <*> parseFrom ["columns"] parseGreaterClues v)
     parseShadedGrid
 
-galaxies :: ParsePuzzle (Grid C (), Grid N (), Grid C (), M.Map (Edge N) ()) AreaGrid
+galaxies :: ParsePuzzle (Grid C (), Grid N (), Grid C (), Map (Edge N) ()) AreaGrid
 galaxies = (,)
     (\v -> do (a,b,c) <- parseEdgeGrid v
               return $ (fmap (const ()) b, f a, f b, f c))
     parseGrid
   where
     toUnit GalaxyCentre = ()
-    f = fmap toUnit . M.mapMaybe id . fmap blankToMaybe''
+    f = fmap toUnit . Map.mapMaybe id . fmap blankToMaybe''
 
 mines :: ParsePuzzle (Grid C (Maybe Int)) (Grid C Bool)
 mines = (parseClueGrid, parseShadedGrid)
@@ -466,7 +467,7 @@ pentominoSums = (p, s)
     s v = (,,) <$> parseFrom ["grid"] parseGrid v
                <*> parseFrom ["values"] values v
                <*> fst coral v
-    values v = parseJSON v >>= sequence . map parseKey . M.toList
+    values v = parseJSON v >>= sequence . map parseKey . Map.toList
     parseKey (k, v) = (,) <$> parseString k <*> pure v
 
 coralLits :: ParsePuzzle (OutsideClues C [String]) (Grid C (Maybe Char))
