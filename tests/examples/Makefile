@@ -33,7 +33,8 @@ compare:
 		$(DRAW) -d cur -p -f png $$f ; \
 	done
 	for f in *.png; do \
-		diff $$f cur/$$f > /dev/null || compare $$f cur/$$f diff/$$f; \
+		diff $$f cur/$$f > /dev/null || \
+			touch diff/$$f && compare $$f cur/$$f diff/$$f ; \
 	done
 	sh gallery.sh > gallery.html
 	! ls diff/*.png
