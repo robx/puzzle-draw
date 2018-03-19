@@ -34,7 +34,7 @@ compare:
 	done
 	for f in *.png; do \
 		diff $$f cur/$$f > /dev/null || \
-			touch diff/$$f && compare $$f cur/$$f diff/$$f ; \
+			(touch diff/$$f ; compare $$f cur/$$f diff/$$f) ; \
 	done
 	sh gallery.sh > gallery.html
 	! ls diff/*.png
