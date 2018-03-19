@@ -36,5 +36,5 @@ compare:
 		diff $$f cur/$$f > /dev/null || \
 			(touch diff/$$f ; compare $$f cur/$$f diff/$$f) ; \
 	done
-	sh gallery.sh diff/*.png > gallery.html
+	./gallery.sh diff/*.png > gallery.html
 	! ls diff/*.png
