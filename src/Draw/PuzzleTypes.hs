@@ -312,12 +312,15 @@ primeplace = drawers
     gStyle = GridStyle LineThin LineThick Nothing VertexNone
 
 labyrinth :: Backend' b =>
-             Drawers b (Grid C (Maybe Int), [Edge N]) (Grid C (Maybe Int))
+             Drawers b (Grid C (Maybe Int), [Edge N], String) (Grid C (Maybe Int))
 labyrinth = drawers
-    (placeGrid . fmap drawInt . clues . fst <> g)
-    (placeGrid . fmap drawInt . clues . snd <> g . fst)
+    (placeGrid . fmap drawInt . clues . fst3 <> p <> n)
+    (placeGrid . fmap drawInt . clues . snd <> p . fst)
   where
-    g = drawEdges . snd <> grid gPlain . fst
+    p (g, e, _) = drawEdges e <> grid gPlain g
+    n (g, _, ds) = placeNoteTR (size' g) (drawText ds # scale 0.8)
+    size' = size . Map.mapKeys toCoord
+    fst3 (x,_,_) = x
 
 bahnhof :: Backend' b =>
             Drawers b (Grid C (Maybe BahnhofClue)) [Edge C]

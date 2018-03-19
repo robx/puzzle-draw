@@ -180,8 +180,12 @@ maximallengths = (\v -> fmap blankToMaybe <$> parseCharOutside v,
 primeplace :: ParsePuzzle (Grid C PrimeDiag) (Grid C Int)
 primeplace = (parseIrregGrid, parseIrregGrid)
 
-labyrinth :: ParsePuzzle (Grid C (Maybe Int), [Edge N]) (Grid C (Maybe Int))
-labyrinth = (parseCellEdges, parseClueGrid')
+labyrinth :: ParsePuzzle (Grid C (Maybe Int), [Edge N], String) (Grid C (Maybe Int))
+labyrinth = (p, parseClueGrid')
+  where
+    p v@(Object o) = tup <$> parseFrom ["grid"] parseCellEdges v <*> o .: "digits"
+    p _            = mempty
+    tup (x,y) z = (x,y,z)
 
 bahnhof :: ParsePuzzle (Grid C (Maybe BahnhofClue)) [Edge C]
 bahnhof = (parseClueGrid, parseEdges)
