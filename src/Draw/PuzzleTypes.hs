@@ -22,7 +22,7 @@ module Draw.PuzzleTypes (
     horseSnake, illumination, pentopia,
     pentominoPipes, greaterWall, galaxies, mines, tents,
     pentominoSums, coralLits, coralLitso, snake, countryRoad,
-    killersudoku
+    killersudoku, friendlysudoku
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
@@ -888,3 +888,14 @@ countryRoad ::
 countryRoad = drawers
     smallHintRooms
     (solstyle . drawEdges . snd <> smallHintRooms . fst)
+
+friendlysudoku ::
+    Backend' b =>
+    Drawers b (Map.Map (Edge N) KropkiDot, Grid C (Maybe Int)) (Grid C Int)
+friendlysudoku = drawers
+    p
+    (placeGrid . fmap drawInt . snd <> p . fst)
+  where
+    p = placeGrid' . Map.mapKeys midPoint . fmap kropkiDot . fst
+      <> placeGrid . fmap drawInt . clues . snd
+      <> sudokugrid . snd

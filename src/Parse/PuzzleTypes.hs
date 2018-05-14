@@ -18,7 +18,7 @@ module Parse.PuzzleTypes (
     nanroSignpost, tomTom, horseSnake, illumination, pentopia,
     pentominoPipes, greaterWall, galaxies, mines, tents,
     pentominoSums, coralLits, coralLitso, snake, countryRoad,
-    killersudoku
+    killersudoku, friendlysudoku
   ) where
 
 import Control.Applicative
@@ -493,3 +493,10 @@ snake = (p, parseClueGrid)
 
 countryRoad :: ParsePuzzle (AreaGrid, Grid C (Maybe Int)) (Loop C)
 countryRoad = (,) (fst nanroSignpost) parseEdges
+
+friendlysudoku :: ParsePuzzle (Map (Edge N) KropkiDot, Grid C (Maybe Int)) (Grid C Int)
+friendlysudoku = (,) p parseGrid
+  where
+    p v = (\(_,c,e) -> (e,c)) <$> pp v
+    pp :: Value -> Parser (Grid N (), Grid C (Maybe Int), Map.Map (Edge N) KropkiDot)
+    pp = parseEdgeGrid
