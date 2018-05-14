@@ -2,4 +2,13 @@ ghc-options:
   puzzle-draw: -Werror
 packages:
 - '.'
-resolver: lts-8.24
+resolver: lts-11.6
+extra-deps:
+- Rasterific-0.7.3
+- diagrams-lib-1.4.2.1
+- SVGFonts-1.6.0.3
+- diagrams-core-1.4.1
+- diagrams-rasterific-1.4
+- diagrams-solve-0.1.1
+- dual-tree-0.2.1.1
+allow-newer: true
