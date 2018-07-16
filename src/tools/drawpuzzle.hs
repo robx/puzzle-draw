@@ -17,7 +17,6 @@ import Draw.Code
 import Options.Applicative
 import Control.Monad
 import Data.Maybe
-import Data.Monoid
 import Data.List (intercalate, sort)
 
 import System.FilePath

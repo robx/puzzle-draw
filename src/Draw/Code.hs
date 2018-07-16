@@ -21,6 +21,10 @@ import qualified Data.Map.Strict as Map
 
 data CodeDiagrams a = CodeDiagrams { _cdLeft :: a, _cdTop :: a, _cdOver :: a }
 
+instance Semigroup a => Semigroup (CodeDiagrams a) where
+    (CodeDiagrams x y z) <> (CodeDiagrams x' y' z') =
+        CodeDiagrams (x <> x') (y <> y') (z <> z')
+
 instance Monoid a => Monoid (CodeDiagrams a) where
     mempty = CodeDiagrams mempty mempty mempty
     (CodeDiagrams x y z) `mappend` (CodeDiagrams x' y' z') =

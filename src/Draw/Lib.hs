@@ -125,7 +125,7 @@ fontGenLight = unsafePerformIO . loadFont . unsafePerformIO . getDataFileName
     $ "data/fonts/gen-light.svg"
 
 fontBit :: Font
-fontBit = bit
+fontBit = unsafePerformIO $ bit
 
 -- text' t = text t # fontSize 0.8 # font "Helvetica" # translate (r2 (0.04, -0.07))
 --          <> phantom' (textrect t)
