@@ -15,7 +15,6 @@ import Options.Applicative
 import Control.Monad
 import Data.Maybe
 import qualified Data.Map.Strict as Map
-import Data.Monoid
 import Data.List (intercalate, sort)
 
 import System.Exit
