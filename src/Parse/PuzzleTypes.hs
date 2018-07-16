@@ -18,7 +18,7 @@ module Parse.PuzzleTypes (
     nanroSignpost, tomTom, horseSnake, illumination, pentopia,
     pentominoPipes, greaterWall, galaxies, mines, tents,
     pentominoSums, coralLits, coralLitso, snake, countryRoad,
-    killersudoku, friendlysudoku
+    killersudoku, friendlysudoku, japsummasyu
   ) where
 
 import Control.Applicative
@@ -447,7 +447,7 @@ galaxies = (,)
     f = fmap toUnit . Map.mapMaybe id . fmap blankToMaybe''
 
 mines :: ParsePuzzle (Grid C (Maybe Int)) (Grid C Bool)
-mines = (parseClueGrid, parseShadedGrid)
+mines = (parseIrregGrid, parseShadedGrid)
 
 tents :: ParsePuzzle (OutsideClues C (Maybe Int), Grid C (Maybe Tree)) (Grid C (Maybe PlacedTent))
 tents =
@@ -500,3 +500,8 @@ friendlysudoku = (,) p parseGrid
     p v = (\(_,c,e) -> (e,c)) <$> pp v
     pp :: Value -> Parser (Grid N (), Grid C (Maybe Int), Map.Map (Edge N) KropkiDot)
     pp = parseEdgeGrid
+
+japsummasyu :: ParsePuzzle (OutsideClues C [String]) ()
+japsummasyu = (,)
+    (fmap (fmap (map unIntString)) . parseMultiOutsideClues)
+    (error "japsummasyu solution not implemented")

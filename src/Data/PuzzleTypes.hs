@@ -97,6 +97,7 @@ data PuzzleType = LITS
                 | CountryRoad
                 | KillerSudoku
                 | FriendlySudoku
+                | JapaneseSumsMasyu
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -185,6 +186,7 @@ typeNames = [ (LITS, "lits")
             , (CountryRoad, "country-road")
             , (KillerSudoku, "killersudoku")
             , (FriendlySudoku, "friendly-sudoku")
+            , (JapaneseSumsMasyu, "japanesesums-masyu")
             ]
 
 -- | Look up a puzzle type by name.

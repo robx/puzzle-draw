@@ -22,7 +22,7 @@ module Draw.PuzzleTypes (
     horseSnake, illumination, pentopia,
     pentominoPipes, greaterWall, galaxies, mines, tents,
     pentominoSums, coralLits, coralLitso, snake, countryRoad,
-    killersudoku, friendlysudoku
+    killersudoku, friendlysudoku, japsummasyu
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
@@ -899,3 +899,12 @@ friendlysudoku = drawers
     p = placeGrid' . Map.mapKeys midPoint . fmap kropkiDot . fst
       <> placeGrid . fmap drawInt . clues . snd
       <> sudokugrid . snd
+
+japsummasyu :: Backend' b =>
+          Drawers b (OutsideClues C [String]) ()
+japsummasyu = drawers
+    (placeMultiOutside . fmap (fmap (scale 0.8 . drawText))
+                     <> grid gDashDash . outsideGrid)
+    (error "japsummasyu solution not implemented")
+  where
+    gDashDash = GridStyle LineDashed LineDashed Nothing VertexNone
