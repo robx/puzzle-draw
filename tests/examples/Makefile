@@ -7,10 +7,13 @@ PUZZLES = $(filter-out $(EXAMPLES), $(wildcard *.pzl))
 
 EXAMPLETARGETS = $(patsubst %.pzl,%.png,$(EXAMPLES))
 PUZZLETARGETS = $(patsubst %.pzl,%.png,$(PUZZLES))
+PUZZLEPDFTARGETS = $(patsubst %.pzl,%.pdf,$(PUZZLES))
 
 all: puzzles examples
 
 puzzles: $(PUZZLETARGETS)
+
+puzzles-pdf: $(PUZZLEPDFTARGETS)
 
 examples: $(EXAMPLETARGETS)
 
@@ -22,6 +25,9 @@ $(EXAMPLETARGETS): %.png: %.pzl
 
 $(PUZZLETARGETS): %.png: %.pzl
 	$(DRAW) -p -f png $<
+
+$(PUZZLEPDFTARGETS): %.pdf: %.pzl
+	$(DRAW) -p -f pdf $<
 
 compare:
 	rm -f cur/*.png diff/*.png
