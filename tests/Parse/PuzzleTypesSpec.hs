@@ -17,7 +17,7 @@ packLines :: [String] -> B.ByteString
 packLines = encodeUtf8 . T.pack . unlines
 
 parse :: (Value -> Parser a) -> B.ByteString -> Maybe a
-parse p t = decode t >>= parseMaybe p
+parse p t = decodeThrow t >>= parseMaybe p
 
 spec :: Spec
 spec = do
