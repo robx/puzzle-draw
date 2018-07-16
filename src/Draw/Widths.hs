@@ -23,4 +23,4 @@ edgewidth :: Double
 edgewidth = 3 * onepix
 
 borderwidth :: Double
-borderwidth = 1 / 4
+borderwidth = 1 / 2
