@@ -10,7 +10,7 @@ description:         puzzle-draw is a library and tool for drawing pencil
 license:             MIT
 license-file:        LICENSE
 author:              Robert Vollmert
-maintainer:          rfvollmert@gmail.com
+maintainer:          rob@vllmrt.net
 category:            Graphics
 build-type:          Simple
 extra-source-files:  README.md, CHANGES.md
