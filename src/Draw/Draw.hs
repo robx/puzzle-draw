@@ -10,7 +10,7 @@ module Draw.Draw (
     OutputChoice(..),
     render,
     Unit(..),
-    diagramWidth,
+    diagramSize,
     toOutputWidth,
   ) where
 
@@ -63,8 +63,8 @@ data Unit = Pixels | Points
 cmtopoint :: Double -> Double
 cmtopoint = (* 28.3464567)
 
-diagramWidth :: Backend' b => Diagram b -> Double
-diagramWidth = fst . unr2 . boxExtents . boundingBox
+diagramSize :: Backend' b => Diagram b -> (Double, Double)
+diagramSize = unr2 . boxExtents . boundingBox
 
 toOutputWidth :: Unit -> Double -> Double
 toOutputWidth u w = case u of Pixels -> fromIntegral wpix
