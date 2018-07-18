@@ -51,8 +51,7 @@ solution:
     ..X...
 ```
 
-There is a demo web application at
-[puzzle-draw-demo.herokuapp.com][demo] that provides some more
+There is a [demo web application][demo] that provides some more
 examples and that can be used to generate SVG images from such
 puzzle descriptions.
 
@@ -71,7 +70,8 @@ $ stack install
 ```
 
 Alternatively, get a Haskell environment by installing the
-[platform][Haskell Platform]. Then install `puzzle-draw` with cabal:
+[Haskell Platform](https://www.haskell.org/platform/).
+Then install `puzzle-draw` with cabal:
 
 ```
 $ cabal install puzzle-draw
@@ -98,9 +98,7 @@ to see some command line options that allow modifying the program's
 behaviour, e.g., choosing the output format.
 
 [travis]: https://travis-ci.org/robx/puzzle-draw
-[cmdline]: https://github.com/robx/puzzle-draw-cmdline
 [liarslither]: https://maybepuzzles.wordpress.com/types/liar-slither-link/
 [twentyfour]: https://maybepuzzles.wordpress.com/2014/03/29/puzzle-set-24-hour-marathon/
 [diagrams]: http://projects.haskell.org/diagrams/
-[demo]: https://puzzle-draw-demo.herokuapp.com
-[platform]: https://www.haskell.org/platform/
+[demo]: https://arp.vllmrt.net/puzzles/draw/static/puzzle.html
