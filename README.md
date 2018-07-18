@@ -70,6 +70,13 @@ clone this repository, and install using
 $ stack install
 ```
 
+Alternatively, get a Haskell environment by installing the
+[platform][Haskell Platform]. Then install `puzzle-draw` with cabal:
+
+```
+$ cabal install puzzle-draw
+```
+
 Running
 -------
 
