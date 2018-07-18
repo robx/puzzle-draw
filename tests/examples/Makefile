@@ -1,6 +1,7 @@
 .PHONY: all puzzles examples clean compare
 
-DRAW = stack exec drawpuzzle --
+LOCALINSTALL := $(shell stack path | grep ^local-install-root: | awk '{print $$2}')/bin
+DRAW = $(LOCALINSTALL)/drawpuzzle
 
 EXAMPLES = $(wildcard *-example.pzl)
 PUZZLES = $(filter-out $(EXAMPLES), $(wildcard *.pzl))
