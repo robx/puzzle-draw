@@ -2,36 +2,72 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Draw.Draw (
     PuzzleSol,
     Drawers(..),
-    drawers,
+    QDrawing(..),
+    Drawing,
+    draw,
+    diagram,
     OutputChoice(..),
     render,
     Unit(..),
     diagramSize,
     toOutputWidth,
+    CodeDiagrams(..),
+    centerX',
+    centerY',
+    centerXY',
+    smash',
+    alignBL',
+    alignBR',
+    alignTL',
+    alignTR',
+    alignL',
+    fit',
+    spread',
+    phantom'',
+    aboveT',
+    besidesR',
+    strutX'
   ) where
 
 import Diagrams.Prelude hiding (render)
 
 import Draw.Lib
 import Draw.Widths
-import Draw.Code
 
 type Config = ()
 
+newtype QDrawing b v n m = Drawing { fromDrawing :: Config -> QDiagram b v n m }
+    deriving (Monoid, Semigroup, HasStyle, Juxtaposable)
+
+type instance V (QDrawing b v n m) = v
+type instance N (QDrawing b v n m) = n
+
+instance (Metric v, OrderedField n, Semigroup m) => HasOrigin (QDrawing b v n m) where
+    moveOriginTo p (Drawing f) = Drawing (moveOriginTo p . f)
+
+instance (Metric v, OrderedField n, Semigroup m) => Transformable (QDrawing b v n m) where
+    transform t (Drawing f) = Drawing (transform t . f)
+
+draw :: QDiagram b v n m -> QDrawing b v n m
+draw = Drawing . const
+
+diagram :: Config -> QDrawing b v n m -> QDiagram b v n m
+diagram c d = fromDrawing d c
+
+type Drawing b = QDrawing b (V b) (N b) Any
+
 data Drawers b p s =
     Drawers
-        { puzzle :: p -> Config -> Diagram b
-        , solution :: (p, s) -> Config -> Diagram b
+        { puzzle :: p -> Drawing b
+        , solution :: (p, s) -> Drawing b
         }
 
-drawers :: (p -> Diagram b) -> ((p, s) -> Diagram b) -> Drawers b p s
-drawers p s = Drawers (const . p) (const . s)
-
-type PuzzleSol b = (Diagram b, Maybe (Diagram b))
+type PuzzleSol b = (Drawing b, Maybe (Drawing b))
 
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
     deriving Show
@@ -39,7 +75,7 @@ data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 -- | Optionally render the puzzle, its solution, or a side-by-side
 --   example with puzzle and solution.
 render :: Backend' b
-     => Maybe (CodeDiagrams (Diagram b))
+     => Maybe (CodeDiagrams (Drawing b))
      -> PuzzleSol b -> OutputChoice -> Maybe (Diagram b)
 render mc (p, ms) = fmap (bg white) . d
   where
@@ -47,14 +83,14 @@ render mc (p, ms) = fmap (bg white) . d
     addCode x = case mc of
         Nothing                              -> x
         Just (CodeDiagrams cleft ctop cover) ->
-            ((cover <> x) =!= top ctop) |!| lft cleft
+            ((diagram () cover <> x) =!= top (diagram () ctop)) |!| lft (diagram () cleft)
     (=!=) = beside unitY
     (|!|) = beside (negated unitX)
     top c = if isEmpty c then mempty else strutY 0.5 =!= c
     lft c = if isEmpty c then mempty else strutX 0.5 |!| c
     isEmpty c = diameter unitX c == 0
-    d DrawPuzzle   = fixup . addCode <$> Just p
-    d DrawSolution = fixup . addCode <$> ms
+    d DrawPuzzle   = fixup . addCode <$> Just (diagram () p)
+    d DrawSolution = fixup . addCode <$> fmap (diagram ()) ms
     d DrawExample  = sideBySide <$> d DrawPuzzle <*> d DrawSolution
     sideBySide x y = x ||| strutX 2.0 ||| y
 
@@ -87,3 +123,68 @@ alignPixel = scale (1/gridresd) . align' . scale gridresd
 border :: Backend' b => Double -> Diagram b -> Diagram b
 border w = extrudeEnvelope (w *^ unitX) . extrudeEnvelope (-w *^ unitX)
          . extrudeEnvelope (w *^ unitY) . extrudeEnvelope (-w *^ unitY)
+
+data CodeDiagrams a = CodeDiagrams { _cdLeft :: a, _cdTop :: a, _cdOver :: a }
+
+instance Semigroup a => Semigroup (CodeDiagrams a) where
+    (CodeDiagrams x y z) <> (CodeDiagrams x' y' z') =
+        CodeDiagrams (x <> x') (y <> y') (z <> z')
+
+instance Monoid a => Monoid (CodeDiagrams a) where
+    mempty = CodeDiagrams mempty mempty mempty
+    (CodeDiagrams x y z) `mappend` (CodeDiagrams x' y' z') =
+        CodeDiagrams (x `mappend` x') (y `mappend` y') (z `mappend` z')
+
+
+centerX' :: Backend' b => Drawing b -> Drawing b
+centerX' = lift centerX
+
+centerY' :: Backend' b => Drawing b -> Drawing b
+centerY' = lift centerY
+
+centerXY' :: Backend' b => Drawing b -> Drawing b
+centerXY' = lift centerXY
+
+smash' :: Backend' b => Drawing b -> Drawing b
+smash' = lift smash
+
+alignBL' :: Backend' b => Drawing b -> Drawing b
+alignBL' = lift alignBL
+
+alignBR' :: Backend' b => Drawing b -> Drawing b
+alignBR' = lift alignBR
+
+alignTL' :: Backend' b => Drawing b -> Drawing b
+alignTL' = lift alignTL
+
+alignTR' :: Backend' b => Drawing b -> Drawing b
+alignTR' = lift alignTR
+
+alignL' :: Backend' b => Drawing b -> Drawing b
+alignL' = lift alignL
+
+fit' :: Backend' b => Double -> Drawing b -> Drawing b
+fit' f = lift (fit f)
+
+spread' :: Backend' b => V2 Double -> [Drawing b] -> Drawing b
+spread' v ds = Drawing (\c -> spread v $ map (\d -> fromDrawing d c) ds)
+
+phantom'' :: Backend' b => Drawing b -> Drawing b
+phantom'' = lift phantom
+
+aboveT' :: Backend' b =>
+          Drawing b -> Drawing b -> Drawing b
+aboveT' = lift2 aboveT
+
+besidesR' :: Backend' b =>
+          Drawing b -> Drawing b -> Drawing b
+besidesR' = lift2 besidesR
+
+strutX' :: Backend' b => Double -> Drawing b
+strutX' = draw . strutX
+
+lift :: (Diagram b -> Diagram b) -> Drawing b -> Drawing b
+lift f d = Drawing (\c -> f (fromDrawing d c))
+
+lift2 :: (Diagram b -> Diagram b -> Diagram b) -> Drawing b -> Drawing b -> Drawing b
+lift2 f d1 d2 = Drawing (\c -> f (fromDrawing d1 c) (fromDrawing d2 c))

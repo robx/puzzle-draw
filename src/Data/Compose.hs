@@ -12,7 +12,6 @@ module Data.Compose (
     drawPuzzleMaybeSol,
   ) where
 
-import Diagrams.Prelude
 import Data.Yaml (Parser, Value)
 
 import Parse.Puzzle
@@ -125,10 +124,10 @@ handle f JapaneseSumsMasyu    = f R.japsummasyu         D.japsummasyu
 --   corresponding YAML values, and renders both individually, optionally
 --   for the solution.
 drawPuzzleMaybeSol :: PuzzleHandler b ((Value, Maybe Value)
-                      -> Parser (Diagram b, Maybe (Diagram b)))
+                      -> Parser (Drawing b, Maybe (Drawing b)))
 drawPuzzleMaybeSol (pp, ps) (Drawers dp ds) (p, s) = do
     p' <- pp p
     s' <- traverse ps s
     let mps = case s' of Nothing  -> Nothing
                          Just s'' -> Just (p', s'')
-    return (dp p' (), ds <$> mps <*> pure ())
+    return (dp p', ds <$> mps)

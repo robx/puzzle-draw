@@ -18,6 +18,7 @@ import Data.Util
 import Data.Grid
 import Data.GridShape hiding (edge)
 
+import Draw.Draw
 import Draw.Style
 import Draw.Lib
 import Draw.Widths
@@ -35,15 +36,15 @@ instance ToPoint N where
     toPoint c = origin .+^ r2i (c .--. N 0 0)
 
 -- | Draw a small black dot with no envelope.
-dot :: Backend' b => Diagram b
-dot = circle 0.05 # fc black # smash
+dot :: Backend' b => Drawing b
+dot = draw $ circle 0.05 # fc black # smash
 
 grid :: Backend' b
-     => GridStyle -> Grid C a -> Diagram b
+     => GridStyle -> Grid C a -> Drawing b
 grid s g =
     (placeGrid . fmap (const vertex) . nodeGrid $ g)
-    <> stroke inner # linestyle (_line s)
-    <> stroke outer # linestyle (_border s)
+    <> (draw $ stroke inner # linestyle (_line s))
+    <> (draw $ stroke outer # linestyle (_border s))
     <> frm
   where
     vertex = case _vertex s of
@@ -59,8 +60,8 @@ grid s g =
 
     (outer, inner) = irregularGridPaths g
 
-outLine :: Backend' b => Double -> Path V2 Double -> Diagram b
-outLine f p = lwG 0 . stroke $ pin <> pout
+outLine :: Backend' b => Double -> Path V2 Double -> Drawing b
+outLine f p = draw $ lwG 0 . stroke $ pin <> pout
   where
     pout = reversePath $ offsetPath (f * onepix - e) p
     pin = offsetPath (-e) p
@@ -160,36 +161,36 @@ edgeStyle = lineCap LineCapSquare . lwG edgewidth
 thinEdgeStyle :: (HasStyle a, InSpace V2 Double a) => a -> a
 thinEdgeStyle = lineCap LineCapSquare . lwG onepix
 
-drawEdges :: (ToPoint k, Backend' b) => [Edge k] -> Diagram b
-drawEdges = edgeStyle . stroke . mconcat . map edge
+drawEdges :: (ToPoint k, Backend' b) => [Edge k] -> Drawing b
+drawEdges = draw . edgeStyle . stroke . mconcat . map edge
 
-drawThinEdges :: (ToPoint k, Backend' b) => [Edge k] -> Diagram b
-drawThinEdges = thinEdgeStyle . stroke . mconcat . map edge
+drawThinEdges :: (ToPoint k, Backend' b) => [Edge k] -> Drawing b
+drawThinEdges = draw . thinEdgeStyle . stroke . mconcat . map edge
 
 drawAreas :: (Backend' b, Eq a) =>
-             Grid C a -> Diagram b
+             Grid C a -> Drawing b
 drawAreas = drawEdges . borders
 
-cage :: Backend' b => [C] -> Diagram b
-cage cs = dashingG dashes dashoffset
+cage :: Backend' b => [C] -> Drawing b
+cage cs = draw $ dashingG dashes dashoffset
         . lwG onepix . stroke . offsetBorder (-4 * onepix) $ cs
 
-fillBG :: Backend' b => Colour Double -> Diagram b
-fillBG c = square 1 # lwG onepix # fc c # lc c
+fillBG :: Backend' b => Colour Double -> Drawing b
+fillBG c = draw $ square 1 # lwG onepix # fc c # lc c
 
 shadeGrid :: Backend' b =>
-             Grid C (Maybe (Colour Double)) -> Diagram b
+             Grid C (Maybe (Colour Double)) -> Drawing b
 shadeGrid = placeGrid . fmap fillBG . clues
 
 drawShade :: Backend' b =>
-             Grid C Bool -> Diagram b
+             Grid C Bool -> Drawing b
 drawShade = shadeGrid . fmap f
   where
     f True  = Just gray
     f False = Nothing
 
 drawAreasGray :: Backend' b =>
-                 Grid C Char -> Diagram b
+                 Grid C Char -> Drawing b
 drawAreasGray = drawAreas <> shadeGrid . fmap cols
   where
     cols c | isUpper c  = Just (blend 0.1 black white)
