@@ -410,11 +410,15 @@ drawCages :: (Backend' b, Eq a, Ord a) =>
 drawCages g m =
     hints <> (mconcat . map cage . Map.elems) byChar
   where
-    hints = placeGrid . fmap (bgFrame' . placeTL) . clues
+    hints = placeGrid . fmap (bgFrame' . placetl) . clues
           . fmap (flip Map.lookup m . head) . invertMap . fmap tl $ byChar
     tl = head . sortOn (\ (C x y) -> (-y, x))
     byChar = invertMap g
     bgFrame' d = Drawing (\c -> bgFrame 0.05 white (fromDrawing d c))
+    placetl (Drawing d) = Drawing (\c -> moveTo (off c) . scale 0.5 . alignTL $ d c)
+    off cfg = case cfg of
+      Screen -> p2 (-0.4,0.4)
+      Print -> p2 (-0.42,0.42)
 
 invertMap :: (Eq a, Ord a) => Map.Map k a -> Map.Map a [k]
 invertMap
