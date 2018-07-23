@@ -11,6 +11,7 @@ import qualified Data.Map.Strict as Map
 
 import Diagrams.Prelude hiding (size, E, N, dot, outer)
 import Diagrams.TwoD.Offset (offsetPath)
+import Diagrams.Path (pathPoints)
 
 import qualified Data.AffineSpace as AS
 
@@ -186,9 +187,15 @@ drawAreas :: (Backend' b, Eq a) =>
 drawAreas = drawEdges . borders
 
 cage :: Backend' b => [C] -> Drawing b
-cage cs = Drawing (\cfg ->
-    dashing' cfg . lwG (cageWidth cfg) . stroke . offsetBorder (-(cageOffset cfg)) $ cs)
+cage cs = Drawing dcage
   where
+    dcage cfg = border # stroke # lwG w # dashing' cfg
+                -- patch the missing LineCapSquare
+                <> rect w w # lwG 0 # fc black # moveTo corner
+      where
+        w = cageWidth cfg
+        border = offsetBorder (-(cageOffset cfg)) cs
+        corner = head (head (pathPoints border))
     cageWidth Screen = onepix
     cageWidth Print = onepix / 2
     cageOffset Screen = 4 * onepix

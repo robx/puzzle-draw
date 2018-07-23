@@ -410,15 +410,36 @@ drawCages :: (Backend' b, Eq a, Ord a) =>
 drawCages g m =
     hints <> (mconcat . map cage . Map.elems) byChar
   where
-    hints = placeGrid . fmap (bgFrame' . placetl) . clues
+    hints = placeGrid . fmap framedClue . clues
           . fmap (flip Map.lookup m . head) . invertMap . fmap tl $ byChar
     tl = head . sortOn (\ (C x y) -> (-y, x))
     byChar = invertMap g
-    bgFrame' d = Drawing (\c -> bgFrame 0.05 white (fromDrawing d c))
-    placetl (Drawing d) = Drawing (\c -> moveTo (off c) . scale 0.5 . alignTL $ d c)
-    off cfg = case cfg of
-      Screen -> p2 (-0.4,0.4)
-      Print -> p2 (-0.42,0.42)
+    framedClue d = Drawing (\cfg -> framed d cfg)
+    framed :: Backend' b => Drawing b -> Config -> Diagram b
+    framed d cfg =
+        (alignTL d' # moveTo corner)
+        <> bgwhite
+      where
+        corner = p2 (-0.5 + cageOffset, 0.5 - cageOffset)
+        d' = scale 0.5 (fromDrawing d cfg)
+        w, h :: Double
+        (w, h) = diagramSize d'
+        cageOffset = case cfg of
+            Screen -> 4 * onepix
+            Print -> 2 * onepix
+        dashStep = case cfg of
+            Screen -> 8 * onepix
+            Print -> 4 * onepix
+        quant x = q (dashStep / 2) x
+              + (case cfg of
+                   Screen -> -onepix / 2
+                   Print -> 0)
+          where
+            q s x' = s * (fromIntegral $ (floor (x' / s + 1) :: Int))
+        bgwhite =
+            rect (quant w + onepix) (quant h + onepix)
+                # lwG 0 # fc white
+                # alignTL # moveTo (corner .+^ r2 (-onepix, onepix))
 
 invertMap :: (Eq a, Ord a) => Map.Map k a -> Map.Map a [k]
 invertMap
