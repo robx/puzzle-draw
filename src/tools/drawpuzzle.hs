@@ -153,7 +153,7 @@ maybeSkipSolution ocs (Just v) =
 maybeSkipCode :: PuzzleOpts -> Maybe Y.Value -> Maybe Y.Value
 maybeSkipCode opts = if _code opts then id else const Nothing
 
-parseAndDrawCode :: Y.Value -> IO (CodeDiagrams (Diagram B))
+parseAndDrawCode :: Y.Value -> IO (CodeDiagrams (Drawing B))
 parseAndDrawCode v = case parsed of
     Left  e -> exitErr $ "solution code parse failure: " ++ e
     Right c -> return $ drawCode c

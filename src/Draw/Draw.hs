@@ -10,6 +10,7 @@ module Draw.Draw (
     QDrawing(..),
     Drawing,
     draw,
+    diagram,
     OutputChoice(..),
     render,
     Unit(..),
@@ -55,6 +56,9 @@ instance (Metric v, OrderedField n, Semigroup m) => Transformable (QDrawing b v 
 draw :: QDiagram b v n m -> QDrawing b v n m
 draw = Drawing . const
 
+diagram :: Config -> QDrawing b v n m -> QDiagram b v n m
+diagram c d = fromDrawing d c
+
 type Drawing b = QDrawing b (V b) (N b) Any
 
 data Drawers b p s =
@@ -63,7 +67,7 @@ data Drawers b p s =
         , solution :: (p, s) -> Drawing b
         }
 
-type PuzzleSol b = (Diagram b, Maybe (Diagram b))
+type PuzzleSol b = (Drawing b, Maybe (Drawing b))
 
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
     deriving Show
@@ -71,7 +75,7 @@ data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 -- | Optionally render the puzzle, its solution, or a side-by-side
 --   example with puzzle and solution.
 render :: Backend' b
-     => Maybe (CodeDiagrams (Diagram b))
+     => Maybe (CodeDiagrams (Drawing b))
      -> PuzzleSol b -> OutputChoice -> Maybe (Diagram b)
 render mc (p, ms) = fmap (bg white) . d
   where
@@ -79,14 +83,14 @@ render mc (p, ms) = fmap (bg white) . d
     addCode x = case mc of
         Nothing                              -> x
         Just (CodeDiagrams cleft ctop cover) ->
-            ((cover <> x) =!= top ctop) |!| lft cleft
+            ((diagram () cover <> x) =!= top (diagram () ctop)) |!| lft (diagram () cleft)
     (=!=) = beside unitY
     (|!|) = beside (negated unitX)
     top c = if isEmpty c then mempty else strutY 0.5 =!= c
     lft c = if isEmpty c then mempty else strutX 0.5 |!| c
     isEmpty c = diameter unitX c == 0
-    d DrawPuzzle   = fixup . addCode <$> Just p
-    d DrawSolution = fixup . addCode <$> ms
+    d DrawPuzzle   = fixup . addCode <$> Just (diagram () p)
+    d DrawSolution = fixup . addCode <$> fmap (diagram ()) ms
     d DrawExample  = sideBySide <$> d DrawPuzzle <*> d DrawSolution
     sideBySide x y = x ||| strutX 2.0 ||| y
 
