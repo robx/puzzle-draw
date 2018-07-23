@@ -45,7 +45,7 @@ grid s g =
     (placeGrid . fmap (const vertex) . nodeGrid $ g)
     <> Drawing (\c -> stroke inner # linestyle c (_line s))
     <> Drawing (\c -> stroke outer # linestyle c (_border s))
-    <> frm
+    <> Drawing (\c -> frm c)
   where
     vertex = case _vertex s of
         VertexDot    -> dot
@@ -56,26 +56,26 @@ grid s g =
           Screen -> linewidth
           Print -> linewidth / 2
         ew = case cfg of
-          Screen -> 3 * linewidth
-          Print -> 2 * linewidth
+          Screen -> edgewidth
+          Print -> edgewidth / 2
       in
       case ls of
         LineNone -> const mempty
         LineThin -> lwG gw
         LineDashed -> gridDashing . lwG gw
         LineThick -> lwG ew
-    frm = case _frame s of
-        Just (FrameStyle f c)  -> outLine f outer # fc c
+    frm cfg = case _frame s of
+        Just (FrameStyle f c)  -> outLine cfg f outer # fc c
         Nothing                -> mempty
-
+    outLine cfg f p = lwG 0 . stroke $ pin <> pout
+      where
+        pout = reversePath $ offsetPath (f * w - e) p
+        pin = offsetPath (-e) p
+        e = w / 2
+        w = case cfg of
+          Screen -> onepix
+          Print -> onepix / 2
     (outer, inner) = irregularGridPaths g
-
-outLine :: Backend' b => Double -> Path V2 Double -> Drawing b
-outLine f p = draw $ lwG 0 . stroke $ pin <> pout
-  where
-    pout = reversePath $ offsetPath (f * onepix - e) p
-    pin = offsetPath (-e) p
-    e = onepix / 2
 
 bgdashingG :: (Semigroup a, HasStyle a, InSpace V2 Double a) =>
              [Double] -> Double -> AlphaColour Double -> a -> a
@@ -165,14 +165,18 @@ midPoint e = c .+^ 0.5 *^ (d .-. c)
     c = toPoint a
     d = toPoint b
 
-edgeStyle :: (HasStyle a, InSpace V2 Double a) => a -> a
-edgeStyle = lineCap LineCapSquare . lwG edgewidth
+edgeStyle :: (HasStyle a, InSpace V2 Double a) => Config -> a -> a
+edgeStyle cfg = lineCap LineCapSquare . lwG ew
+  where
+    ew = case cfg of
+        Screen -> edgewidth
+        Print -> edgewidth / 2
 
 thinEdgeStyle :: (HasStyle a, InSpace V2 Double a) => a -> a
 thinEdgeStyle = lineCap LineCapSquare . lwG onepix
 
 drawEdges :: (ToPoint k, Backend' b) => [Edge k] -> Drawing b
-drawEdges = draw . edgeStyle . stroke . mconcat . map edge
+drawEdges es = Drawing (\cfg -> edgeStyle cfg . stroke . mconcat . map edge $ es)
 
 drawThinEdges :: (ToPoint k, Backend' b) => [Edge k] -> Drawing b
 drawThinEdges = draw . thinEdgeStyle . stroke . mconcat . map edge
@@ -182,8 +186,18 @@ drawAreas :: (Backend' b, Eq a) =>
 drawAreas = drawEdges . borders
 
 cage :: Backend' b => [C] -> Drawing b
-cage cs = draw $ dashingG dashes dashoffset
-        . lwG onepix . stroke . offsetBorder (-4 * onepix) $ cs
+cage cs = Drawing (\cfg ->
+    dashing' cfg . lwG (cageWidth cfg) . stroke . offsetBorder (-(cageOffset cfg)) $ cs)
+  where
+    cageWidth Screen = onepix
+    cageWidth Print = onepix / 2
+    cageOffset Screen = 4 * onepix
+    cageOffset Print = 2 * onepix
+    dashing' Screen = dashingG dashes dashoffset
+    dashing' Print = dashingG [a, b] (a/2)
+      where
+        a = 5 / 80
+        b = 3 / 80
 
 fillBG :: Backend' b => Colour Double -> Drawing b
 fillBG c = draw $ square 1 # lwG onepix # fc c # lc c
