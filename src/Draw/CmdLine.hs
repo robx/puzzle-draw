@@ -4,15 +4,14 @@ module Draw.CmdLine
     ( B
     , renderToFile
     , RenderOpts(..)
+    , Format(..)
+    , lookupFormat
+    , extension
     , formats
-    , checkFormat
     )
   where
 
-import Data.CmdLine (exitErr)
-
 import Diagrams.Prelude hiding (value, option, (<>), Result)
-import Control.Monad (unless)
 
 import Diagrams.Backend.Rasterific (B, renderRasterific)
 
@@ -24,9 +23,20 @@ data RenderOpts = RenderOpts
 renderToFile :: RenderOpts -> Diagram B -> IO ()
 renderToFile ropts = renderRasterific (_file ropts) (_size ropts)
 
-formats :: [String]
-formats = ["png", "ps", "pdf"]
+data Format = PNG | PS | PDF
 
-checkFormat :: String -> IO ()
-checkFormat f = unless (f `elem` formats) $
-                    exitErr $ "unknown format: " ++ f
+lookupFormat :: String -> Maybe Format
+lookupFormat f = case f of
+    "png" -> Just PNG
+    "ps" -> Just PS
+    "pdf" -> Just PDF
+    _ -> Nothing
+
+extension :: Format -> String
+extension f = case f of
+    PNG -> "png"
+    PDF -> "pdf"
+    PS -> "ps"
+
+formats :: [Format]
+formats = [PNG, PS, PDF]

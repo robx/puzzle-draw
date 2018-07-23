@@ -34,7 +34,7 @@ optListTypes =
     unlines' = intercalate "\n"
 
 data PuzzleOpts = PuzzleOpts
-    { _format   :: String
+    { _format   :: Format
     , _type     :: Maybe String
     , _dir      :: FilePath
     , _puzzle   :: Bool
@@ -50,7 +50,7 @@ config = const Config
 
 puzzleOpts :: Parser PuzzleOpts
 puzzleOpts = PuzzleOpts
-    <$> strOption
+    <$> option parseFormat
             (long "format" <> short 'f'
              <> value (head formats)
              <> metavar "FMT"
@@ -85,7 +85,11 @@ puzzleOpts = PuzzleOpts
             (metavar "INPUT"
              <> help "Puzzle file in .pzl format")
   where
-    fmts = "(" ++ intercalate ", " formats ++ ")"
+    parseFormat = eitherReader
+        (\s -> case lookupFormat s of
+                Just f -> Right f
+                Nothing -> Left "unknown format")
+    fmts = "(" ++ intercalate ", " (map extension formats) ++ ")"
 
 cmtopoint :: Double -> Double
 cmtopoint = (* 28.3464567)
@@ -99,13 +103,13 @@ toRenderOpts :: OutputChoice -> (Double, Double) -> PuzzleOpts -> RenderOpts
 toRenderOpts oc (w, h) opts = RenderOpts out sz
   where
     f = _format opts
-    u = case f of "png" -> Pixels
-                  _     -> Points
+    u = case f of PNG -> Pixels
+                  _    -> Points
     w' = toOutputWidth u w * (_scale opts)
     h' = toOutputWidth u h * (_scale opts)
     sz = mkSizeSpec2D (Just w') (Just h')
     base = takeBaseName (_input opts)
-    out = _dir opts </> (base ++ outputSuffix oc) <.> f
+    out = _dir opts </> (base ++ outputSuffix oc) <.> extension f
 
 renderPuzzle :: PuzzleOpts -> (OutputChoice -> Maybe (Diagram B)) ->
                 (OutputChoice, Bool) -> IO ()
@@ -167,7 +171,6 @@ main :: IO ()
 main = do
     opts <- defaultOpts puzzleOpts
     ocs <- checkOutput opts
-    checkFormat (_format opts)
     mp <- readPuzzle (_input opts)
     TP mt pv msv mc <- case mp of Left  e -> exitErr $
                                              "parse failure: " ++ show e
