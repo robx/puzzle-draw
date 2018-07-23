@@ -45,6 +45,9 @@ data PuzzleOpts = PuzzleOpts
     , _input    :: FilePath
     }
 
+config :: PuzzleOpts -> Config
+config = const Config
+
 puzzleOpts :: Parser PuzzleOpts
 puzzleOpts = PuzzleOpts
     <$> strOption
@@ -174,5 +177,5 @@ main = do
     t <- checkType $ _type opts `mplus` mt
     let ps = Y.parseEither (handle drawPuzzleMaybeSol t) (pv, msv')
     mcode <- sequenceA $ parseAndDrawCode <$> mc'
-    case ps of Right ps' -> mapM_ (renderPuzzle opts (render mcode ps')) ocs
+    case ps of Right ps' -> mapM_ (renderPuzzle opts (render (config opts) mcode ps')) ocs
                Left    e -> exitErr $ "parse failure: " ++ e

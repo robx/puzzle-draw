@@ -5,6 +5,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Draw.Draw (
+    Config(..),
     PuzzleSol,
     Drawers(..),
     QDrawing(..),
@@ -39,7 +40,7 @@ import Diagrams.Prelude hiding (render)
 import Draw.Lib
 import Draw.Widths
 
-type Config = ()
+data Config = Config
 
 newtype QDrawing b v n m = Drawing { fromDrawing :: Config -> QDiagram b v n m }
     deriving (Monoid, Semigroup, HasStyle, Juxtaposable)
@@ -75,22 +76,23 @@ data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 -- | Optionally render the puzzle, its solution, or a side-by-side
 --   example with puzzle and solution.
 render :: Backend' b
-     => Maybe (CodeDiagrams (Drawing b))
+     => Config
+     -> Maybe (CodeDiagrams (Drawing b))
      -> PuzzleSol b -> OutputChoice -> Maybe (Diagram b)
-render mc (p, ms) = fmap (bg white) . d
+render config mc (p, ms) = fmap (bg white) . d
   where
     fixup = alignPixel . border borderwidth
     addCode x = case mc of
         Nothing                              -> x
         Just (CodeDiagrams cleft ctop cover) ->
-            ((diagram () cover <> x) =!= top (diagram () ctop)) |!| lft (diagram () cleft)
+            ((diagram config cover <> x) =!= top (diagram config ctop)) |!| lft (diagram config cleft)
     (=!=) = beside unitY
     (|!|) = beside (negated unitX)
     top c = if isEmpty c then mempty else strutY 0.5 =!= c
     lft c = if isEmpty c then mempty else strutX 0.5 |!| c
     isEmpty c = diameter unitX c == 0
-    d DrawPuzzle   = fixup . addCode <$> Just (diagram () p)
-    d DrawSolution = fixup . addCode <$> fmap (diagram ()) ms
+    d DrawPuzzle   = fixup . addCode <$> Just (diagram config p)
+    d DrawSolution = fixup . addCode <$> fmap (diagram config) ms
     d DrawExample  = sideBySide <$> d DrawPuzzle <*> d DrawSolution
     sideBySide x y = x ||| strutX 2.0 ||| y
 
