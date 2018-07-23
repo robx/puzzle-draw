@@ -40,7 +40,7 @@ module Data.GridShape
 
 import qualified Data.Foldable as F
 import Data.List (partition, groupBy, sortOn)
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 import Data.AffineSpace
 
 type Coord = (Int, Int)

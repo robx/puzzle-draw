@@ -1,7 +1,7 @@
 {-# LANGUAGE TypeFamilies #-}
 module Parse.UtilSpec where
 
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 import Data.Yaml
 import qualified Data.Text as T
 

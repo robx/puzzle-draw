@@ -14,7 +14,7 @@ import Data.List (sortBy, intersect)
 import Data.Maybe (catMaybes, fromMaybe, isJust, fromJust)
 import Data.Ord (comparing)
 import Data.Either (isRight)
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
 import qualified Data.HashMap.Strict as HMap
 import Data.Traversable (mapM)

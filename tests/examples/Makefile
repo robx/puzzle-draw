@@ -1,14 +1,19 @@
 .PHONY: all puzzles examples clean compare
 
+DRAW = drawpuzzle
+
 EXAMPLES = $(wildcard *-example.pzl)
 PUZZLES = $(filter-out $(EXAMPLES), $(wildcard *.pzl))
 
 EXAMPLETARGETS = $(patsubst %.pzl,%.png,$(EXAMPLES))
 PUZZLETARGETS = $(patsubst %.pzl,%.png,$(PUZZLES))
+PUZZLEPDFTARGETS = $(patsubst %.pzl,%.pdf,$(PUZZLES))
 
 all: puzzles examples
 
 puzzles: $(PUZZLETARGETS)
+
+puzzles-pdf: $(PUZZLEPDFTARGETS)
 
 examples: $(EXAMPLETARGETS)
 
@@ -16,22 +21,26 @@ clean:
 	rm -f $(PUZZLETARGETS) $(EXAMPLETARGETS)
 
 $(EXAMPLETARGETS): %.png: %.pzl
-	stack exec drawpuzzle -- -e -c -f png $<
+	$(DRAW) -e -c -f png $<
 
 $(PUZZLETARGETS): %.png: %.pzl
-	stack exec drawpuzzle -- -p -f png $<
+	$(DRAW) -p -f png $<
+
+$(PUZZLEPDFTARGETS): %.pdf: %.pzl
+	$(DRAW) -p -f pdf $<
 
 compare:
 	rm -f cur/*.png diff/*.png
 	mkdir -p cur diff
 	for f in $(EXAMPLES); do \
-		stack exec drawpuzzle -- -d compare -e -c -f png $$f ; \
+		$(DRAW) -d cur -e -c -f png $$f ; \
 	done
 	for f in $(PUZZLES); do \
-		stack exec drawpuzzle -- -d compare -p -f png $$f ; \
+		$(DRAW) -d cur -p -f png $$f ; \
 	done
 	for f in *.png; do \
-		diff $$f compare/$$f > /dev/null || compare $$f cur/$$f diff/$$f; \
+		diff $$f cur/$$f > /dev/null || \
+			(touch diff/$$f ; compare $$f cur/$$f diff/$$f) ; \
 	done
-	sh gallery.sh > gallery.html
+	./gallery.sh diff/*.png > gallery.html
 	! ls diff/*.png

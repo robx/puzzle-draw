@@ -3,7 +3,7 @@ module Data.GridShapeSpec where
 import Test.Hspec (Spec, describe, it, shouldBe)
 
 import Data.GridShape
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 import Data.List (sort)
 
 spec :: Spec

@@ -1,3 +1,11 @@
+0.3.0.0: 20180718
+-----------------
+
+* Switch backend to diagrams-rasterific, losing the dependency on Cairo.
+* Upgrade to diagrams 1.4.
+* Various new puzzle types, including Minesweeper, Tents, Snake,
+  Country Road, Killer Sudoku.
+
 0.2.0.0: 20161211
 -----------------
 

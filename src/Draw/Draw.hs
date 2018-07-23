@@ -13,7 +13,7 @@ module Draw.Draw (
     OutputChoice(..),
     render,
     Unit(..),
-    diagramWidth,
+    diagramSize,
     toOutputWidth,
     CodeDiagrams(..),
     centerX',
@@ -90,8 +90,8 @@ data Unit = Pixels | Points
 cmtopoint :: Double -> Double
 cmtopoint = (* 28.3464567)
 
-diagramWidth :: Backend' b => Diagram b -> Double
-diagramWidth = fst . unr2 . boxExtents . boundingBox
+diagramSize :: Backend' b => Diagram b -> (Double, Double)
+diagramSize = unr2 . boxExtents . boundingBox
 
 toOutputWidth :: Unit -> Double -> Double
 toOutputWidth u w = case u of Pixels -> fromIntegral wpix
@@ -116,6 +116,10 @@ border w = extrudeEnvelope (w *^ unitX) . extrudeEnvelope (-w *^ unitX)
          . extrudeEnvelope (w *^ unitY) . extrudeEnvelope (-w *^ unitY)
 
 data CodeDiagrams a = CodeDiagrams { _cdLeft :: a, _cdTop :: a, _cdOver :: a }
+
+instance Semigroup a => Semigroup (CodeDiagrams a) where
+    (CodeDiagrams x y z) <> (CodeDiagrams x' y' z') =
+        CodeDiagrams (x <> x') (y <> y') (z <> z')
 
 instance Monoid a => Monoid (CodeDiagrams a) where
     mempty = CodeDiagrams mempty mempty mempty

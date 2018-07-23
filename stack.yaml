@@ -2,4 +2,4 @@ ghc-options:
   puzzle-draw: -Werror
 packages:
 - '.'
-resolver: lts-8.24
+resolver: lts-12.0

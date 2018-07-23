@@ -17,7 +17,6 @@ import Draw.Code
 import Options.Applicative
 import Control.Monad
 import Data.Maybe
-import Data.Monoid
 import Data.List (intercalate, sort)
 
 import System.FilePath
@@ -93,13 +92,15 @@ outputSuffix DrawPuzzle = ""
 outputSuffix DrawSolution = "-sol"
 outputSuffix DrawExample = ""
 
-toRenderOpts :: OutputChoice -> Double -> PuzzleOpts -> RenderOpts
-toRenderOpts oc w opts = RenderOpts out w'
+toRenderOpts :: OutputChoice -> (Double, Double) -> PuzzleOpts -> RenderOpts
+toRenderOpts oc (w, h) opts = RenderOpts out sz
   where
     f = _format opts
     u = case f of "png" -> Pixels
                   _     -> Points
     w' = toOutputWidth u w * (_scale opts)
+    h' = toOutputWidth u h * (_scale opts)
+    sz = mkSizeSpec2D (Just w') (Just h')
     base = takeBaseName (_input opts)
     out = _dir opts </> (base ++ outputSuffix oc) <.> f
 
@@ -111,7 +112,7 @@ renderPuzzle opts r (oc, req) = do
         exitErr ("failed to render (no solution?): " ++ show oc)
     when (isJust x) $ do
         let Just x' = x
-            ropts = toRenderOpts oc (diagramWidth x') opts
+            ropts = toRenderOpts oc (diagramSize x') opts
         renderToFile ropts x'
 
 defaultOpts :: Parser a -> IO a

@@ -13,7 +13,7 @@ module Draw.Elements where
 import Diagrams.Prelude hiding (N)
 import Diagrams.TwoD.Offset
 
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 import Data.List (groupBy, sortOn)
 
 import Data.Grid
@@ -28,7 +28,7 @@ import Draw.Grid
 
 pearl :: Backend' b =>
          MasyuPearl -> Drawing b
-pearl m = circle 0.35 # lwG 0.05 # fc (c m)
+pearl m = draw $ circle 0.35 # lwG 0.05 # fc (c m)
   where
     c MWhite = white
     c MBlack = black
@@ -75,14 +75,14 @@ drawCompassClue (CC n e s w) = draw $ texts <> stroke cross # lwG onepix
 drawSlovakClue :: Backend' b =>
                   SlovakClue -> Drawing b
 drawSlovakClue (SlovakClue s c) =
-    centerY (drawInt s === draw (strutY 0.1) === dots c) <> fillBG gray
+    centerY' (drawInt s === draw (strutY 0.1) === dots c) <> fillBG gray
   where
     dots n = draw $ centerX $ hcat' with {_sep = 0.04} (replicate n $ d)
     d = circle 0.1 # lwG 0.02 # fc white
 
 -- | Draw a thermometer.
 thermo :: Backend' b => [P2 Double] -> Drawing b
-thermo vs@(v:_) = (bulb `atop` line) # col
+thermo vs@(v:_) = (bulb `atop` line) # col # draw
     where bulb = circle 0.4 # moveTo v
           line = strokeLocLine (fromVertices vs)
                  # lwG 0.55 # lineCap LineCapSquare
@@ -100,12 +100,12 @@ drawThermos = mconcat . map (thermo . map toPoint)
 drawTight :: Backend' b =>
              (a -> Drawing b) -> Tightfit a -> Drawing b
 drawTight d (Single x) = d x
-drawTight d (UR x y) = stroke ur # lwG onepix
+drawTight d (UR x y) = stroke ur # lwG onepix # draw
                        <> d x # scale s # translate (r2 (-t,t))
                        <> d y # scale s # translate (r2 (t,-t))
     where t = 1/5
           s = 2/3
-drawTight d (DR x y) = stroke dr # lwG onepix
+drawTight d (DR x y) = stroke dr # lwG onepix # draw
                        <> d x # scale s # translate (r2 (-t,-t))
                        <> d y # scale s # translate (r2 (t,t))
     where t = 1/5
@@ -113,19 +113,19 @@ drawTight d (DR x y) = stroke dr # lwG onepix
 
 -- | Stack the given words, left-justified.
 stackWords :: Backend' b => [String] -> Drawing b
-stackWords = vcat' with {_sep = 0.1} . scale 0.8 . map (alignL . textFixed)
+stackWords = draw . vcat' with {_sep = 0.1} . scale 0.8 . map (alignL . textFixed)
 
 -- | Stack the given words, left-justified, a bit more generous, nice font
 stackWordsLeft :: Backend' b => [String] -> Drawing b
-stackWordsLeft = vcat' (with & catMethod .~ Distrib & sep .~ 1) . map (alignL . text')
+stackWordsLeft = draw . vcat' (with & catMethod .~ Distrib & sep .~ 1) . map (alignL . text')
 
 -- | Stack the given words, left-justified, a bit more generous, nice font
 stackWordsRight :: Backend' b => [String] -> Drawing b
-stackWordsRight = vcat' (with & catMethod .~ Distrib & sep .~ 1) . map (alignR . text')
+stackWordsRight = draw . vcat' (with & catMethod .~ Distrib & sep .~ 1) . map (alignR . text')
 
 -- | Mark a word in a grid of letters.
 drawMarkedWord :: Backend' b => MarkedWord -> Drawing b
-drawMarkedWord (MW s e) = lwG onepix . stroke $ expandTrail' with {_expandCap = LineCapRound} 0.4 t
+drawMarkedWord (MW s e) = draw $ lwG onepix . stroke $ expandTrail' with {_expandCap = LineCapRound} 0.4 t
     where t = fromVertices [p2i s, p2i e] # translate (r2 (1/2,1/2))
 
 -- | Apply 'drawMarkedWord' to a list of words.
@@ -133,7 +133,7 @@ drawMarkedWords :: Backend' b => [MarkedWord] -> Drawing b
 drawMarkedWords = mconcat . map drawMarkedWord
 
 drawMarkedLine :: (ToPoint a, Backend' b) => MarkedLine a -> Drawing b
-drawMarkedLine (MarkedLine s e) = strokePath (toPoint s ~~ toPoint e) # lwG edgewidth # lc gray
+drawMarkedLine (MarkedLine s e) = draw $ strokePath (toPoint s ~~ toPoint e) # lwG edgewidth # lc gray
 
 drawMarkedLines :: (ToPoint a, Backend' b) => [MarkedLine a] -> Drawing b
 drawMarkedLines = mconcat . map drawMarkedLine
@@ -141,22 +141,23 @@ drawMarkedLines = mconcat . map drawMarkedLine
 -- | Draw a slalom clue.
 drawSlalomClue :: (Show a, Backend' b) =>
                   a -> Drawing b
-drawSlalomClue x = text' (show x) # scale 0.75
+drawSlalomClue x = draw $
+                   text' (show x) # scale 0.75
                    <> circle 0.4 # fc white # lwG onepix
 
 drawSlalomDiag :: Backend' b
                => SlalomDiag -> Drawing b
-drawSlalomDiag d = stroke (v d) # lwG edgewidth
+drawSlalomDiag d = draw $ stroke (v d) # lwG edgewidth
   where
     v SlalomForward = ur
     v SlalomBackward = dr
 
 -- | Draw text. Shouldn't be more than two characters or so to fit a cell.
 drawText :: Backend' b => String -> Drawing b
-drawText = text'
+drawText = draw . text'
 
 drawTextFixed :: Backend' b => String -> Drawing b
-drawTextFixed = textFixed
+drawTextFixed = draw . textFixed
 
 -- | Draw an @Int@.
 drawInt :: Backend' b =>
@@ -174,19 +175,19 @@ drawCharFixed c = drawTextFixed [c]
 
 drawCharOpaque :: Backend' b =>
                   Char -> Drawing b
-drawCharOpaque c = drawChar c <> circle 0.5 # lwG 0 # fc white
+drawCharOpaque c = drawChar c <> circle 0.5 # lwG 0 # fc white # draw
 
 placeTL :: Backend' b => Drawing b -> Drawing b
-placeTL = moveTo (p2 (-0.4,0.4)) . scale 0.5 . alignTL
+placeTL = moveTo (p2 (-0.4,0.4)) . scale 0.5 . alignTL'
 
-hintTL :: Backend' b => String -> Diagram b
+hintTL :: Backend' b => String -> Drawing b
 hintTL = placeTL . drawText
 
 -- | Stack a list of words into a unit square. Scaled such that at least
 -- three words will fit.
 drawWords :: Backend' b =>
              [String] -> Drawing b
-drawWords ws = spread (-1.0 *^ unitY)
+drawWords ws = spread' (-1.0 *^ unitY)
                       (map (centerXY' . scale 0.4 . drawText) ws)
                # centerY'
 

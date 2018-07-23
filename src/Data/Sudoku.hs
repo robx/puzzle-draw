@@ -3,7 +3,7 @@ module Data.Sudoku (
     sudokubordersg
   ) where
 
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 
 import Data.Grid
 import Data.GridShape

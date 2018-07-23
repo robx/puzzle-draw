@@ -1,7 +1,7 @@
 module Parse.PuzzleTypesSpec where
 
 import Data.Maybe (isJust)
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 import Data.Yaml
 import Data.Text.Encoding (encodeUtf8)
 import qualified Data.ByteString as B
@@ -17,7 +17,7 @@ packLines :: [String] -> B.ByteString
 packLines = encodeUtf8 . T.pack . unlines
 
 parse :: (Value -> Parser a) -> B.ByteString -> Maybe a
-parse p t = decode t >>= parseMaybe p
+parse p t = decodeThrow t >>= parseMaybe p
 
 spec :: Spec
 spec = do

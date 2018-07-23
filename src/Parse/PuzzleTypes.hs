@@ -18,13 +18,14 @@ module Parse.PuzzleTypes (
     nanroSignpost, tomTom, horseSnake, illumination, pentopia,
     pentominoPipes, greaterWall, galaxies, mines, tents,
     pentominoSums, coralLits, coralLitso, snake, countryRoad,
-    killersudoku
+    killersudoku, friendlysudoku, japsummasyu
   ) where
 
 import Control.Applicative
 import Control.Monad
 
-import qualified Data.Map.Strict as M
+import qualified Data.Map.Strict as Map
+import Data.Map.Strict (Map)
 import Data.Yaml
 
 import Parse.Util
@@ -69,11 +70,12 @@ thermosudoku :: ParsePuzzle (Grid C (Maybe Int), [Thermometer])
                             (Grid C (Maybe Int))
 thermosudoku = ((parseThermoGrid =<<) . parseJSON, parseClueGrid)
 
-killersudoku :: ParsePuzzle (AreaGrid, M.Map Char Int) (Grid C Int)
+killersudoku :: ParsePuzzle (AreaGrid, Map Char Int, Grid C (Maybe Int)) (Grid C Int)
 killersudoku = (,)
-    (\v -> (,)
+    (\v -> (,,)
          <$> parseFrom ["cages"] parseGrid v
-         <*> parseFrom ["clues"] parseCharMap v)
+         <*> parseFrom ["clues"] parseCharMap v
+         <*> (parseFrom ["grid"] parseClueGrid v <|> pure Map.empty))
     parseGrid
 
 pyramid :: ParsePuzzle Pyr.Pyramid Pyr.PyramidSol
@@ -178,8 +180,12 @@ maximallengths = (\v -> fmap blankToMaybe <$> parseCharOutside v,
 primeplace :: ParsePuzzle (Grid C PrimeDiag) (Grid C Int)
 primeplace = (parseIrregGrid, parseIrregGrid)
 
-labyrinth :: ParsePuzzle (Grid C (Maybe Int), [Edge N]) (Grid C (Maybe Int))
-labyrinth = (parseCellEdges, parseClueGrid')
+labyrinth :: ParsePuzzle (Grid C (Maybe Int), [Edge N], String) (Grid C (Maybe Int))
+labyrinth = (p, parseClueGrid')
+  where
+    p v@(Object o) = tup <$> parseFrom ["grid"] parseCellEdges v <*> o .: "digits"
+    p _            = mempty
+    tup (x,y) z = (x,y,z)
 
 bahnhof :: ParsePuzzle (Grid C (Maybe BahnhofClue)) [Edge C]
 bahnhof = (parseClueGrid, parseEdges)
@@ -379,10 +385,10 @@ abctje = (,)
     x :: FromString a => (String, b) -> Parser (a, b)
     x (k, v) = (\k' -> (k',v)) <$> parseString k
 
-    pair :: M.Map a b -> Parser (a, b)
-    pair m = if M.size m == 1 then (return . head . M.toList $ m) else empty
+    pair :: Map a b -> Parser (a, b)
+    pair m = if Map.size m == 1 then (return . head . Map.toList $ m) else empty
 
-kropki :: ParsePuzzle (M.Map (Edge N) KropkiDot) (Grid C Int)
+kropki :: ParsePuzzle (Map (Edge N) KropkiDot) (Grid C Int)
 kropki = (,) parseAnnotatedEdges parseGrid
 
 statuepark :: ParsePuzzle (Grid C (Maybe MasyuPearl)) (Grid C Bool)
@@ -431,17 +437,17 @@ greaterWall = (,)
                <*> parseFrom ["columns"] parseGreaterClues v)
     parseShadedGrid
 
-galaxies :: ParsePuzzle (Grid C (), Grid N (), Grid C (), M.Map (Edge N) ()) AreaGrid
+galaxies :: ParsePuzzle (Grid C (), Grid N (), Grid C (), Map (Edge N) ()) AreaGrid
 galaxies = (,)
     (\v -> do (a,b,c) <- parseEdgeGrid v
               return $ (fmap (const ()) b, f a, f b, f c))
     parseGrid
   where
     toUnit GalaxyCentre = ()
-    f = fmap toUnit . M.mapMaybe id . fmap blankToMaybe''
+    f = fmap toUnit . Map.mapMaybe id . fmap blankToMaybe''
 
 mines :: ParsePuzzle (Grid C (Maybe Int)) (Grid C Bool)
-mines = (parseClueGrid, parseShadedGrid)
+mines = (parseIrregGrid, parseShadedGrid)
 
 tents :: ParsePuzzle (OutsideClues C (Maybe Int), Grid C (Maybe Tree)) (Grid C (Maybe PlacedTent))
 tents =
@@ -465,7 +471,7 @@ pentominoSums = (p, s)
     s v = (,,) <$> parseFrom ["grid"] parseGrid v
                <*> parseFrom ["values"] values v
                <*> fst coral v
-    values v = parseJSON v >>= sequence . map parseKey . M.toList
+    values v = parseJSON v >>= sequence . map parseKey . Map.toList
     parseKey (k, v) = (,) <$> parseString k <*> pure v
 
 coralLits :: ParsePuzzle (OutsideClues C [String]) (Grid C (Maybe Char))
@@ -487,3 +493,15 @@ snake = (p, parseClueGrid)
 
 countryRoad :: ParsePuzzle (AreaGrid, Grid C (Maybe Int)) (Loop C)
 countryRoad = (,) (fst nanroSignpost) parseEdges
+
+friendlysudoku :: ParsePuzzle (Map (Edge N) KropkiDot, Grid C (Maybe Int)) (Grid C Int)
+friendlysudoku = (,) p parseGrid
+  where
+    p v = (\(_,c,e) -> (e,c)) <$> pp v
+    pp :: Value -> Parser (Grid N (), Grid C (Maybe Int), Map.Map (Edge N) KropkiDot)
+    pp = parseEdgeGrid
+
+japsummasyu :: ParsePuzzle (OutsideClues C [String]) ()
+japsummasyu = (,)
+    (fmap (fmap (map unIntString)) . parseMultiOutsideClues)
+    (error "japsummasyu solution not implemented")

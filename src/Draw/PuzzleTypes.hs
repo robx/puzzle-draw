@@ -22,14 +22,14 @@ module Draw.PuzzleTypes (
     horseSnake, illumination, pentopia,
     pentominoPipes, greaterWall, galaxies, mines, tents,
     pentominoSums, coralLits, coralLitso, snake, countryRoad,
-    killersudoku
+    killersudoku, friendlysudoku, japsummasyu
   ) where
 
 import Diagrams.Prelude hiding (Loop, N, coral, size)
 
 import Data.Char (isUpper)
 import Data.List (nub, sort, sortOn)
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 
 import Draw.Style
 import Draw.PuzzleGrids
@@ -137,13 +137,15 @@ thermosudoku = drawers
     (placeGrid . fmap drawInt . clues . snd <> sudokugrid . snd <> drawThermos . snd . fst)
 
 killersudoku :: Backend' b =>
-                Drawers b (AreaGrid, Map.Map Char Int) (Grid C Int)
+                Drawers b (AreaGrid, Map.Map Char Int, Grid C (Maybe Int)) (Grid C Int)
 killersudoku = drawers
-    p
+    (p <> placeGrid . fmap drawInt . clues . trd3)
     (placeGrid . fmap drawInt . snd <> p . fst)
   where
-    p = cages <> sudokugrid . fst
-    cages (g, m) = drawCages (Map.filter (/= '.') g) (Map.map drawInt m)
+    fst3 (x,_,_) = x
+    trd3 (_,_,z) = z
+    p = cages <> sudokugrid . fst3
+    cages (g, m, _) = drawCages (Map.filter (/= '.') g) (Map.map drawInt m)
 
 pyramid :: Backend' b =>
     Drawers b Pyr.Pyramid Pyr.PyramidSol
@@ -310,12 +312,15 @@ primeplace = drawers
     gStyle = GridStyle LineThin LineThick Nothing VertexNone
 
 labyrinth :: Backend' b =>
-             Drawers b (Grid C (Maybe Int), [Edge N]) (Grid C (Maybe Int))
+             Drawers b (Grid C (Maybe Int), [Edge N], String) (Grid C (Maybe Int))
 labyrinth = drawers
-    (placeGrid . fmap drawInt . clues . fst <> g)
-    (placeGrid . fmap drawInt . clues . snd <> g . fst)
+    (placeGrid . fmap drawInt . clues . fst3 <> p <> n)
+    (placeGrid . fmap drawInt . clues . snd <> p . fst)
   where
-    g = drawEdges . snd <> grid gPlain . fst
+    p (g, e, _) = drawEdges e <> grid gPlain g
+    n (g, _, ds) = placeNoteTR (size' g) (drawText ds # scale 0.8)
+    size' = size . Map.mapKeys toCoord
+    fst3 (x,_,_) = x
 
 bahnhof :: Backend' b =>
             Drawers b (Grid C (Maybe BahnhofClue)) [Edge C]
@@ -883,3 +888,23 @@ countryRoad ::
 countryRoad = Drawers
     smallHintRooms
     (draw . solstyle . drawEdges . snd <> smallHintRooms . fst)
+
+friendlysudoku ::
+    Backend' b =>
+    Drawers b (Map.Map (Edge N) KropkiDot, Grid C (Maybe Int)) (Grid C Int)
+friendlysudoku = drawers
+    p
+    (placeGrid . fmap drawInt . snd <> p . fst)
+  where
+    p = placeGrid' . Map.mapKeys midPoint . fmap kropkiDot . fst
+      <> placeGrid . fmap drawInt . clues . snd
+      <> sudokugrid . snd
+
+japsummasyu :: Backend' b =>
+          Drawers b (OutsideClues C [String]) ()
+japsummasyu = drawers
+    (placeMultiOutside . fmap (fmap (scale 0.8 . drawText))
+                     <> grid gDashDash . outsideGrid)
+    (error "japsummasyu solution not implemented")
+  where
+    gDashDash = GridStyle LineDashed LineDashed Nothing VertexNone

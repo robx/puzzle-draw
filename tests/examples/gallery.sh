@@ -1,12 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
 set -eu
 
 echo "<html>"
 echo "<body>"
 for file in "$@"; do
-    file=`basename $file`
-    typ=`basename $file .png`
+    file=`basename "$file"`
+    typ=`basename "$file" .png`
 
     cat <<HERE
 <a href="$typ.pzl">$typ</a><br>

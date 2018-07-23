@@ -17,7 +17,7 @@ import Draw.Elements
 
 import Diagrams.Prelude
 
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 
 drawCode :: Backend' b => Code -> CodeDiagrams (Diagram b)
 drawCode cs = mconcat (map drawCodePart cs)

@@ -4,7 +4,7 @@ import Test.Tasty.HUnit
 
 import Data.Yaml
 import Data.List (sort)
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 
 import Parse.Puzzle
 import Data.Elements (Thermometer, MasyuPearl(..))
