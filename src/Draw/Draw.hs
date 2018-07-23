@@ -24,10 +24,13 @@ module Draw.Draw (
     alignBR',
     alignTL',
     alignTR',
+    alignL',
     fit',
     spread',
     phantom'',
-    aboveT'
+    aboveT',
+    besidesR',
+    strutX'
   ) where
 
 import Diagrams.Prelude hiding (render)
@@ -130,39 +133,54 @@ instance Monoid a => Monoid (CodeDiagrams a) where
 
 
 centerX' :: Backend' b => Drawing b -> Drawing b
-centerX' (Drawing d) = Drawing (\c -> centerX (d c))
+centerX' = lift centerX
 
 centerY' :: Backend' b => Drawing b -> Drawing b
-centerY' (Drawing d) = Drawing (\c -> centerY (d c))
+centerY' = lift centerY
 
 centerXY' :: Backend' b => Drawing b -> Drawing b
-centerXY' (Drawing d) = Drawing (\c -> centerXY (d c))
+centerXY' = lift centerXY
 
 smash' :: Backend' b => Drawing b -> Drawing b
-smash' (Drawing d) = Drawing (\c -> smash (d c))
+smash' = lift smash
 
 alignBL' :: Backend' b => Drawing b -> Drawing b
-alignBL' (Drawing d) = Drawing (\c -> alignBL (d c))
+alignBL' = lift alignBL
 
 alignBR' :: Backend' b => Drawing b -> Drawing b
-alignBR' (Drawing d) = Drawing (\c -> alignBR (d c))
+alignBR' = lift alignBR
 
 alignTL' :: Backend' b => Drawing b -> Drawing b
-alignTL' (Drawing d) = Drawing (\c -> alignTL (d c))
+alignTL' = lift alignTL
 
 alignTR' :: Backend' b => Drawing b -> Drawing b
-alignTR' (Drawing d) = Drawing (\c -> alignTR (d c))
+alignTR' = lift alignTR
+
+alignL' :: Backend' b => Drawing b -> Drawing b
+alignL' = lift alignL
 
 fit' :: Backend' b => Double -> Drawing b -> Drawing b
-fit' f (Drawing d) = Drawing (\c -> fit f (d c))
+fit' f = lift (fit f)
 
 spread' :: Backend' b => V2 Double -> [Drawing b] -> Drawing b
 spread' v ds = Drawing (\c -> spread v $ map (\d -> fromDrawing d c) ds)
 
 phantom'' :: Backend' b => Drawing b -> Drawing b
-phantom'' d = Drawing (\c -> phantom (fromDrawing d c))
+phantom'' = lift phantom
 
 aboveT' :: Backend' b =>
           Drawing b -> Drawing b -> Drawing b
-aboveT' a b = Drawing (\c -> fromDrawing a c `aboveT`  fromDrawing b c)
+aboveT' = lift2 aboveT
 
+besidesR' :: Backend' b =>
+          Drawing b -> Drawing b -> Drawing b
+besidesR' = lift2 besidesR
+
+strutX' :: Backend' b => Double -> Drawing b
+strutX' = draw . strutX
+
+lift :: (Diagram b -> Diagram b) -> Drawing b -> Drawing b
+lift f d = Drawing (\c -> f (fromDrawing d c))
+
+lift2 :: (Diagram b -> Diagram b -> Diagram b) -> Drawing b -> Drawing b -> Drawing b
+lift2 f d1 d2 = Drawing (\c -> f (fromDrawing d1 c) (fromDrawing d2 c))

@@ -183,7 +183,7 @@ slithermulti = Drawers
     (drawSlitherGrid . fst <> n)
     (drawSlitherGrid . fst . fst <> solstyle . drawEdges . snd)
   where
-    n (g, l) = placeNoteTR (size' g) (drawInt l ||| strutX 0.2 ||| miniloop)
+    n (g, l) = placeNoteTR (size' g) (drawInt l ||| strutX' 0.2 ||| miniloop)
     size' = size . Map.mapKeys toCoord
 
 tightfitskyscrapers :: Backend' b =>
@@ -197,7 +197,7 @@ tightfitskyscrapers = Drawers
 
 wordgrid :: Backend' b =>
             Grid C (Maybe Char) -> [String] -> Drawing b
-wordgrid g ws = stackWords ws `besidesR` drawCharGrid g
+wordgrid g ws = stackWords ws `besidesR'` drawCharGrid g
 
 wordloop :: Backend' b =>
             Drawers b (Grid C (Maybe Char), [String]) (Grid C (Maybe Char))
@@ -354,7 +354,7 @@ angleLoop ::
 angleLoop = Drawers
     (cs <> gr)
     (cs . fst
-     <> lineJoin LineJoinBevel . solstyle . strokeLocLoop . vertexLoop . snd
+     <> draw . lineJoin LineJoinBevel . solstyle . strokeLocLoop . vertexLoop . snd
      <> gr . fst)
   where
     cs = placeGrid . fmap drawAnglePoly . clues
@@ -370,8 +370,8 @@ anglers = Drawers
     p = placeGrid . fmap drawInt' . clues . outsideClues . fst <>
         placeGrid . fmap drawFish' . clues . snd
     g = grid gDefault . snd
-    drawInt' x = drawInt x <> (square 0.6 # lc white # fc white)
-    drawFish' x = drawFish x <> (square 0.6 # lc white # fc white)
+    drawInt' x = drawInt x <> draw (square 0.6 # lc white # fc white)
+    drawFish' x = drawFish x <> draw (square 0.6 # lc white # fc white)
 
 cave ::
     Backend' b =>
@@ -425,7 +425,7 @@ skyscrapersStars = Drawers
     g = (placeGrid . fmap drawInt . clues . outsideClues
          <> grid gDefault . outsideGrid) . fst
     n (oc, s) = placeNoteTR (outsideSize oc)
-                          (drawInt s ||| strutX 0.2 ||| drawStar Star)
+                          (drawInt s ||| strutX' 0.2 ||| drawStar Star)
 
 summon ::
     Backend' b =>
@@ -529,7 +529,7 @@ dominoPills = Drawers
     p (g, ds, ps) =
         ((placeGrid . fmap drawInt . clues <> grid gDashed) $ g)
         `aboveT'`
-        (drawDominos ds ||| strutX 0.5 ||| drawPills ps)
+        (drawDominos ds ||| strutX' 0.5 ||| drawPills ps)
 
 numberlink ::
     Backend' b =>
@@ -540,7 +540,7 @@ numberlink = Drawers
      <> solstyle . drawEdges . snd
      <> grid gDefault . fst)
   where
-    drawInt' x = drawInt x <> (square 0.7 # lc white # fc white)
+    drawInt' x = drawInt x <> draw (square 0.7 # lc white # fc white)
 
 loopki :: Backend' b =>
           Drawers b (Grid C (Maybe MasyuPearl)) (Loop N)
@@ -556,7 +556,7 @@ scrabble = Drawers
     p
     (placeGrid . fmap drawCharFixed . clues . snd <> gr . fst . fst)
   where
-    p (g, ws) = stackWords ws `besidesR` gr g
+    p (g, ws) = stackWords ws `besidesR'` gr g
     gr = grid gDefault <> drawShade
 
 neighbors :: Backend' b =>
@@ -581,7 +581,7 @@ starbattle = Drawers
   where
     p = (drawAreas <> grid gDefault) . fst
     n (g, k) = placeNoteTR (size' g)
-                         (drawInt k ||| strutX 0.2 ||| drawStar Star)
+                         (drawInt k ||| strutX' 0.2 ||| drawStar Star)
     size' = size . Map.mapKeys toCoord
 
 heyawake :: Backend' b =>
@@ -617,7 +617,7 @@ colorakari = Drawers
     drawColorClue 'X' = fillBG black
     drawColorClue c = case col c of Nothing -> error "invalid color"
                                     Just c' -> drawText [c] # scale 0.5
-                                               <> circle (1/3) # fc c'
+                                               <> circle (1/3) # fc c' # draw
                                                <> fillBG black
     col c = case c of 'R' -> Just red
                       'G' -> Just green
@@ -657,10 +657,10 @@ abctje ::
     Drawers b (DigitRange, [(String, Int)]) [(Int, Char)]
 abctje = Drawers
     p
-    ((mappingTable . h  ||| const (strutX 1.0) ||| mappingTable . h') . snd)
+    ((mappingTable . h  ||| const (strutX' 1.0) ||| mappingTable . h') . snd)
   where
-    p (ds, cs) = (digNote ds `aboveT'` (stackWordsLeft ws ||| strutX 1.0 ||| stackWordsRight ns))
-                 `besidesR` (strutX 2.0 ||| mappingTable ps ||| strutX 1.0 ||| mappingTable ps')
+    p (ds, cs) = (digNote ds `aboveT'` (stackWordsLeft ws ||| strutX' 1.0 ||| stackWordsRight ns))
+                 `besidesR'` (strutX' 2.0 ||| mappingTable ps ||| strutX' 1.0 ||| mappingTable ps')
       where
         ws = map fst cs
         ns = map (show . snd) cs
@@ -817,10 +817,10 @@ pentominoSums :: Backend' b => Drawers b (OutsideClues C [String], String)
                                (Grid C (Either Pentomino Int), [(Char, Int)], OutsideClues C [String])
 pentominoSums = Drawers
     p
-    (solgrid ||| const (strutX 1.0) ||| table)
+    (solgrid ||| const (strutX' 1.0) ||| table)
   where
     p (ocs, ds) =
-        (((drawMultiOutsideGrid ocs <> n (ocs, ds)) ||| strutX 1.0 ||| emptyTable ocs)
+        (((drawMultiOutsideGrid ocs <> n (ocs, ds)) ||| strutX' 1.0 ||| emptyTable ocs)
         `aboveT'` drawPentominos)
     n (ocs, ds) = placeNoteTL (0, h ocs) (drawText ds # scale 0.8)
     h = snd . outsideSize
