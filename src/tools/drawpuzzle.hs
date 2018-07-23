@@ -46,7 +46,9 @@ data PuzzleOpts = PuzzleOpts
     }
 
 config :: PuzzleOpts -> Config
-config = const Config
+config opts = case _format opts of
+    PNG -> Screen
+    _   -> Print
 
 puzzleOpts :: Parser PuzzleOpts
 puzzleOpts = PuzzleOpts

@@ -40,7 +40,7 @@ import Diagrams.Prelude hiding (render)
 import Draw.Lib
 import Draw.Widths
 
-data Config = Config
+data Config = Screen | Print
 
 newtype QDrawing b v n m = Drawing { fromDrawing :: Config -> QDiagram b v n m }
     deriving (Monoid, Semigroup, HasStyle, Juxtaposable)
