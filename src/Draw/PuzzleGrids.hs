@@ -29,36 +29,37 @@ import Data.GridShape
 import Data.Elements
 import Data.Sudoku
 
+import Draw.Draw
 import Draw.Lib
 import Draw.Style
 import Draw.Grid
 import Draw.Elements
 
 drawCharGrid :: Backend' b =>
-                Grid C (Maybe Char) -> Diagram b
+                Grid C (Maybe Char) -> Drawing b
 drawCharGrid = placeGrid . fmap drawChar . clues <> grid gDefault
 
 drawIntGrid :: Backend' b =>
-               Grid C (Maybe Int) -> Diagram b
+               Grid C (Maybe Int) -> Drawing b
 drawIntGrid = placeGrid . fmap drawInt . clues  <> grid gDefault
 
 drawSlitherGrid :: Backend' b =>
-                   Grid C (Maybe Int) -> Diagram b
+                   Grid C (Maybe Int) -> Drawing b
 drawSlitherGrid = placeGrid . fmap  drawInt . clues <> grid gSlither
 
 sudokugrid :: Backend' b =>
-              Grid C a -> Diagram b
+              Grid C a -> Drawing b
 sudokugrid = drawEdges . sudokubordersg <> grid gDefault
 
 drawWordsClues :: Backend' b =>
-                  Grid C (Maybe [String]) -> Diagram b
+                  Grid C (Maybe [String]) -> Drawing b
 drawWordsClues = placeGrid . fmap drawWords . clues
 
 drawTightGrid :: Backend' b =>
-                 (t -> Diagram b) -> Grid C (Tightfit t) -> Diagram b
+                 (t -> Drawing b) -> Grid C (Tightfit t) -> Drawing b
 drawTightGrid d g = (placeGrid . fmap (drawTight d) $ g)
                     <> grid gDefault g
-                    <> phantom' (strokePath $ p2i (-1,-1) ~~ p2i (sx + 1, sy + 1))
+                    <> draw (phantom' (strokePath $ p2i (-1,-1) ~~ p2i (sx + 1, sy + 1)))
     where (sx, sy) = size (Map.mapKeys toCoord g)
 
 placeMultiOutside :: (Ord k, FromCoord k, ToPoint k,
@@ -73,21 +74,21 @@ placeOutside :: (Ord k, FromCoord k, ToPoint k,
              => OutsideClues k (Maybe a) -> a
 placeOutside = placeMultiOutside . fmap maybeToList
 
-drawOutsideGrid :: Backend' b => OutsideClues C (Maybe String) -> Diagram b
+drawOutsideGrid :: Backend' b => OutsideClues C (Maybe String) -> Drawing b
 drawOutsideGrid = placeOutside . fmap (fmap (scale 0.8 . drawText))
                   <> grid gDefault . outsideGrid
 
-drawOutsideGridN :: Backend' b => OutsideClues N (Maybe String) -> Diagram b
+drawOutsideGridN :: Backend' b => OutsideClues N (Maybe String) -> Drawing b
 drawOutsideGridN = placeOutside . fmap (fmap (scale 0.8 . drawText))
                   <> grid gDefault . cellGrid . outsideGrid
 
-drawMultiOutsideGrid :: Backend' b => OutsideClues C [String] -> Diagram b
+drawMultiOutsideGrid :: Backend' b => OutsideClues C [String] -> Drawing b
 drawMultiOutsideGrid = placeMultiOutside . fmap (fmap (scale 0.8 . drawText))
                      <> grid gDefault . outsideGrid
 
-drawMultiOutsideGridN :: Backend' b => OutsideClues N [String] -> Diagram b
+drawMultiOutsideGridN :: Backend' b => OutsideClues N [String] -> Drawing b
 drawMultiOutsideGridN = placeMultiOutside . fmap (fmap (scale 0.8 . drawText))
                       <> grid gDefault . cellGrid . outsideGrid
 
-outsideIntGrid :: Backend' b => OutsideClues C [Int] -> Diagram b
+outsideIntGrid :: Backend' b => OutsideClues C [Int] -> Drawing b
 outsideIntGrid = drawMultiOutsideGrid . fmap (fmap show)
