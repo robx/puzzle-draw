@@ -43,17 +43,27 @@ grid :: Backend' b
      => GridStyle -> Grid C a -> Drawing b
 grid s g =
     (placeGrid . fmap (const vertex) . nodeGrid $ g)
-    <> (draw $ stroke inner # linestyle (_line s))
-    <> (draw $ stroke outer # linestyle (_border s))
+    <> Drawing (\c -> stroke inner # linestyle c (_line s))
+    <> Drawing (\c -> stroke outer # linestyle c (_border s))
     <> frm
   where
     vertex = case _vertex s of
         VertexDot    -> dot
         VertexNone   -> mempty
-    linestyle LineNone   = const mempty
-    linestyle LineThin   = lwG gridwidth
-    linestyle LineDashed = gridDashing . lwG gridwidth
-    linestyle LineThick  = lwG edgewidth
+    linestyle cfg ls =
+      let
+        gw = case cfg of
+          Screen -> linewidth
+          Print -> linewidth / 2
+        ew = case cfg of
+          Screen -> 3 * linewidth
+          Print -> 2 * linewidth
+      in
+      case ls of
+        LineNone -> const mempty
+        LineThin -> lwG gw
+        LineDashed -> gridDashing . lwG gw
+        LineThick -> lwG ew
     frm = case _frame s of
         Just (FrameStyle f c)  -> outLine f outer # fc c
         Nothing                -> mempty

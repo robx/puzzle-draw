@@ -267,7 +267,7 @@ drawTree Tree =
         ]
 
 drawTent :: Backend' b => PlacedTent -> Drawing b
-drawTent (Tent d) = draw $ tent <> lwG gridwidth (stroke conn)
+drawTent (Tent d) = draw $ tent <> lwG linewidth (stroke conn)
   where
     conn :: Path V2 Double
     conn = p2 (0, 0) ~~ p2 (case d of
