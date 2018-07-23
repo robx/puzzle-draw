@@ -25,7 +25,8 @@ module Draw.Draw (
     alignTL',
     alignTR',
     fit',
-    spread'
+    spread',
+    phantom''
   ) where
 
 import Diagrams.Prelude hiding (render)
@@ -156,3 +157,6 @@ fit' f (Drawing d) = Drawing (\c -> fit f (d c))
 
 spread' :: Backend' b => V2 Double -> [Drawing b] -> Drawing b
 spread' v ds = Drawing (\c -> spread v $ map (\d -> fromDrawing d c) ds)
+
+phantom'' :: Backend' b => Drawing b -> Drawing b
+phantom'' d = Drawing (\c -> phantom (fromDrawing d c))

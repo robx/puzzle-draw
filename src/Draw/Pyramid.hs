@@ -8,6 +8,7 @@ module Draw.Pyramid where
 import Diagrams.Prelude
 
 import Data.Pyramid
+import Draw.Draw
 import Draw.Elements
 import Draw.Lib
 import Draw.Widths
@@ -15,27 +16,27 @@ import Draw.Widths
 pgray :: Colour Double
 pgray = blend 0.6 white black
 
-cell :: Backend' b => Bool -> Diagram b
-cell s = square 1 # lwG onepix # if s then fc pgray else id
+cell :: Backend' b => Bool -> Drawing b
+cell s = draw $ square 1 # lwG onepix # if s then fc pgray else id
 
-clue :: Backend' b => Maybe Int -> Diagram b
+clue :: Backend' b => Maybe Int -> Drawing b
 clue Nothing = mempty
-clue (Just c) = text' (show c)
+clue (Just c) = drawText (show c)
 
-cellc :: Backend' b => Bool -> Maybe Int -> Diagram b
-cellc s c = clue c `atop` cell s
+cellc :: Backend' b => Bool -> Maybe Int -> Drawing b
+cellc s c = clue c <> cell s
 
-row :: Backend' b => Row -> Diagram b
-row (R cs s) = centerX . hcat . map (cellc s) $ cs
+row :: Backend' b => Row -> Drawing b
+row (R cs s) = centerX' . hcat . map (cellc s) $ cs
 
-pyramid :: Backend' b => Pyramid -> Diagram b
-pyramid = alignBL . vcat . map row . unPyr
+pyramid :: Backend' b => Pyramid -> Drawing b
+pyramid = alignBL' . vcat . map row . unPyr
 
-krow :: Backend' b => KropkiRow -> Diagram b
+krow :: Backend' b => KropkiRow -> Drawing b
 krow (KR cs s ks) = ccat dots <> ccat clues
-    where ccat = centerX . hcat
+    where ccat = centerX' . hcat
           clues = map (cellc s) cs
-          dots = interleave (map phantom clues) (map kropkiDot ks)
+          dots = interleave (map phantom'' clues) (map kropkiDot ks)
 
-kpyramid :: Backend' b => RowKropkiPyramid -> Diagram b
-kpyramid = alignBL . vcat . map krow . unKP
+kpyramid :: Backend' b => RowKropkiPyramid -> Drawing b
+kpyramid = alignBL' . vcat . map krow . unKP
