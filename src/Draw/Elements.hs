@@ -421,17 +421,14 @@ drawCages g m =
         <> bgwhite
       where
         corner = p2 (-0.5 + cageOffset params, 0.5 - cageOffset params)
-        d' = scale 0.5 (fromDrawing d cfg)
+        d' = scale 0.4 (fromDrawing d cfg)
         w, h :: Double
-        (w, h) = diagramSize d'
+        (w, h) = diagramSize (scale 1.05 d')
         params = cageParams cfg
         dashStep = cageDashOn params + cageDashOff params
-        quant x = q (dashStep / 2) x
-              + (case cfg of
-                   Screen -> -onepix / 2
-                   Print -> 0)
+        quant x = q (dashStep / 2) (dashStep / 2) x
           where
-            q s x' = s * (fromIntegral $ (floor (x' / s + 1) :: Int))
+            q o s x' = o + s * (fromIntegral $ (floor ((x' - o) / s + 1) :: Int))
         bgwhite =
             rect (quant w + onepix) (quant h + onepix)
                 # lwG 0 # fc white

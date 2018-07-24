@@ -144,7 +144,7 @@ killersudoku = Drawers
   where
     fst3 (x,_,_) = x
     trd3 (_,_,z) = z
-    p = cages <> sudokugrid . fst3
+    p = sudokugrid . fst3 <> cages
     cages (g, m, _) = drawCages (Map.filter (/= '.') g) (Map.map drawInt m)
 
 pyramid :: Backend' b =>

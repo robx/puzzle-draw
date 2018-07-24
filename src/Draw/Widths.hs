@@ -17,7 +17,7 @@ linewidth :: Double
 linewidth = onepix
 
 framewidthfactor :: Double
-framewidthfactor = 4
+framewidthfactor = 4/3
 
 edgewidth :: Double
 edgewidth = 3 * onepix

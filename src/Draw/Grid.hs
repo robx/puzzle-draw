@@ -9,7 +9,7 @@ import Data.Maybe (catMaybes)
 import Data.Char (isUpper)
 import qualified Data.Map.Strict as Map
 
-import Diagrams.Prelude hiding (size, E, N, dot, outer)
+import Diagrams.Prelude hiding (size, E, N, dot, outer, offset, unit)
 import Diagrams.TwoD.Offset (offsetPath)
 
 import qualified Data.AffineSpace as AS
@@ -50,14 +50,15 @@ grid s g =
     vertex = case _vertex s of
         VertexDot    -> dot
         VertexNone   -> mempty
+    edgeWidth cfg = case cfg of
+        Screen -> edgewidth
+        Print -> 2*edgewidth/3
     linestyle cfg ls =
       let
         gw = case cfg of
           Screen -> linewidth
           Print -> linewidth / 2
-        ew = case cfg of
-          Screen -> edgewidth
-          Print -> edgewidth / 2
+        ew = edgeWidth cfg
       in
       case ls of
         LineNone -> const mempty
@@ -72,9 +73,7 @@ grid s g =
         pout = reversePath $ offsetPath (f * w - e) p
         pin = offsetPath (-e) p
         e = w / 2
-        w = case cfg of
-          Screen -> onepix
-          Print -> onepix / 2
+        w = edgeWidth cfg
     (outer, inner) = irregularGridPaths g
 
 bgdashingG :: (Semigroup a, HasStyle a, InSpace V2 Double a) =>
@@ -105,7 +104,20 @@ cageParams cfg =
     Screen ->
       CageParams (4/40) (4/40) onepix (4 * onepix)
     Print ->
-      CageParams (2/40) (2/40) (onepix/2) (2 * onepix)
+      let
+        -- input parameters
+        lwidth = 1.25 * onepix
+        steps = 10
+        gapSteps = 2
+        dashFactor = 3
+
+        step = 1 / steps
+        cap = lwidth
+        on = dashFactor * step / (dashFactor + 1) - cap
+        off = step / (dashFactor + 1) + cap
+        offset = step * gapSteps / 2
+      in
+        CageParams on off lwidth offset
 
 cageDashing :: (HasStyle a, InSpace V2 Double a) => CageParams -> a -> a
 cageDashing (CageParams on off w _) = lineCap LineCapSquare . lwG w . dashingG [on, off] (on/2)
@@ -188,7 +200,7 @@ edgeStyle cfg = lineCap LineCapSquare . lwG ew
   where
     ew = case cfg of
         Screen -> edgewidth
-        Print -> edgewidth / 2
+        Print -> 2*edgewidth/3
 
 thinEdgeStyle :: (HasStyle a, InSpace V2 Double a) => a -> a
 thinEdgeStyle = lineCap LineCapSquare . lwG onepix
