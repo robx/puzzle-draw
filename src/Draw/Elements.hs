@@ -420,16 +420,12 @@ drawCages g m =
         (alignTL d' # moveTo corner)
         <> bgwhite
       where
-        corner = p2 (-0.5 + cageOffset, 0.5 - cageOffset)
+        corner = p2 (-0.5 + cageOffset params, 0.5 - cageOffset params)
         d' = scale 0.5 (fromDrawing d cfg)
         w, h :: Double
         (w, h) = diagramSize d'
-        cageOffset = case cfg of
-            Screen -> 4 * onepix
-            Print -> 2 * onepix
-        dashStep = case cfg of
-            Screen -> 8 * onepix
-            Print -> 4 * onepix
+        params = cageParams cfg
+        dashStep = cageDashOn params + cageDashOff params
         quant x = q (dashStep / 2) x
               + (case cfg of
                    Screen -> -onepix / 2

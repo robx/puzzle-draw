@@ -93,6 +93,24 @@ gridDashing = bgdashingG dashes dashoffset white'
   where
     white' = black `withOpacity` (0.05 :: Double)
 
+data CageParams = CageParams
+  { cageDashOn :: Double
+  , cageDashOff :: Double
+  , cageWidth :: Double
+  , cageOffset :: Double
+  }
+
+cageParams :: Config -> CageParams
+cageParams cfg =
+  case cfg of
+    Screen ->
+      CageParams (5/40) (3/40) onepix (4 * onepix)
+    Print ->
+      CageParams (2.5/40) (1.5/40) (onepix/2) (2 * onepix)
+
+cageDashing :: (HasStyle a, InSpace V2 Double a) => CageParams -> a -> a
+cageDashing (CageParams on off w _) = lwG w . dashingG [on, off] (on/2)
+
 -- | `irregularGridPaths g` is a pair `(outer, inner)` of paths.
 --
 -- `outer` consists of the loops that make up the border of the
@@ -189,22 +207,14 @@ drawAreas = drawEdges . borders
 cage :: Backend' b => [C] -> Drawing b
 cage cs = Drawing dcage
   where
-    dcage cfg = border # stroke # lwG w # dashing' cfg
+    dcage cfg = border # stroke # cageDashing params
                 -- patch the missing LineCapSquare
                 <> rect w w # lwG 0 # fc black # moveTo corner
       where
-        w = cageWidth cfg
-        border = offsetBorder (-(cageOffset cfg)) cs
+        params = cageParams cfg
+        w = cageWidth params
+        border = offsetBorder (-(cageOffset params)) cs
         corner = head (head (pathPoints border))
-    cageWidth Screen = onepix
-    cageWidth Print = onepix / 2
-    cageOffset Screen = 4 * onepix
-    cageOffset Print = 2 * onepix
-    dashing' Screen = dashingG dashes dashoffset
-    dashing' Print = dashingG [a, b] (a/2)
-      where
-        a = 5 / 80
-        b = 3 / 80
 
 fillBG :: Backend' b => Colour Double -> Drawing b
 fillBG c = draw $ square 1 # lwG onepix # fc c # lc c
