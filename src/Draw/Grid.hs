@@ -11,7 +11,6 @@ import qualified Data.Map.Strict as Map
 
 import Diagrams.Prelude hiding (size, E, N, dot, outer)
 import Diagrams.TwoD.Offset (offsetPath)
-import Diagrams.Path (pathPoints)
 
 import qualified Data.AffineSpace as AS
 
@@ -104,12 +103,12 @@ cageParams :: Config -> CageParams
 cageParams cfg =
   case cfg of
     Screen ->
-      CageParams (5/40) (3/40) onepix (4 * onepix)
+      CageParams (4/40) (4/40) onepix (4 * onepix)
     Print ->
-      CageParams (2.5/40) (1.5/40) (onepix/2) (2 * onepix)
+      CageParams (2/40) (2/40) (onepix/2) (2 * onepix)
 
 cageDashing :: (HasStyle a, InSpace V2 Double a) => CageParams -> a -> a
-cageDashing (CageParams on off w _) = lwG w . dashingG [on, off] (on/2)
+cageDashing (CageParams on off w _) = lineCap LineCapSquare . lwG w . dashingG [on, off] (on/2)
 
 -- | `irregularGridPaths g` is a pair `(outer, inner)` of paths.
 --
@@ -208,13 +207,9 @@ cage :: Backend' b => [C] -> Drawing b
 cage cs = Drawing dcage
   where
     dcage cfg = border # stroke # cageDashing params
-                -- patch the missing LineCapSquare
-                <> rect w w # lwG 0 # fc black # moveTo corner
       where
         params = cageParams cfg
-        w = cageWidth params
         border = offsetBorder (-(cageOffset params)) cs
-        corner = head (head (pathPoints border))
 
 fillBG :: Backend' b => Colour Double -> Drawing b
 fillBG c = draw $ square 1 # lwG onepix # fc c # lc c
