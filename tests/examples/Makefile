@@ -40,7 +40,8 @@ compare:
 	done
 	for f in *.png; do \
 		diff $$f cur/$$f > /dev/null || \
-			(touch diff/$$f ; compare $$f cur/$$f diff/$$f) ; \
+			(touch diff/$$f ; compare $$f cur/$$f diff/$$f) || \
+			true ; \
 	done
 	./gallery.sh diff/*.png > gallery.html
 	! ls diff/*.png
