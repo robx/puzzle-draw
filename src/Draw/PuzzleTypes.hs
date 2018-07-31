@@ -384,7 +384,7 @@ cave = Drawers
      <> grid gStyle . fst)
   where
     gDashDash = GridStyle LineDashed LineDashed Nothing VertexNone
-    gStyle = GridStyle LineDashed LineNone (Just $ FrameStyle 8 gray)
+    gStyle = GridStyle LineDashed LineNone (Just $ FrameStyle (8/3) gray)
                        VertexNone
 
 skyscrapers ::
