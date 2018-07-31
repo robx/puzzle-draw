@@ -59,9 +59,9 @@ main :: IO ()
 main = do
     opts <- defaultOpts puzzleOpts
     mp <- readPuzzle (_input opts)
-    TP mt pv msv _ <- case mp of Left  e -> exitErr $
+    TP mt _ pv msv _ <- case mp of Left  e -> exitErr $
                                              "parse failure: " ++ show e
-                                 Right p -> return p
+                                   Right p -> return p
     t <- checkType $ _type opts `mplus` mt
     sv <- maybe (exitErr $ "need solution") return msv 
     let es = Y.parseEither (check t) (pv, sv)

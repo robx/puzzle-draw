@@ -180,12 +180,12 @@ main = do
     opts <- defaultOpts puzzleOpts
     ocs <- checkOutput opts
     mp <- readPuzzle (_input opts)
-    TP mt pv msv mc <- case mp of Left  e -> exitErr $
+    TP mt mrt pv msv mc <- case mp of Left  e -> exitErr $
                                              "parse failure: " ++ show e
-                                  Right p -> return p
+                                      Right p -> return p
     let msv' = maybeSkipSolution ocs msv
         mc'  = maybeSkipCode opts mc
-    t <- checkType $ _type opts `mplus` mt
+    t <- checkType $ _type opts `mplus` mrt `mplus` mt
     let ps = Y.parseEither (handle drawPuzzleMaybeSol t) (pv, msv')
     mcode <- sequenceA $ parseAndDrawCode <$> mc'
     cfg <- config opts
