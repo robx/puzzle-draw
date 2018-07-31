@@ -2,7 +2,7 @@
 {-# LANGUAGE TypeFamilies #-}
 
 module Parse.PuzzleTypes (
-    lits, litsplus, geradeweg, fillomino, masyu, nurikabe, latintapa,
+    lits, geradeweg, fillomino, masyu, nurikabe, latintapa,
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
@@ -37,9 +37,6 @@ import Data.Elements
 
 lits :: ParsePuzzle AreaGrid (Grid C Bool)
 lits = (parseGrid, parseShadedGrid)
-
-litsplus :: ParsePuzzle AreaGrid (Grid C Bool)
-litsplus = lits
 
 geradeweg :: ParsePuzzle (Grid C (Maybe Int)) (Loop C)
 geradeweg = (parseClueGrid, parseEdges)

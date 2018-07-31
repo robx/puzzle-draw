@@ -3,7 +3,7 @@
 module Main where
 
 import Parse.Puzzle
-import Data.PuzzleTypes (typeNames, PuzzleType(..))
+import Data.PuzzleTypes (typeOptions, PuzzleType(..))
 import Data.CmdLine (exitErr, readPuzzle, checkType)
 
 import Data.Elements (KropkiDot(..), digitList)
@@ -25,7 +25,7 @@ import qualified Data.Yaml as Y
 optListTypes :: Parser (a -> a)
 optListTypes =
     infoOption
-        (unlines' . sort . map snd $ typeNames)
+        (unlines' typeOptions)
         (long "list-types"
          <> help "List supported puzzle types")
   where

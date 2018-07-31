@@ -10,7 +10,7 @@ import Draw.CmdLine
 import Parse.Puzzle
 import Parse.Code
 import Data.Compose
-import Data.PuzzleTypes (typeNames)
+import Data.PuzzleTypes (typeOptions)
 import Draw.Draw
 import Draw.Code
 import Draw.Lib
@@ -18,7 +18,7 @@ import Draw.Lib
 import Options.Applicative
 import Control.Monad
 import Data.Maybe
-import Data.List (intercalate, sort)
+import Data.List (intercalate)
 
 import System.FilePath
 import System.Environment (getProgName)
@@ -28,7 +28,7 @@ import qualified Data.Yaml as Y
 optListTypes :: Parser (a -> a)
 optListTypes =
     infoOption
-        (unlines' . sort . map snd $ typeNames)
+        (unlines' typeOptions)
         (long "list-types"
          <> help "List supported puzzle types")
   where

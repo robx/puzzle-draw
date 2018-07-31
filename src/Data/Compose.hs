@@ -33,7 +33,6 @@ type PuzzleHandler b a = forall p q.
 handle :: Backend' b =>
         PuzzleHandler b a -> PuzzleType -> a
 handle f LITS                 = f R.lits                D.lits
-handle f LITSPlus             = f R.litsplus            D.litsplus
 handle f LITSSym              = f R.lits                D.litssym
 handle f Geradeweg            = f R.geradeweg           D.geradeweg
 handle f Fillomino            = f R.fillomino           D.fillomino

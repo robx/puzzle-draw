@@ -6,14 +6,14 @@
 module Data.PuzzleTypes (
     PuzzleType(..)
   , lookupType
-  , typeNames
+  , typeOptions
   ) where
 
+import Data.List (sort)
 import Data.Tuple (swap)
 
 -- | The list of specific puzzle types we can handle.
 data PuzzleType = LITS
-                | LITSPlus
                 | LITSSym
                 | Geradeweg
                 | Fillomino
@@ -102,7 +102,6 @@ data PuzzleType = LITS
 
 typeNames :: [(PuzzleType, String)]
 typeNames = [ (LITS, "lits")
-            , (LITSPlus, "litsplus")
             , (LITSSym, "lits-symmetry")
             , (Geradeweg, "geradeweg")
             , (Fillomino, "fillomino")
@@ -189,6 +188,17 @@ typeNames = [ (LITS, "lits")
             , (JapaneseSumsMasyu, "japanesesums-masyu")
             ]
 
+typeAliases :: [(PuzzleType, String)]
+typeAliases =
+  [ (LITS, "litsplus")
+  ]
+
+allTypeNames :: [(PuzzleType, String)]
+allTypeNames = typeNames ++ typeAliases
+
+typeOptions :: [String]
+typeOptions = sort . map snd $ allTypeNames
+
 -- | Look up a puzzle type by name.
 lookupType :: String -> Maybe PuzzleType
-lookupType t = lookup t (map swap typeNames)
+lookupType t = lookup t (map swap allTypeNames)

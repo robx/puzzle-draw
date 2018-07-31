@@ -5,7 +5,7 @@
 {-# LANGUAGE ConstraintKinds #-}
 
 module Draw.PuzzleTypes (
-    lits, litsplus, geradeweg, fillomino, masyu, nurikabe, latintapa,
+    lits, geradeweg, fillomino, masyu, nurikabe, latintapa,
     sudoku, thermosudoku, pyramid, kpyramid, slither,
     liarslither, tightfitskyscrapers, wordloop, wordsearch,
     curvedata, doubleback, slalom, compass, boxof2or3,
@@ -52,9 +52,6 @@ lits :: Backend' b => Drawers b AreaGrid ShadedGrid
 lits = Drawers
     (grid gDefault <> drawAreasGray)
     ((drawAreas <> grid gDefault) . fst <> drawShade . snd)
-
-litsplus :: Backend' b => Drawers b AreaGrid ShadedGrid
-litsplus = lits
 
 litssym :: Backend' b => Drawers b AreaGrid ShadedGrid
 litssym = Drawers
