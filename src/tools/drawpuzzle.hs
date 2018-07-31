@@ -13,6 +13,7 @@ import Data.Compose
 import Data.PuzzleTypes (typeNames)
 import Draw.Draw
 import Draw.Code
+import Draw.Lib
 
 import Options.Applicative
 import Control.Monad
@@ -45,10 +46,15 @@ data PuzzleOpts = PuzzleOpts
     , _input    :: FilePath
     }
 
-config :: PuzzleOpts -> Config
-config opts = case _format opts of
-    PNG -> Screen
-    _   -> Print
+config :: PuzzleOpts -> IO Config
+config opts =
+  do
+    var <- fontGenLight
+    bit <- fontBit
+    let device = case _format opts of
+                     PNG -> Screen
+                     _   -> Print
+    return $ Config device var bit
 
 puzzleOpts :: Parser PuzzleOpts
 puzzleOpts = PuzzleOpts
@@ -182,5 +188,6 @@ main = do
     t <- checkType $ _type opts `mplus` mt
     let ps = Y.parseEither (handle drawPuzzleMaybeSol t) (pv, msv')
     mcode <- sequenceA $ parseAndDrawCode <$> mc'
-    case ps of Right ps' -> mapM_ (renderPuzzle opts (render (config opts) mcode ps')) ocs
+    cfg <- config opts
+    case ps of Right ps' -> mapM_ (renderPuzzle opts (render cfg mcode ps')) ocs
                Left    e -> exitErr $ "parse failure: " ++ e

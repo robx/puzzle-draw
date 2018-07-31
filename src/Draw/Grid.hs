@@ -50,12 +50,12 @@ grid s g =
     vertex = case _vertex s of
         VertexDot    -> dot
         VertexNone   -> mempty
-    edgeWidth cfg = case cfg of
+    edgeWidth cfg = case _cfgDevice cfg of
         Screen -> edgewidth
         Print -> 2*edgewidth/3
     linestyle cfg ls =
       let
-        gw = case cfg of
+        gw = case _cfgDevice cfg of
           Screen -> linewidth
           Print -> linewidth / 2
         ew = edgeWidth cfg
@@ -100,7 +100,7 @@ data CageParams = CageParams
 
 cageParams :: Config -> CageParams
 cageParams cfg =
-  case cfg of
+  case _cfgDevice cfg of
     Screen ->
       CageParams (4/40) (4/40) onepix (4 * onepix)
     Print ->
@@ -198,7 +198,7 @@ midPoint e = c .+^ 0.5 *^ (d .-. c)
 edgeStyle :: (HasStyle a, InSpace V2 Double a) => Config -> a -> a
 edgeStyle cfg = lineCap LineCapSquare . lwG ew
   where
-    ew = case cfg of
+    ew = case _cfgDevice cfg of
         Screen -> edgewidth
         Print -> 2*edgewidth/3
 

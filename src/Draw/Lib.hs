@@ -5,7 +5,6 @@
 
 module Draw.Lib where
 
-import Diagrams.Path (pathPoints)
 import Diagrams.Prelude
 
 import Graphics.SVGFonts.Text (TextOpts(..), Mode(..), Spacing(..), textSVG')
@@ -15,7 +14,6 @@ import Graphics.SVGFonts.ReadFont (PreparedFont, loadFont)
 import Control.Arrow ((***))
 
 import Paths_puzzle_draw (getDataFileName)
-import System.IO.Unsafe (unsafePerformIO)
 
 type Backend' b = (V b ~ V2, N b ~ Double,
                    Renderable (Path V2 Double) b, Backend b V2 Double)
@@ -114,40 +112,12 @@ text'' fnt t = stroke (textSVG' (TextOpts fnt INSIDE_H KERN False 1 1) t)
     rfc :: (HasStyle a, InSpace V2 Double a) => Colour Double -> a -> a
     rfc = recommendFillColor
 
-text' :: Backend' b => String -> Diagram b
-text' = text'' fontGenLight
+fontGenLight :: IO Font
+fontGenLight = getDataFileName "data/fonts/gen-light.svg" >>= loadFont
 
-textFixed :: Backend' b => String -> Diagram b
-textFixed = text'' fontBit
-
-fontGenLight :: Font
-fontGenLight = unsafePerformIO . loadFont . unsafePerformIO . getDataFileName
-    $ "data/fonts/gen-light.svg"
-
-fontBit :: Font
-fontBit = unsafePerformIO $ bit
-
--- text' t = text t # fontSize 0.8 # font "Helvetica" # translate (r2 (0.04, -0.07))
---          <> phantom' (textrect t)
---textrect :: Backend' b => String -> Diagram b R2
---textrect t = rect (fromIntegral (length t) * 0.4) 0.7 # lc red
---text'' :: Backend' b => String -> Diagram b R2
---text'' t = text' t `atop` textrect t
+fontBit :: IO Font
+fontBit = bit
 
 -- | Variant of 'phantom' that forces the argument backend type.
 phantom' :: Backend' b => Diagram b -> Diagram b
 phantom' = phantom
-
-debugPath :: Backend' b => Path V2 Double -> Diagram b
-debugPath p = mconcat . map draw $ prts'
-  where
-    prts = zip (pathVertices p) ['a'..]
-    prts' = concatMap (\(ps,c) -> zipWith (\pt d -> (pt, c:d:[])) ps ['0'..]) prts
-    draw (pt, l) = moveTo pt $ text' l
-
-debugPath' :: Backend' b => Path V2 Double -> Diagram b
-debugPath' p = mconcat . map draw $ prts'
-  where
-    prts = zip (pathPoints p) ['a'..]
-    prts' = concatMap (\(ps,c) -> zipWith (\pt d -> (pt, c:d:[])) ps ['0'..]) prts
-    draw (pt, l) = moveTo pt $ text' l
