@@ -75,19 +75,19 @@ placeOutside :: (Ord k, FromCoord k, ToPoint k,
 placeOutside = placeMultiOutside . fmap maybeToList
 
 drawOutsideGrid :: Backend' b => OutsideClues C (Maybe String) -> Drawing b
-drawOutsideGrid = placeOutside . fmap (fmap (scale 0.8 . drawText))
+drawOutsideGrid = placeOutside . fmap (fmap (scale 0.8 . text'))
                   <> grid gDefault . outsideGrid
 
 drawOutsideGridN :: Backend' b => OutsideClues N (Maybe String) -> Drawing b
-drawOutsideGridN = placeOutside . fmap (fmap (scale 0.8 . drawText))
+drawOutsideGridN = placeOutside . fmap (fmap (scale 0.8 . text'))
                   <> grid gDefault . cellGrid . outsideGrid
 
 drawMultiOutsideGrid :: Backend' b => OutsideClues C [String] -> Drawing b
-drawMultiOutsideGrid = placeMultiOutside . fmap (fmap (scale 0.8 . drawText))
+drawMultiOutsideGrid = placeMultiOutside . fmap (fmap (scale 0.8 . text'))
                      <> grid gDefault . outsideGrid
 
 drawMultiOutsideGridN :: Backend' b => OutsideClues N [String] -> Drawing b
-drawMultiOutsideGridN = placeMultiOutside . fmap (fmap (scale 0.8 . drawText))
+drawMultiOutsideGridN = placeMultiOutside . fmap (fmap (scale 0.8 . text'))
                       <> grid gDefault . cellGrid . outsideGrid
 
 outsideIntGrid :: Backend' b => OutsideClues C [Int] -> Drawing b

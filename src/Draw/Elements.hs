@@ -65,7 +65,7 @@ drawCross False = mempty
 -- | Draw a Compass clue.
 drawCompassClue :: Backend' b =>
                    CompassC -> Drawing b
-drawCompassClue (CC n e s w) = draw $ texts <> stroke cross # lwG onepix
+drawCompassClue (CC n e s w) = texts <> (draw $ stroke cross # lwG onepix)
     where tx Nothing _ = mempty
           tx (Just x) v = text' (show x) # scale 0.5 # translate (r2 v)
           texts = mconcat . zipWith tx [n, e, s, w] $
@@ -113,15 +113,15 @@ drawTight d (DR x y) = stroke dr # lwG onepix # draw
 
 -- | Stack the given words, left-justified.
 stackWords :: Backend' b => [String] -> Drawing b
-stackWords = draw . vcat' with {_sep = 0.1} . scale 0.8 . map (alignL . textFixed)
+stackWords = vcat' with {_sep = 0.1} . scale 0.8 . map (alignL' . textFixed)
 
 -- | Stack the given words, left-justified, a bit more generous, nice font
 stackWordsLeft :: Backend' b => [String] -> Drawing b
-stackWordsLeft = draw . vcat' (with & catMethod .~ Distrib & sep .~ 1) . map (alignL . text')
+stackWordsLeft = vcat' (with & catMethod .~ Distrib & sep .~ 1) . map (alignL' . text')
 
 -- | Stack the given words, left-justified, a bit more generous, nice font
 stackWordsRight :: Backend' b => [String] -> Drawing b
-stackWordsRight = draw . vcat' (with & catMethod .~ Distrib & sep .~ 1) . map (alignR . text')
+stackWordsRight = vcat' (with & catMethod .~ Distrib & sep .~ 1) . map (alignR' . text')
 
 -- | Mark a word in a grid of letters.
 drawMarkedWord :: Backend' b => MarkedWord -> Drawing b
@@ -141,9 +141,8 @@ drawMarkedLines = mconcat . map drawMarkedLine
 -- | Draw a slalom clue.
 drawSlalomClue :: (Show a, Backend' b) =>
                   a -> Drawing b
-drawSlalomClue x = draw $
-                   text' (show x) # scale 0.75
-                   <> circle 0.4 # fc white # lwG onepix
+drawSlalomClue x = text' (show x) # scale 0.75
+                   <> (draw $ circle 0.4 # fc white # lwG onepix)
 
 drawSlalomDiag :: Backend' b
                => SlalomDiag -> Drawing b
@@ -152,26 +151,19 @@ drawSlalomDiag d = draw $ stroke (v d) # lwG edgewidth
     v SlalomForward = ur
     v SlalomBackward = dr
 
--- | Draw text. Shouldn't be more than two characters or so to fit a cell.
-drawText :: Backend' b => String -> Drawing b
-drawText = draw . text'
-
-drawTextFixed :: Backend' b => String -> Drawing b
-drawTextFixed = draw . textFixed
-
 -- | Draw an @Int@.
 drawInt :: Backend' b =>
            Int -> Drawing b
-drawInt s = drawText (show s)
+drawInt s = text' (show s)
 
 -- | Draw a character.
 drawChar :: Backend' b =>
             Char -> Drawing b
-drawChar c = drawText [c]
+drawChar c = text' [c]
 
 drawCharFixed :: Backend' b =>
                  Char -> Drawing b
-drawCharFixed c = drawTextFixed [c]
+drawCharFixed c = textFixed [c]
 
 drawCharOpaque :: Backend' b =>
                   Char -> Drawing b
@@ -181,14 +173,14 @@ placeTL :: Backend' b => Drawing b -> Drawing b
 placeTL = moveTo (p2 (-0.4,0.4)) . scale 0.5 . alignTL'
 
 hintTL :: Backend' b => String -> Drawing b
-hintTL = placeTL . drawText
+hintTL = placeTL . text'
 
 -- | Stack a list of words into a unit square. Scaled such that at least
 -- three words will fit.
 drawWords :: Backend' b =>
              [String] -> Drawing b
 drawWords ws = spread' (-1.0 *^ unitY)
-                      (map (centerXY' . scale 0.4 . drawText) ws)
+                      (map (centerXY' . scale 0.4 . text') ws)
                # centerY'
 
 -- | Fit a line drawing into a unit square.
@@ -345,7 +337,7 @@ polyominoGrid :: Backend' b => Grid C (Maybe Char) -> Drawing b
 polyominoGrid = placeGrid . fmap (scale 0.8) . fmap
     (\x -> case x of
         Nothing -> fillBG black
-        Just c -> (drawText [c] # fc white # lc white) <> fillBG black)
+        Just c -> (text' [c] # fc white # lc white) <> fillBG black)
 
 drawPentominos :: Backend' b => Drawing b
 drawPentominos = centerXY' . scale 0.5 . polyominoGrid $ pentominoGrid
@@ -371,13 +363,13 @@ kropkiDot c = draw $ circle 0.1 # lwG 0.03 # fc (col c) # smash
 
 drawFraction :: Backend' b => Fraction -> Drawing b
 drawFraction f = centerX' $ case f of
-    FInt a      -> drawText a # scale 0.8
+    FInt a      -> text' a # scale 0.8
     FFrac a b   -> frac a b
-    FComp a b c -> (drawText a # scale 0.8) ||| draw (strutX (1/10)) ||| frac b c
+    FComp a b c -> (text' a # scale 0.8) ||| draw (strutX (1/10)) ||| frac b c
   where
     frac b c = (draw $ stroke slash # scale (1/4) # lwG onepix)
-               <> drawText b # scale s # translate (r2 (-t,t))
-               <> drawText c # scale s # translate (r2 (t,-t))
+               <> text' b # scale s # translate (r2 (-t,t))
+               <> text' c # scale s # translate (r2 (t,-t))
       where t = 1/6
             s = 1/2
             slash :: Path V2 Double
@@ -400,9 +392,9 @@ greaterClue (_:rs) = g rs
     g [] = [placeholder]
     g (r:rs') = placeholder : drawRel r : g rs'
     drawRel RUndetermined = mempty
-    drawRel RLess = drawText "<"
-    drawRel RGreater = drawText ">"
-    drawRel REqual = drawText "="
+    drawRel RLess = text' "<"
+    drawRel RGreater = text' ">"
+    drawRel REqual = text' "="
     placeholder = draw $ circle 0.35 # lwG onepix # dashingG [0.05, 0.05] 0
 
 drawCages :: (Backend' b, Eq a, Ord a) =>

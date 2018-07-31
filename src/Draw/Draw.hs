@@ -5,6 +5,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Draw.Draw (
+    Device(..),
     Config(..),
     PuzzleSol,
     Drawers(..),
@@ -27,12 +28,15 @@ module Draw.Draw (
     alignTL',
     alignTR',
     alignL',
+    alignR',
     fit',
     spread',
     phantom'',
     aboveT',
     besidesR',
-    strutX'
+    strutX',
+    text',
+    textFixed
   ) where
 
 import Diagrams.Prelude hiding (render)
@@ -40,7 +44,13 @@ import Diagrams.Prelude hiding (render)
 import Draw.Lib
 import Draw.Widths
 
-data Config = Screen | Print
+data Device = Screen | Print
+
+data Config = Config
+  { _cfgDevice :: Device
+  , _cfgFontVar :: Font
+  , _cfgFontFixed :: Font
+  }
 
 newtype QDrawing b v n m = Drawing { fromDrawing :: Config -> QDiagram b v n m }
     deriving (Monoid, Semigroup, HasStyle, Juxtaposable)
@@ -165,6 +175,9 @@ alignTR' = lift alignTR
 alignL' :: Backend' b => Drawing b -> Drawing b
 alignL' = lift alignL
 
+alignR' :: Backend' b => Drawing b -> Drawing b
+alignR' = lift alignR
+
 fit' :: Backend' b => Double -> Drawing b -> Drawing b
 fit' f = lift (fit f)
 
@@ -190,3 +203,9 @@ lift f d = Drawing (\c -> f (fromDrawing d c))
 
 lift2 :: (Diagram b -> Diagram b -> Diagram b) -> Drawing b -> Drawing b -> Drawing b
 lift2 f d1 d2 = Drawing (\c -> f (fromDrawing d1 c) (fromDrawing d2 c))
+
+text' :: Backend' b => String -> Drawing b
+text' t = Drawing (\cfg -> text'' (_cfgFontVar cfg) t)
+
+textFixed :: Backend' b => String -> Drawing b
+textFixed t = Drawing (\cfg -> text'' (_cfgFontFixed cfg) t)

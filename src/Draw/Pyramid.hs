@@ -21,7 +21,7 @@ cell s = draw $ square 1 # lwG onepix # if s then fc pgray else id
 
 clue :: Backend' b => Maybe Int -> Drawing b
 clue Nothing = mempty
-clue (Just c) = drawText (show c)
+clue (Just c) = text' (show c)
 
 cellc :: Backend' b => Bool -> Maybe Int -> Drawing b
 cellc s c = clue c <> cell s
