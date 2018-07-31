@@ -1,0 +1,16 @@
+# test that unknown type is ok when we have render-as
+type: masyu+notouch
+render-as: masyu
+puzzle: |
+  ..........
+  ....o...*.
+  .o*.......
+  .....o*...
+  .o........
+  .o..*....*
+  ...o...o..
+  o.......o.
+  .o..o..o..
+  ..........
+code:
+  cell_rows_bottom: [2,5]

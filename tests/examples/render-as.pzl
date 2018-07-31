@@ -1,0 +1,15 @@
+# test that render-as overrides the type
+type: lits-symmetry
+render-as: lits
+puzzle: |
+  aabbbc
+  aacbbc
+  dacccc
+  dddddd
+  eddede
+  eeeeee
+  eeeeff
+  ggffff
+  ggggff
+  giighh
+  iiihhh

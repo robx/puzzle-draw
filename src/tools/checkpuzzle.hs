@@ -3,7 +3,7 @@
 module Main where
 
 import Parse.Puzzle
-import Data.PuzzleTypes (typeNames, PuzzleType(..))
+import Data.PuzzleTypes (typeOptions, PuzzleType(..))
 import Data.CmdLine (exitErr, readPuzzle, checkType)
 
 import Data.Elements (KropkiDot(..), digitList)
@@ -25,7 +25,7 @@ import qualified Data.Yaml as Y
 optListTypes :: Parser (a -> a)
 optListTypes =
     infoOption
-        (unlines' . sort . map snd $ typeNames)
+        (unlines' typeOptions)
         (long "list-types"
          <> help "List supported puzzle types")
   where
@@ -59,9 +59,9 @@ main :: IO ()
 main = do
     opts <- defaultOpts puzzleOpts
     mp <- readPuzzle (_input opts)
-    TP mt pv msv _ <- case mp of Left  e -> exitErr $
+    TP mt _ pv msv _ <- case mp of Left  e -> exitErr $
                                              "parse failure: " ++ show e
-                                 Right p -> return p
+                                   Right p -> return p
     t <- checkType $ _type opts `mplus` mt
     sv <- maybe (exitErr $ "need solution") return msv 
     let es = Y.parseEither (check t) (pv, sv)

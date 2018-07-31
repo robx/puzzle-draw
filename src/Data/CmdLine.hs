@@ -23,5 +23,3 @@ readPuzzle = Y.decodeFileEither
 
 exitErr :: String -> IO a
 exitErr e = putStrLn e >> exitFailure
-
-
