@@ -16,6 +16,7 @@ module Draw.PuzzleGrids
     , drawMultiOutsideGrid
     , drawOutsideGridN
     , drawMultiOutsideGridN
+    , placeOutside
     , placeMultiOutside
     ) where
 

@@ -187,9 +187,9 @@ tightfitskyscrapers :: Backend' b =>
                        Drawers b (OutsideClues C (Maybe Int), Grid C (Tightfit ()))
                                       (Grid C (Tightfit Int))
 tightfitskyscrapers = Drawers
-    (placeGrid . fmap drawInt . clues . outsideClues . fst
+    (placeOutside . fmap (fmap drawInt) . fst
      <> drawTightGrid (const mempty) . snd)
-    (placeGrid . fmap drawInt . clues . outsideClues . fst . fst
+    (placeOutside . fmap (fmap drawInt) . fst . fst
      <> drawTightGrid drawInt . snd)
 
 wordgrid :: Backend' b =>
@@ -295,7 +295,7 @@ maximallengths = Drawers
     g
     (solstyle . drawEdges . snd <> g . fst)
   where
-    g = placeGrid . fmap drawInt . clues . outsideClues
+    g = placeOutside . fmap (fmap drawInt)
         <> grid gDefault . outsideGrid
 
 primeplace :: Backend' b =>
@@ -364,7 +364,7 @@ anglers = Drawers
     (p <> g)
     (p . fst <> solstyle . drawEdges . snd <> g . fst)
   where
-    p = placeGrid . fmap drawInt' . clues . outsideClues . fst <>
+    p = placeOutside . fmap (fmap drawInt') . fst <>
         placeGrid . fmap drawFish' . clues . snd
     g = grid gDefault . snd
     drawInt' x = drawInt x <> draw (square 0.6 # lc white # fc white)
@@ -391,7 +391,7 @@ skyscrapers = Drawers
     (g . fst <> n)
     (g . fst . fst <> placeGrid . fmap drawInt . clues . snd)
   where
-    g = placeGrid . fmap drawInt . clues . outsideClues
+    g = placeOutside . fmap (fmap drawInt)
         <> grid gDefault . outsideGrid
     n (oc, s) = placeNoteTR (outsideSize oc) (text' s)
 
@@ -419,7 +419,7 @@ skyscrapersStars = Drawers
     (g <> n)
     (g . fst <> placeGrid . fmap (either drawInt drawStar) . snd)
   where
-    g = (placeGrid . fmap drawInt . clues . outsideClues
+    g = (placeOutside . fmap (fmap drawInt)
          <> grid gDefault . outsideGrid) . fst
     n (oc, s) = placeNoteTR (outsideSize oc)
                           (drawInt s ||| strutX' 0.2 ||| drawStar Star)
@@ -432,7 +432,7 @@ summon = Drawers
     (placeGrid . fmap drawInt . clues . snd <> p . fst)
   where
     p (g, oc, _) = grid gDefault g <> drawAreasGray g
-                <> (placeGrid . clues . outsideClues
+                <> (placeOutside
                     . al . fmap (fmap (scale 0.7 . drawInt)) $ oc)
     al :: Backend' b => OutsideClues k (Maybe (Drawing b)) -> OutsideClues k (Maybe (Drawing b))
     al (OC l r b t) = OC l (map (fmap alignL') r) b t
@@ -455,8 +455,7 @@ baca = Drawers
               grid gDefault g
               <> (foldMap (placeGrid . fmap drawInt)
                   . multiOutsideClues $ tl)
-              <> (placeGrid . fmap drawChar . clues
-                  . outsideClues $ br)
+              <> (placeOutside . fmap (fmap drawChar) $ br)
     drawVal (Right c) = drawChar c
     drawVal (Left _) = fillBG gray
 
@@ -467,7 +466,7 @@ buchstabensalat = Drawers
     (p <> n)
     (p . fst <> placeGrid . fmap drawChar . clues . snd)
   where
-    p = (placeGrid . fmap drawChar . clues . outsideClues
+    p = (placeOutside . fmap (fmap drawChar)
          <> grid gDefault . outsideGrid) . fst
     n (ocs, ls) = placeNoteTR (outsideSize ocs) (text' ls # scale 0.8)
 
@@ -479,7 +478,7 @@ doppelblock = Drawers
     (p <> n)
     (p . fst <> placeGrid . fmap drawVal . snd)
   where
-    p = placeGrid . fmap (scale 0.8 . drawInt) . clues . outsideClues
+    p = placeOutside . fmap (fmap (scale 0.8 . drawInt))
         <> grid gDefault . outsideGrid
     n ocs = placeNoteTL (0, h) (text' ds # scale 0.8)
       where
@@ -496,7 +495,7 @@ sudokuDoppelblock = Drawers
     p
     (p . fst <> placeGrid . fmap drawVal . snd)
   where
-    p = placeGrid . fmap (scale 0.8 . drawInt) . clues . outsideClues . snd
+    p = placeOutside . fmap (fmap (scale 0.8 . drawInt)) . snd
         <> (grid gDefault <> drawAreas) . fst
     drawVal (Right c) = drawInt c
     drawVal (Left _) = fillBG gray
@@ -735,7 +734,7 @@ illumination = Drawers
     p
     ((placeGrid . fmap (const (smallPearl MWhite)) . clues . fst <> drawEdges . snd) . snd <> p . fst)
   where
-    p = placeGrid . fmap drawFraction . clues . outsideClues
+    p = placeOutside . fmap (fmap drawFraction)
         <> grid gDashed . outsideGrid
 
 pentopia ::
@@ -806,7 +805,7 @@ tents = Drawers
     p
     (p . fst <> placeGrid . fmap drawTent . clues . snd)
   where
-    p = placeGrid . fmap drawInt . clues . outsideClues . fst
+    p = placeOutside . fmap (fmap drawInt) . fst
         <> placeGrid . fmap drawTree . clues . snd
         <> grid gDashed . snd
 
@@ -870,7 +869,7 @@ snake ::
                    (Grid C (Maybe (Either MEnd Black)))
 snake = Drawers p s
   where
-    cs = placeGrid . fmap drawInt . clues . outsideClues . fst
+    cs = placeOutside . fmap (fmap drawInt) . fst
     p = cs
         <> placeGrid . fmap drawBigEnd . clues . snd
         <> grid gDefault . snd
