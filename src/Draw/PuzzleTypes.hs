@@ -443,9 +443,9 @@ summon = Drawers
 baca ::
     Backend' b =>
     Drawers b (Grid C (Maybe Char),
-                    OutsideClues C [Int],
-                    OutsideClues C (Maybe Char))
-                   (Grid C (Either Black Char))
+               OutsideClues C [Int],
+               OutsideClues C (Maybe Char))
+              (Grid C (Either Black Char))
 baca = Drawers
     (inside <> outside)
     (outside . fst <> placeGrid . fmap drawVal . snd <> inside . fst)
@@ -453,8 +453,7 @@ baca = Drawers
     inside (g,_,_) = placeGrid . fmap (fc gray . drawChar) . clues $ g
     outside (g,tl,br) =
               grid gDefault g
-              <> (foldMap (placeGrid . fmap drawInt)
-                  . multiOutsideClues $ tl)
+              <> (placeMultiOutside . fmap (fmap drawInt) $ tl)
               <> (placeOutside . fmap (fmap drawChar) $ br)
     drawVal (Right c) = drawChar c
     drawVal (Left _) = fillBG gray
