@@ -453,7 +453,7 @@ baca = Drawers
     inside (g,_,_) = placeGrid . fmap (fc gray . drawChar) . clues $ g
     outside (g,tl,br) =
               grid gDefault g
-              <> (placeGrid . fmap drawInt
+              <> (foldMap (placeGrid . fmap drawInt)
                   . multiOutsideClues $ tl)
               <> (placeGrid . fmap drawChar . clues
                   . outsideClues $ br)
@@ -765,7 +765,7 @@ greaterWall = Drawers
   where
     munge (rs,cs) = OC (map (reverse . greaterClue) (reverse rs)) [] []
                        (map (map (rotateBy (-1/4))) . map (reverse . greaterClue) $ cs)
-    plc ocs = placeGrid' . Map.mapKeys toPt . multiOutsideClues $ ocs
+    plc ocs = foldMap (placeGrid' . Map.mapKeys toPt) . multiOutsideClues $ ocs
       where
         OC l _ _ _ = ocs
         h = length l

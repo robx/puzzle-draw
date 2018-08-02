@@ -66,7 +66,7 @@ placeMultiOutside :: (Ord k, FromCoord k, ToPoint k,
                       HasOrigin a, Monoid a,
                       InSpace V2 Double a)
                   => OutsideClues k [a] -> a
-placeMultiOutside = placeGrid . multiOutsideClues
+placeMultiOutside = foldMap placeGrid . multiOutsideClues
 
 placeOutside :: (Ord k, FromCoord k, ToPoint k,
                  HasOrigin a, Monoid a,
