@@ -105,7 +105,8 @@ type Font = PreparedFont Double
 -- | Write text that is centered both vertically and horizontally and that
 -- has an envelope. Sized such that single capital characters fit nicely
 -- into a square of size @1@.
-text'' :: Backend' b => Font -> String -> Diagram b
+text'' :: Renderable (Path V2 Double) b =>
+         Font -> String -> QDiagram b V2 Double Any
 text'' fnt t = stroke (textSVG' (TextOpts fnt INSIDE_H KERN False 1 1) t)
              # lwG 0 # rfc black # scale 0.8
   where

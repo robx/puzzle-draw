@@ -204,7 +204,8 @@ lift f d = Drawing (\c -> f (fromDrawing d c))
 lift2 :: (Diagram b -> Diagram b -> Diagram b) -> Drawing b -> Drawing b -> Drawing b
 lift2 f d1 d2 = Drawing (\c -> f (fromDrawing d1 c) (fromDrawing d2 c))
 
-text' :: Backend' b => String -> Drawing b
+text' :: Renderable (Path V2 Double) b =>
+         String -> QDrawing b V2 Double Any
 text' t = Drawing (\cfg -> text'' (_cfgFontVar cfg) t)
 
 textFixed :: Backend' b => String -> Drawing b

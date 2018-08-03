@@ -142,7 +142,7 @@ data Sides a = Sides
   , _sideRight :: a
   , _sideBottom :: a
   , _sideTop :: a
-  }
+  } deriving (Show, Eq)
 
 instance Functor Sides where
     fmap f (Sides l r b t) = Sides (f l) (f r) (f b) (f t)
@@ -183,23 +183,27 @@ data OClue = OClue
     }
   deriving (Show, Eq, Ord)
 
-oClues :: OutsideClues k a -> Sides (Map.Map OClue a)
+oClues :: OutsideClues k a -> Sides (Map.Map Coord a)
 oClues ocs@(OC l r b t) = fmap Map.fromList $ Sides
-    (zipWith (\y c -> (OClue (-1, y) (-1, 0), c)) [0..h-1] l)
-    (zipWith (\y c -> (OClue ( w, y) ( 1, 0), c)) [0..h-1] r)
-    (zipWith (\x c -> (OClue ( x,-1) ( 0,-1), c)) [0..w-1] b)
-    (zipWith (\x c -> (OClue ( x, h) ( 0, 1), c)) [0..w-1] t)
+    (zipWith (\y c -> ((-1, y), c)) [0..h-1] l)
+    (zipWith (\y c -> (( w, y), c)) [0..h-1] r)
+    (zipWith (\x c -> (( x,-1), c)) [0..w-1] b)
+    (zipWith (\x c -> (( x, h), c)) [0..w-1] t)
   where
     (w, h) = outsideSize ocs
 
 outsideClues :: (Ord k, FromCoord k) => OutsideClues k a -> Map.Map k a
-outsideClues = fold . fmap (Map.mapKeys (fromCoord . ocBase)) . oClues
+outsideClues = fold . fmap (Map.mapKeys fromCoord) . oClues
 
-multiOutsideClues :: (Ord k, FromCoord k) => OutsideClues k [a] -> Sides (Map.Map k a)
-multiOutsideClues = fmap (Map.mapKeys fromCoord . Map.fromList . concatMap distrib . Map.toList)
-                  . oClues
+multiOutsideClues :: (Ord k, FromCoord k) => OutsideClues k a -> Sides (Map.Map k a, (Int, Int))
+multiOutsideClues ocs =
+    Sides
+      (Map.mapKeys fromCoord l, (-1, 0))
+      (Map.mapKeys fromCoord r, ( 1, 0))
+      (Map.mapKeys fromCoord b, ( 0,-1))
+      (Map.mapKeys fromCoord t, ( 0, 1))
   where
-    distrib (OClue o d, xs) = zip [o ^+^ i *^ d | i <- [0..]] xs
+    Sides l r b t = oClues ocs
 
 dualEdgesP :: Key k
            => (a -> a -> Bool) -> Grid k a -> [Edge k]

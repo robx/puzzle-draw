@@ -23,7 +23,8 @@ module Draw.PuzzleGrids
 import Diagrams.Prelude hiding (size, N)
 
 import qualified Data.Map.Strict as Map
-import Data.Maybe (maybeToList)
+import Data.Maybe (maybeToList, fromMaybe)
+import Data.Foldable (fold)
 
 import Data.Grid
 import Data.GridShape
@@ -63,16 +64,25 @@ drawTightGrid d g = (placeGrid . fmap (drawTight d) $ g)
                     <> draw (phantom' (strokePath $ p2i (-1,-1) ~~ p2i (sx + 1, sy + 1)))
     where (sx, sy) = size (Map.mapKeys toCoord g)
 
-placeMultiOutside :: (Ord k, FromCoord k, ToPoint k,
-                      HasOrigin a, Monoid a,
-                      InSpace V2 Double a)
-                  => OutsideClues k [a] -> a
-placeMultiOutside = foldMap placeGrid . multiOutsideClues
+placeMultiOutside :: (Backend' b, FromCoord k, ToCoord k, ToPoint k, Ord k) => OutsideClues k [Drawing b] -> Drawing b
+placeMultiOutside ocs = Drawing pmo
+  where
+    pmo cfg = foldMap (place_ cfg) (multiOutsideClues ocs)
+    place_ cfg (clueSets, dir) =
+      let
+        clueSetsD = fmap (map (diagram cfg)) $ clueSets
+        minDiam = diameter (r2i dir) (diagram cfg (drawChar 'M') :: D V2 Double)
+        m = max minDiam . fromMaybe 0 . fmap getMax . foldMap (maxSize dir) $ clueSetsD
+        placeRow base ds =
+            zipWith (\d i -> d # moveTo (toPoint base .+^ ((fromIntegral (i::Int) * m * spreadFactor) *^ r2i dir)))
+                    ds [0..]
+      in
+        fold $ Map.foldMapWithKey placeRow clueSetsD
+    maxSize :: Backend' b => (Int, Int) -> [Diagram b] -> Maybe (Max Double)
+    maxSize dir = foldMap (Just . Max . diameter (r2i dir))
+    spreadFactor = 1.5
 
-placeOutside :: (Ord k, FromCoord k, ToPoint k,
-                 HasOrigin a, Monoid a,
-                 InSpace V2 Double a)
-             => OutsideClues k (Maybe a) -> a
+placeOutside :: (Backend' b, ToPoint k, FromCoord k, ToCoord k, Ord k) => OutsideClues k (Maybe (Drawing b)) -> Drawing b
 placeOutside = placeMultiOutside . fmap maybeToList
 
 drawOutsideGrid :: Backend' b => OutsideClues C (Maybe String) -> Drawing b
