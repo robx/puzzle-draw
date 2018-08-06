@@ -43,7 +43,7 @@ data PuzzleOpts = PuzzleOpts
     , _example  :: Bool
     , _code     :: Bool
     , _scale    :: Double
-    , _input    :: FilePath
+    , _input    :: [FilePath]
     }
 
 config :: PuzzleOpts -> IO Config
@@ -89,9 +89,9 @@ puzzleOpts = PuzzleOpts
              <> value 1.0
              <> metavar "FACTOR"
              <> help "Scale the size by this factor")
-    <*> argument str
-            (metavar "INPUT"
-             <> help "Puzzle file in .pzl format")
+    <*> some (argument str
+            (metavar "INPUT..."
+             <> help "Puzzle files in .pzl format"))
   where
     parseFormat = eitherReader
         (\s -> case lookupFormat s of
@@ -107,8 +107,8 @@ outputSuffix DrawPuzzle = ""
 outputSuffix DrawSolution = "-sol"
 outputSuffix DrawExample = ""
 
-toRenderOpts :: OutputChoice -> (Double, Double) -> PuzzleOpts -> RenderOpts
-toRenderOpts oc (w, h) opts = RenderOpts out sz
+toRenderOpts :: FilePath -> OutputChoice -> (Double, Double) -> PuzzleOpts -> RenderOpts
+toRenderOpts input oc (w, h) opts = RenderOpts out sz
   where
     f = _format opts
     u = case f of PNG -> Pixels
@@ -116,18 +116,18 @@ toRenderOpts oc (w, h) opts = RenderOpts out sz
     w' = toOutputWidth u w * (_scale opts)
     h' = toOutputWidth u h * (_scale opts)
     sz = mkSizeSpec2D (Just w') (Just h')
-    base = takeBaseName (_input opts)
+    base = takeBaseName input
     out = _dir opts </> (base ++ outputSuffix oc) <.> extension f
 
-renderPuzzle :: PuzzleOpts -> (OutputChoice -> Maybe (Diagram B)) ->
+renderPuzzle :: PuzzleOpts -> FilePath -> (OutputChoice -> Maybe (Diagram B)) ->
                 (OutputChoice, Bool) -> IO ()
-renderPuzzle opts r (oc, req) = do
+renderPuzzle opts input r (oc, req) = do
     let x = r oc
     when (req && isNothing x) $
         exitErr ("failed to render (no solution?): " ++ show oc)
     when (isJust x) $ do
         let Just x' = x
-            ropts = toRenderOpts oc (diagramSize x') opts
+            ropts = toRenderOpts input oc (diagramSize x') opts
         renderToFile ropts x'
 
 defaultOpts :: Parser a -> IO a
@@ -139,7 +139,9 @@ defaultOpts optsParser = do
                  <> header prog)
     execParser p
 
-checkOutput :: PuzzleOpts -> IO [(OutputChoice, Bool)]
+type OutputChoices = [(OutputChoice, Bool)]
+
+checkOutput :: PuzzleOpts -> IO OutputChoices
 checkOutput opts
     | (p || s) && e  = exitErr "example output conflicts with puzzle/solution"
     | e              = return . map req $ [DrawExample]
@@ -154,7 +156,7 @@ checkOutput opts
     req x = (x, True)
     opt x = (x, False)
 
-maybeSkipSolution :: [(OutputChoice, Bool)] -> Maybe Y.Value -> Maybe Y.Value
+maybeSkipSolution :: OutputChoices -> Maybe Y.Value -> Maybe Y.Value
 maybeSkipSolution _ Nothing    = Nothing
 maybeSkipSolution ocs (Just v) =
     if any hasSol . map fst $ ocs
@@ -175,11 +177,9 @@ parseAndDrawCode v = case parsed of
   where
     parsed = Y.parseEither parseCode v
 
-main :: IO ()
-main = do
-    opts <- defaultOpts puzzleOpts
-    ocs <- checkOutput opts
-    mp <- readPuzzle (_input opts)
+handleOne :: PuzzleOpts -> OutputChoices -> FilePath -> IO ()
+handleOne opts ocs input = do
+    mp <- readPuzzle input
     TP mt mrt pv msv mc <- case mp of Left  e -> exitErr $
                                              "parse failure: " ++ show e
                                       Right p -> return p
@@ -189,5 +189,11 @@ main = do
     let ps = Y.parseEither (handle drawPuzzleMaybeSol t) (pv, msv')
     mcode <- sequenceA $ parseAndDrawCode <$> mc'
     cfg <- config opts
-    case ps of Right ps' -> mapM_ (renderPuzzle opts (render cfg mcode ps')) ocs
+    case ps of Right ps' -> mapM_ (renderPuzzle opts input (render cfg mcode ps')) ocs
                Left    e -> exitErr $ "parse failure: " ++ e
+
+main :: IO ()
+main = do
+    opts <- defaultOpts puzzleOpts
+    ocs <- checkOutput opts
+    mapM_ (handleOne opts ocs) (_input opts)
