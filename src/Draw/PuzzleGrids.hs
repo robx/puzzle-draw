@@ -76,14 +76,10 @@ placeMultiOutside ocs = Drawing pmo
           . fmap getMax
           . foldMap (maxSize dir)
           $ clueSetsD
-      placeRow base ds = zipWith
-        ( \d i -> d # moveTo
-          (   toPoint base
-          .+^ ((fromIntegral (i :: Int) * m * spreadFactor) *^ r2i dir)
-          )
-        )
-        ds
-        [0 ..]
+      pt :: (ToPoint k) => k -> Int -> P2 Double
+      pt base i =
+        toPoint base .+^ (fromIntegral i * m * spreadFactor *^ r2i dir)
+      placeRow base ds = zipWith (\d i -> d # moveTo (pt base i)) ds [0 ..]
     in
       fold $ Map.foldMapWithKey placeRow clueSetsD
   maxSize :: Backend' b => (Int, Int) -> [Diagram b] -> Maybe (Max Double)
