@@ -22,8 +22,8 @@ echo "<body>"
 for file in "$@"; do
     base=`basename "$file" .pzl`
 
-    cat <<HERE
-<iframe src="$file"></iframe><img src="$base.png" title="$base">
-HERE
-
+    echo "<pre>"
+    cat "$file"
+    echo "</pre>"
+    echo '<img src="'$base.png'" title="'$base'">'
 done
