@@ -32,12 +32,8 @@ $(PUZZLEPDFTARGETS): %.pdf: %.pzl
 compare:
 	rm -f cur/*.png diff/*.png
 	mkdir -p cur diff
-	for f in $(EXAMPLES); do \
-		$(DRAW) -d cur -e -c -f png $$f ; \
-	done
-	for f in $(PUZZLES); do \
-		$(DRAW) -d cur -p -f png $$f ; \
-	done
+	$(DRAW) -d cur -e -c -f png $(EXAMPLES)
+	$(DRAW) -d cur -p -c -f png $(PUZZLES)
 	for f in *.png; do \
 		diff $$f cur/$$f > /dev/null || \
 			(touch diff/$$f ; compare $$f cur/$$f diff/$$f) || \
