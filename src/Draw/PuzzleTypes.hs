@@ -758,7 +758,7 @@ greaterWall ::
     Backend' b =>
     Drawers b ([GreaterClue], [GreaterClue]) (Grid C Bool)
 greaterWall = Drawers
-    ((placeMultiOutside <> grid gDefault . outsideGrid) . munge)
+    ((placeMultiOutsideGW <> grid gDefault . outsideGrid) . munge)
     undefined
   where
     munge (rs,cs) = OC (map (reverse . greaterClue) (reverse rs)) [] []

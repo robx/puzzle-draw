@@ -18,6 +18,7 @@ module Draw.PuzzleGrids
     , drawMultiOutsideGridN
     , placeOutside
     , placeMultiOutside
+    , placeMultiOutsideGW
     ) where
 
 import Diagrams.Prelude hiding (size, N)
@@ -70,21 +71,41 @@ placeMultiOutside ocs = Drawing pmo
     let
       clueSetsD = fmap (map (diagram cfg)) $ clueSets
       minDiam   = diameter (r2i dir) (diagram cfg (drawChar 'M') :: D V2 Double)
-      m =
+      elt =
         max minDiam
           . fromMaybe 0
           . fmap getMax
           . foldMap (maxSize dir)
           $ clueSetsD
+      mrg = minDiam * (2 / 3)
       pt :: (ToPoint k) => k -> Int -> P2 Double
       pt base i =
-        toPoint base .+^ (fromIntegral i * m * spreadFactor *^ r2i dir)
+        toPoint base
+          .+^ (  (-(1 / 2) + mrg + (1 / 2) * elt + fromIntegral i * (elt + mrg))
+              *^ r2i dir
+              )
       placeRow base ds = zipWith (\d i -> d # moveTo (pt base i)) ds [0 ..]
     in
       fold $ Map.foldMapWithKey placeRow clueSetsD
-  maxSize :: Backend' b => (Int, Int) -> [Diagram b] -> Maybe (Max Double)
   maxSize dir = foldMap (Just . Max . diameter (r2i dir))
-  spreadFactor = 1.5
+
+placeMultiOutsideGW
+  :: (Backend' b, FromCoord k, ToCoord k, ToPoint k, Ord k)
+  => OutsideClues k [Drawing b]
+  -> Drawing b
+placeMultiOutsideGW ocs = Drawing pmo
+ where
+  pmo cfg = foldMap (place_ cfg) (multiOutsideClues ocs)
+  place_ cfg (clueSets, dir) =
+    let
+      clueSetsD = fmap (map (diagram cfg)) $ clueSets
+      elt       = fromMaybe 0 . fmap getMax . foldMap (maxSize dir) $ clueSetsD
+      pt :: (ToPoint k) => k -> Int -> P2 Double
+      pt base i = toPoint base .+^ ((1 / 4 + fromIntegral i * elt) *^ r2i dir)
+      placeRow base ds = zipWith (\d i -> d # moveTo (pt base i)) ds [0 ..]
+    in
+      fold $ Map.foldMapWithKey placeRow clueSetsD
+  maxSize dir = foldMap (Just . Max . diameter (r2i dir))
 
 placeOutside
   :: (Backend' b, ToPoint k, FromCoord k, ToCoord k, Ord k)
