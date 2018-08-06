@@ -51,12 +51,15 @@ solution:
     ..X...
 ```
 
-There is a [demo web application][demo] that provides some more
-examples and that can be used to generate SVG images from such
-puzzle descriptions.
-
-Or see a [puzzle set][twentyfour] that covers the puzzle types
-that are supported as of 2014-05.
+For more examples, see:
+* A [demo web application][demo] that provides some more
+  examples and that can be used to generate SVG images from such
+  puzzle descriptions.
+* The [gallery of examples][examples] used to test the program.
+* A [puzzle set][twentyfour] that covers the puzzle types
+  that were supported as of 2014-05.
+* Most of the puzzle graphics on the puzzle blog [maybepuzzles][maybepuzzles]
+  were generated with this tool.
 
 Installing
 ----------
@@ -87,7 +90,7 @@ is copied into a file `slitherliar.pzl`.
 $ drawpuzzle slitherliar.pzl
 ```
 
-This will generate two files `slitherliar.svg` and `slitherliar-sol.svg`,
+This will generate two files `slitherliar.png` and `slitherliar-sol.png`,
 containing the puzzle and solved puzzle, respectively. Run
 
 ```
@@ -102,3 +105,5 @@ behaviour, e.g., choosing the output format.
 [twentyfour]: https://maybepuzzles.wordpress.com/2014/03/29/puzzle-set-24-hour-marathon/
 [diagrams]: http://projects.haskell.org/diagrams/
 [demo]: https://arp.vllmrt.net/puzzles/draw/static/puzzle.html
+[maybepuzzles]: https://maybepuzzles.wordpress.com/
+[examples]: ./tests/examples/examples.html
