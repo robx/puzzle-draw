@@ -106,4 +106,4 @@ behaviour, e.g., choosing the output format.
 [diagrams]: http://projects.haskell.org/diagrams/
 [demo]: https://arp.vllmrt.net/puzzles/draw/static/puzzle.html
 [maybepuzzles]: https://maybepuzzles.wordpress.com/
-[examples]: https://rawgit.com/robx/puzzle-draw/tests/examples/examples.html
+[examples]: https://rawgit.com/robx/puzzle-draw/master/tests/examples/examples.html
