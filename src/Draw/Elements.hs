@@ -157,8 +157,8 @@ drawInt :: Backend' b =>
 drawInt s = text' (show s)
 
 -- | Draw a character.
-drawChar :: Backend' b =>
-            Char -> Drawing b
+drawChar :: Renderable (Path V2 Double) b =>
+            Char -> QDrawing b V2 Double Any
 drawChar c = text' [c]
 
 drawCharFixed :: Backend' b =>

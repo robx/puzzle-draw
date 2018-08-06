@@ -178,11 +178,12 @@ testMultiOutsideClues = multiOutsideClues (OC l r b t) @=? res
     r = [[], [1, 0]]
     b = [[0, 0, 1]]
     t = [[1, -1]]
-    res :: Map.Map C Int
-    res = Map.mapKeys fromCoord . Map.fromList $
-          [ ((-1,0), 1), ((-2,0), 2), ((-1,1), 3),
-            ((1,1), 1), ((2,1), 0), ((0,-1), 0), ((0,-2), 0), ((0,-3), 1),
-            ((0,2), 1), ((0,3), -1) ]
+    res :: Sides (Map.Map C [Int], (Int, Int))
+    res = Sides
+            (Map.fromList [ (fromCoord (-1, 0), [1,2]), (fromCoord (-1,1), [3]) ], (-1, 0))
+            (Map.fromList [ (fromCoord (1, 0), []), (fromCoord (1,1), [1,0]) ], (1, 0))
+            (Map.fromList [ (fromCoord (0, -1), [0, 0, 1]) ], (0, -1))
+            (Map.fromList [ (fromCoord (0, 2), [1,-1]) ], (0, 1))
 
 testEdges :: Assertion
 testEdges = do
