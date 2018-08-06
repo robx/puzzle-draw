@@ -1,4 +1,4 @@
-[![Build Status](https://api.travis-ci.org/robx/puzzle-draw.png)][travis]
+[![Build Status](https://api.travis-ci.org/robx/puzzle-draw.png?branch=master)][travis]
 
 puzzle-draw
 ===========
