@@ -14,7 +14,7 @@ Examples
 
 A [liar slitherlink][liarslither] with solution:
 
-![Liar Slitherlink](doc/slitherlink-liar-example.png)
+![Liar Slitherlink](test/examples/slitherlink-liar-example.png)
 
 This was rendered from the following YAML document:
 
