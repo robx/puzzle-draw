@@ -116,6 +116,12 @@ text'' fnt t = stroke (textSVG' (TextOpts fnt INSIDE_H KERN False 1 1) t)
 fontGenLight :: IO Font
 fontGenLight = getDataFileName "data/fonts/gen-light.svg" >>= loadFont
 
+fontAnelizaLight :: IO Font
+fontAnelizaLight = getDataFileName "data/fonts/aneliza-light.svg" >>= loadFont
+
+fontAnelizaRegular :: IO Font
+fontAnelizaRegular = getDataFileName "data/fonts/aneliza-regular.svg" >>= loadFont
+
 fontBit :: IO Font
 fontBit = bit
 
