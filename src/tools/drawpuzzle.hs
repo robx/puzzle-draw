@@ -49,7 +49,7 @@ data PuzzleOpts = PuzzleOpts
 config :: PuzzleOpts -> IO Config
 config opts =
   do
-    var <- fontGenLight
+    var <- fontAnelizaRegular
     bit <- fontBit
     let device = case _format opts of
                      PNG -> Screen
