@@ -1,5 +1,5 @@
 module Data.CmdLine
-    ( checkType
+    ( checkTypeExit
     , exitErr
     , readPuzzle
     ) where
@@ -10,13 +10,10 @@ import Data.PuzzleTypes
 import qualified Data.Yaml as Y
 import System.Exit
 
-checkType :: Maybe String -> IO PuzzleType
-checkType mt = do
-    t <- maybe errno return mt
-    maybe (errunk t) return (lookupType t)
-  where
-    errno    = exitErr "no puzzle type given"
-    errunk t = exitErr $ "unknown puzzle type: " ++ t
+checkTypeExit :: Maybe String -> IO PuzzleType
+checkTypeExit mt = case checkType mt of
+    Left err -> exitErr err
+    Right t -> return t
 
 readPuzzle :: FilePath -> IO (Either Y.ParseException TypedPuzzle)
 readPuzzle = Y.decodeFileEither

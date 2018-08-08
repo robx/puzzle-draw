@@ -6,6 +6,7 @@
 module Data.PuzzleTypes (
     PuzzleType(..)
   , lookupType
+  , checkType
   , typeOptions
   ) where
 
@@ -207,3 +208,11 @@ typeOptions = sort . map snd $ typeNames ++ typeAliases
 -- | Look up a puzzle type by name.
 lookupType :: String -> Maybe PuzzleType
 lookupType t = lookup t (map swap allTypeNames)
+
+checkType :: Maybe String -> Either String PuzzleType
+checkType mt =
+  case mt of
+    Nothing -> Left "no puzzle type given"
+    Just t  -> case lookupType t of
+                 Nothing -> Left $ "unknown puzzle type: " ++ t
+                 Just tt -> Right tt

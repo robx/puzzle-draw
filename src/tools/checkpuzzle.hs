@@ -4,7 +4,7 @@ module Main where
 
 import Parse.Puzzle
 import Data.PuzzleTypes (typeOptions, PuzzleType(..))
-import Data.CmdLine (exitErr, readPuzzle, checkType)
+import Data.CmdLine (exitErr, readPuzzle, checkTypeExit)
 
 import Data.Elements (KropkiDot(..), digitList)
 import Data.GridShape (Edge, N, C, rows, edgesM, unorient, ends, dualE)
@@ -62,7 +62,7 @@ main = do
     TP mt _ pv msv _ <- case mp of Left  e -> exitErr $
                                              "parse failure: " ++ show e
                                    Right p -> return p
-    t <- checkType $ _type opts `mplus` mt
+    t <- checkTypeExit $ _type opts `mplus` mt
     sv <- maybe (exitErr $ "need solution") return msv 
     let es = Y.parseEither (check t) (pv, sv)
     case es of Left err  -> exitErr $ "parse failure: " ++ err

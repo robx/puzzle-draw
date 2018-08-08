@@ -185,7 +185,7 @@ handleOne opts ocs input = do
                                       Right p -> return p
     let msv' = maybeSkipSolution ocs msv
         mc'  = maybeSkipCode opts mc
-    t <- checkType $ _type opts `mplus` mrt `mplus` mt
+    t <- checkTypeExit $ _type opts `mplus` mrt `mplus` mt
     let ps = Y.parseEither (handle drawPuzzleMaybeSol t) (pv, msv')
     mcode <- sequenceA $ parseAndDrawCode <$> mc'
     cfg <- config opts
