@@ -26,3 +26,9 @@ edgewidth = 3 * onepix
 
 borderwidth :: Double
 borderwidth = 1 / 4
+
+outsideScale :: Double
+outsideScale = 0.85
+
+noteScale :: Double
+noteScale = 0.85

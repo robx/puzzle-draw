@@ -277,7 +277,7 @@ japanesesums = Drawers
     (outsideIntGrid . fst <> n)
     (outsideIntGrid . fst . fst <> japcells . snd)
   where
-    n (ocs, ds) = placeNoteTL (0, h ocs) (text' ds # scale 0.8)
+    n (ocs, ds) = placeNoteTL (0, h ocs) (text' ds # scale noteScale)
     japcells = placeGrid . fmap japcell
     japcell (Left Black) = fillBG gray
     japcell (Right x) = drawInt x
@@ -315,7 +315,7 @@ labyrinth = Drawers
     (placeGrid . fmap drawInt . clues . snd <> p . fst)
   where
     p (g, e, _) = drawEdges e <> grid gPlain g
-    n (g, _, ds) = placeNoteTR (size' g) (text' ds # scale 0.8)
+    n (g, _, ds) = placeNoteTR (size' g) (text' ds # scale noteScale)
     size' = size . Map.mapKeys toCoord
     fst3 (x,_,_) = x
 
@@ -407,7 +407,7 @@ slovaksums = Drawers
     (p . fst <> n)
     (placeGrid . fmap drawInt . clues . snd <> p . fst . fst)
   where
-    n (g, ds) = placeNoteTR (size' g) (text' ds # scale 0.8)
+    n (g, ds) = placeNoteTR (size' g) (text' ds # scale noteScale)
     p = grid gDefault <> placeGrid . fmap drawSlovakClue . clues
     size' = size . Map.mapKeys toCoord
 
@@ -467,7 +467,7 @@ buchstabensalat = Drawers
   where
     p = (placeOutside . fmap (fmap drawChar)
          <> grid gDefault . outsideGrid) . fst
-    n (ocs, ls) = placeNoteTR (outsideSize ocs) (text' ls # scale 0.8)
+    n (ocs, ls) = placeNoteTR (outsideSize ocs) (text' ls # scale noteScale)
 
 doppelblock ::
     Backend' b =>
@@ -477,9 +477,8 @@ doppelblock = Drawers
     (p <> n)
     (p . fst <> placeGrid . fmap drawVal . snd)
   where
-    p = placeOutside . fmap (fmap (scale 0.8 . drawInt))
-        <> grid gDefault . outsideGrid
-    n ocs = placeNoteTL (0, h) (text' ds # scale 0.8)
+    p = drawOutsideGrid . fmap (fmap show)
+    n ocs = placeNoteTL (0, h) (text' ds # scale noteScale)
       where
         h = snd (outsideSize ocs)
         ds = "1-" ++ show (h - 2)
@@ -494,7 +493,7 @@ sudokuDoppelblock = Drawers
     p
     (p . fst <> placeGrid . fmap drawVal . snd)
   where
-    p = placeOutside . fmap (fmap (scale 0.8 . drawInt)) . snd
+    p = placeOutside . fmap (fmap (scale outsideScale . drawInt)) . snd
         <> (grid gDefault <> drawAreas) . fst
     drawVal (Right c) = drawInt c
     drawVal (Left _) = fillBG gray
@@ -674,7 +673,7 @@ kropki = Drawers
     (placeGrid . fmap drawInt . snd <> p . fst)
   where
     p = placeGrid' . Map.mapKeys midPoint . fmap kropkiDot <> grid gDefault . sizeGrid . sz
-    n g = placeNoteTR (w, h) (text' ds # scale 0.8)
+    n g = placeNoteTR (w, h) (text' ds # scale noteScale)
       where
         (w, h) = sz g
         ds = "1-" ++ show h
@@ -807,7 +806,7 @@ pentominoSums = Drawers
     p (ocs, ds) =
         (((drawMultiOutsideGrid ocs <> n (ocs, ds)) ||| strutX' 1.0 ||| emptyTable ocs)
         `aboveT'` drawPentominos)
-    n (ocs, ds) = placeNoteTL (0, h ocs) (text' ds # scale 0.8)
+    n (ocs, ds) = placeNoteTL (0, h ocs) (text' ds # scale noteScale)
     h = snd . outsideSize
     emptyTable = mappingTable . emptys
     emptys = map (\k -> (k, "")) . nub . sort . concat . outsideValues
@@ -888,7 +887,7 @@ friendlysudoku = Drawers
 japsummasyu :: Backend' b =>
           Drawers b (OutsideClues C [String]) ()
 japsummasyu = Drawers
-    (placeMultiOutside . fmap (fmap (scale 0.8 . text'))
+    (placeMultiOutside . fmap (fmap (scale outsideScale . text'))
                      <> grid gDashDash . outsideGrid)
     (error "japsummasyu solution not implemented")
   where

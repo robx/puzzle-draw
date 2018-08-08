@@ -34,6 +34,7 @@ import Data.Sudoku
 
 import Draw.Draw
 import Draw.Lib
+import Draw.Widths
 import Draw.Style
 import Draw.Grid
 import Draw.Elements
@@ -77,7 +78,7 @@ placeMultiOutside ocs = Drawing pmo
           . fmap getMax
           . foldMap (maxSize dir)
           $ clueSetsD
-      mrg = minDiam * (2 / 3)
+      mrg = 1/3
       pt :: (ToPoint k) => k -> Int -> P2 Double
       pt base i =
         toPoint base
@@ -115,12 +116,12 @@ placeOutside = placeMultiOutside . fmap maybeToList
 
 drawOutsideGrid :: Backend' b => OutsideClues C (Maybe String) -> Drawing b
 drawOutsideGrid =
-  placeOutside . fmap (fmap (scale 0.8 . text')) <> grid gDefault . outsideGrid
+  placeOutside . fmap (fmap (scale outsideScale . text')) <> grid gDefault . outsideGrid
 
 drawOutsideGridN :: Backend' b => OutsideClues N (Maybe String) -> Drawing b
 drawOutsideGridN =
   placeOutside
-    .  fmap (fmap (scale 0.8 . text'))
+    .  fmap (fmap (scale outsideScale . text'))
     <> grid gDefault
     .  cellGrid
     .  outsideGrid
@@ -128,14 +129,14 @@ drawOutsideGridN =
 drawMultiOutsideGrid :: Backend' b => OutsideClues C [String] -> Drawing b
 drawMultiOutsideGrid =
   placeMultiOutside
-    .  fmap (fmap (scale 0.8 . text'))
+    .  fmap (fmap (scale outsideScale . text'))
     <> grid gDefault
     .  outsideGrid
 
 drawMultiOutsideGridN :: Backend' b => OutsideClues N [String] -> Drawing b
 drawMultiOutsideGridN =
   placeMultiOutside
-    .  fmap (fmap (scale 0.8 . text'))
+    .  fmap (fmap (scale outsideScale . text'))
     <> grid gDefault
     .  cellGrid
     .  outsideGrid
