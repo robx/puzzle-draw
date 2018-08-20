@@ -2,4 +2,6 @@ ghc-options:
   puzzle-draw: -Werror
 packages:
 - '.'
+extra-deps:
+- Rasterific-0.7.4
 resolver: lts-12.0
