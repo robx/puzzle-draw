@@ -1,3 +1,4 @@
+* Add SVG and JPG output.
 * Support differences between print and screen output. Thinner lines
   for PDF output.
 * Layout improvements for puzzles with outside clues.

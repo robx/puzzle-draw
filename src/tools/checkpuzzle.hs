@@ -3,14 +3,14 @@
 module Main where
 
 import Parse.Puzzle
-import Data.PuzzleTypes (typeOptions, PuzzleType(..))
-import Data.CmdLine (exitErr, readPuzzle, checkTypeExit)
+import Data.PuzzleTypes (typeOptions, PuzzleType(..), checkType)
 
 import Data.Elements (KropkiDot(..), digitList)
 import Data.GridShape (Edge, N, C, rows, edgesM, unorient, ends, dualE)
 import Data.Grid (Grid)
 import qualified Parse.PuzzleTypes as T
 
+import qualified Data.ByteString as ByteString
 import Options.Applicative
 import Control.Monad
 import Data.Maybe
@@ -58,16 +58,27 @@ defaultOpts optsParser = do
 main :: IO ()
 main = do
     opts <- defaultOpts puzzleOpts
-    mp <- readPuzzle (_input opts)
-    TP mt _ pv msv _ <- case mp of Left  e -> exitErr $
-                                             "parse failure: " ++ show e
-                                   Right p -> return p
-    t <- checkTypeExit $ _type opts `mplus` mt
-    sv <- maybe (exitErr $ "need solution") return msv 
-    let es = Y.parseEither (check t) (pv, sv)
-    case es of Left err  -> exitErr $ "parse failure: " ++ err
-               Right []  -> exitSuccess
-               Right es' -> mapM_ putStrLn es' >> exitFailure
+    bytes <- ByteString.readFile (_input opts)
+    es <- orExit $ do
+        TP mt _ pv msv _ <- fmapL (\e -> "parse failure: " ++ show e)
+                            $ Y.decodeThrow bytes
+        t <- checkType $ _type opts `mplus` mt
+        sv <- note "need solution" msv
+        Y.parseEither (check t) (pv, sv)
+    case es of [] -> exitSuccess
+               _  -> mapM_ putStrLn es >> exitFailure
+
+orExit :: Either String a -> IO a
+orExit (Left err) = putStrLn err >> exitFailure
+orExit (Right r) = return r
+
+fmapL :: (e -> f) -> Either e a -> Either f a
+fmapL m (Left e) = Left (m e)
+fmapL _ (Right x) = Right x
+
+note :: String -> Maybe a -> Either String a
+note err Nothing = Left err
+note _ (Just x) = Right x
 
 check :: PuzzleType -> (Y.Value, Y.Value) -> Y.Parser [String]
 check t (pv, sv) =
