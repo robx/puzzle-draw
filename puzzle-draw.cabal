@@ -72,7 +72,8 @@ library
         optparse-applicative >=0.13 && <0.15,
         filepath >=1.3 && <1.5,
         linear >=1.20.8 && <1.21,
-        diagrams-rasterific >=1.4.1 && <1.5
+        diagrams-rasterific >=1.4.1 && <1.5,
+        diagrams-svg >=1.4.2 && <1.5
 
 executable drawpuzzle
     main-is: drawpuzzle.hs
@@ -87,7 +88,8 @@ executable drawpuzzle
         aeson >=0.7 && <1.4,
         filepath >=1.3 && <1.5,
         bytestring == 0.10.*,
-        diagrams-rasterific >=1.4.1 && <1.5
+        diagrams-rasterific >=1.4.1 && <1.5,
+        diagrams-svg >=1.4.2 && <1.5
 
 executable checkpuzzle
     main-is: checkpuzzle.hs

@@ -173,7 +173,20 @@ handleOne :: PuzzleOpts -> OutputChoices -> FilePath -> IO ()
 handleOne opts ocs input = do
     bytes <- ByteString.readFile input
     cfg <- config opts
-    ds <- orExit $ do
+    case backend (_format opts) of
+        BackendRasterific -> do
+            ds <- parseAndDraw bytes cfg
+            mapM_ (\(ropts, d) -> renderRasterific ropts d) ds
+        BackendSVG -> do
+            ds <- parseAndDraw bytes cfg
+            mapM_ (\(ropts, d) -> renderSVG ropts d) ds
+  where
+    fmapL f e = case e of
+        Left l -> Left (f l)
+        Right r -> Right r
+    parseAndDraw :: Backend' b =>
+                    ByteString.ByteString -> Config -> IO [(RenderOpts, Diagram b)]
+    parseAndDraw bytes cfg = orExit $ do
        TP mt mrt pv msv mc <- fmapL (\e -> "parse failure: " ++ show e)
                                     (Y.decodeThrow bytes)
        let msv' = maybeSkipSolution ocs msv
@@ -185,11 +198,6 @@ handleOne opts ocs input = do
                       parsedCode <- Y.parseEither parseCode c
                       return . Just $ drawCode parsedCode
        catMaybes <$> mapM (renderPuzzle opts input (render cfg mcode ps)) ocs
-    mapM_ (\(ropts, d) -> renderToFile ropts d) ds
-  where
-    fmapL f e = case e of
-        Left l -> Left (f l)
-        Right r -> Right r
 
 main :: IO ()
 main = do
