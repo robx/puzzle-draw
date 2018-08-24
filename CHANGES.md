@@ -1,3 +1,9 @@
+* Support differences between print and screen output. Thinner lines
+  for PDF output.
+* Layout improvements for puzzles with outside clues.
+* Switch font.
+* Support `render-as:` key in `.pzl` format.
+
 0.3.0.0: 20180718
 -----------------
 
