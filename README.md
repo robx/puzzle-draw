@@ -14,7 +14,7 @@ Examples
 
 A [liar slitherlink][liarslither] with solution:
 
-![Liar Slitherlink](test/examples/slitherlink-liar-example.png)
+![Liar Slitherlink](https://raw.githubusercontent.com/robx/puzzle-draw/master/tests/examples/slitherlink-liar-example.png)
 
 This was rendered from the following YAML document:
 
