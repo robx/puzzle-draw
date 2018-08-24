@@ -1,16 +1,16 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Main where
 
 import Diagrams.Prelude hiding (value, option, (<>), Result, render)
 
-import Data.CmdLine
 import Draw.CmdLine
 
 import Parse.Puzzle
 import Parse.Code
 import Data.Compose
-import Data.PuzzleTypes (typeOptions)
+import Data.PuzzleTypes (checkType, typeOptions)
 import Draw.Draw
 import Draw.Code
 import Draw.Lib
@@ -22,7 +22,9 @@ import Data.List (intercalate)
 
 import System.FilePath
 import System.Environment (getProgName)
+import System.Exit (exitFailure)
 
+import qualified Data.ByteString as ByteString
 import qualified Data.Yaml as Y
 
 optListTypes :: Parser (a -> a)
@@ -119,17 +121,6 @@ toRenderOpts input oc (w, h) opts = RenderOpts out sz
     base = takeBaseName input
     out = _dir opts </> (base ++ outputSuffix oc) <.> extension f
 
-renderPuzzle :: PuzzleOpts -> FilePath -> (OutputChoice -> Maybe (Diagram B)) ->
-                (OutputChoice, Bool) -> IO ()
-renderPuzzle opts input r (oc, req) = do
-    let x = r oc
-    when (req && isNothing x) $
-        exitErr ("failed to render (no solution?): " ++ show oc)
-    when (isJust x) $ do
-        let Just x' = x
-            ropts = toRenderOpts input oc (diagramSize x') opts
-        renderToFile ropts x'
-
 defaultOpts :: Parser a -> IO a
 defaultOpts optsParser = do
     prog <- getProgName
@@ -141,14 +132,14 @@ defaultOpts optsParser = do
 
 type OutputChoices = [(OutputChoice, Bool)]
 
-checkOutput :: PuzzleOpts -> IO OutputChoices
+checkOutput :: PuzzleOpts -> Either String OutputChoices
 checkOutput opts
-    | (p || s) && e  = exitErr "example output conflicts with puzzle/solution"
-    | e              = return . map req $ [DrawExample]
-    | p && s         = return . map req $ [DrawPuzzle, DrawSolution]
-    | p              = return . map req $ [DrawPuzzle]
-    | s              = return . map req $ [DrawSolution]
-    | otherwise      = return [req DrawPuzzle, opt DrawSolution]
+    | (p || s) && e  = Left "example output conflicts with puzzle/solution"
+    | e              = Right . map req $ [DrawExample]
+    | p && s         = Right . map req $ [DrawPuzzle, DrawSolution]
+    | p              = Right . map req $ [DrawPuzzle]
+    | s              = Right . map req $ [DrawSolution]
+    | otherwise      = Right [req DrawPuzzle, opt DrawSolution]
   where
     p = _puzzle opts
     s = _solution opts
@@ -170,30 +161,42 @@ maybeSkipSolution ocs (Just v) =
 maybeSkipCode :: PuzzleOpts -> Maybe Y.Value -> Maybe Y.Value
 maybeSkipCode opts = if _code opts then id else const Nothing
 
-parseAndDrawCode :: Y.Value -> IO (CodeDiagrams (Drawing B))
-parseAndDrawCode v = case parsed of
-    Left  e -> exitErr $ "solution code parse failure: " ++ e
-    Right c -> return $ drawCode c
-  where
-    parsed = Y.parseEither parseCode v
+renderPuzzle :: Backend' b =>
+                PuzzleOpts -> FilePath -> (OutputChoice -> Maybe (Diagram b)) ->
+                (OutputChoice, Bool) -> Either String (Maybe (RenderOpts, Diagram b))
+renderPuzzle opts input drw (oc, required) = case (drw oc, required) of
+    (Nothing, True) -> Left $ "failed to render " ++ show oc
+    (Nothing, _)    -> Right Nothing
+    (Just x, _)     -> Right $ Just (toRenderOpts input oc (diagramSize x) opts, x)
 
 handleOne :: PuzzleOpts -> OutputChoices -> FilePath -> IO ()
 handleOne opts ocs input = do
-    mp <- readPuzzle input
-    TP mt mrt pv msv mc <- case mp of Left  e -> exitErr $
-                                             "parse failure: " ++ show e
-                                      Right p -> return p
-    let msv' = maybeSkipSolution ocs msv
-        mc'  = maybeSkipCode opts mc
-    t <- checkTypeExit $ _type opts `mplus` mrt `mplus` mt
-    let ps = Y.parseEither (handle drawPuzzleMaybeSol t) (pv, msv')
-    mcode <- sequenceA $ parseAndDrawCode <$> mc'
+    bytes <- ByteString.readFile input
     cfg <- config opts
-    case ps of Right ps' -> mapM_ (renderPuzzle opts input (render cfg mcode ps')) ocs
-               Left    e -> exitErr $ "parse failure: " ++ e
+    ds <- orExit $ do
+       TP mt mrt pv msv mc <- fmapL (\e -> "parse failure: " ++ show e)
+                                    (Y.decodeThrow bytes)
+       let msv' = maybeSkipSolution ocs msv
+       t <- checkType $ _type opts `mplus` mrt `mplus` mt
+       ps <- Y.parseEither (handle drawPuzzleMaybeSol t) (pv, msv')
+       mcode <- case maybeSkipCode opts mc of
+          Nothing -> return Nothing
+          Just c -> fmapL ("solution code parse failure: " ++) $ do
+                      parsedCode <- Y.parseEither parseCode c
+                      return . Just $ drawCode parsedCode
+       catMaybes <$> mapM (renderPuzzle opts input (render cfg mcode ps)) ocs
+    mapM_ (\(ropts, d) -> renderToFile ropts d) ds
+  where
+    fmapL f e = case e of
+        Left l -> Left (f l)
+        Right r -> Right r
 
 main :: IO ()
 main = do
     opts <- defaultOpts puzzleOpts
-    ocs <- checkOutput opts
+    ocs <- orExit $ checkOutput opts
     mapM_ (handleOne opts ocs) (_input opts)
+
+orExit :: Either String a -> IO a
+orExit (Left err) = putStrLn err >> exitFailure
+orExit (Right r) = return r
