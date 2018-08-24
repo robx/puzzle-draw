@@ -59,23 +59,26 @@ main :: IO ()
 main = do
     opts <- defaultOpts puzzleOpts
     bytes <- ByteString.readFile (_input opts)
-    TP mt _ pv msv _ <- case Y.decodeThrow bytes of
-                                   Left  e -> exitErr $
-                                             "parse failure: " ++ show e
-                                   Right p -> return p
-    t <- orExit $ checkType $ _type opts `mplus` mt
-    sv <- maybe (exitErr $ "need solution") return msv 
-    let es = Y.parseEither (check t) (pv, sv)
-    case es of Left err  -> exitErr $ "parse failure: " ++ err
-               Right []  -> exitSuccess
-               Right es' -> mapM_ putStrLn es' >> exitFailure
-
-exitErr :: String -> IO a
-exitErr err = putStrLn err >> exitFailure
+    es <- orExit $ do
+        TP mt _ pv msv _ <- fmapL (\e -> "parse failure: " ++ show e)
+                            $ Y.decodeThrow bytes
+        t <- checkType $ _type opts `mplus` mt
+        sv <- note "need solution" msv
+        Y.parseEither (check t) (pv, sv)
+    case es of [] -> exitSuccess
+               _  -> mapM_ putStrLn es >> exitFailure
 
 orExit :: Either String a -> IO a
 orExit (Left err) = putStrLn err >> exitFailure
 orExit (Right r) = return r
+
+fmapL :: (e -> f) -> Either e a -> Either f a
+fmapL m (Left e) = Left (m e)
+fmapL _ (Right x) = Right x
+
+note :: String -> Maybe a -> Either String a
+note err Nothing = Left err
+note _ (Just x) = Right x
 
 check :: PuzzleType -> (Y.Value, Y.Value) -> Y.Parser [String]
 check t (pv, sv) =
