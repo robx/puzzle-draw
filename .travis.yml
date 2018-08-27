@@ -62,7 +62,7 @@ matrix:
     addons: {apt: {packages: [libgmp-dev, imagemagick]}}
 
   # Build on macOS in addition to Linux
-  - env: BUILD=stack ARGS=""
+  - env: BUILD=stack ARGS="" UPLOAD=yes
     compiler: ": #stack default osx"
     os: osx
 
