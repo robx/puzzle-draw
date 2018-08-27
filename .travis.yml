@@ -48,7 +48,7 @@ matrix:
 
   # The Stack builds. We can pass in arbitrary Stack arguments via the ARGS
   # variable, such as using --stack-yaml to point to a different file.
-  - env: BUILD=stack ARGS=""
+  - env: BUILD=stack ARGS="" UPLOAD=yes
     compiler: ": #stack default"
     addons: {apt: {packages: [libgmp-dev, imagemagick]}}
 
@@ -102,7 +102,7 @@ before_install:
   mkdir -p $HOME/.cabal
   echo 'remote-repo: hackage.haskell.org:http://hackage.fpcomplete.com/' > $HOME/.cabal/config
   echo 'remote-repo-cache: $HOME/.cabal/packages' >> $HOME/.cabal/config
-
+- sh tools/install-ghr.sh
 
 install:
 - echo "$(ghc --version) [$(ghc --print-project-git-commit-id 2> /dev/null || echo '?')]"
@@ -173,3 +173,10 @@ script:
       ;;
   esac
   set +ex
+
+after_success:
+- |
+  set -ex
+  if [ "$BUILD" = "stack" ] && [ "$UPLOAD" = "yes" ]; then
+    sh tools/attach-binary.sh
+  fi
