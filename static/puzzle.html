@@ -29,7 +29,9 @@ the source of this app is at
 <input type="radio" name="output" value="puzzle" checked=1>puzzle</input>
 <input type="radio" name="output" value="solution">solution</input>
 <input type="radio" name="output" value="both">both</input>
-<button id="renderButton">Render</button>
+<br>
+<button id="renderButton">Show</button>
+<button id="downloadButton">Download</button>
 </div>
 
 <div><img id="drawing" /><span id="error" style="display: none"></div>
@@ -57,6 +59,34 @@ $("#exampleList").change(function() {
 });
 
 $("#renderButton").click(function(event) {
+    $.ajax({
+        url: "../puzzle?" + $.param({
+            output: $("input[name=output]:checked").val()
+        }),
+ 
+        data: $("#puzzle").val(),
+ 
+        type: "POST",
+        contentType: "application/x-yaml",
+        processData: false,
+ 
+        dataType : "text",
+ 
+        success: function(text) {
+            $("#drawing").attr("src", "data:image/svg+xml," + text);
+            $("#error").hide();
+            $("#drawing").show();
+        },
+
+        error: function(req) {
+            $("#drawing").hide();
+            $("#error").text("error: " + req.responseText);
+            $("#error").show();
+        }
+    });
+});
+
+$("#downloadButton").click(function(event) {
     $.ajax({
         url: "../puzzle?" + $.param({
             output: $("input[name=output]:checked").val()

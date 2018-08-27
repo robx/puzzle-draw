@@ -176,10 +176,10 @@ handleOne opts ocs input = do
     case backend (_format opts) of
         BackendRasterific -> do
             ds <- parseAndDraw bytes cfg
-            mapM_ (\(ropts, d) -> renderRasterific ropts d) ds
+            mapM_ (\(ropts, d) -> renderFileRasterific ropts d) ds
         BackendSVG -> do
             ds <- parseAndDraw bytes cfg
-            mapM_ (\(ropts, d) -> renderSVG ropts d) ds
+            mapM_ (\(ropts, d) -> renderFileSVG ropts d) ds
   where
     fmapL f e = case e of
         Left l -> Left (f l)

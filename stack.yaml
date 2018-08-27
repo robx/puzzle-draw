@@ -2,4 +2,7 @@ ghc-options:
   puzzle-draw: -Werror
 packages:
 - '.'
+extra-deps:
+  - github: robx/diagrams-rasterific
+    commit: 41f731d0a63ff2e7ff29e9f12f6028a71fa87bcf
 resolver: lts-12.19

@@ -1,8 +1,10 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 module Draw.CmdLine 
-    ( renderRasterific
-    , renderSVG
+    ( renderFileRasterific
+    , renderFileSVG
+    , renderBytesRasterific
+    , renderBytesSVG
     , backend
     , BackendType(..)
     , RenderOpts(..)
@@ -15,6 +17,14 @@ module Draw.CmdLine
 
 import Diagrams.Prelude hiding (value, option, (<>), Result)
 
+import Data.ByteString.Lazy (ByteString)
+import Graphics.Svg.Core (renderBS)
+import qualified Data.Text as Text
+import Codec.Picture (pixelMap)
+import Codec.Picture.Types (convertPixel, dropTransparency)
+import Codec.Picture.Png (encodePng)
+import Codec.Picture.Jpg (encodeJpeg)
+
 import qualified Diagrams.Backend.Rasterific as Rasterific
 import qualified Diagrams.Backend.SVG as SVG
 
@@ -23,11 +33,35 @@ data RenderOpts = RenderOpts
   , _size :: SizeSpec V2 Double
   }
 
-renderRasterific :: RenderOpts -> Diagram Rasterific.B -> IO ()
-renderRasterific ropts = Rasterific.renderRasterific (_file ropts) (_size ropts)
+renderFileRasterific :: RenderOpts -> Diagram Rasterific.B -> IO ()
+renderFileRasterific ropts = Rasterific.renderRasterific (_file ropts) (_size ropts)
 
-renderSVG :: RenderOpts -> Diagram SVG.B -> IO ()
-renderSVG ropts = SVG.renderSVG (_file ropts) (_size ropts)
+renderFileSVG :: RenderOpts -> Diagram SVG.B -> IO ()
+renderFileSVG ropts = SVG.renderSVG (_file ropts) (_size ropts)
+
+renderBytesRasterific :: Format -> SizeSpec V2 Double -> Diagram Rasterific.B -> ByteString
+renderBytesRasterific fmt sz dia =
+  case fmt of
+    PDF -> Rasterific.renderDiaPdf (round w) (round h) sz dia
+    PNG -> encodePng $ renderDia Rasterific.Rasterific (Rasterific.RasterificOptions sz) dia
+    JPG -> encodeJpeg . pixelMap (convertPixel . dropTransparency)
+            $ renderDia Rasterific.Rasterific (Rasterific.RasterificOptions sz) dia
+    _ -> error "unsupported format"
+  where
+    V2 w' h' = boxExtents (boundingBox dia)
+    aspectRatio = h' / w'
+    (w, h) =
+      case getSpec sz of
+        V2 (Just ww) (Just hh) -> (ww, hh)
+        V2 (Just ww) Nothing  -> (ww, aspectRatio * ww)
+        V2 Nothing (Just hh)  -> (hh / aspectRatio, hh)
+        V2 Nothing Nothing   -> (100, 100)
+
+renderBytesSVG :: Format -> SizeSpec V2 Double -> Diagram SVG.B -> ByteString
+renderBytesSVG fmt sz =
+  case fmt of
+    SVG -> renderBS . renderDia SVG.SVG (SVG.SVGOptions sz Nothing (Text.pack "") [] True)
+    _ -> error "unsupported format"
 
 data Format = PNG | PDF | SVG | JPG
 
