@@ -119,17 +119,34 @@ colourM nbrs m = fmap fromRight . execState colour' $ start
     fill a c x = do
         v <- (Map.! x) <$> get
         case v of
-            Left _     -> if m Map.! x == a
-                    then do modify (Map.insert x (Right c))
-                            mapM_ (fill a c) (nbrs x)
-                    else modify (del x c)
-            Right _    -> return ()
+            Left _  -> let b = m Map.! x in
+                       if a == b then do
+                           modify (Map.insert x (Right c))
+                           mapM_ (fill a c) (nbrs x)
+                       else
+                           del b c x
+            Right _ -> return ()
 
-    -- remove the given colour from the list of candidates
-    del x c = Map.adjust f x
-      where
-        f (Left cs) = Left $ filter (/= c) cs
-        f (Right c') = Right c'
+    -- flood-remove the given colour from the list of candidates
+    del a c x = do
+        v <- (Map.! x) <$> get
+        case v of
+            Left cs -> if m Map.! x == a then
+                           case (rm c) cs of
+                               Nothing -> return ()
+                               Just cs' -> do
+                                   modify (Map.insert x (Left cs'))
+                                   mapM_ (del a c) (nbrs x)
+                       else
+                           return ()
+            Right _ -> return ()
+
+    rm c (x:xs) =
+        if x == c then Just xs
+        else if x > c then Nothing
+             else (x :) <$> rm c xs
+    rm _ [] = Nothing
+
 
 colour :: Eq a => Grid C a -> Grid C Int
 colour m = colourM edgeNeighbours' m
