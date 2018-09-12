@@ -36,6 +36,7 @@ module Data.GridShape
     , vertexNeighbours
     , edgeNeighbours
     , rows
+    , shift
     ) where
 
 import qualified Data.Foldable as F
@@ -229,3 +230,6 @@ rows g = map (map snd) $
     grouped f = map (map snd) . groupOn fst . sortOn fst . map (\x -> (f x, x))
     groupOn :: Eq b => (a -> b) -> [a] -> [[a]]
     groupOn f = groupBy (\x y -> f x == f y)
+
+shift :: (AffineSpace a, Diff a ~ (Int, Int)) => (Int, Int) -> Edge a -> Edge a
+shift delta (E x dir) = E (x .+^ delta) dir

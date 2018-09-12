@@ -15,7 +15,6 @@ import Data.Maybe (catMaybes, fromMaybe, isJust, fromJust)
 import Data.Ord (comparing)
 import Data.Either (isRight)
 import qualified Data.Map.Strict as Map
-import qualified Data.Set as Set
 import qualified Data.HashMap.Strict as HMap
 import Data.Traversable (mapM)
 import Data.Monoid ((<>))
@@ -371,8 +370,8 @@ parseIrregGrid v = fromCoordGrid . rectToIrregGrid <$> parseJSON v
 --  o-o o
 --    | |
 --    o-o
-parsePlainEdges :: Key k => Value -> Parser [Edge k]
-parsePlainEdges v = filterPlainEdges <$> parseAnnotatedEdges v
+parseEdges :: Key k => Value -> Parser [Edge k]
+parseEdges v = filterPlainEdges <$> parseAnnotatedEdges v
 
 filterPlainEdges :: Map.Map (Edge k) Char -> [Edge k]
 filterPlainEdges = Map.keys . Map.filterWithKey p
@@ -450,28 +449,6 @@ parseCellEdges v = proj23 <$> parsePlainEdgeGrid v
               -> (Grid C a, [Edge N])
     proj23 (_,y,z) = (y,z)
 
-data HalfDirs = HalfDirs {unHalfDirs :: [Dir]}
-
-instance FromChar HalfDirs where
-    parseChar c | c `elem` ("└┴├┼" :: String) = pure . HalfDirs $ [Vert, Horiz]
-                | c `elem` ("│┘┤"  :: String) = pure . HalfDirs $ [Vert]
-                | c `elem` ("─┌┬"  :: String) = pure . HalfDirs $ [Horiz]
-                | otherwise                   = pure . HalfDirs $ []
-
--- parses a string like
---  ┌┐┌─┐
---  ││└┐│
---  │└─┘│
---  └──┐│
---     └┘
-parseBoxEdges :: Key k => Value -> Parser [Edge k]
-parseBoxEdges v = do
-    m <- fmap unHalfDirs <$> parseGrid v
-    return [ E p d | (p, ds) <- Map.toList m, d <- ds ]
-
-parseEdges :: Key k => Value -> Parser [Edge k]
-parseEdges v = parsePlainEdges v <|> parseBoxEdges v
-
 instance FromChar Dir' where
     parseChar 'u' = pure U
     parseChar 'U' = pure U
@@ -482,27 +459,6 @@ instance FromChar Dir' where
     parseChar 'l' = pure L
     parseChar 'L' = pure L
     parseChar _   = fail "expected 'uUdDrRlL'"
-
-newtype Dirs' = Dirs' { unDirs' :: [Dir'] }
-
-instance FromChar Dirs' where
-    parseChar '└' = pure . Dirs' $ [U, R]
-    parseChar '│' = pure . Dirs' $ [U, D]
-    parseChar '┘' = pure . Dirs' $ [L, U]
-    parseChar '─' = pure . Dirs' $ [L, R]
-    parseChar '┌' = pure . Dirs' $ [D, R]
-    parseChar '┐' = pure . Dirs' $ [L, D]
-    parseChar '╶' = pure . Dirs' $ [R]
-    parseChar '╴' = pure . Dirs' $ [L]
-    parseChar '╷' = pure . Dirs' $ [D]
-    parseChar '╵' = pure . Dirs' $ [U]
-    parseChar _   = pure . Dirs' $ []
-
-parseEdgesFull :: Key k => Value -> Parser [Edge k]
-parseEdgesFull v = do
-    m <- parseGrid v
-    return . Set.toList . Set.fromList . map unorient
-        $ [ E' p d | (p, Dirs' ds) <- Map.toList m, d <- ds ]
 
 type ThermoRect = Rect (Either Blank (Either Int Alpha))
 

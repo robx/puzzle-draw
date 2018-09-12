@@ -8,11 +8,16 @@ puzzle: |
   .AAA...
   o....AA
 solution: |2
-  ┌─┐  ╷
-  │ └┐ │
-  │  │ │
-  │  │ └┐
-  └┐ │  │
-   │ └┐ │
-  ╶┘  └─┘
-
+  o-o-o . . o .
+  |   |     |
+  o . o-o . o .
+  |     |   |
+  o     o   o
+  |     |   |
+  o     o   o-o
+  |     |     |
+  o-o   o     o
+    |   |     |
+    o   o-o   o
+    |     |   |
+  o-o     o-o-o

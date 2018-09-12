@@ -43,4 +43,4 @@ compare:
 	! ls diff/*.png
 
 example-gallery:
-	sh ./docgallery.sh *.pzl
+	sh ./docgallery.sh *.pzl > examples.html

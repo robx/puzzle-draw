@@ -611,6 +611,39 @@ code:
 </pre>
 <img src="japanischesummen-example.png" title="japanischesummen-example">
 <pre>
+type: japanesesums
+puzzle:
+  digits: 1-9
+  left:
+    - [34]
+    - [22,2]
+    - [7,6,4]
+    - [13,23]
+    - [12]
+    - [12,10]
+    - [24]
+    - [12,12,12]
+  top:
+    - [9,4,3]
+    - [23,9]
+    - [12,24]
+    - [8,8,8]
+    - [7,7,7]
+    - [5,5,5]
+    - [2,12,20]
+    - [9,9,9]
+solution: |
+  XX857329
+  7843X2XX
+  25XX6X31
+  X67X1598
+  X138XXXX
+  435XX172
+  XX912453
+  39X75X84
+</pre>
+<img src="japsum-9.png" title="japsum-9">
+<pre>
 type: killersudoku
 puzzle:
   cages: |
@@ -949,14 +982,19 @@ puzzle: |
   .AAA...
   o....AA
 solution: |2
-  ┌─┐  ╷
-  │ └┐ │
-  │  │ │
-  │  │ └┐
-  └┐ │  │
-   │ └┐ │
-  ╶┘  └─┘
-
+  o-o-o . . o .
+  |   |     |
+  o . o-o . o .
+  |     |   |
+  o     o   o
+  |     |   |
+  o     o   o-o
+  |     |     |
+  o-o   o     o
+    |   |     |
+    o   o-o   o
+    |     |   |
+  o-o     o-o-o
 </pre>
 <img src="memory-example.png" title="memory-example">
 <pre>
@@ -1088,8 +1126,19 @@ puzzle: |
   o o-o-o o-o o-o-o-o o
 
   o o o o o o o o o o o
+solution: |
+  pppiiiiiuu
+  ppuuullllu
+  ffuyulwnuu
+  iffyywwnll
+  ifnywwznnl
+  innyzzzynl
+  intwzyyyyl
+  intwwnnvvv
+  ltttwwnnnv
+  lllliiiiiv
 </pre>
-<img src="pentomino-borders.png" title="pentomino-borders">
+<img src="pentominous-borders.png" title="pentominous-borders">
 <pre>
 type: pentominous
 puzzle: |
@@ -1856,11 +1905,15 @@ puzzle: |
   ...1
   33.3
 solution: |
-  .┌─┐.
-  ┌┘.└┐
-  └┐..│
-  ┌┘┌┐│
-  └─┘└┘
+  . .-.-. .
+    |   |
+  .-. . .-.
+  |       |
+  .-. . . .
+    |     |
+  .-. .-. .
+  |   | | |
+  .-.-. .-.
 code:
   cell_rows_bottom: [0,2]
 </pre>
