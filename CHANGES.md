@@ -4,6 +4,7 @@
 * Layout improvements for puzzles with outside clues.
 * Switch font.
 * Support `render-as:` key in `.pzl` format.
+* Remove support for drawing curves with "box drawing characters".
 
 0.3.0.0: 20180718
 -----------------

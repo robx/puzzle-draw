@@ -6,10 +6,17 @@ puzzle: |2
   -...*-
   -....-
    --3-
-solution: |
-  .┌──
-  ┐**.
-  │┌┘*
-  └┘┌┘
+solution: |2
+    . . . .
+
+  . . o-o-o-4
+      |
+  7-o * * . .
+    |   |
+  . o o-o * .
+    | |   |
+  . o-o o-o .
+        |
+    . . 3 .
 code:
   cell_rows_bottom: [1,2]

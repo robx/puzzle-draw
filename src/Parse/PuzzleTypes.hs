@@ -130,10 +130,10 @@ wordsearch = ((unGW <$>) . parseJSON, (unGM <$>) . parseJSON)
 newtype Curve = Curve { unCurve :: [Edge N] }
 
 instance FromJSON Curve where
-    parseJSON v = Curve <$> parsePlainEdges v
+    parseJSON v = Curve <$> parseEdges v
 
 curvedata :: ParsePuzzle (Grid C (Maybe [Edge N])) [Edge C]
-curvedata = ((fmap (fmap unCurve) . unRG <$>) . parseJSON, parsePlainEdges)
+curvedata = ((fmap (fmap unCurve) . unRG <$>) . parseJSON, parseEdges)
 
 doubleback :: ParsePuzzle AreaGrid (Loop C)
 doubleback = (parseGrid, parseEdges)
@@ -210,7 +210,7 @@ slovaksums = (p, parseClueGrid)
 
 anglers :: ParsePuzzle (OutsideClues C (Maybe Int), Grid C (Maybe Fish)) [Edge C]
 anglers = ( parseOutsideGridMap blankToMaybe blankToMaybe'
-          , parseEdgesFull )
+          , \v -> map (shift (-1, -1)) <$> parseEdges v)
 
 cave :: ParsePuzzle (Grid C (Maybe Int)) (Grid C Bool)
 cave = (parseClueGrid, parseShadedGrid)
@@ -354,7 +354,7 @@ colorakari :: ParsePuzzle (Grid C (Maybe Char)) (Grid C (Maybe Char))
 colorakari = (,) parseClueGrid parseClueGrid
 
 persistenceOfMemory :: ParsePuzzle (AreaGrid, Grid C (Maybe MEnd)) (Loop C)
-persistenceOfMemory = (p, parseEdgesFull)
+persistenceOfMemory = (p, parseEdges )
   where
     p v = do g <- parseGrid v
              return (areas g, ends_ g)
@@ -405,7 +405,7 @@ tomTom = (,)
     parseGrid
 
 horseSnake :: ParsePuzzle (Grid C (Maybe (Either MEnd Int))) [Edge C]
-horseSnake = (parseGrid, parseEdgesFull)
+horseSnake = (parseGrid, parseEdges)
 
 illumination :: ParsePuzzle (OutsideClues C (Maybe Fraction)) (Grid N (Maybe PlainNode), [Edge N])
 illumination = (,)
