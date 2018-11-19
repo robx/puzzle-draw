@@ -1,3 +1,6 @@
+0.3.1.0: 20181119
+-----------------
+
 * Add SVG and JPG output.
 * Support differences between print and screen output. Thinner lines
   for PDF output.
