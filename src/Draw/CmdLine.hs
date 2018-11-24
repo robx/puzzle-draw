@@ -29,14 +29,13 @@ renderRasterific ropts = Rasterific.renderRasterific (_file ropts) (_size ropts)
 renderSVG :: RenderOpts -> Diagram SVG.B -> IO ()
 renderSVG ropts = SVG.renderSVG (_file ropts) (_size ropts)
 
-data Format = PNG | PS | PDF | SVG | JPG
+data Format = PNG | PDF | SVG | JPG
 
 data BackendType = BackendRasterific | BackendSVG
 
 backend :: Format -> BackendType
 backend b = case b of
   PNG -> BackendRasterific
-  PS -> BackendRasterific
   PDF -> BackendRasterific
   JPG -> BackendRasterific
   SVG -> BackendSVG
@@ -44,7 +43,6 @@ backend b = case b of
 lookupFormat :: String -> Maybe Format
 lookupFormat f = case f of
     "png" -> Just PNG
-    "ps" -> Just PS
     "pdf" -> Just PDF
     "svg" -> Just SVG
     "jpg" -> Just JPG
@@ -54,9 +52,8 @@ extension :: Format -> String
 extension f = case f of
     PNG -> "png"
     PDF -> "pdf"
-    PS -> "ps"
     SVG -> "svg"
     JPG -> "jpg"
 
 formats :: [Format]
-formats = [PNG, JPG, PS, PDF, SVG]
+formats = [PNG, JPG, PDF, SVG]
