@@ -16,6 +16,7 @@ else
   mkdir "./$REPO"
   cp "$BIN"/drawpuzzle "./$REPO"
   cp "$BIN"/checkpuzzle "./$REPO"
+  cp "$BIN"/servepuzzle "./$REPO"
   chmod +x "./$REPO"/*
   tar -czf "$BUNDLE_NAME" "$REPO"
   echo "SHA256:"
