@@ -1,3 +1,5 @@
+* Remove non-existent PostScript support.
+
 0.3.1.0: 20181119
 -----------------
 
