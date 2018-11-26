@@ -18,20 +18,24 @@ module Main exposing
     )
 
 import Browser
+import Browser.Navigation as Navigation
 import Html
 import Html.Attributes as Attr
 import Html.Events as Event
 import Http
 import Json.Decode as Json
+import Url exposing (Url)
 
 
 main : Program Flags Model Msg
 main =
-    Browser.document
+    Browser.application
         { init = init
         , view = view
         , update = update
         , subscriptions = subscriptions
+        , onUrlRequest = always Ignore
+        , onUrlChange = always Ignore
         }
 
 
@@ -64,6 +68,7 @@ type alias Model =
     , image : ImageData
     , renderState : RenderState
     , examples : List Example
+    , url : Url
     }
 
 
@@ -123,16 +128,18 @@ type Msg
     | RenderResult (Result Http.Error String)
     | ExamplesResult (Result Http.Error (List Example))
     | ExampleResult (Result Http.Error String)
+    | Ignore
 
 
-init : Flags -> ( Model, Cmd Msg )
-init flags =
+init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
+init flags url _ =
     ( { puzzle = ""
       , output = OutputPuzzle
       , downloadFormat = "png"
       , image = NoImage
       , renderState = Ready
       , examples = []
+      , url = url
       }
     , Http.send ExamplesResult listExamples
     )
@@ -282,6 +289,9 @@ update msg model =
                     ( m, Cmd.none )
     in
     case msg of
+        Ignore ->
+            ( model, Cmd.none )
+
         PuzzleChange puzzle ->
             rerender { model | puzzle = puzzle }
 
