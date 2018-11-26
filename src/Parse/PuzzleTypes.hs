@@ -98,6 +98,9 @@ import           Data.GridShape
 import qualified Data.Pyramid                  as Pyr
 import           Data.Elements
 
+unimplemented :: String -> Value -> Parser ()
+unimplemented _ _ = pure ()
+
 lits :: ParsePuzzle AreaGrid (Grid C Bool)
 lits = (parseGrid, parseShadedGrid)
 
@@ -220,7 +223,7 @@ compass :: ParsePuzzle (Grid C (Maybe CompassC)) AreaGrid
 compass = ((fmap (fmap unPCC) . unRG <$>) . parseJSON, parseGrid)
 
 boxof2or3 :: ParsePuzzle (Grid N MasyuPearl, [Edge N]) ()
-boxof2or3 = (parseNodeEdges, error "boxof2or3 parsing not implemented")
+boxof2or3 = (parseNodeEdges, unimplemented "boxof2or3 solution")
 
 afternoonskyscrapers :: ParsePuzzle (Grid C Shade) (Grid C (Maybe Int))
 afternoonskyscrapers = (parseAfternoonGrid, parseGrid)
@@ -446,7 +449,7 @@ heyawake = (p, parseShadedGrid)
       <*> parseFrom ["clues"] parseClueGrid v
 
 wormhole :: ParsePuzzle (Grid C (Maybe (Either Int Char))) ()
-wormhole = (,) p (const $ return ())
+wormhole = (,) p (unimplemented "wormhole solution")
   where p v = fmap (fmap unEither') <$> parseExtClueGrid v
 
 pentominous :: ParsePuzzle (Grid C (Maybe Char)) (Grid C Char)
@@ -628,4 +631,4 @@ friendlysudoku = (,) p parseGrid
 
 japsummasyu :: ParsePuzzle (OutsideClues C [String]) ()
 japsummasyu = (,) (fmap (fmap (map unIntString)) . parseMultiOutsideClues)
-                  (error "japsummasyu solution not implemented")
+                  (unimplemented "japsummasyu solution")
