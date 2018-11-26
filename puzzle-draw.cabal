@@ -43,6 +43,7 @@ library
         Parse.Code
         Draw.Style
         Draw.Grid
+        Draw.Font
         Draw.Lib
         Draw.Elements
         Draw.Widths
@@ -76,7 +77,8 @@ library
         linear >=1.20.8 && <1.21,
         JuicyPixels,
         diagrams-rasterific >=1.4.1 && <1.5,
-        diagrams-svg >=1.4.2 && <1.5
+        diagrams-svg >=1.4.2 && <1.5,
+        file-embed >= 0.0.10 && < 0.1
 
 executable drawpuzzle
     main-is: drawpuzzle.hs
