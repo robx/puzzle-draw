@@ -98,8 +98,8 @@ import           Data.GridShape
 import qualified Data.Pyramid                  as Pyr
 import           Data.Elements
 
-unimplemented :: String -> Value -> Parser a
-unimplemented x = error (x ++ " parsing unimplemented")
+unimplemented :: String -> Value -> Parser ()
+unimplemented _ _ = pure ()
 
 lits :: ParsePuzzle AreaGrid (Grid C Bool)
 lits = (parseGrid, parseShadedGrid)

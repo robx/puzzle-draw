@@ -117,7 +117,7 @@ import           Data.Elements
 import qualified Data.Pyramid                  as Pyr
 
 unimplemented :: Backend' b => String -> (p, s) -> Drawing b
-unimplemented x = error (x ++ " drawing unimplemented")
+unimplemented _ _ = mempty
 
 lits :: Backend' b => Drawers b AreaGrid ShadedGrid
 lits = Drawers (grid gDefault <> drawAreasGray)
