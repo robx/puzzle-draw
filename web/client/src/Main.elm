@@ -64,6 +64,7 @@ type RenderState
 type alias Model =
     { puzzle : String
     , output : Output
+    , code : Bool
     , downloadFormat : String
     , image : ImageData
     , renderState : RenderState
@@ -95,8 +96,8 @@ loadExample path =
     Http.getString path
 
 
-render : Output -> String -> Http.Request String
-render output body =
+render : Output -> Bool -> String -> Http.Request String
+render output code body =
     let
         out =
             case output of
@@ -112,7 +113,14 @@ render output body =
     Http.request
         { method = "POST"
         , headers = []
-        , url = "./api/preview?output=" ++ out
+        , url =
+            "./api/preview?output=" ++ out ++ "&code="
+                ++ (if code then
+                        "yes"
+
+                    else
+                        "no"
+                   )
         , body = Http.stringBody "application/x-yaml" body
         , expect = Http.expectString
         , timeout = Nothing
@@ -123,6 +131,7 @@ render output body =
 type Msg
     = PuzzleChange String
     | OutputChange String
+    | CodeChange Bool
     | FormatChange String
     | ExamplesChange String
     | RenderResult (Result Http.Error String)
@@ -135,6 +144,7 @@ init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url _ =
     ( { puzzle = ""
       , output = OutputPuzzle
+      , code = False
       , downloadFormat = "png"
       , image = NoImage
       , renderState = Ready
@@ -193,6 +203,14 @@ view model =
                 , radio OutputPuzzle "puzzle"
                 , radio OutputSolution "solution"
                 , radio OutputBoth "both"
+                , [ Html.label [] [ Html.text "Code markers: " ]
+                  , Html.input
+                        [ Attr.type_ "checkbox"
+                        , Attr.checked model.code
+                        , Event.onCheck CodeChange
+                        ]
+                        []
+                  ]
                 ]
         , Html.div [] <|
             [ Html.form
@@ -232,6 +250,18 @@ view model =
                 List.concat
                     [ [ Html.input [ Attr.type_ "hidden", Attr.name "pzl", Attr.value model.puzzle ] []
                       , Html.input [ Attr.type_ "hidden", Attr.name "output", Attr.value out ] []
+                      , Html.input
+                            [ Attr.type_ "hidden"
+                            , Attr.name "code"
+                            , Attr.value
+                                (if model.code then
+                                    "yes"
+
+                                 else
+                                    "no"
+                                )
+                            ]
+                            []
                       , Html.label [] [ Html.text "Download format: " ]
                       ]
                     , format "svg"
@@ -280,7 +310,7 @@ update msg model =
         rerender m =
             case m.renderState of
                 Ready ->
-                    ( { m | renderState = Rendering }, Http.send RenderResult (render m.output m.puzzle) )
+                    ( { m | renderState = Rendering }, Http.send RenderResult (render m.output m.code m.puzzle) )
 
                 Rendering ->
                     ( { m | renderState = Queued }, Cmd.none )
@@ -309,6 +339,9 @@ update msg model =
                             OutputPuzzle
             in
             rerender { model | output = output }
+
+        CodeChange code ->
+            rerender { model | code = code }
 
         FormatChange fmt ->
             ( { model | downloadFormat = fmt }, Cmd.none )
