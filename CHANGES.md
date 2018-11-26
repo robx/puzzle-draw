@@ -1,3 +1,6 @@
+0.3.2.0: 20181126
+-----------------
+
 * Remove non-existent PostScript support.
 * Embed fonts in binary.
 
