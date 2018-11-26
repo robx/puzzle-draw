@@ -160,6 +160,11 @@ view model =
     { title = "puzzle-draw web"
     , body =
         [ Html.h3 [] [ Html.text "puzzle-draw web" ]
+        , Html.p []
+            [ Html.text "This is a web interface to "
+            , Html.a [ Attr.href "https://github.com/robx/puzzle-draw" ] [ Html.text "puzzle-draw" ]
+            , Html.text ", a tool for formatting puzzle graphics from text descriptions."
+            ]
         , Html.div []
             [ Html.label [] [ Html.text "Load an example: " ]
             , Html.select [ Event.onInput ExamplesChange ] <|
@@ -203,7 +208,8 @@ view model =
                 , radio OutputPuzzle "puzzle"
                 , radio OutputSolution "solution"
                 , radio OutputBoth "both"
-                , [ Html.label [] [ Html.text "Code markers: " ]
+                , [ Html.br [] []
+                  , Html.label [] [ Html.text "Code markers: " ]
                   , Html.input
                         [ Attr.type_ "checkbox"
                         , Attr.checked model.code
