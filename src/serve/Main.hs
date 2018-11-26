@@ -25,7 +25,8 @@ import Draw.Draw
 import Data.Compose
 import Parse.Puzzle
 import Data.PuzzleTypes
-import Draw.Lib (fontAnelizaRegular, fontBit, Backend')
+import Draw.Font (fontAnelizaRegular, fontBit)
+import Draw.Lib (Backend')
 
 import qualified Data.ByteString.Char8 as C
 import qualified Data.ByteString as B
