@@ -104,6 +104,6 @@ behaviour, e.g., choosing the output format.
 [liarslither]: https://maybepuzzles.wordpress.com/types/liar-slither-link/
 [twentyfour]: https://maybepuzzles.wordpress.com/2014/03/29/puzzle-set-24-hour-marathon/
 [diagrams]: http://projects.haskell.org/diagrams/
-[demo]: https://arp.vllmrt.net/puzzles/draw/static/puzzle.html
+[demo]: https://arp.vllmrt.net/puzzles/draw/
 [maybepuzzles]: https://maybepuzzles.wordpress.com/
 [examples]: https://rawgit.com/robx/puzzle-draw/master/tests/examples/examples.html
