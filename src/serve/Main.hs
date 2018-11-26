@@ -117,14 +117,6 @@ decodeAndDrawPuzzle fmt oc b =
                      return (ds (p', s'))
         maybe (fail "no solution provided") return (render config Nothing (pzl, sol) oc)
 
-getFirstQueryParam :: B.ByteString -> Snap (Maybe B.ByteString)
-getFirstQueryParam p = do
-    req <- getRequest
-    return $ case rqQueryParam p req of
-        Nothing -> Nothing
-        Just [] -> Nothing
-        Just (x:_) -> Just x
-
 getOutputChoice :: Snap OutputChoice
 getOutputChoice = do
     ocs <- maybe "puzzle" id <$> getParam "output"
