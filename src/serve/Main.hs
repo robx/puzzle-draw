@@ -155,7 +155,8 @@ downloadPostHandler = do
     body <- maybe "" id <$> getParam "pzl"
     outputChoice <- getOutputChoice
     format <- getFormat
-    filename <- maybe "puzzle" id <$> getParam "filename"
+    fname <- maybe "" id <$> getParam "filename"
+    let filename = if fname == "" then "puzzle" else fname
     case decodeAndDrawPuzzle format outputChoice body of
         Left e      -> fail400 e
         Right bytes -> serveDiagram format (Just filename) bytes
