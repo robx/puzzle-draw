@@ -40,11 +40,11 @@ main :: IO ()
 main = quickHttpServe site
 
 site :: Snap ()
-site = ifTop (redirect "static/puzzle.html") <|>
-       route [ ("puzzle", puzzlePostHandler)
-             , ("download", downloadPostHandler)
-             , ("examples", examplesGetHandler) ] <|>
-       dir "static" (serveDirectory "static")
+site = ifTop (redirect "index.html") <|>
+       route [ ("/api/preview", previewPostHandler)
+             , ("/api/download", downloadPostHandler)
+             , ("/api/examples", examplesGetHandler) ] <|>
+       serveDirectory "static"
 
 fail400 :: String -> Snap a
 fail400 e = do
@@ -138,8 +138,8 @@ getFormat = do
             Nothing     -> fail400 "invalid parameter value: format"
             Just format -> return format
 
-puzzlePostHandler :: Snap ()
-puzzlePostHandler = do
+previewPostHandler :: Snap ()
+previewPostHandler = do
     outputChoice <- getOutputChoice
     body <- readRequestBody 4096
     case decodeAndDrawPuzzle SVG outputChoice (BL.toStrict body) of
@@ -167,7 +167,7 @@ exampleFromPath fp = do
     guard $ takeExtension fp == ".pzl"
     let n = stripSuffixMaybe "-example" $ takeBaseName fp
     guard $ length n > 0
-    return . Example n $ ".." </> "static" </> "examples" </> fp
+    return . Example n $ "./examples" </> fp
   where
     stripSuffix suffix = fmap reverse . stripPrefix (reverse suffix) . reverse
     stripSuffixMaybe suffix str = case stripSuffix suffix str of
