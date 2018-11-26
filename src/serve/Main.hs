@@ -1,6 +1,8 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE RankNTypes #-}
+
 module Main where
 
 import Control.Applicative
@@ -20,6 +22,8 @@ import Diagrams.Prelude hiding (Result, (.=), render)
 import qualified Data.Aeson as J
 import Data.Yaml
 
+import Parse.Code (parseCode)
+import Draw.Code (drawCode)
 import Draw.CmdLine
 import Draw.Draw
 import Data.Compose
@@ -86,9 +90,9 @@ loadConfig = do
 config :: Config
 config = unsafePerformIO loadConfig
 
-decodeAndDrawPuzzle :: Format -> OutputChoice -> B.ByteString ->
+decodeAndDrawPuzzle :: Format -> OutputChoice -> Bool -> B.ByteString ->
                        Either String BL.ByteString
-decodeAndDrawPuzzle fmt oc b = 
+decodeAndDrawPuzzle fmt oc code b = 
   case backend fmt of
      BackendSVG -> withSize (renderBytesSVG fmt) (dec b >>= drawP)
      BackendRasterific -> withSize (renderBytesRasterific fmt) (dec b >>= drawP)
@@ -101,21 +105,35 @@ decodeAndDrawPuzzle fmt oc b =
       let (w, h) = diagramSize d
           sz = mkSizeSpec2D (Just $ toOutputWidth u w) (Just $ toOutputWidth u h)
       return $ f sz d
+    dec :: B.ByteString -> Either String TypedPuzzle
     dec x = case decodeEither' x of
       Left e -> Left $ show e
       Right y -> Right y
-    drawP (TP mt mrt p ms _mc) = parseEither goP (mt, mrt, (p, ms))
-    goP (mt, mrt, x) = do
+    fmapL f e = case e of
+        Left l -> Left (f l)
+        Right r -> Right r
+    drawP :: Backend' b => TypedPuzzle -> Either String (Diagram b)
+    drawP (TP mt mrt p ms mc) = do
+      mcode <- case (code, mc) of
+          (True, Just c) ->
+              fmapL ("solution code parse failure: " ++) $ do
+                      parsedCode <- parseEither parseCode c
+                      return . Just $ drawCode parsedCode
+          _ -> return Nothing
+      parseEither goP (mt, mrt, (p, ms), mcode)
+    goP :: Backend' b => (Maybe String, Maybe String, (Value, Maybe Value), (Maybe (CodeDiagrams (Drawing b)))) -> Parser (Diagram b)
+    goP (mt, mrt, x, mcode) = do
         t' <- either fail pure (checkType (mrt `mplus` mt))
-        handle handler t' x
-    handler :: Backend' b => PuzzleHandler b ((Value, Maybe Value) -> Parser (Diagram b))
-    handler (pp, ps) (Drawers dp ds) (p, ms) = do
-        p' <- pp p
-        ms' <- maybe (pure Nothing) (fmap Just . ps) ms
-        let pzl = dp p'
-            sol = do s' <- ms'
-                     return (ds (p', s'))
-        maybe (fail "no solution provided") return (render config Nothing (pzl, sol) oc)
+        handle (handler mcode) t' x
+
+    handler :: Backend' b => Maybe (CodeDiagrams (Drawing b)) -> PuzzleHandler b ((Value, Maybe Value) -> Parser (Diagram b))
+    handler mcode (pp, ps) (Drawers dp ds) (p, ms) = do
+          p' <- pp p
+          ms' <- maybe (pure Nothing) (fmap Just . ps) ms
+          let pzl = dp p'
+              sol = do s' <- ms'
+                       return (ds (p', s'))
+          maybe (fail "no solution provided") return (render config mcode (pzl, sol) oc)
 
 getOutputChoice :: Snap OutputChoice
 getOutputChoice = do
@@ -124,6 +142,19 @@ getOutputChoice = do
                 "both"     -> return DrawExample
                 "puzzle"   -> return DrawPuzzle
                 _          -> fail400 "invalid parameter value: output"
+
+getBoolParam ::  B.ByteString -> Snap Bool
+getBoolParam key = do
+    param <- getParam key
+    case fromMaybe "" param of
+      "yes" -> return True
+      "true" -> return True
+      "1" -> return True
+      "no" -> return False
+      "false" -> return False
+      "0" -> return False
+      "" -> return False
+      _ -> fail400 "invalid boolean parameter value"
 
 getFormat :: Snap Format
 getFormat = do
@@ -137,8 +168,9 @@ getFormat = do
 previewPostHandler :: Snap ()
 previewPostHandler = do
     outputChoice <- getOutputChoice
+    code <- getBoolParam "code"
     body <- readRequestBody 4096
-    case decodeAndDrawPuzzle SVG outputChoice (BL.toStrict body) of
+    case decodeAndDrawPuzzle SVG outputChoice code (BL.toStrict body) of
         Left err   -> fail400 err
         Right bytes  -> serveDiagram SVG Nothing bytes
 
@@ -146,10 +178,11 @@ downloadPostHandler :: Snap ()
 downloadPostHandler = do
     body <- maybe "" id <$> getParam "pzl"
     outputChoice <- getOutputChoice
+    code <- getBoolParam "code"
     format <- getFormat
     fname <- maybe "" id <$> getParam "filename"
     let filename = if fname == "" then "puzzle" else fname
-    case decodeAndDrawPuzzle format outputChoice body of
+    case decodeAndDrawPuzzle format outputChoice code body of
         Left e      -> fail400 e
         Right bytes -> serveDiagram format (Just filename) bytes
 
