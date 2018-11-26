@@ -1,4 +1,21 @@
-module Main exposing (Example, Flags, ImageData(..), Model, Msg(..), Output(..), RenderState(..), decodeExample, init, listExamples, loadExample, main, render, subscriptions, update, view)
+module Main exposing
+    ( Example
+    , Flags
+    , ImageData(..)
+    , Model
+    , Msg(..)
+    , Output(..)
+    , RenderState(..)
+    , decodeExample
+    , init
+    , listExamples
+    , loadExample
+    , main
+    , render
+    , subscriptions
+    , update
+    , view
+    )
 
 import Browser
 import Html
@@ -110,7 +127,13 @@ type Msg
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( { puzzle = "", output = OutputPuzzle, downloadFormat = "png", image = NoImage, renderState = Ready, examples = [] }
+    ( { puzzle = ""
+      , output = OutputPuzzle
+      , downloadFormat = "png"
+      , image = NoImage
+      , renderState = Ready
+      , examples = []
+      }
     , Http.send ExamplesResult listExamples
     )
 
@@ -129,7 +152,14 @@ view model =
                         model.examples
             ]
         , Html.div []
-            [ Html.textarea [ Attr.cols 80, Attr.rows 20, Attr.id "puzzle", Attr.value model.puzzle, Event.onInput PuzzleChange ] []
+            [ Html.textarea
+                [ Attr.cols 80
+                , Attr.rows 20
+                , Attr.id "puzzle"
+                , Attr.value model.puzzle
+                , Event.onInput PuzzleChange
+                ]
+                []
             ]
         , Html.div [] <|
             let
@@ -158,7 +188,12 @@ view model =
                 , radio OutputBoth "both"
                 ]
         , Html.div [] <|
-            [ Html.form [ Attr.method "post", Attr.id "downloadForm", Attr.action "/puzzles/draw/download" ] <|
+            [ Html.form
+                [ Attr.method "post"
+                , Attr.id "downloadForm"
+                , Attr.action "/puzzles/draw/download"
+                ]
+              <|
                 let
                     format f =
                         [ Html.input
