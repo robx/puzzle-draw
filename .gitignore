@@ -6,3 +6,7 @@ cabal-dev
 *.chs.h
 .stack-work
 tests/examples/gallery.html
+tests/examples/cur
+web/elm-stuff
+static/index.html
+
