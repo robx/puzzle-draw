@@ -40,7 +40,7 @@ main :: IO ()
 main = quickHttpServe site
 
 site :: Snap ()
-site = ifTop (redirect "index.html") <|>
+site = ifTop (serveFile "static/index.html") <|>
        route [ ("/api/preview", previewPostHandler)
              , ("/api/download", downloadPostHandler)
              , ("/api/examples", examplesGetHandler) ] <|>
