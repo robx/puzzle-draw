@@ -17,15 +17,11 @@ type Font = PreparedFont Double
 anelizaRegular :: String
 anelizaRegular = Text.unpack . decodeUtf8 $ $(embedFile "data/fonts/aneliza-regular.svg")
 
-fontAnelizaRegular :: IO Font
-fontAnelizaRegular = return f
-  where
-    (_, f) = loadFont' "aneliza-regular" anelizaRegular
+fontAnelizaRegular :: Font
+fontAnelizaRegular = snd $ loadFont' "aneliza-regular" anelizaRegular
 
 bit :: String
 bit = Text.unpack . decodeUtf8 $ $(embedFile "data/fonts/bitstream.svg")
 
-fontBit :: IO Font
-fontBit = return f
-  where
-    (_, f) = loadFont' "bitstream" bit
+fontBit :: Font
+fontBit = snd $ loadFont' "bitstream" bit

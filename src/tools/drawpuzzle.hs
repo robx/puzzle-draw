@@ -49,15 +49,15 @@ data PuzzleOpts = PuzzleOpts
     , _input    :: [FilePath]
     }
 
-config :: PuzzleOpts -> IO Config
+config :: PuzzleOpts -> Config
 config opts =
-  do
-    var <- fontAnelizaRegular
-    bit <- fontBit
-    let device = case _format opts of
+  let
+    var = fontAnelizaRegular
+    bit = fontBit
+    device = case _format opts of
                      PDF -> Print
                      _ -> Screen
-    return $ Config device var bit
+  in Config device var bit
 
 puzzleOpts :: Parser PuzzleOpts
 puzzleOpts = PuzzleOpts
@@ -170,7 +170,7 @@ renderPuzzle opts input drw (oc, required) = case (drw oc, required) of
 handleOne :: PuzzleOpts -> OutputChoices -> FilePath -> IO ()
 handleOne opts ocs input = do
     bytes <- ByteString.readFile input
-    cfg <- config opts
+    let cfg = config opts
     case backend (_format opts) of
         BackendRasterific -> do
             ds <- parseAndDraw bytes cfg

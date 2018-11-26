@@ -11,8 +11,6 @@ import Data.Maybe
 import Control.Monad.IO.Class
 import Data.List (sort)
 
-import System.IO.Unsafe (unsafePerformIO)
-
 import Snap.Core
 import Snap.Util.FileServe
 import Snap.Http.Server hiding (Config)
@@ -80,15 +78,12 @@ serveDiagram format name bs = do
         Just n -> addContentDisposition format n
     writeLBS $ bs
 
-loadConfig :: IO Config
-loadConfig = do
-    var <- fontAnelizaRegular
-    fix <- fontBit
-    return $ Config Screen var fix
-
-{-# NOINLINE config #-}
-config :: Config
-config = unsafePerformIO loadConfig
+config :: Format -> Config
+config fmt = Config device fontAnelizaRegular fontBit
+  where
+     device = case fmt of
+                     PDF -> Print
+                     _ -> Screen
 
 decodeAndDrawPuzzle :: Format -> OutputChoice -> Bool -> B.ByteString ->
                        Either String BL.ByteString
@@ -133,7 +128,7 @@ decodeAndDrawPuzzle fmt oc code b =
           let pzl = dp p'
               sol = do s' <- ms'
                        return (ds (p', s'))
-          maybe (fail "no solution provided") return (render config mcode (pzl, sol) oc)
+          maybe (fail "no solution provided") return (render (config fmt) mcode (pzl, sol) oc)
 
 getOutputChoice :: Snap OutputChoice
 getOutputChoice = do
