@@ -1,3 +1,10 @@
+0.3.2.2: 20181126
+-----------------
+
+* Solution for Color Akari.
+* Don't crash for puzzle types that are missing
+  solution parsing or rendering.
+
 0.3.2.1: 20181126
 -----------------
 
