@@ -65,7 +65,7 @@ decodeExample =
 
 listExamples : Http.Request (List Example)
 listExamples =
-    Http.get "/examples" (Json.list decodeExample)
+    Http.get "/puzzles/draw/examples" (Json.list decodeExample)
 
 
 loadExample : String -> Http.Request String
@@ -90,7 +90,7 @@ render output body =
     Http.request
         { method = "POST"
         , headers = []
-        , url = "http://localhost:8000/puzzle?output=" ++ out
+        , url = "/puzzles/draw/puzzle?output=" ++ out
         , body = Http.stringBody "application/x-yaml" body
         , expect = Http.expectString
         , timeout = Nothing
@@ -158,7 +158,7 @@ view model =
                 , radio OutputBoth "both"
                 ]
         , Html.div [] <|
-            [ Html.form [ Attr.method "post", Attr.id "downloadForm", Attr.action "/download" ] <|
+            [ Html.form [ Attr.method "post", Attr.id "downloadForm", Attr.action "/puzzles/draw/download" ] <|
                 let
                     format f =
                         [ Html.input
