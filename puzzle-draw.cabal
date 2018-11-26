@@ -43,6 +43,7 @@ library
         Parse.Code
         Draw.Style
         Draw.Grid
+        Draw.Font
         Draw.Lib
         Draw.Elements
         Draw.Widths

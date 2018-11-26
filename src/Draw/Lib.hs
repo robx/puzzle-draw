@@ -8,12 +8,10 @@ module Draw.Lib where
 import Diagrams.Prelude
 
 import Graphics.SVGFonts.Text (TextOpts(..), Mode(..), Spacing(..), textSVG')
-import Graphics.SVGFonts.Fonts (bit)
-import Graphics.SVGFonts.ReadFont (PreparedFont, loadFont)
 
 import Control.Arrow ((***))
 
-import Paths_puzzle_draw (getDataFileName)
+import Draw.Font
 
 type Backend' b = (V b ~ V2, N b ~ Double,
                    Renderable (Path V2 Double) b, Backend b V2 Double)
@@ -100,8 +98,6 @@ fit f a = scale (f / m) a
     where m = max (diameter unitX a)
                   (diameter unitY a)
 
-type Font = PreparedFont Double
-
 -- | Write text that is centered both vertically and horizontally and that
 -- has an envelope. Sized such that single capital characters fit nicely
 -- into a square of size @1@.
@@ -112,18 +108,6 @@ text'' fnt t = stroke (textSVG' (TextOpts fnt INSIDE_H KERN False 1 1) t)
   where
     rfc :: (HasStyle a, InSpace V2 Double a) => Colour Double -> a -> a
     rfc = recommendFillColor
-
-fontGenLight :: IO Font
-fontGenLight = getDataFileName "data/fonts/gen-light.svg" >>= loadFont
-
-fontAnelizaLight :: IO Font
-fontAnelizaLight = getDataFileName "data/fonts/aneliza-light.svg" >>= loadFont
-
-fontAnelizaRegular :: IO Font
-fontAnelizaRegular = getDataFileName "data/fonts/aneliza-regular.svg" >>= loadFont
-
-fontBit :: IO Font
-fontBit = bit
 
 -- | Variant of 'phantom' that forces the argument backend type.
 phantom' :: Backend' b => Diagram b -> Diagram b

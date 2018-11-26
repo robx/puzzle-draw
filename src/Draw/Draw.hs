@@ -41,6 +41,7 @@ module Draw.Draw (
 
 import Diagrams.Prelude hiding (render)
 
+import Draw.Font
 import Draw.Lib
 import Draw.Widths
 

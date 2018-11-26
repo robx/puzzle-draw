@@ -13,6 +13,7 @@ import Data.Compose
 import Data.PuzzleTypes (checkType, typeOptions)
 import Draw.Draw
 import Draw.Code
+import Draw.Font
 import Draw.Lib
 
 import Options.Applicative
