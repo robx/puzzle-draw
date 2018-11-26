@@ -102,9 +102,6 @@ puzzleOpts = PuzzleOpts
                 Nothing -> Left "unknown format")
     fmts = "(" ++ intercalate ", " (map extension formats) ++ ")"
 
-cmtopoint :: Double -> Double
-cmtopoint = (* 28.3464567)
-
 outputSuffix :: OutputChoice -> String
 outputSuffix DrawPuzzle = ""
 outputSuffix DrawSolution = "-sol"
