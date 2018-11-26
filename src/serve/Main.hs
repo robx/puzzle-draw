@@ -93,10 +93,14 @@ decodeAndDrawPuzzle fmt oc b =
      BackendSVG -> withSize (renderBytesSVG fmt) (dec b >>= drawP)
      BackendRasterific -> withSize (renderBytesRasterific fmt) (dec b >>= drawP)
   where
+    u = case fmt of PDF -> Points
+                    _ -> Pixels
+    withSize :: (Monad m, Backend' b) => (SizeSpec V2 Double -> Diagram b -> BL.ByteString) -> m (Diagram b) -> m BL.ByteString
     withSize f x = do
       d <- x
-      let w = mkWidth . toOutputWidth Pixels . fst . diagramSize $ d
-      return $ f w d
+      let (w, h) = diagramSize d
+          sz = mkSizeSpec2D (Just $ toOutputWidth u w) (Just $ toOutputWidth u h)
+      return $ f sz d
     dec x = case decodeEither' x of
       Left e -> Left $ show e
       Right y -> Right y

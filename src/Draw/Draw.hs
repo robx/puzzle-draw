@@ -16,6 +16,7 @@ module Draw.Draw (
     OutputChoice(..),
     render,
     Unit(..),
+    DiagramSize,
     diagramSize,
     toOutputWidth,
     CodeDiagrams(..),
@@ -112,7 +113,9 @@ data Unit = Pixels | Points
 cmtopoint :: Double -> Double
 cmtopoint = (* 28.3464567)
 
-diagramSize :: Backend' b => Diagram b -> (Double, Double)
+type DiagramSize = (Double, Double)
+
+diagramSize :: Backend' b => Diagram b -> DiagramSize
 diagramSize = unr2 . boxExtents . boundingBox
 
 toOutputWidth :: Unit -> Double -> Double

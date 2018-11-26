@@ -55,8 +55,8 @@ config opts =
     var <- fontAnelizaRegular
     bit <- fontBit
     let device = case _format opts of
-                     PNG -> Screen
-                     _   -> Print
+                     PDF -> Print
+                     _ -> Screen
     return $ Config device var bit
 
 puzzleOpts :: Parser PuzzleOpts
@@ -107,17 +107,17 @@ outputSuffix DrawPuzzle = ""
 outputSuffix DrawSolution = "-sol"
 outputSuffix DrawExample = ""
 
-toRenderOpts :: FilePath -> OutputChoice -> (Double, Double) -> PuzzleOpts -> RenderOpts
+toRenderOpts :: FilePath -> OutputChoice -> DiagramSize -> PuzzleOpts -> RenderOpts
 toRenderOpts input oc (w, h) opts = RenderOpts out sz
   where
-    f = _format opts
-    u = case f of PNG -> Pixels
-                  _    -> Points
+    fmt = _format opts
+    u = case fmt of PDF -> Points
+                    _ -> Pixels
     w' = toOutputWidth u w * (_scale opts)
     h' = toOutputWidth u h * (_scale opts)
     sz = mkSizeSpec2D (Just w') (Just h')
     base = takeBaseName input
-    out = _dir opts </> (base ++ outputSuffix oc) <.> extension f
+    out = _dir opts </> (base ++ outputSuffix oc) <.> extension fmt
 
 defaultOpts :: Parser a -> IO a
 defaultOpts optsParser = do
