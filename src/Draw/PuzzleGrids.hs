@@ -4,40 +4,44 @@
 {-# LANGUAGE ConstraintKinds           #-}
 
 module Draw.PuzzleGrids
-    (
-      drawIntGrid
-    , drawCharGrid
-    , outsideIntGrid
-    , drawSlitherGrid
-    , drawTightGrid
-    , sudokugrid
-    , drawWordsClues
-    , drawOutsideGrid
-    , drawMultiOutsideGrid
-    , drawOutsideGridN
-    , drawMultiOutsideGridN
-    , placeOutside
-    , placeMultiOutside
-    , placeMultiOutsideGW
-    ) where
+  ( drawIntGrid
+  , drawCharGrid
+  , outsideIntGrid
+  , drawSlitherGrid
+  , drawTightGrid
+  , sudokugrid
+  , drawWordsClues
+  , drawOutsideGrid
+  , drawMultiOutsideGrid
+  , drawOutsideGridN
+  , drawMultiOutsideGridN
+  , placeOutside
+  , placeMultiOutside
+  , placeMultiOutsideGW
+  )
+where
 
-import Diagrams.Prelude hiding (size, N)
+import           Diagrams.Prelude        hiding ( size
+                                                , N
+                                                )
 
-import qualified Data.Map.Strict as Map
-import Data.Maybe (maybeToList, fromMaybe)
-import Data.Foldable (fold)
+import qualified Data.Map.Strict               as Map
+import           Data.Maybe                     ( maybeToList
+                                                , fromMaybe
+                                                )
+import           Data.Foldable                  ( fold )
 
-import Data.Grid
-import Data.GridShape
-import Data.Elements
-import Data.Sudoku
+import           Data.Grid
+import           Data.GridShape
+import           Data.Elements
+import           Data.Sudoku
 
-import Draw.Draw
-import Draw.Lib
-import Draw.Widths
-import Draw.Style
-import Draw.Grid
-import Draw.Elements
+import           Draw.Draw
+import           Draw.Lib
+import           Draw.Widths
+import           Draw.Style
+import           Draw.Grid
+import           Draw.Elements
 
 drawCharGrid :: Backend' b => Grid C (Maybe Char) -> Drawing b
 drawCharGrid = placeGrid . fmap drawChar . clues <> grid gDefault
@@ -68,26 +72,27 @@ placeMultiOutside
 placeMultiOutside ocs = Drawing pmo
  where
   pmo cfg = foldMap (place_ cfg) (multiOutsideClues ocs)
-  place_ cfg (clueSets, dir) =
-    let
-      clueSetsD = fmap (map (diagram cfg)) $ clueSets
-      minDiam   = diameter (r2i dir) (diagram cfg (drawChar 'M') :: D V2 Double)
-      elt =
-        max minDiam
-          . fromMaybe 0
-          . fmap getMax
-          . foldMap (maxSize dir)
-          $ clueSetsD
-      mrg = 1/3
-      pt :: (ToPoint k) => k -> Int -> P2 Double
-      pt base i =
-        toPoint base
-          .+^ (  (-(1 / 2) + mrg + (1 / 2) * elt + fromIntegral i * (elt + mrg))
-              *^ r2i dir
-              )
-      placeRow base ds = zipWith (\d i -> d # moveTo (pt base i)) ds [0 ..]
-    in
-      fold $ Map.foldMapWithKey placeRow clueSetsD
+  place_ cfg (clueSets, dir)
+    = let
+        clueSetsD = fmap (map (diagram cfg)) $ clueSets
+        minDiam =
+          diameter (r2i dir) (diagram cfg (drawChar 'M') :: D V2 Double)
+        elt =
+          max minDiam
+            . fromMaybe 0
+            . fmap getMax
+            . foldMap (maxSize dir)
+            $ clueSetsD
+        mrg = 1 / 3
+        pt :: (ToPoint k) => k -> Int -> P2 Double
+        pt base i =
+          toPoint base
+            .+^ ((-(1 / 2) + mrg + (1 / 2) * elt + fromIntegral i * (elt + mrg))
+                *^ r2i dir
+                )
+        placeRow base ds = zipWith (\d i -> d # moveTo (pt base i)) ds [0 ..]
+      in
+        fold $ Map.foldMapWithKey placeRow clueSetsD
   maxSize dir = foldMap (Just . Max . diameter (r2i dir))
 
 placeMultiOutsideGW
@@ -116,7 +121,10 @@ placeOutside = placeMultiOutside . fmap maybeToList
 
 drawOutsideGrid :: Backend' b => OutsideClues C (Maybe String) -> Drawing b
 drawOutsideGrid =
-  placeOutside . fmap (fmap (scale outsideScale . text')) <> grid gDefault . outsideGrid
+  placeOutside
+    .  fmap (fmap (scale outsideScale . text'))
+    <> grid gDefault
+    .  outsideGrid
 
 drawOutsideGridN :: Backend' b => OutsideClues N (Maybe String) -> Drawing b
 drawOutsideGridN =

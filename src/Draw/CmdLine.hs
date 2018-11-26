@@ -1,32 +1,38 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Draw.CmdLine 
-    ( renderFileRasterific
-    , renderFileSVG
-    , renderBytesRasterific
-    , renderBytesSVG
-    , backend
-    , BackendType(..)
-    , RenderOpts(..)
-    , Format(..)
-    , lookupFormat
-    , extension
-    , formats
-    )
-  where
+module Draw.CmdLine
+  ( renderFileRasterific
+  , renderFileSVG
+  , renderBytesRasterific
+  , renderBytesSVG
+  , backend
+  , BackendType(..)
+  , RenderOpts(..)
+  , Format(..)
+  , lookupFormat
+  , extension
+  , formats
+  )
+where
 
-import Diagrams.Prelude hiding (value, option, (<>), Result)
+import           Diagrams.Prelude        hiding ( value
+                                                , option
+                                                , (<>)
+                                                , Result
+                                                )
 
-import Data.ByteString.Lazy (ByteString)
-import Graphics.Svg.Core (renderBS)
-import qualified Data.Text as Text
-import Codec.Picture (pixelMap)
-import Codec.Picture.Types (convertPixel, dropTransparency)
-import Codec.Picture.Png (encodePng)
-import Codec.Picture.Jpg (encodeJpeg)
+import           Data.ByteString.Lazy           ( ByteString )
+import           Graphics.Svg.Core              ( renderBS )
+import qualified Data.Text                     as Text
+import           Codec.Picture                  ( pixelMap )
+import           Codec.Picture.Types            ( convertPixel
+                                                , dropTransparency
+                                                )
+import           Codec.Picture.Png              ( encodePng )
+import           Codec.Picture.Jpg              ( encodeJpeg )
 
-import qualified Diagrams.Backend.Rasterific as Rasterific
-import qualified Diagrams.Backend.SVG as SVG
+import qualified Diagrams.Backend.Rasterific   as Rasterific
+import qualified Diagrams.Backend.SVG          as SVG
 
 data RenderOpts = RenderOpts
   { _file :: FilePath
@@ -34,34 +40,37 @@ data RenderOpts = RenderOpts
   }
 
 renderFileRasterific :: RenderOpts -> Diagram Rasterific.B -> IO ()
-renderFileRasterific ropts = Rasterific.renderRasterific (_file ropts) (_size ropts)
+renderFileRasterific ropts =
+  Rasterific.renderRasterific (_file ropts) (_size ropts)
 
 renderFileSVG :: RenderOpts -> Diagram SVG.B -> IO ()
 renderFileSVG ropts = SVG.renderSVG (_file ropts) (_size ropts)
 
-renderBytesRasterific :: Format -> SizeSpec V2 Double -> Diagram Rasterific.B -> ByteString
-renderBytesRasterific fmt sz dia =
-  case fmt of
-    PDF -> Rasterific.renderDiaPdf (round w) (round h) sz dia
-    PNG -> encodePng $ renderDia Rasterific.Rasterific (Rasterific.RasterificOptions sz) dia
-    JPG -> encodeJpeg . pixelMap (convertPixel . dropTransparency)
-            $ renderDia Rasterific.Rasterific (Rasterific.RasterificOptions sz) dia
-    _ -> error "unsupported format"
-  where
-    V2 w' h' = boxExtents (boundingBox dia)
-    aspectRatio = h' / w'
-    (w, h) =
-      case getSpec sz of
-        V2 (Just ww) (Just hh) -> (ww, hh)
-        V2 (Just ww) Nothing  -> (ww, aspectRatio * ww)
-        V2 Nothing (Just hh)  -> (hh / aspectRatio, hh)
-        V2 Nothing Nothing   -> (100, 100)
+renderBytesRasterific
+  :: Format -> SizeSpec V2 Double -> Diagram Rasterific.B -> ByteString
+renderBytesRasterific fmt sz dia = case fmt of
+  PDF -> Rasterific.renderDiaPdf (round w) (round h) sz dia
+  PNG -> encodePng
+    $ renderDia Rasterific.Rasterific (Rasterific.RasterificOptions sz) dia
+  JPG -> encodeJpeg . pixelMap (convertPixel . dropTransparency) $ renderDia
+    Rasterific.Rasterific
+    (Rasterific.RasterificOptions sz)
+    dia
+  _ -> error "unsupported format"
+ where
+  V2 w' h'    = boxExtents (boundingBox dia)
+  aspectRatio = h' / w'
+  (w, h)      = case getSpec sz of
+    V2 (Just ww) (Just hh) -> (ww, hh)
+    V2 (Just ww) Nothing   -> (ww, aspectRatio * ww)
+    V2 Nothing   (Just hh) -> (hh / aspectRatio, hh)
+    V2 Nothing   Nothing   -> (100, 100)
 
 renderBytesSVG :: Format -> SizeSpec V2 Double -> Diagram SVG.B -> ByteString
-renderBytesSVG fmt sz =
-  case fmt of
-    SVG -> renderBS . renderDia SVG.SVG (SVG.SVGOptions sz Nothing (Text.pack "") [] True)
-    _ -> error "unsupported format"
+renderBytesSVG fmt sz = case fmt of
+  SVG -> renderBS
+    . renderDia SVG.SVG (SVG.SVGOptions sz Nothing (Text.pack "") [] True)
+  _ -> error "unsupported format"
 
 data Format = PNG | PDF | SVG | JPG
 
@@ -76,18 +85,18 @@ backend b = case b of
 
 lookupFormat :: String -> Maybe Format
 lookupFormat f = case f of
-    "png" -> Just PNG
-    "pdf" -> Just PDF
-    "svg" -> Just SVG
-    "jpg" -> Just JPG
-    _ -> Nothing
+  "png" -> Just PNG
+  "pdf" -> Just PDF
+  "svg" -> Just SVG
+  "jpg" -> Just JPG
+  _     -> Nothing
 
 extension :: Format -> String
 extension f = case f of
-    PNG -> "png"
-    PDF -> "pdf"
-    SVG -> "svg"
-    JPG -> "jpg"
+  PNG -> "png"
+  PDF -> "pdf"
+  SVG -> "svg"
+  JPG -> "jpg"
 
 formats :: [Format]
 formats = [PNG, JPG, PDF, SVG]

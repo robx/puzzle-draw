@@ -1,20 +1,20 @@
 module Draw.Style
-    ( LineStyle (..)
-    , FrameStyle (..)
-    , VertexStyle (..)
-    , GridStyle (..)
+  ( LineStyle(..)
+  , FrameStyle(..)
+  , VertexStyle(..)
+  , GridStyle(..)
+  , gDefault
+  , gDashed
+  , gDashedThick
+  , gPlain
+  , gPlainDashed
+  , gSlither
+  )
+where
 
-    , gDefault
-    , gDashed
-    , gDashedThick
-    , gPlain
-    , gPlainDashed
-    , gSlither
-    ) where
+import           Draw.Widths
 
-import Draw.Widths
-
-import Diagrams.Prelude
+import           Diagrams.Prelude
 
 data LineStyle =
       LineNone
@@ -39,12 +39,15 @@ data GridStyle = GridStyle
     }
 
 gDefault, gSlither, gDashed, gDashedThick, gPlain, gPlainDashed :: GridStyle
-gDefault = GridStyle LineThin LineThin
-                     (Just (FrameStyle framewidthfactor black)) VertexNone
+gDefault = GridStyle LineThin
+                     LineThin
+                     (Just (FrameStyle framewidthfactor black))
+                     VertexNone
 gSlither = GridStyle LineNone LineNone Nothing VertexDot
-gDashed  = GridStyle LineDashed LineThin
-                     (Just (FrameStyle framewidthfactor black)) VertexNone
-gDashedThick  = GridStyle LineDashed LineThick
-                          Nothing VertexNone
-gPlain   = GridStyle LineThin LineThin Nothing VertexNone
+gDashed = GridStyle LineDashed
+                    LineThin
+                    (Just (FrameStyle framewidthfactor black))
+                    VertexNone
+gDashedThick = GridStyle LineDashed LineThick Nothing VertexNone
+gPlain = GridStyle LineThin LineThin Nothing VertexNone
 gPlainDashed = GridStyle LineDashed LineDashed Nothing VertexNone

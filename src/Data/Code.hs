@@ -1,9 +1,9 @@
 module Data.Code where
 
-import Data.Map.Strict (Map)
+import           Data.Map.Strict                ( Map )
 
-import Data.Grid
-import Data.GridShape
+import           Data.Grid
+import           Data.GridShape
 
 type Code = [CodePart]
 
