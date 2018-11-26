@@ -2,8 +2,8 @@
 
 module Parse.Puzzle where
 
-import Data.Yaml
-import Control.Applicative
+import           Data.Yaml
+import           Control.Applicative
 
 data TypedPuzzle = TP
   { _tpType :: Maybe String

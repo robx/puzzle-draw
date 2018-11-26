@@ -4,32 +4,41 @@
 
 module Parse.Util where
 
-import Prelude hiding (mapM)
+import           Prelude                 hiding ( mapM )
 
-import Control.Applicative
-import Control.Arrow
-import Control.Monad hiding (mapM)
+import           Control.Applicative
+import           Control.Arrow
+import           Control.Monad           hiding ( mapM )
 
-import Data.List (sortBy, intersect)
-import Data.Maybe (catMaybes, fromMaybe, isJust, fromJust)
-import Data.Ord (comparing)
-import Data.Either (isRight)
-import qualified Data.Map.Strict as Map
-import qualified Data.HashMap.Strict as HMap
-import Data.Traversable (mapM)
-import Data.Monoid ((<>))
+import           Data.List                      ( sortBy
+                                                , intersect
+                                                )
+import           Data.Maybe                     ( catMaybes
+                                                , fromMaybe
+                                                , isJust
+                                                , fromJust
+                                                )
+import           Data.Ord                       ( comparing )
+import           Data.Either                    ( isRight )
+import qualified Data.Map.Strict               as Map
+import qualified Data.HashMap.Strict           as HMap
+import           Data.Traversable               ( mapM )
+import           Data.Monoid                    ( (<>) )
 
-import Data.Char (digitToInt, isAlpha, isDigit)
-import Text.Read (readMaybe)
-import qualified Data.Text as T
+import           Data.Char                      ( digitToInt
+                                                , isAlpha
+                                                , isDigit
+                                                )
+import           Text.Read                      ( readMaybe )
+import qualified Data.Text                     as T
 
-import Data.Yaml
+import           Data.Yaml
 
-import Data.Grid
-import Data.GridShape
-import Data.Elements
+import           Data.Grid
+import           Data.GridShape
+import           Data.Elements
 
-import Parse.Parsec
+import           Parse.Parsec
 
 type Path = [String]
 
@@ -38,18 +47,18 @@ impossible = error "impossible"
 
 field :: Path -> Value -> Parser Value
 field = field' . map T.pack
-  where
-    field' [] v              = pure v
-    field' (f:fs) (Object v) = v .: f >>= field' fs
-    field' (f:_)  _          = fail $ "expected field '" ++ T.unpack f ++ "'"
+ where
+  field' []       v          = pure v
+  field' (f : fs) (Object v) = v .: f >>= field' fs
+  field' (f : _ ) _          = fail $ "expected field '" ++ T.unpack f ++ "'"
 
 parseFrom :: Path -> (Value -> Parser b) -> Value -> Parser b
 parseFrom fs p v = field fs v >>= p
 
 chars :: [Char] -> Char -> Parser Char
 chars cs c = if c `elem` cs
-                 then pure c
-                 else (fail $ "got '" ++ [c] ++ "', expected '" ++ cs ++ "'")
+  then pure c
+  else (fail $ "got '" ++ [c] ++ "', expected '" ++ cs ++ "'")
 
 char :: Char -> Char -> Parser Char
 char c = chars [c]
@@ -131,22 +140,24 @@ instance Functor Border where
 data BorderedRect a b = BorderedRect !Int !Int [[a]] (Border b)
     deriving Show
 
-parseBorderedRect :: (Char -> Parser a) -> (Char -> Parser b)
-                  -> Value -> Parser (BorderedRect a b)
+parseBorderedRect
+  :: (Char -> Parser a)
+  -> (Char -> Parser b)
+  -> Value
+  -> Parser (BorderedRect a b)
 parseBorderedRect parseIn parseOut v = do
-    Rect w h ls <- parseJSON v
-    let b = Border (reverse . map head . middle h $ ls)
-                   (reverse . map last . middle h $ ls)
-                   (middle w . last $ ls)
-                   (middle w . head $ ls)
-        ls' = map (middle w) . middle h $ ls
-    mapM_ ((parseChar :: Char -> Parser Space) . flip ($) ls)
-          [head . head, head . last, last . head, last . last]
-    lsparsed <- mapM (mapM parseIn) ls'
-    bparsed  <- mapM parseOut b
-    return $ BorderedRect (w-2) (h-2) lsparsed bparsed
-  where
-    middle len = take (len - 2) . drop 1
+  Rect w h ls <- parseJSON v
+  let b = Border (reverse . map head . middle h $ ls)
+                 (reverse . map last . middle h $ ls)
+                 (middle w . last $ ls)
+                 (middle w . head $ ls)
+      ls' = map (middle w) . middle h $ ls
+  mapM_ ((parseChar :: Char -> Parser Space) . flip ($) ls)
+        [head . head, head . last, last . head, last . last]
+  lsparsed <- mapM (mapM parseIn) ls'
+  bparsed  <- mapM parseOut b
+  return $ BorderedRect (w - 2) (h - 2) lsparsed bparsed
+  where middle len = take (len - 2) . drop 1
 
 instance (FromChar a, FromChar b) => FromJSON (BorderedRect a b) where
     parseJSON = parseBorderedRect parseChar parseChar
@@ -182,8 +193,8 @@ instance FromChar Blank where
 
 parseCharJSON :: FromChar a => Value -> Parser a
 parseCharJSON v = do
-    [c] <- parseJSON v
-    parseChar c
+  [c] <- parseJSON v
+  parseChar c
 
 instance FromJSON Blank where
    parseJSON = parseCharJSON
@@ -268,11 +279,12 @@ instance FromChar a => FromChar (Maybe a) where
     parseChar = optional . parseChar
 
 listListToMap :: [[a]] -> Grid Coord a
-listListToMap ls = Map.fromList . concat
-                 . zipWith (\y -> zipWith (\x -> (,) (x, y)) [0..]) [h-1,h-2..]
-                 $ ls
-  where
-    h = length ls
+listListToMap ls =
+  Map.fromList
+    . concat
+    . zipWith (\y -> zipWith (\x -> (,) (x, y)) [0 ..]) [h - 1, h - 2 ..]
+    $ ls
+  where h = length ls
 
 rectToCoordGrid :: Rect a -> Grid Coord a
 rectToCoordGrid (Rect _ _ ls) = listListToMap ls
@@ -288,9 +300,9 @@ blankToMaybe'' = either (const Nothing) Just
 
 rectToIrregGrid :: Rect (Either Empty a) -> Grid Coord a
 rectToIrregGrid = fmap fromRight . Map.filter isRight . rectToCoordGrid
-  where
-    fromRight (Right r) = r
-    fromRight _         = impossible
+ where
+  fromRight (Right r) = r
+  fromRight _         = impossible
 
 newtype Shaded = Shaded { unShaded :: Bool }
 
@@ -302,44 +314,41 @@ instance FromChar Shaded where
 parseShadedGrid :: Key k => Value -> Parser (Grid k Bool)
 parseShadedGrid v = fmap unShaded <$> parseGrid v
 
-parseCoordGrid :: (FromChar a)
-               => Value -> Parser (Grid Coord a)
+parseCoordGrid :: (FromChar a) => Value -> Parser (Grid Coord a)
 parseCoordGrid v = rectToCoordGrid <$> parseJSON v
 
-parseGrid :: (Key k, FromChar a)
-          => Value -> Parser (Grid k a)
+parseGrid :: (Key k, FromChar a) => Value -> Parser (Grid k a)
 parseGrid v = fromCoordGrid <$> parseCoordGrid v
 
-parseGridWith :: Key k
-              => (Char -> Parser a) -> Value -> Parser (Grid k a)
+parseGridWith :: Key k => (Char -> Parser a) -> Value -> Parser (Grid k a)
 parseGridWith pChar v = traverse pChar =<< parseGrid v
 
-parseWithReplacement :: FromChar a =>
-    (Char -> Maybe a) -> Char -> Parser a
+parseWithReplacement :: FromChar a => (Char -> Maybe a) -> Char -> Parser a
 parseWithReplacement replace c = maybe (parseChar c) pure (replace c)
 
-parseSpacedGrid :: (Key k, FromString a)
-                => Value -> Parser (Grid k a)
+parseSpacedGrid :: (Key k, FromString a) => Value -> Parser (Grid k a)
 parseSpacedGrid v = fromCoordGrid . rectToCoordGrid . unSpaced <$> parseJSON v
 
 parseCharMap :: FromJSON a => Value -> Parser (Map.Map Char a)
 parseCharMap v = do
-    m <- parseJSON v
-    guard . all (\k -> length k == 1) . Map.keys $ m
-    return $ Map.mapKeys head m
+  m <- parseJSON v
+  guard . all (\k -> length k == 1) . Map.keys $ m
+  return $ Map.mapKeys head m
 
-parseExtGrid' :: (Key k, FromJSON a, FromChar b)
-              => (a -> b) -> Value -> Parser (Grid k b)
+parseExtGrid'
+  :: (Key k, FromJSON a, FromChar b) => (a -> b) -> Value -> Parser (Grid k b)
 parseExtGrid' _ v@(String _) = parseGrid v
-parseExtGrid' f v = do
-    repl <- fmap f <$> parseFrom ["replace"] parseCharMap v
-    parseFrom ["grid"] (parseGridWith
-                        (parseWithReplacement (`Map.lookup` repl))) v
+parseExtGrid' f v            = do
+  repl <- fmap f <$> parseFrom ["replace"] parseCharMap v
+  parseFrom ["grid"]
+            (parseGridWith (parseWithReplacement (`Map.lookup` repl)))
+            v
 
 parseExtGrid :: (Key k, FromChar a, FromJSON a) => Value -> Parser (Grid k a)
 parseExtGrid = parseExtGrid' id
 
-parseExtClueGrid :: (Key k, FromChar a, FromJSON a) => Value -> Parser (Grid k (Maybe a))
+parseExtClueGrid
+  :: (Key k, FromChar a, FromJSON a) => Value -> Parser (Grid k (Maybe a))
 parseExtClueGrid v = fmap blankToMaybe <$> parseExtGrid' Right v
 
 fromCoordGrid :: Key k => Grid Coord a -> Grid k a
@@ -351,14 +360,14 @@ fromCoordEdge (E c d) = E (fromCoord c) d
 fromCoordEdges :: Key k => [Edge Coord] -> [Edge k]
 fromCoordEdges = map fromCoordEdge
 
-parseClueGrid :: (FromChar a, Key k)
-              => Value -> Parser (Grid k (Maybe a))
+parseClueGrid :: (FromChar a, Key k) => Value -> Parser (Grid k (Maybe a))
 parseClueGrid v = fmap blankToMaybe <$> parseGrid v
 
 parseClueGrid' :: (FromChar a, Key k) => Value -> Parser (Grid k (Maybe a))
 parseClueGrid' v = fmap blankToMaybe' <$> parseGrid v
 
-parseSpacedClueGrid :: (Key k, FromString a) => Value -> Parser (Grid k (Maybe a))
+parseSpacedClueGrid
+  :: (Key k, FromString a) => Value -> Parser (Grid k (Maybe a))
 parseSpacedClueGrid v = fmap blankToMaybe <$> parseSpacedGrid v
 
 parseIrregGrid :: (Key k, FromChar a) => Value -> Parser (Grid k a)
@@ -375,24 +384,28 @@ parseEdges v = filterPlainEdges <$> parseAnnotatedEdges v
 
 filterPlainEdges :: Map.Map (Edge k) Char -> [Edge k]
 filterPlainEdges = Map.keys . Map.filterWithKey p
-  where
-    p (E _ Horiz) '-' = True
-    p (E _ Vert)  '|' = True
-    p _           _   = False
+ where
+  p (E _ Horiz) '-' = True
+  p (E _ Vert ) '|' = True
+  p _           _   = False
 
-parseAnnotatedEdges :: (Key k, FromChar a) => Value -> Parser (Map.Map (Edge k) a)
+parseAnnotatedEdges
+  :: (Key k, FromChar a) => Value -> Parser (Map.Map (Edge k) a)
 parseAnnotatedEdges v = do
-    g <- readEdges <$> parseCoordGrid v
-    Map.mapKeys fromCoordEdge <$> traverse parseChar g
+  g <- readEdges <$> parseCoordGrid v
+  Map.mapKeys fromCoordEdge <$> traverse parseChar g
 
 readEdges :: Grid Coord Char -> Map.Map (Edge Coord) Char
-readEdges = Map.mapKeysMonotonic fromJust . Map.filterWithKey (const . isJust) . Map.mapKeys toEdge
-  where
-    toEdge c@(x, y) = case (x `mod` 2, y `mod` 2) of
-                        (1, 0) -> Just $ E (div2 c) Horiz
-                        (0, 1) -> Just $ E (div2 c) Vert
-                        _      -> Nothing
-    div2 (x', y') = (x' `div` 2, y' `div` 2)
+readEdges =
+  Map.mapKeysMonotonic fromJust
+    . Map.filterWithKey (const . isJust)
+    . Map.mapKeys toEdge
+ where
+  toEdge c@(x, y) = case (x `mod` 2, y `mod` 2) of
+    (1, 0) -> Just $ E (div2 c) Horiz
+    (0, 1) -> Just $ E (div2 c) Vert
+    _      -> Nothing
+  div2 (x', y') = (x' `div` 2, y' `div` 2)
 
 parseGridChars :: FromChar a => Grid k Char -> Parser (Grid k a)
 parseGridChars = traverse parseChar
@@ -403,29 +416,30 @@ parseGridChars = traverse parseChar
 --      |1|2 3
 --      *-o
 -- to a grid of masyu pearls, a grid of integers, and some annotated edges.
-parseEdgeGrid :: (FromChar a, FromChar b, FromChar c) =>
-                 Value -> Parser (Grid N a, Grid C b, Map.Map (Edge N) c)
-parseEdgeGrid v = uncurry (,,) <$>
-                  parseBoth <*>
-                  parseAnnotatedEdges v
-  where
-    parseBoth = do
-        g <- parseCoordGrid v
-        let (gn, gc) = halveGrid g
-        gn' <- parseGridChars gn
-        gc' <- parseGridChars gc
-        return (gn', gc')
-    both f (x, y) = (f x, f y)
-    halveGrid m =
-        (fromCoordGrid . divkeys $ mnode, fromCoordGrid . divkeys $ mcell)
-      where
-        mnode = Map.filterWithKey (const . uncurry (&&) . both even) m
-        mcell = Map.filterWithKey (const . uncurry (&&) . both odd)  m
-        divkeys = Map.mapKeys (both (`div` 2))
+parseEdgeGrid
+  :: (FromChar a, FromChar b, FromChar c)
+  => Value
+  -> Parser (Grid N a, Grid C b, Map.Map (Edge N) c)
+parseEdgeGrid v = uncurry (,,) <$> parseBoth <*> parseAnnotatedEdges v
+ where
+  parseBoth = do
+    g <- parseCoordGrid v
+    let (gn, gc) = halveGrid g
+    gn' <- parseGridChars gn
+    gc' <- parseGridChars gc
+    return (gn', gc')
+  both f (x, y) = (f x, f y)
+  halveGrid m =
+    (fromCoordGrid . divkeys $ mnode, fromCoordGrid . divkeys $ mcell)
+   where
+    mnode   = Map.filterWithKey (const . uncurry (&&) . both even) m
+    mcell   = Map.filterWithKey (const . uncurry (&&) . both odd) m
+    divkeys = Map.mapKeys (both (`div` 2))
 
-parsePlainEdgeGrid :: (FromChar a, FromChar b) =>
-                 Value -> Parser (Grid N a, Grid C b, [Edge N])
-parsePlainEdgeGrid v = (\(a,b,c) -> (a, b, filterPlainEdges c)) <$> parseEdgeGrid v
+parsePlainEdgeGrid
+  :: (FromChar a, FromChar b) => Value -> Parser (Grid N a, Grid C b, [Edge N])
+parsePlainEdgeGrid v =
+  (\(a, b, c) -> (a, b, filterPlainEdges c)) <$> parseEdgeGrid v
 
 -- | Parse a grid of edges with values at the nodes.
 --
@@ -433,21 +447,17 @@ parsePlainEdgeGrid v = (\(a,b,c) -> (a, b, filterPlainEdges c)) <$> parseEdgeGri
 --      | |
 --      *-o
 -- to a grid of masyu pearls and some edges.
-parseNodeEdges :: FromChar a =>
-                  Value -> Parser (Grid N a, [Edge N])
+parseNodeEdges :: FromChar a => Value -> Parser (Grid N a, [Edge N])
 parseNodeEdges v = proj13 <$> parsePlainEdgeGrid v
-  where
-    proj13 :: (Grid N a, Grid C Char, [Edge N])
-              -> (Grid N a, [Edge N])
-    proj13 (x,_,z) = (x,z)
+ where
+  proj13 :: (Grid N a, Grid C Char, [Edge N]) -> (Grid N a, [Edge N])
+  proj13 (x, _, z) = (x, z)
 
-parseCellEdges :: FromChar a =>
-                  Value -> Parser (Grid C a, [Edge N])
+parseCellEdges :: FromChar a => Value -> Parser (Grid C a, [Edge N])
 parseCellEdges v = proj23 <$> parsePlainEdgeGrid v
-  where
-    proj23 :: (Grid N Char, Grid C a, [Edge N])
-              -> (Grid C a, [Edge N])
-    proj23 (_,y,z) = (y,z)
+ where
+  proj23 :: (Grid N Char, Grid C a, [Edge N]) -> (Grid C a, [Edge N])
+  proj23 (_, y, z) = (y, z)
 
 instance FromChar Dir' where
     parseChar 'u' = pure U
@@ -462,67 +472,75 @@ instance FromChar Dir' where
 
 type ThermoRect = Rect (Either Blank (Either Int Alpha))
 
-partitionEithers :: Ord k => Map.Map k (Either a b) -> (Map.Map k a, Map.Map k b)
+partitionEithers
+  :: Ord k => Map.Map k (Either a b) -> (Map.Map k a, Map.Map k b)
 partitionEithers = Map.foldrWithKey insertEither (Map.empty, Map.empty)
-
-  where
-    insertEither k = either (first . Map.insert k) (second . Map.insert k)
+  where insertEither k = either (first . Map.insert k) (second . Map.insert k)
 
 parseThermos :: Grid C Alpha -> Parser [Thermometer]
 parseThermos m = catMaybes <$> mapM parseThermo (Map.keys m')
-  where
-    m' = fmap unAlpha m
-    parseThermo :: C -> Parser (Maybe Thermometer)
-    parseThermo p | not (isStart p)           = pure Nothing
-                  | not (isAlmostIsolated p)  = fail $ show p ++ " not almost isolated"
-                  | otherwise                 = Just <$> parseThermo' p
-    parseThermo' :: C -> Parser Thermometer
-    parseThermo' p = do
-        q <- next p
-        maybe (fail "no succ for thermo bulb") (fmap (p:) . parseThermo'') q
-    parseThermo'' :: C -> Parser Thermometer
-    parseThermo'' p = do
-        q <- next p
-        maybe (pure [p]) (fmap (p:) . parseThermo'') q
-    next :: C -> Parser (Maybe C)
-    next p = case succs p of
-        []   -> pure Nothing
-        [q]  -> pure (Just q)
-        _    -> fail "multiple successors"
-    succs      p = filter    (test ((==) . succ) p) . vertexNeighbours $ p
-    isStart    p = not . any (test ((==) . pred) p) . vertexNeighbours $ p
-    test f p q = maybe False (f (m' Map.! p)) (Map.lookup q m')
-    isAlmostIsolated p = all disjointSucc . vertexNeighbours $ p
-      where
-        disjointSucc q = null $ intersect (succs p) (succs' q)
-        succs' q = maybe [] (const $ succs q) (Map.lookup q m')
+ where
+  m' = fmap unAlpha m
+  parseThermo :: C -> Parser (Maybe Thermometer)
+  parseThermo p
+    | not (isStart p)          = pure Nothing
+    | not (isAlmostIsolated p) = fail $ show p ++ " not almost isolated"
+    | otherwise                = Just <$> parseThermo' p
+  parseThermo' :: C -> Parser Thermometer
+  parseThermo' p = do
+    q <- next p
+    maybe (fail "no succ for thermo bulb") (fmap (p :) . parseThermo'') q
+  parseThermo'' :: C -> Parser Thermometer
+  parseThermo'' p = do
+    q <- next p
+    maybe (pure [p]) (fmap (p :) . parseThermo'') q
+  next :: C -> Parser (Maybe C)
+  next p = case succs p of
+    []  -> pure Nothing
+    [q] -> pure (Just q)
+    _   -> fail "multiple successors"
+  succs p = filter (test ((==) . succ) p) . vertexNeighbours $ p
+  isStart p = not . any (test ((==) . pred) p) . vertexNeighbours $ p
+  test f p q = maybe False (f (m' Map.! p)) (Map.lookup q m')
+  isAlmostIsolated p = all disjointSucc . vertexNeighbours $ p
+   where
+    disjointSucc q = null $ intersect (succs p) (succs' q)
+    succs' q = maybe [] (const $ succs q) (Map.lookup q m')
 
 parseThermoGrid :: ThermoRect -> Parser (Grid C (Maybe Int), [Thermometer])
-parseThermoGrid (Rect _ _ ls) = (,) ints
-                              <$> parseThermos alphas
-  where
-    m = fromCoordGrid $ listListToMap ls
-    ints = either (const Nothing) (either Just (const Nothing)) <$> m
-    alphas = fmap fromRight . Map.filter isRight
-           . fmap fromRight . Map.filter isRight $ m
-    fromRight (Left _) = impossible
-    fromRight (Right x) = x
+parseThermoGrid (Rect _ _ ls) = (,) ints <$> parseThermos alphas
+ where
+  m    = fromCoordGrid $ listListToMap ls
+  ints = either (const Nothing) (either Just (const Nothing)) <$> m
+  alphas =
+    fmap fromRight
+      . Map.filter isRight
+      . fmap fromRight
+      . Map.filter isRight
+      $ m
+  fromRight (Left  _) = impossible
+  fromRight (Right x) = x
 
-parseOutsideGrid :: Key k =>
-                    (Char -> Parser a)
-                 -> (Char -> Parser b)
-                 -> Value -> Parser (OutsideClues k b, Grid k a)
+parseOutsideGrid
+  :: Key k
+  => (Char -> Parser a)
+  -> (Char -> Parser b)
+  -> Value
+  -> Parser (OutsideClues k b, Grid k a)
 parseOutsideGrid parseIn parseOut v = do
-    BorderedRect w h ls b <- parseBorderedRect parseIn parseOut v
-    return (outside b, fromCoordGrid . rectToCoordGrid $ Rect w h ls)
+  BorderedRect w h ls b <- parseBorderedRect parseIn parseOut v
+  return (outside b, fromCoordGrid . rectToCoordGrid $ Rect w h ls)
   where outside (Border l r b t) = OC l r b t
 
-parseOutsideGridMap :: (Key k, FromChar a, FromChar b)
-                    => (a -> c) -> (b -> d)
-                    -> Value -> Parser (OutsideClues k d, Grid k c)
+parseOutsideGridMap
+  :: (Key k, FromChar a, FromChar b)
+  => (a -> c)
+  -> (b -> d)
+  -> Value
+  -> Parser (OutsideClues k d, Grid k c)
 parseOutsideGridMap mapIn mapOut v = do
-    (o, g) <- parseOutsideGrid parseChar parseChar v
-    return (mapOut <$> o, mapIn <$> g)
+  (o, g) <- parseOutsideGrid parseChar parseChar v
+  return (mapOut <$> o, mapIn <$> g)
 
 newtype Tight = Tight { unTight :: Tightfit () }
 
@@ -532,12 +550,12 @@ instance FromChar Tight where
     parseChar '\\' = pure . Tight $ DR () ()
     parseChar _    = empty
 
-parseTightOutside :: Value -> Parser (OutsideClues C (Maybe Int),
-                                      Grid C (Tightfit ()))
+parseTightOutside
+  :: Value -> Parser (OutsideClues C (Maybe Int), Grid C (Tightfit ()))
 parseTightOutside = parseOutsideGridMap unTight unBlank'
-  where
-    unBlank' :: Either Blank' Int -> Maybe Int
-    unBlank' = either (const Nothing) Just
+ where
+  unBlank' :: Either Blank' Int -> Maybe Int
+  unBlank' = either (const Nothing) Just
 
 instance FromChar a => FromString (Tightfit a) where
     parseString [c]           = Single <$> parseChar c
@@ -548,16 +566,16 @@ instance FromChar a => FromString (Tightfit a) where
 newtype PMarkedWord = PMW {unPMW :: MarkedWord}
 
 parseNWords :: Int -> String -> Parser [String]
-parseNWords n s | length ws == n  = pure ws
-                | otherwise       = empty
-  where
-    ws = words s
+parseNWords n s | length ws == n = pure ws
+                | otherwise      = empty
+  where ws = words s
 
 parseDoublePair :: FromString a => Value -> Parser ((a, a), (a, a))
-parseDoublePair v = (,) <$>
-                     ((,) <$> ((!!0) <$> x) <*> ((!!1) <$> x)) <*>
-                     ((,) <$> ((!!2) <$> x) <*> ((!!3) <$> x))
-    where x = parseJSON v >>= parseNWords 4 >>= mapM parseString
+parseDoublePair v =
+  (,)
+    <$> ((,) <$> ((!! 0) <$> x) <*> ((!! 1) <$> x))
+    <*> ((,) <$> ((!! 2) <$> x) <*> ((!! 3) <$> x))
+  where x = parseJSON v >>= parseNWords 4 >>= mapM parseString
 
 instance FromJSON PMarkedWord where
     parseJSON v = PMW . uncurry MW <$> parseDoublePair v
@@ -567,8 +585,8 @@ instance FromString Int where
 
 parseMarkedLine :: FromCoord a => Value -> Parser (MarkedLine a)
 parseMarkedLine v = do
-    (s, e) <- parseDoublePair v
-    return $ MarkedLine (fromCoord s) (fromCoord e)
+  (s, e) <- parseDoublePair v
+  return $ MarkedLine (fromCoord s) (fromCoord e)
 
 newtype PMarkedLine a = PML {unPML :: MarkedLine a}
 
@@ -613,9 +631,8 @@ instance Foldable (MaybeMap k) where
 instance Traversable (MaybeMap k) where
     traverse f m = MM <$> traverse (traverse f) (unMaybeMap m)
 
-compose' :: Ord b => Map.Map a (Maybe b)
-                  -> Map.Map b c
-                  -> Maybe (Map.Map a (Maybe c))
+compose'
+  :: Ord b => Map.Map a (Maybe b) -> Map.Map b c -> Maybe (Map.Map a (Maybe c))
 compose' m1 m2 = unMaybeMap <$> mapM (`Map.lookup` m2) (MM m1)
 
 instance (Key k, FromJSON a) => FromJSON (RefGrid k a) where
@@ -629,17 +646,18 @@ instance (Key k, FromJSON a) => FromJSON (RefGrid k a) where
 
 parseAfternoonGrid :: Value -> Parser (Grid C Shade)
 parseAfternoonGrid v = do
-    (_, g, es) <- parsePlainEdgeGrid v
-                  :: Parser (Grid N Char, Grid C Char, [Edge N])
-    return $ toMap g es
-  where
-    toShade Vert  = Shade False True
-    toShade Horiz = Shade True  False
-    merge (Shade a b) (Shade c d) = Shade (a || c) (b || d)
-    toMap g es = Map.fromListWith
-        merge
-        ([(fromCoord . toCoord $ p, toShade d) | E p d <- es]
-         ++ [(p, Shade False False) | p <- Map.keys g])
+  (_, g, es) <-
+    parsePlainEdgeGrid v :: Parser (Grid N Char, Grid C Char, [Edge N])
+  return $ toMap g es
+ where
+  toShade Vert  = Shade False True
+  toShade Horiz = Shade True False
+  merge (Shade a b) (Shade c d) = Shade (a || c) (b || d)
+  toMap g es = Map.fromListWith
+    merge
+    (  [ (fromCoord . toCoord $ p, toShade d) | E p d <- es ]
+    ++ [ (p, Shade False False) | p <- Map.keys g ]
+    )
 
 newtype ParseTapaClue = ParseTapaClue { unParseTapaClue :: TapaClue }
 
@@ -652,30 +670,30 @@ reorientOutside :: OutsideClues k a -> OutsideClues k a
 reorientOutside (OC l r b t) = OC (reverse l) (reverse r) b t
 
 parseCharOutside :: FromChar a => Value -> Parser (OutsideClues k a)
-parseCharOutside (Object v) = reorientOutside <$>
-                              (OC <$>
-                               pfield "left" <*> pfield "right" <*>
-                               pfield "bottom" <*> pfield "top" )
-  where
-    pfield f = parseLine . fromMaybe [] =<< v .:? f
-parseCharOutside _          = empty
+parseCharOutside (Object v) =
+  reorientOutside
+    <$> (OC <$> pfield "left" <*> pfield "right" <*> pfield "bottom" <*> pfield
+          "top"
+        )
+  where pfield f = parseLine . fromMaybe [] =<< v .:? f
+parseCharOutside _ = empty
 
 parseOutside :: FromJSON a => Value -> Parser (OutsideClues k a)
-parseOutside (Object v) = reorientOutside <$>
-                              (OC <$>
-                               pfield "left" <*> pfield "right" <*>
-                               pfield "bottom" <*> pfield "top" )
-  where
-    pfield f = pure . fromMaybe [] =<< v .:? f
-parseOutside _          = empty
+parseOutside (Object v) =
+  reorientOutside
+    <$> (OC <$> pfield "left" <*> pfield "right" <*> pfield "bottom" <*> pfield
+          "top"
+        )
+  where pfield f = pure . fromMaybe [] =<< v .:? f
+parseOutside _ = empty
 
 parseMultiOutsideClues :: FromJSON a => Value -> Parser (OutsideClues k [a])
 parseMultiOutsideClues (Object v) = rev <$> raw
-  where
-    raw = OC <$> v `ml` "left" <*> v `ml` "right" <*> v `ml` "bottom" <*> v `ml` "top"
-    v' `ml` k = fromMaybe [] <$> v' .:? k
-    rev (OC l r b t) = reorientOutside $
-                       OC (map reverse l) r b (map reverse t)
+ where
+  raw =
+    OC <$> v `ml` "left" <*> v `ml` "right" <*> v `ml` "bottom" <*> v `ml` "top"
+  v' `ml` k = fromMaybe [] <$> v' .:? k
+  rev (OC l r b t) = reorientOutside $ OC (map reverse l) r b (map reverse t)
 parseMultiOutsideClues _ = empty
 
 instance FromChar PrimeDiag where
@@ -687,9 +705,9 @@ instance FromChar PrimeDiag where
 
 parseCoordLoop :: Value -> Parser VertexLoop
 parseCoordLoop v = sortCoords <$> parseClueGrid v
-  where
-    sortCoords :: Grid N (Maybe Char) -> VertexLoop
-    sortCoords = map fst . sortBy (comparing snd) . Map.toList . clues
+ where
+  sortCoords :: Grid N (Maybe Char) -> VertexLoop
+  sortCoords = map fst . sortBy (comparing snd) . Map.toList . clues
 
 instance FromString DigitRange where
     parseString s = do
@@ -723,17 +741,17 @@ instance FromChar Relation where
 
 parseGreaterClues :: Value -> Parser [GreaterClue]
 parseGreaterClues v = do
-    Rect _ _ ls <- parseJSON v
-    mapM parseGreaterClue ls
+  Rect _ _ ls <- parseJSON v
+  mapM parseGreaterClue ls
 
 parseGreaterClue :: [Char] -> Parser GreaterClue
 parseGreaterClue [] = pure []
 parseGreaterClue xs = p RUndetermined xs
-  where
-    p rel ('.':cs) = (rel:) <$> q cs
-    p _   (' ':_)  = pure [] -- Rect fills the lines up with spaces...
-    p _   _        = fail "expected '.'"
-    q [] = pure []
-    q (r:cs) = do
-        rel <- parseChar r
-        p rel cs
+ where
+  p rel ('.' : cs) = (rel :) <$> q cs
+  p _   (' ' : _ ) = pure [] -- Rect fills the lines up with spaces...
+  p _   _          = fail "expected '.'"
+  q []       = pure []
+  q (r : cs) = do
+    rel <- parseChar r
+    p rel cs

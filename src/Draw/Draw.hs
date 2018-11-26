@@ -4,46 +4,48 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module Draw.Draw (
-    Device(..),
-    Config(..),
-    PuzzleSol,
-    Drawers(..),
-    QDrawing(..),
-    Drawing,
-    draw,
-    diagram,
-    OutputChoice(..),
-    render,
-    Unit(..),
-    diagramSize,
-    toOutputWidth,
-    CodeDiagrams(..),
-    centerX',
-    centerY',
-    centerXY',
-    smash',
-    alignBL',
-    alignBR',
-    alignTL',
-    alignTR',
-    alignL',
-    alignR',
-    fit',
-    spread',
-    phantom'',
-    aboveT',
-    besidesR',
-    strutX',
-    text',
-    textFixed
-  ) where
+module Draw.Draw
+  ( Device(..)
+  , Config(..)
+  , PuzzleSol
+  , Drawers(..)
+  , QDrawing(..)
+  , Drawing
+  , draw
+  , diagram
+  , OutputChoice(..)
+  , render
+  , Unit(..)
+  , DiagramSize
+  , diagramSize
+  , toOutputWidth
+  , CodeDiagrams(..)
+  , centerX'
+  , centerY'
+  , centerXY'
+  , smash'
+  , alignBL'
+  , alignBR'
+  , alignTL'
+  , alignTR'
+  , alignL'
+  , alignR'
+  , fit'
+  , spread'
+  , phantom''
+  , aboveT'
+  , besidesR'
+  , strutX'
+  , text'
+  , textFixed
+  )
+where
 
-import Diagrams.Prelude hiding (render)
+import           Diagrams.Prelude        hiding ( render )
 
-import Draw.Font
-import Draw.Lib
-import Draw.Widths
+import           Draw.Font
+import           Draw.Lib
+import           Draw.Widths
 
 data Device = Screen | Print
 
@@ -86,56 +88,66 @@ data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 
 -- | Optionally render the puzzle, its solution, or a side-by-side
 --   example with puzzle and solution.
-render :: Backend' b
-     => Config
-     -> Maybe (CodeDiagrams (Drawing b))
-     -> PuzzleSol b -> OutputChoice -> Maybe (Diagram b)
+render
+  :: Backend' b
+  => Config
+  -> Maybe (CodeDiagrams (Drawing b))
+  -> PuzzleSol b
+  -> OutputChoice
+  -> Maybe (Diagram b)
 render config mc (p, ms) = fmap (bg white) . d
-  where
-    fixup = alignPixel . border borderwidth
-    addCode x = case mc of
-        Nothing                              -> x
-        Just (CodeDiagrams cleft ctop cover) ->
-            ((diagram config cover <> x) =!= top (diagram config ctop)) |!| lft (diagram config cleft)
-    (=!=) = beside unitY
-    (|!|) = beside (negated unitX)
-    top c = if isEmpty c then mempty else strutY 0.5 =!= c
-    lft c = if isEmpty c then mempty else strutX 0.5 |!| c
-    isEmpty c = diameter unitX c == 0
-    d DrawPuzzle   = fixup . addCode <$> Just (diagram config p)
-    d DrawSolution = fixup . addCode <$> fmap (diagram config) ms
-    d DrawExample  = sideBySide <$> d DrawPuzzle <*> d DrawSolution
-    sideBySide x y = x ||| strutX 2.0 ||| y
+ where
+  fixup = alignPixel . border borderwidth
+  addCode x = case mc of
+    Nothing -> x
+    Just (CodeDiagrams cleft ctop cover) ->
+      ((diagram config cover <> x) =!= top (diagram config ctop))
+        |!| lft (diagram config cleft)
+  (=!=) = beside unitY
+  (|!|) = beside (negated unitX)
+  top c = if isEmpty c then mempty else strutY 0.5 =!= c
+  lft c = if isEmpty c then mempty else strutX 0.5 |!| c
+  isEmpty c = diameter unitX c == 0
+  d DrawPuzzle   = fixup . addCode <$> Just (diagram config p)
+  d DrawSolution = fixup . addCode <$> fmap (diagram config) ms
+  d DrawExample  = sideBySide <$> d DrawPuzzle <*> d DrawSolution
+  sideBySide x y = x ||| strutX 2.0 ||| y
 
 data Unit = Pixels | Points
 
 cmtopoint :: Double -> Double
 cmtopoint = (* 28.3464567)
 
-diagramSize :: Backend' b => Diagram b -> (Double, Double)
+type DiagramSize = (Double, Double)
+
+diagramSize :: Backend' b => Diagram b -> DiagramSize
 diagramSize = unr2 . boxExtents . boundingBox
 
 toOutputWidth :: Unit -> Double -> Double
-toOutputWidth u w = case u of Pixels -> fromIntegral wpix
-                              Points -> wpt
-  where
-    wpix = round (gridresd * w) :: Int  -- grid square size 40px
-    wpt = cmtopoint w     -- grid square size 1.0cm
+toOutputWidth u w = case u of
+  Pixels -> fromIntegral wpix
+  Points -> wpt
+ where
+  wpix = round (gridresd * w) :: Int  -- grid square size 40px
+  wpt  = cmtopoint w     -- grid square size 1.0cm
 
 alignPixel :: Backend' b => Diagram b -> Diagram b
-alignPixel = scale (1/gridresd) . align' . scale gridresd
-  where
-    align' d = maybe id grow (getCorners $ boundingBox d) d
-    grow (bl, tr) = mappend $ phantoml (nudge bl False) (nudge tr True)
-    nudge p dir = let (px, py) = unp2 p in p2 (nudge' px dir, nudge' py dir)
-    nudge' x True  = fromIntegral (ceiling (x - 0.5) :: Int) + 0.5
-    nudge' x False = fromIntegral (floor   (x + 0.5) :: Int) - 0.5
-    phantoml p q = phantom' $ p ~~ q
+alignPixel = scale (1 / gridresd) . align' . scale gridresd
+ where
+  align' d = maybe id grow (getCorners $ boundingBox d) d
+  grow (bl, tr) = mappend $ phantoml (nudge bl False) (nudge tr True)
+  nudge p dir = let (px, py) = unp2 p in p2 (nudge' px dir, nudge' py dir)
+  nudge' x True  = fromIntegral (ceiling (x - 0.5) :: Int) + 0.5
+  nudge' x False = fromIntegral (floor (x + 0.5) :: Int) - 0.5
+  phantoml p q = phantom' $ p ~~ q
 
 -- | Add a phantom border of the given width around a diagram.
 border :: Backend' b => Double -> Diagram b -> Diagram b
-border w = extrudeEnvelope (w *^ unitX) . extrudeEnvelope (-w *^ unitX)
-         . extrudeEnvelope (w *^ unitY) . extrudeEnvelope (-w *^ unitY)
+border w =
+  extrudeEnvelope (w *^ unitX)
+    . extrudeEnvelope (-w *^ unitX)
+    . extrudeEnvelope (w *^ unitY)
+    . extrudeEnvelope (-w *^ unitY)
 
 data CodeDiagrams a = CodeDiagrams { _cdLeft :: a, _cdTop :: a, _cdOver :: a }
 
@@ -188,12 +200,10 @@ spread' v ds = Drawing (\c -> spread v $ map (\d -> fromDrawing d c) ds)
 phantom'' :: Backend' b => Drawing b -> Drawing b
 phantom'' = lift phantom
 
-aboveT' :: Backend' b =>
-          Drawing b -> Drawing b -> Drawing b
+aboveT' :: Backend' b => Drawing b -> Drawing b -> Drawing b
 aboveT' = lift2 aboveT
 
-besidesR' :: Backend' b =>
-          Drawing b -> Drawing b -> Drawing b
+besidesR' :: Backend' b => Drawing b -> Drawing b -> Drawing b
 besidesR' = lift2 besidesR
 
 strutX' :: Backend' b => Double -> Drawing b
@@ -202,11 +212,14 @@ strutX' = draw . strutX
 lift :: (Diagram b -> Diagram b) -> Drawing b -> Drawing b
 lift f d = Drawing (\c -> f (fromDrawing d c))
 
-lift2 :: (Diagram b -> Diagram b -> Diagram b) -> Drawing b -> Drawing b -> Drawing b
+lift2
+  :: (Diagram b -> Diagram b -> Diagram b)
+  -> Drawing b
+  -> Drawing b
+  -> Drawing b
 lift2 f d1 d2 = Drawing (\c -> f (fromDrawing d1 c) (fromDrawing d2 c))
 
-text' :: Renderable (Path V2 Double) b =>
-         String -> QDrawing b V2 Double Any
+text' :: Renderable (Path V2 Double) b => String -> QDrawing b V2 Double Any
 text' t = Drawing (\cfg -> text'' (_cfgFontVar cfg) t)
 
 textFixed :: Backend' b => String -> Drawing b

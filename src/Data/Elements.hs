@@ -1,7 +1,7 @@
 -- | Types for a variety of puzzle elements.
 module Data.Elements where
 
-import Data.GridShape
+import           Data.GridShape
 
 type Clue a = Maybe a
 
@@ -88,7 +88,7 @@ data DigitRange = DigitRange !Int !Int
     deriving (Show, Eq)
 
 digitList :: DigitRange -> [Int]
-digitList (DigitRange a b) = [a..b]
+digitList (DigitRange a b) = [a .. b]
 
 data MEnd = MEnd
 

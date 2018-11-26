@@ -19,7 +19,7 @@ linewidth = onepix
 -- width of frame relative to width of thick edge
 -- for standard 3 pixel edgewidth this yields a 4 pixel frame
 framewidthfactor :: Double
-framewidthfactor = 4/3
+framewidthfactor = 4 / 3
 
 edgewidth :: Double
 edgewidth = 3 * onepix
