@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Draw.Font
     ( fontAnelizaRegular
     , fontBit
@@ -5,15 +7,25 @@ module Draw.Font
     )
   where
 
-import Graphics.SVGFonts.Fonts (bit)
-import Graphics.SVGFonts.ReadFont (PreparedFont, loadFont)
-
-import Paths_puzzle_draw (getDataFileName)
+import Graphics.SVGFonts.ReadFont (PreparedFont, loadFont')
+import Data.FileEmbed
+import Data.Text.Encoding (decodeUtf8)
+import qualified Data.Text as Text
 
 type Font = PreparedFont Double
 
+anelizaRegular :: String
+anelizaRegular = Text.unpack . decodeUtf8 $ $(embedFile "data/fonts/aneliza-regular.svg")
+
 fontAnelizaRegular :: IO Font
-fontAnelizaRegular = getDataFileName "data/fonts/aneliza-regular.svg" >>= loadFont
+fontAnelizaRegular = return f
+  where
+    (_, f) = loadFont' "aneliza-regular" anelizaRegular
+
+bit :: String
+bit = Text.unpack . decodeUtf8 $ $(embedFile "data/fonts/bitstream.svg")
 
 fontBit :: IO Font
-fontBit = getDataFileName "data/fonts/bitstream.svg" >>= loadFont
+fontBit = return f
+  where
+    (_, f) = loadFont' "bitstream" bit

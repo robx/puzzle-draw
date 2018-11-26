@@ -1,4 +1,5 @@
 * Remove non-existent PostScript support.
+* Embed fonts in binary.
 
 0.3.1.0: 20181119
 -----------------
