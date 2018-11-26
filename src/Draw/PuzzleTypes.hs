@@ -116,8 +116,8 @@ import           Data.GridShape
 import           Data.Elements
 import qualified Data.Pyramid                  as Pyr
 
-unimplemented :: String -> a
-unimplemented x = error (x ++ " unimplemented")
+unimplemented :: Backend' b => String -> (p, s) -> Drawing b
+unimplemented x = error (x ++ " drawing unimplemented")
 
 lits :: Backend' b => Drawers b AreaGrid ShadedGrid
 lits = Drawers (grid gDefault <> drawAreasGray)
@@ -711,7 +711,7 @@ heyawake = Drawers (as <> cs) (as . fst <> drawShade . snd <> cs . fst)
 wormhole :: Backend' b => Drawers b (Grid C (Maybe (Either Int Char))) ()
 wormhole = Drawers
   (placeGrid . fmap (either drawInt drawChar) . clues <> grid gDashed)
-  mempty
+  (unimplemented "wormhole solution")
 
 pentominous :: Backend' b => Drawers b (Grid C (Maybe Char)) (Grid C Char)
 pentominous = Drawers
@@ -1069,5 +1069,5 @@ japsummasyu = Drawers
   <> grid gDashDash
   .  outsideGrid
   )
-  (error "japsummasyu solution not implemented")
+  (unimplemented "japsummasyu solution")
   where gDashDash = GridStyle LineDashed LineDashed Nothing VertexNone
