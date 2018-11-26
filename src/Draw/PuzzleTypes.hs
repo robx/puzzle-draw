@@ -721,14 +721,19 @@ pentominous = Drawers
 colorakari
   :: Backend' b => Drawers b (Grid C (Maybe Char)) (Grid C (Maybe Char))
 colorakari = Drawers
-  (placeGrid . fmap drawColorClue . clues <> grid gDefault)
-  (unimplemented "color akari solution")
+  p
+  (p . fst <> placeGrid . fmap drawColorLight . clues . snd)
  where
+  p = placeGrid . fmap drawColorClue . clues <> grid gDefault
   drawColorClue 'X' = fillBG black
   drawColorClue c   = case col c of
     Nothing -> error "invalid color"
     Just c' ->
       text' [c] # scale 0.5 <> circle (1 / 3) # fc c' # draw <> fillBG black
+  drawColorLight c = case col c of
+    Nothing -> error "invalid color"
+    Just c' ->
+      (text' [c] # scale 0.5 <> circle (1 / 3) # fc c' # lwG 0 # draw) # scale 1.2
   col c = case c of
     'R' -> Just red
     'G' -> Just green
