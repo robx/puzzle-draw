@@ -276,7 +276,22 @@ update msg model =
                 m2 =
                     case res of
                         Err error ->
-                            { model | image = Error (Debug.toString error) }
+                            let
+                                err =
+                                    case error of
+                                        Http.BadStatus resp ->
+                                            resp.body
+
+                                        Http.Timeout ->
+                                            "timeout"
+
+                                        Http.NetworkError ->
+                                            "network error"
+
+                                        _ ->
+                                            Debug.toString error
+                            in
+                            { model | image = Error err }
 
                         Ok svg ->
                             { model | image = SVG svg }
