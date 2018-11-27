@@ -50,6 +50,7 @@ main = quickHttpServe site
 site :: Snap ()
 site =
   ifTop (serveFile "static/index.html")
+    <|> route [ ("/static/puzzle.html", redirect "/") ] -- old demo redirect
     <|> route
           [ ("/api/preview" , previewPostHandler)
           , ("/api/download", downloadPostHandler)
