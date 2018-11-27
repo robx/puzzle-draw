@@ -10,6 +10,7 @@ import           Control.Monad
 import           Data.Maybe
 import           Control.Monad.IO.Class
 import           Data.List                      ( sort )
+import           Safe                           ( readMay )
 
 import           Snap.Core
 import           Snap.Util.FileServe
@@ -96,10 +97,11 @@ config fmt = Config device fontAnelizaRegular fontBit
 decodeAndDrawPuzzle
   :: Format
   -> OutputChoice
+  -> Double
   -> Bool
   -> B.ByteString
   -> Either String BL.ByteString
-decodeAndDrawPuzzle fmt oc code b = case backend fmt of
+decodeAndDrawPuzzle fmt oc s code b = case backend fmt of
   BackendSVG        -> withSize (renderBytesSVG fmt) (dec b >>= drawP)
   BackendRasterific -> withSize (renderBytesRasterific fmt) (dec b >>= drawP)
  where
@@ -114,8 +116,8 @@ decodeAndDrawPuzzle fmt oc code b = case backend fmt of
   withSize f x = do
     d <- x
     let (w, h) = diagramSize d
-        sz =
-          mkSizeSpec2D (Just $ toOutputWidth u w) (Just $ toOutputWidth u h)
+        sz     = mkSizeSpec2D (Just $ toOutputWidth u (s * w))
+                              (Just $ toOutputWidth u (s * h))
     return $ f sz d
   dec :: B.ByteString -> Either String TypedPuzzle
   dec x = case decodeEither' x of
@@ -190,12 +192,23 @@ getFormat = do
       Nothing     -> fail400 "invalid parameter value: format"
       Just format -> return format
 
+getDouble :: B.ByteString -> Double -> Snap Double
+getDouble key defaultValue = do
+  param <- getParam key
+  case param of
+    Nothing -> return defaultValue
+    Just "" -> return defaultValue
+    Just d  -> case readMay (C.unpack d) of
+      Nothing -> fail400 "invalid number parameter"
+      Just dd -> return dd
+
 previewPostHandler :: Snap ()
 previewPostHandler = do
   outputChoice <- getOutputChoice
   code         <- getBoolParam "code"
+  s            <- getDouble "scale" 1.0
   body         <- readRequestBody 4096
-  case decodeAndDrawPuzzle SVG outputChoice code (BL.toStrict body) of
+  case decodeAndDrawPuzzle SVG outputChoice s code (BL.toStrict body) of
     Left  err   -> fail400 err
     Right bytes -> serveDiagram SVG Nothing bytes
 
@@ -204,10 +217,11 @@ downloadPostHandler = do
   body         <- maybe "" id <$> getParam "pzl"
   outputChoice <- getOutputChoice
   code         <- getBoolParam "code"
+  s            <- getDouble "scale" 1.0
   format       <- getFormat
   fname        <- maybe "" id <$> getParam "filename"
   let filename = if fname == "" then "puzzle" else fname
-  case decodeAndDrawPuzzle format outputChoice code body of
+  case decodeAndDrawPuzzle format outputChoice s code body of
     Left  e     -> fail400 e
     Right bytes -> serveDiagram format (Just filename) bytes
 

@@ -732,8 +732,8 @@ colorakari = Drawers
       text' [c] # scale 0.5 <> circle (1 / 3) # fc c' # draw <> fillBG black
   drawColorLight c = case col c of
     Nothing -> error "invalid color"
-    Just c' ->
-      (text' [c] # scale 0.5 <> circle (1 / 3) # fc c' # lwG 0 # draw) # scale 1.2
+    Just c' -> (text' [c] # scale 0.5 <> circle (1 / 3) # fc c' # lwG 0 # draw)
+      # scale 1.2
   col c = case c of
     'R' -> Just red
     'G' -> Just green
