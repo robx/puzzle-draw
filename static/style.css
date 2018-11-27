@@ -3,3 +3,7 @@ body > div {
   padding: 0.5em;
   background-color: #f0f0f0;
 }
+
+#error {
+  background-color: #ffaaaa;
+}

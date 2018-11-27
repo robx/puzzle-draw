@@ -1,7 +1,7 @@
 module Main exposing
     ( Example
     , Flags
-    , ImageData(..)
+    , ImageData
     , Model
     , Msg(..)
     , Output(..)
@@ -49,10 +49,10 @@ type Output
     | OutputBoth
 
 
-type ImageData
-    = SVG String
-    | Error String
-    | NoImage
+type alias ImageData =
+    { svg : Maybe String
+    , error : Maybe String
+    }
 
 
 type RenderState
@@ -153,7 +153,7 @@ init flags url _ =
       , scale = 1.0
       , code = False
       , downloadFormat = "png"
-      , image = NoImage
+      , image = { svg = Nothing, error = Nothing }
       , renderState = Ready
       , examples = []
       , url = url
@@ -305,27 +305,37 @@ view model =
             let
                 updating =
                     model.renderState == Rendering || model.renderState == Queued
+                errored = model.image.error /= Nothing
+                classes = List.map Attr.class <| List.concat
+                    [ if updating then ["updating"] else []
+                    , if errored then ["errored"] else []
+                    ]
             in
-            [ Html.div []
-                [ Html.text <|
-                    "Preview"
-                        ++ (if updating then
-                                " (updating...)"
+            List.concat
+                [ [ Html.div []
+                        [ Html.text <|
+                            "Preview"
+                                ++ (if updating then
+                                        " (updating...)"
 
-                            else
-                                ""
-                           )
+                                    else
+                                        ""
+                                   )
+                        ]
+                  ]
+                , case model.image.error of
+                    Just err ->
+                        [ Html.div [ Attr.id "error" ] [ Html.text err ] ]
+
+                    Nothing ->
+                        []
+                , case model.image.svg of
+                    Just svg ->
+                        [ Html.img ([ Attr.id "drawing", Attr.src <| "data:image/svg+xml," ++ svg ] ++ classes) [] ]
+
+                    Nothing ->
+                        []
                 ]
-            , case model.image of
-                SVG svg ->
-                    Html.img [ Attr.id "drawing", Attr.src <| "data:image/svg+xml," ++ svg ] []
-
-                Error err ->
-                    Html.span [ Attr.id "error" ] [ Html.text err ]
-
-                NoImage ->
-                    Html.text ""
-            ]
         ]
     }
 
@@ -397,11 +407,13 @@ update msg model =
 
                                         _ ->
                                             Debug.toString error
+                                oldImage = model.image
+                                newImage = { oldImage | error = Just err }
                             in
-                            { model | image = Error err }
+                            { model | image = newImage }
 
                         Ok svg ->
-                            { model | image = SVG svg }
+                            { model | image = { svg = Just svg, error = Nothing } }
             in
             case model.renderState of
                 Ready ->
