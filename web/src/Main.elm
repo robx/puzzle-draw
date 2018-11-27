@@ -64,6 +64,7 @@ type RenderState
 type alias Model =
     { puzzle : String
     , output : Output
+    , scale : Float
     , code : Bool
     , downloadFormat : String
     , image : ImageData
@@ -96,8 +97,8 @@ loadExample path =
     Http.getString path
 
 
-render : Output -> Bool -> String -> Http.Request String
-render output code body =
+render : Output -> Float -> Bool -> String -> Http.Request String
+render output scale code body =
     let
         out =
             case output of
@@ -114,13 +115,17 @@ render output code body =
         { method = "POST"
         , headers = []
         , url =
-            "./api/preview?output=" ++ out ++ "&code="
+            "./api/preview?output="
+                ++ out
+                ++ "&code="
                 ++ (if code then
                         "yes"
 
                     else
                         "no"
                    )
+                ++ "&scale="
+                ++ String.fromFloat scale
         , body = Http.stringBody "application/x-yaml" body
         , expect = Http.expectString
         , timeout = Nothing
@@ -131,6 +136,7 @@ render output code body =
 type Msg
     = PuzzleChange String
     | OutputChange String
+    | ScaleChange Float
     | CodeChange Bool
     | FormatChange String
     | ExamplesChange String
@@ -144,6 +150,7 @@ init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url _ =
     ( { puzzle = ""
       , output = OutputPuzzle
+      , scale = 1.0
       , code = False
       , downloadFormat = "png"
       , image = NoImage
@@ -209,6 +216,18 @@ view model =
                 , radio OutputSolution "solution"
                 , radio OutputBoth "both"
                 , [ Html.br [] []
+                  , Html.label [] [ Html.text "Scale: " ]
+                  , Html.input
+                        [ Attr.type_ "range"
+                        , Attr.min "0"
+                        , Attr.step "0.25"
+                        , Attr.max "4"
+                        , Attr.value <| String.fromFloat model.scale
+                        , Event.on "change" (Json.map ScaleChange <| Json.at [ "target", "valueAsNumber" ] Json.float)
+                        ]
+                        []
+                  , Html.label [] [ Html.text <| " " ++ String.fromFloat model.scale ]
+                  , Html.br [] []
                   , Html.label [] [ Html.text "Code markers: " ]
                   , Html.input
                         [ Attr.type_ "checkbox"
@@ -268,6 +287,7 @@ view model =
                                 )
                             ]
                             []
+                      , Html.input [ Attr.type_ "hidden", Attr.name "scale", Attr.value <| String.fromFloat model.scale ] []
                       , Html.label [] [ Html.text "Download format: " ]
                       ]
                     , format "svg"
@@ -316,7 +336,7 @@ update msg model =
         rerender m =
             case m.renderState of
                 Ready ->
-                    ( { m | renderState = Rendering }, Http.send RenderResult (render m.output m.code m.puzzle) )
+                    ( { m | renderState = Rendering }, Http.send RenderResult (render m.output m.scale m.code m.puzzle) )
 
                 Rendering ->
                     ( { m | renderState = Queued }, Cmd.none )
@@ -345,6 +365,9 @@ update msg model =
                             OutputPuzzle
             in
             rerender { model | output = output }
+
+        ScaleChange scale ->
+            rerender { model | scale = scale }
 
         CodeChange code ->
             rerender { model | code = code }
