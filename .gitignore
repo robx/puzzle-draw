@@ -8,5 +8,5 @@ cabal-dev
 tests/examples/gallery.html
 tests/examples/cur
 web/elm-stuff
-static/index.html
+static/web.js
 
