@@ -66,6 +66,7 @@ type alias Model =
     , output : Output
     , scale : Float
     , code : Bool
+    , preview : Bool
     , downloadFormat : String
     , image : ImageData
     , renderState : RenderState
@@ -138,6 +139,7 @@ type Msg
     | OutputChange String
     | ScaleChange Float
     | CodeChange Bool
+    | PreviewChange Bool
     | FormatChange String
     | ExamplesChange String
     | RenderResult (Result Http.Error String)
@@ -152,6 +154,7 @@ init flags url _ =
       , output = OutputPuzzle
       , scale = 1.0
       , code = False
+      , preview = True
       , downloadFormat = "png"
       , image = { svg = Nothing, error = Nothing }
       , renderState = Ready
@@ -313,8 +316,14 @@ view model =
             in
             List.concat
                 [ [ Html.div []
-                        [ Html.text <|
-                            "Preview"
+                    [ Html.input
+                        [ Attr.type_ "checkbox"
+                        , Attr.checked model.preview
+                        , Event.onCheck PreviewChange
+                        ]
+                        []
+                    , Html.text <|
+                            "Live preview"
                                 ++ (if updating then
                                         " (updating...)"
 
@@ -344,7 +353,8 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     let
         rerender m =
-            case m.renderState of
+            if m.preview then
+              case m.renderState of
                 Ready ->
                     ( { m | renderState = Rendering }, Http.send RenderResult (render m.output m.scale m.code m.puzzle) )
 
@@ -353,6 +363,8 @@ update msg model =
 
                 Queued ->
                     ( m, Cmd.none )
+           else
+              ( m, Cmd.none )
     in
     case msg of
         Ignore ->
@@ -384,6 +396,9 @@ update msg model =
 
         FormatChange fmt ->
             ( { model | downloadFormat = fmt }, Cmd.none )
+
+        PreviewChange preview ->
+            rerender { model | preview = preview }
 
         ExamplesChange path ->
             ( model, Http.send ExampleResult (loadExample path) )
