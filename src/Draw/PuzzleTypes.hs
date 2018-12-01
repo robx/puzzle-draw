@@ -77,6 +77,7 @@ module Draw.PuzzleTypes
   , countryRoad
   , killersudoku
   , japsummasyu
+  , dualloop
   )
 where
 
@@ -986,3 +987,24 @@ japsummasyu = Drawers
   )
   (unimplemented "japsummasyu solution")
   where gDashDash = GridStyle LineDashed LineDashed Nothing VertexNone
+
+dualloop
+  :: Backend' b
+  => Drawers b (Grid C (Maybe Int), Grid N (Maybe Int)) (Loop N, Loop C)
+dualloop = Drawers p (s . snd <> p . fst)
+ where
+  p =
+    placeGrid
+      .  fmap drawInt
+      .  clues
+      .  fst
+      <> placeGrid
+      .  fmap smallClue
+      .  clues
+      .  snd
+      <> grid gDashDash
+      .  fst
+  smallClue x =
+    scale (2 / 3) (drawInt x <> circle 0.5 # fc white # lwG 0 # draw)
+  gDashDash = GridStyle LineDashed LineDashed Nothing VertexNone
+  s         = solstyle . drawEdges . fst <> solstyle . drawEdges . snd

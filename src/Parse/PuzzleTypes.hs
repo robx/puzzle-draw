@@ -73,6 +73,7 @@ module Parse.PuzzleTypes
   , countryRoad
   , killersudoku
   , japsummasyu
+  , dualloop
   )
 where
 
@@ -582,3 +583,14 @@ countryRoad = (,) (fst nanroSignpost) parseEdges
 japsummasyu :: ParsePuzzle (OutsideClues C [String]) ()
 japsummasyu = (,) (fmap (fmap (map unIntString)) . parseMultiOutsideClues)
                   (unimplemented "japsummasyu solution")
+
+dualloop :: ParsePuzzle (Grid C (Clue Int), Grid N (Clue Int)) (Loop N, Loop C)
+dualloop = (,)
+  (\v ->
+    (,)
+      <$> parseFrom ["edges"] parseClueGrid v
+      <*> parseFrom ["dual"]  parseClueGrid v
+  )
+  (\v ->
+    (,) <$> parseFrom ["edges"] parseEdges v <*> parseFrom ["dual"] parseEdges v
+  )

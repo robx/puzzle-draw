@@ -90,6 +90,7 @@ data PuzzleType = LITS
                 | CountryRoad
                 | KillerSudoku
                 | JapaneseSumsMasyu
+                | DualLoop
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -173,6 +174,7 @@ obscureTypes =
   , (CoralLITS        , "coral+lits")
   , (CoralLITSO       , "coral+litso")
   , (JapaneseSumsMasyu, "japanesesums-masyu")
+  , (DualLoop         , "dualloop")
   ]
 
 typeAliases :: [(PuzzleType, String)]
