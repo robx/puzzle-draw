@@ -206,9 +206,14 @@ slalom = (parseClueGrid, parseGrid)
 compass :: ParsePuzzle (Grid C (Maybe CompassC)) AreaGrid
 compass = ((fmap (fmap unPCC) . unRG <$>) . parseJSON, parseGrid)
 
--- this should be changed to support clue numbers
-meanderingnumbers :: ParsePuzzle AreaGrid (Grid C (Maybe Int))
-meanderingnumbers = (parseGrid, parseGrid)
+
+meanderingnumbers
+  :: ParsePuzzle (AreaGrid, Grid C (Maybe Int)) (Grid C (Maybe Int))
+meanderingnumbers = (,)
+  (\v ->
+    (,) <$> parseFrom ["regions"] parseGrid v <*> parseFrom ["clues"] parseGrid v
+  )
+  parseGrid
 
 tapa :: ParsePuzzle (Grid C (Maybe TapaClue)) (Grid C Bool)
 tapa =

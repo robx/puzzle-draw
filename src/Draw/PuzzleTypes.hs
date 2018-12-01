@@ -319,9 +319,19 @@ compass = Drawers
   .  snd
   )
 
-meanderingnumbers :: Backend' b => Drawers b AreaGrid (Grid C (Maybe Int))
-meanderingnumbers =
-  Drawers (grid gDefault <> drawAreas) (drawIntGrid . snd <> drawAreas . fst)
+meanderingnumbers
+  :: Backend' b => Drawers b (AreaGrid, Grid C (Maybe Int)) (Grid C (Maybe Int))
+meanderingnumbers = Drawers
+  (  grid gDefault
+  .  fst
+  <> drawAreas
+  .  fst
+  <> placeGrid
+  .  fmap drawInt
+  .  clues
+  .  snd
+  )
+  (drawIntGrid . snd <> drawAreas . fst . fst)
 
 tapa :: Backend' b => Drawers b (Grid C (Maybe TapaClue)) ShadedGrid
 tapa = Drawers tapaGrid (tapaGrid . fst <> drawShade . snd)
