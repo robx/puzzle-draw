@@ -139,6 +139,7 @@ test-suite test
         Data.GridSpec
         Data.GridShapeSpec
         Draw.GridSpec
+        Draw.PuzzleTypesSpec
         Parse.PuzzleTypesSpec
         Parse.UtilSpec
     ghc-options: -Wall

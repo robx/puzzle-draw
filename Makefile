@@ -11,3 +11,4 @@ compare:
 
 format:
 	find src -name '*.hs' | xargs brittany --write-mode=inplace
+	find tests -name '*.hs' | xargs brittany --write-mode=inplace
