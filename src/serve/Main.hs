@@ -88,21 +88,18 @@ serveDiagram format name bs = do
     Just n  -> addContentDisposition format n
   writeLBS $ bs
 
-config :: Format -> Config
-config fmt = Config device fontAnelizaRegular fontBit
- where
-  device = case fmt of
-    PDF -> Print
-    _   -> Screen
+config :: Device -> Config
+config device = Config device fontAnelizaRegular fontBit
 
 decodeAndDrawPuzzle
   :: Format
   -> OutputChoice
+  -> Device
   -> Double
   -> Bool
   -> B.ByteString
   -> Either String BL.ByteString
-decodeAndDrawPuzzle fmt oc s code b = case backend fmt of
+decodeAndDrawPuzzle fmt oc device s code b = case backend fmt of
   BackendSVG        -> withSize (renderBytesSVG fmt) (dec b >>= drawP)
   BackendRasterific -> withSize (renderBytesRasterific fmt) (dec b >>= drawP)
  where
@@ -160,7 +157,7 @@ decodeAndDrawPuzzle fmt oc s code b = case backend fmt of
           return (ds (p', s'))
     maybe (fail "no solution provided")
           return
-          (render (config fmt) mcode (pzl, sol) oc)
+          (render (config device) mcode (pzl, sol) oc)
 
 getOutputChoice :: Snap OutputChoice
 getOutputChoice = do
@@ -170,6 +167,15 @@ getOutputChoice = do
     "both"     -> return DrawExample
     "puzzle"   -> return DrawPuzzle
     _          -> fail400 "invalid parameter value: output"
+
+getDevice :: Format -> Snap Device
+getDevice fmt = do
+  devs <- maybe "auto" id <$> getParam "device"
+  return $ case (devs, fmt) of
+    ("screen", _  ) -> Screen
+    ("print" , _  ) -> Print
+    (_       , PDF) -> Print
+    _               -> Screen
 
 getBoolParam :: B.ByteString -> Snap Bool
 getBoolParam key = do
@@ -208,8 +214,9 @@ previewPostHandler = do
   outputChoice <- getOutputChoice
   code         <- getBoolParam "code"
   s            <- getDouble "scale" 1.0
+  device       <- getDevice SVG
   body         <- readRequestBody 4096
-  case decodeAndDrawPuzzle SVG outputChoice s code (BL.toStrict body) of
+  case decodeAndDrawPuzzle SVG outputChoice device s code (BL.toStrict body) of
     Left  err   -> fail400 err
     Right bytes -> serveDiagram SVG Nothing bytes
 
@@ -220,9 +227,10 @@ downloadPostHandler = do
   code         <- getBoolParam "code"
   s            <- getDouble "scale" 1.0
   format       <- getFormat
+  device       <- getDevice format
   fname        <- maybe "" id <$> getParam "filename"
   let filename = if fname == "" then "puzzle" else fname
-  case decodeAndDrawPuzzle format outputChoice s code body of
+  case decodeAndDrawPuzzle format outputChoice device s code body of
     Left  e     -> fail400 e
     Right bytes -> serveDiagram format (Just filename) bytes
 
