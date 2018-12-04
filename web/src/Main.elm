@@ -64,6 +64,7 @@ type RenderState
 type alias Model =
     { puzzle : String
     , output : Output
+    , device : String
     , scale : Float
     , code : Bool
     , preview : Bool
@@ -98,8 +99,8 @@ loadExample path =
     Http.getString path
 
 
-render : Output -> Float -> Bool -> String -> Http.Request String
-render output scale code body =
+render : Output -> String -> Float -> Bool -> String -> Http.Request String
+render output device scale code body =
     let
         out =
             case output of
@@ -118,6 +119,7 @@ render output scale code body =
         , url =
             "./api/preview?output="
                 ++ out
+                ++ "&device=-" ++ device
                 ++ "&code="
                 ++ (if code then
                         "yes"
@@ -137,6 +139,7 @@ render output scale code body =
 type Msg
     = PuzzleChange String
     | OutputChange String
+    | DeviceChange String
     | ScaleChange Float
     | CodeChange Bool
     | PreviewChange Bool
@@ -152,6 +155,7 @@ init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url _ =
     ( { puzzle = ""
       , output = OutputPuzzle
+      , device = "auto"
       , scale = 1.0
       , code = False
       , preview = True
@@ -195,29 +199,30 @@ view model =
             ]
         , Html.div [] <|
             let
-                radio output value =
+                radio name msg mod val vals =
                     [ Html.input
-                        [ Attr.id <| "o" ++ value
+                        [ Attr.id <| "o" ++ vals
                         , Attr.type_ "radio"
-                        , Attr.name "output"
-                        , Attr.value value
-                        , Attr.checked (model.output == output)
+                        , Attr.name name
+                        , Attr.value vals
+                        , Attr.checked (mod == val)
 
-                        --, Event.onInput OutputChange
-                        , Event.on "change" (Json.map OutputChange <| Json.at [ "target", "value" ] Json.string)
+                        , Event.on "change" (Json.map msg <| Json.at [ "target", "value" ] Json.string)
                         ]
                         []
                     , Html.label
-                        [ Attr.for <| "o" ++ value
+                        [ Attr.for <| "o" ++ vals
                         ]
-                        [ Html.text value ]
+                        [ Html.text vals ]
                     ]
+                radioout = radio "output" OutputChange model.output
+                radiodev = radio "device" DeviceChange model.device
             in
             List.concat
                 [ [ Html.label [] [ Html.text "Output choice: " ] ]
-                , radio OutputPuzzle "puzzle"
-                , radio OutputSolution "solution"
-                , radio OutputBoth "both"
+                , radioout OutputPuzzle "puzzle"
+                , radioout OutputSolution "solution"
+                , radioout OutputBoth "both"
                 , [ Html.br [] []
                   , Html.label [] [ Html.text "Scale: " ]
                   , Html.input
@@ -238,7 +243,12 @@ view model =
                         , Event.onCheck CodeChange
                         ]
                         []
+                  , Html.br [] []
+                  , Html.label [] [ Html.text "Device: " ]
                   ]
+                , radiodev "auto" "auto"
+                , radiodev "screen" "screen"
+                , radiodev "print" "print"
                 ]
         , Html.div [] <|
             [ Html.form
@@ -278,6 +288,7 @@ view model =
                 List.concat
                     [ [ Html.input [ Attr.type_ "hidden", Attr.name "pzl", Attr.value model.puzzle ] []
                       , Html.input [ Attr.type_ "hidden", Attr.name "output", Attr.value out ] []
+                      , Html.input [ Attr.type_ "hidden", Attr.name "device", Attr.value model.device ] []
                       , Html.input
                             [ Attr.type_ "hidden"
                             , Attr.name "code"
@@ -356,7 +367,7 @@ update msg model =
             if m.preview then
               case m.renderState of
                 Ready ->
-                    ( { m | renderState = Rendering }, Http.send RenderResult (render m.output m.scale m.code m.puzzle) )
+                    ( { m | renderState = Rendering }, Http.send RenderResult (render m.output m.device m.scale m.code m.puzzle) )
 
                 Rendering ->
                     ( { m | renderState = Queued }, Cmd.none )
@@ -387,6 +398,9 @@ update msg model =
                             OutputPuzzle
             in
             rerender { model | output = output }
+
+        DeviceChange device ->
+            rerender { model | device = device }
 
         ScaleChange scale ->
             rerender { model | scale = scale }
