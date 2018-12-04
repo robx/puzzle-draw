@@ -34,6 +34,7 @@ library
         Data.Pyramid
         Data.Sudoku
         Data.Compose
+        Data.Component
         Data.PuzzleTypes
         Data.Code
         Parse.Util
@@ -41,6 +42,7 @@ library
         Parse.Puzzle
         Parse.PuzzleTypes
         Parse.Code
+        Parse.Component
         Draw.Style
         Draw.Grid
         Draw.Font
@@ -53,6 +55,7 @@ library
         Draw.Draw
         Draw.Code
         Draw.CmdLine
+        Draw.Component
     hs-source-dirs: src
     other-modules:
         Paths_puzzle_draw

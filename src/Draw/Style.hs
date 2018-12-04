@@ -4,6 +4,7 @@ module Draw.Style
   , VertexStyle(..)
   , GridStyle(..)
   , gDefault
+  , gDefaultIrreg
   , gDashed
   , gDashedThick
   , gPlain
@@ -38,11 +39,13 @@ data GridStyle = GridStyle
     , _vertex  :: VertexStyle
     }
 
-gDefault, gSlither, gDashed, gDashedThick, gPlain, gPlainDashed :: GridStyle
+gDefault, gDefaultIrreg, gSlither, gDashed, gDashedThick, gPlain, gPlainDashed
+  :: GridStyle
 gDefault = GridStyle LineThin
                      LineThin
                      (Just (FrameStyle framewidthfactor black))
                      VertexNone
+gDefaultIrreg = GridStyle LineThin LineThick Nothing VertexNone
 gSlither = GridStyle LineNone LineNone Nothing VertexDot
 gDashed = GridStyle LineDashed
                     LineThin

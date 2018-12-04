@@ -200,17 +200,18 @@ drawCurve =
   draw . lwG onepix . fit 0.6 . centerXY . mconcat . map (stroke . edge)
 
 -- | Draw a shadow in the style of Afternoon Skyscrapers.
-drawShadow :: Backend' b => Shade -> Drawing b
-drawShadow (Shade s w) =
-  (if s then south else mempty) <> (if w then west else mempty)
+afternoonSouth :: Backend' b => Drawing b
+afternoonSouth = south
  where
   shape =
-    translate (r2 (-1 / 2, -1 / 2))
+    translate (r2 (-1 / 2, 0))
       . fromVertices
       . map p2
       $ [(0, 0), (1 / 4, 1 / 4), (1, 1 / 4), (1, 0), (0, 0)]
   south = draw $ strokeLocLoop shape # lwG 0 # fc gray
-  west  = reflectAbout (p2 (0, 0)) (direction $ r2 (1, 1)) south
+
+afternoonWest :: Backend' b => Drawing b
+afternoonWest = reflectAbout (p2 (0, 0)) (direction $ r2 (1, 1)) afternoonSouth
 
 -- | Draws the digits of a tapa clue, ordered
 --   left to right, top to bottom.

@@ -1,0 +1,36 @@
+- type: edges
+  grid: |
+    o o o o o o o
+     .|. . .|.|.
+    o o-o-o o-o-o
+     . . .|. .|.
+    o-o o o-o o-o
+     .|. . .|. .
+    o-o-o o o o o
+     .|.|. .|. .
+    o o-o-o o-o-o
+     . .|.|. . .
+    o-o o-o-o o o
+     .|. .|.|. .
+    o o o o o o o
+  substitute:
+    "|": afternoon-west
+    "-": afternoon-south
+- type: grid
+  style: default
+  grid: |
+    ......
+    ......
+    ......
+    ......
+    ......
+    ......
+- type: cells
+  tag: solution
+  grid: |
+    423651
+    145362
+    214536
+    651423
+    362145
+    536214

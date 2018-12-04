@@ -16,7 +16,6 @@ import           Data.Tuple                     ( swap )
 
 -- | The list of specific puzzle types we can handle.
 data PuzzleType = LITS
-                | LITSSym
                 | Geradeweg
                 | Fillomino
                 | Masyu
@@ -35,13 +34,11 @@ data PuzzleType = LITS
                 | Slalom
                 | Compass
                 | BoxOf2Or3
-                | AfternoonSkyscrapers
                 | MeanderingNumbers
                 | Tapa
                 | JapaneseSums
                 | Coral
                 | MaximalLengths
-                | PrimePlace
                 | Labyrinth
                 | Bahnhof
                 | BlackoutDominos
@@ -74,7 +71,6 @@ data PuzzleType = LITS
                 | Starwars
                 | Starbattle
                 | Heyawake
-                | Wormhole
                 | Pentominous
                 | ColorAkari
                 | PersistenceOfMemory
@@ -98,7 +94,6 @@ data PuzzleType = LITS
                 | Snake
                 | CountryRoad
                 | KillerSudoku
-                | FriendlySudoku
                 | JapaneseSumsMasyu
     deriving (Show, Eq)
 
@@ -169,30 +164,25 @@ typeNames =
 
 obscureTypes :: [(PuzzleType, String)]
 obscureTypes =
-  [ (ColorAkari          , "color-akari")
-  , (FillominoLoop       , "fillomino-loop")
-  , (DominoPillen        , "domino-pillen")
-  , (SlitherLinkMulti    , "slitherlink-multi")
-  , (TapaCave            , "tapa-cave")
-  , (WordLoop            , "wordloop")
-  , (RowKropkiPyramid    , "rowkropkipyramid")
-  , (LatinTapa           , "latintapa")
-  , (BoxOf2Or3           , "boxof2or3")
-  , (AfternoonSkyscrapers, "afternoonskyscrapers")
-  , (PrimePlace          , "primeplace")
-  , (SkyscrapersStars    , "skyscrapers-doppelstern")
-  , (Wormhole            , "wormhole")
-  , (HorseSnake          , "horsesnake")
-  , (SudokuDoppelblock   , "sudoku-doppelblock")
-  , (Loopki              , "loopki")
-  , (Starwars            , "starwars")
-  , (PentominoPipes      , "pentomino-pipes")
-  , (PentominoSums       , "pentomino-sums")
-  , (CoralLITS           , "coral+lits")
-  , (CoralLITSO          , "coral+litso")
-  , (FriendlySudoku      , "friendly-sudoku")
-  , (JapaneseSumsMasyu   , "japanesesums-masyu")
-  , (LITSSym             , "lits-symmetry")
+  [ (ColorAkari       , "color-akari")
+  , (FillominoLoop    , "fillomino-loop")
+  , (DominoPillen     , "domino-pillen")
+  , (SlitherLinkMulti , "slitherlink-multi")
+  , (TapaCave         , "tapa-cave")
+  , (WordLoop         , "wordloop")
+  , (RowKropkiPyramid , "rowkropkipyramid")
+  , (LatinTapa        , "latintapa")
+  , (BoxOf2Or3        , "boxof2or3")
+  , (SkyscrapersStars , "skyscrapers-doppelstern")
+  , (HorseSnake       , "horsesnake")
+  , (SudokuDoppelblock, "sudoku-doppelblock")
+  , (Loopki           , "loopki")
+  , (Starwars         , "starwars")
+  , (PentominoPipes   , "pentomino-pipes")
+  , (PentominoSums    , "pentomino-sums")
+  , (CoralLITS        , "coral+lits")
+  , (CoralLITSO       , "coral+litso")
+  , (JapaneseSumsMasyu, "japanesesums-masyu")
   ]
 
 typeAliases :: [(PuzzleType, String)]

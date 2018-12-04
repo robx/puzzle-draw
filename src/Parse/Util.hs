@@ -324,14 +324,23 @@ parseGridWith :: Key k => (Char -> Parser a) -> Value -> Parser (Grid k a)
 parseGridWith pChar v = traverse pChar =<< parseGrid v
 
 parseWithReplacement :: FromChar a => (Char -> Maybe a) -> Char -> Parser a
-parseWithReplacement replace c = maybe (parseChar c) pure (replace c)
+parseWithReplacement replace = parseWithReplacementWith replace parseChar
+
+parseWithReplacementWith
+  :: (Char -> Maybe a) -> (Char -> Parser a) -> Char -> Parser a
+parseWithReplacementWith replace p c = maybe (p c) pure (replace c)
 
 parseSpacedGrid :: (Key k, FromString a) => Value -> Parser (Grid k a)
 parseSpacedGrid v = fromCoordGrid . rectToCoordGrid . unSpaced <$> parseJSON v
 
 parseCharMap :: FromJSON a => Value -> Parser (Map.Map Char a)
-parseCharMap v = do
-  m <- parseJSON v
+parseCharMap = parseCharMapWith parseJSON
+
+parseCharMapWith
+  :: FromJSON b => (b -> Parser a) -> Value -> Parser (Map.Map Char a)
+parseCharMapWith p v = do
+  mj <- parseJSON v
+  m  <- sequence $ p <$> mj
   guard . all (\k -> length k == 1) . Map.keys $ m
   return $ Map.mapKeys head m
 
@@ -391,9 +400,14 @@ filterPlainEdges = Map.keys . Map.filterWithKey p
 
 parseAnnotatedEdges
   :: (Key k, FromChar a) => Value -> Parser (Map.Map (Edge k) a)
-parseAnnotatedEdges v = do
+parseAnnotatedEdges = parseAnnotatedEdgesWith parseChar
+
+parseAnnotatedEdgesWith
+  :: (Key k) => (Char -> Parser a) -> Value -> Parser (Map.Map (Edge k) a)
+parseAnnotatedEdgesWith p v = do
   g <- readEdges <$> parseCoordGrid v
-  Map.mapKeys fromCoordEdge <$> traverse parseChar g
+  Map.mapKeys fromCoordEdge <$> traverse p g
+
 
 readEdges :: Grid Coord Char -> Map.Map (Edge Coord) Char
 readEdges =
@@ -644,21 +658,6 @@ instance (Key k, FromJSON a) => FromJSON (RefGrid k a) where
             Nothing -> mzero
             Just m' -> return m'
 
-parseAfternoonGrid :: Value -> Parser (Grid C Shade)
-parseAfternoonGrid v = do
-  (_, g, es) <-
-    parsePlainEdgeGrid v :: Parser (Grid N Char, Grid C Char, [Edge N])
-  return $ toMap g es
- where
-  toShade Vert  = Shade False True
-  toShade Horiz = Shade True False
-  merge (Shade a b) (Shade c d) = Shade (a || c) (b || d)
-  toMap g es = Map.fromListWith
-    merge
-    (  [ (fromCoord . toCoord $ p, toShade d) | E p d <- es ]
-    ++ [ (p, Shade False False) | p <- Map.keys g ]
-    )
-
 newtype ParseTapaClue = ParseTapaClue { unParseTapaClue :: TapaClue }
 
 instance FromJSON ParseTapaClue where
@@ -695,13 +694,6 @@ parseMultiOutsideClues (Object v) = rev <$> raw
   v' `ml` k = fromMaybe [] <$> v' .:? k
   rev (OC l r b t) = reorientOutside $ OC (map reverse l) r b (map reverse t)
 parseMultiOutsideClues _ = empty
-
-instance FromChar PrimeDiag where
-    parseChar '.'  = pure $ PrimeDiag (False, False)
-    parseChar '/'  = pure $ PrimeDiag (True,  False)
-    parseChar '\\' = pure $ PrimeDiag (False, True)
-    parseChar 'X'  = pure $ PrimeDiag (True,  True)
-    parseChar _    = empty
 
 parseCoordLoop :: Value -> Parser VertexLoop
 parseCoordLoop v = sortCoords <$> parseClueGrid v

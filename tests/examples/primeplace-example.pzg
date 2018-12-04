@@ -1,0 +1,24 @@
+- type: cells
+  grid: |2
+     //.
+    // //
+    /   /
+    ./ /\
+     ./.
+- type: grid
+  style: default-irregular
+  grid: |2
+     ... 
+    .. ..
+    .   .
+    .. ..
+     ...
+- type: cells
+  tag: solution
+  grid: |2
+     124
+    11 32
+    2   3
+    43 12
+     434
+
