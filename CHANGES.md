@@ -1,3 +1,9 @@
+0.3.3.0: 20181204
+-----------------
+
+* Fix corrupt PDFs by Rasterific update.
+* Fix colorakari crash.
+
 0.3.2.3: 20181127
 -----------------
 
