@@ -27,6 +27,7 @@ import           Util
 import qualified Data.GridSpec
 import qualified Data.GridShapeSpec
 import qualified Draw.GridSpec
+import qualified Draw.PuzzleTypesSpec
 import qualified Parse.PuzzleTypesSpec
 import qualified Parse.UtilSpec
 
@@ -41,6 +42,7 @@ specs = mapM
   [ ("Data.Grid"        , Data.GridSpec.spec)
   , ("Data.GridShape"   , Data.GridShapeSpec.spec)
   , ("Draw.Grid"        , Draw.GridSpec.spec)
+  , ("Draw.PuzzleTypes" , Draw.PuzzleTypesSpec.spec)
   , ("Parse.PuzzleTypes", Parse.PuzzleTypesSpec.spec)
   , ("Parse.Util"       , Parse.UtilSpec.spec)
   ]
