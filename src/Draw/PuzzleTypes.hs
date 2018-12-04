@@ -77,6 +77,7 @@ module Draw.PuzzleTypes
   , countryRoad
   , killersudoku
   , japsummasyu
+  , arrowsudoku
   )
 where
 
@@ -996,3 +997,22 @@ japsummasyu = Drawers
   )
   (unimplemented "japsummasyu solution")
   where gDashDash = GridStyle LineDashed LineDashed Nothing VertexNone
+
+arrowsudoku
+  :: Backend' b
+  => Drawers b (AreaGrid, Grid C (Maybe Int), [Thermometer]) (Grid C Int)
+arrowsudoku = Drawers
+  ( drawAreas . fst3
+    <> placeGrid . fmap drawInt . clues . snd3
+    <> drawArrows . trd3
+    <> grid gDefault . fst3
+  )
+  ( drawAreas . fst3 . fst
+    <> placeGrid . fmap drawInt . snd
+    <> drawThermos . trd3 . fst
+    <> grid gDefault . fst3 . fst )
+  where
+    fst3 (a,_,_) = a
+    snd3 (_,b,_) = b
+    trd3 (_,_,c) = c
+

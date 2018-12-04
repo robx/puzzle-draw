@@ -73,6 +73,7 @@ module Parse.PuzzleTypes
   , countryRoad
   , killersudoku
   , japsummasyu
+  , arrowsudoku
   )
 where
 
@@ -587,3 +588,14 @@ countryRoad = (,) (fst nanroSignpost) parseEdges
 japsummasyu :: ParsePuzzle (OutsideClues C [String]) ()
 japsummasyu = (,) (fmap (fmap (map unIntString)) . parseMultiOutsideClues)
                   (unimplemented "japsummasyu solution")
+
+arrowsudoku :: ParsePuzzle (AreaGrid, Grid C (Maybe Int), [Thermometer]) (Grid C Int)
+arrowsudoku = (,)
+  (\v ->
+    (,,)
+      <$> parseFrom ["regions"] parseGrid v
+      <*> parseFrom ["givens"] parseClueGrid v
+      <*> (do
+             g <- parseFrom ["arrows"] parseJSON v
+             snd <$> parseThermoGrid g))
+  parseGrid

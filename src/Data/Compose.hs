@@ -112,6 +112,7 @@ handle f Snake               = f R.snake D.snake
 handle f CountryRoad         = f R.countryRoad D.countryRoad
 handle f KillerSudoku        = f R.killersudoku D.killersudoku
 handle f JapaneseSumsMasyu   = f R.japsummasyu D.japsummasyu
+handle f ArrowSudoku          = f R.arrowsudoku D.arrowsudoku
 
 
 -- | Handler that parses puzzle and an optional solution from a pair of
