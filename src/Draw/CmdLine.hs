@@ -49,7 +49,7 @@ renderFileSVG ropts = SVG.renderSVG (_file ropts) (_size ropts)
 renderBytesRasterific
   :: Format -> SizeSpec V2 Double -> Diagram Rasterific.B -> ByteString
 renderBytesRasterific fmt sz dia = case fmt of
-  PDF -> Rasterific.renderDiaPdf (round w) (round h) sz dia
+  PDF -> Rasterific.renderPdfBS (round w) (round h) sz dia
   PNG -> encodePng
     $ renderDia Rasterific.Rasterific (Rasterific.RasterificOptions sz) dia
   JPG -> encodeJpeg . pixelMap (convertPixel . dropTransparency) $ renderDia

@@ -3,8 +3,8 @@ ghc-options:
 packages:
 - '.'
 extra-deps:
-  - github: robx/diagrams-rasterific
-    commit: 433e9f8aae39ceb941f60b7f30ded7225f5e6a54
+  - github: diagrams/diagrams-rasterific
+    commit: 66da2e698ce92bab796a1d56185df07a25a7eeec
   - github: robx/Rasterific
     commit: 5f27e4f1796278c0f83d57b1cbd463539108caef
   - JuicyPixels-3.3.2@sha256:45e3ba1e67be87a2000e594f0b976f400e17ed644777e3286ee742d106926ce9
