@@ -1,4 +1,5 @@
 * Allow choosing device in the web interface.
+* Fix link back to github.
 
 0.3.3.0: 20181204
 -----------------

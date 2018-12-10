@@ -34,7 +34,7 @@ main =
         , view = view
         , update = update
         , subscriptions = subscriptions
-        , onUrlRequest = always Ignore
+        , onUrlRequest = ClickedLink
         , onUrlChange = always Ignore
         }
 
@@ -148,6 +148,7 @@ type Msg
     | RenderResult (Result Http.Error String)
     | ExamplesResult (Result Http.Error (List Example))
     | ExampleResult (Result Http.Error String)
+    | ClickedLink Browser.UrlRequest
     | Ignore
 
 
@@ -380,6 +381,13 @@ update msg model =
     case msg of
         Ignore ->
             ( model, Cmd.none )
+
+        ClickedLink urlRequest ->
+            case urlRequest of
+                Browser.Internal url ->
+                    ( model, Cmd.none )
+                Browser.External url ->
+                    ( model, Navigation.load url )
 
         PuzzleChange puzzle ->
             rerender { model | puzzle = puzzle }
