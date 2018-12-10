@@ -1,3 +1,5 @@
+* Allow choosing device in the web interface.
+
 0.3.3.0: 20181204
 -----------------
 

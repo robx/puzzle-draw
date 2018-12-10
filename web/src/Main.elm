@@ -119,7 +119,7 @@ render output device scale code body =
         , url =
             "./api/preview?output="
                 ++ out
-                ++ "&device=-" ++ device
+                ++ "&device=" ++ device
                 ++ "&code="
                 ++ (if code then
                         "yes"
