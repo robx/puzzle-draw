@@ -64,6 +64,7 @@ type RenderState
 type alias Model =
     { puzzle : String
     , output : Output
+    , puzzleFormat : String
     , device : String
     , scale : Float
     , code : Bool
@@ -79,15 +80,16 @@ type alias Model =
 type alias Example =
     { name : String
     , path : String
+    , puzzleFormat : String
     }
 
 
 decodeExample : Json.Decoder Example
 decodeExample =
-    Json.map2 Example
+    Json.map3 Example
         (Json.field "name" Json.string)
         (Json.field "path" Json.string)
-
+        (Json.field "pformat" Json.string)
 
 listExamples : Http.Request (List Example)
 listExamples =
@@ -139,15 +141,16 @@ render output device scale code body =
 type Msg
     = PuzzleChange String
     | OutputChange String
+    | PuzzleFormatChange String
     | DeviceChange String
     | ScaleChange Float
     | CodeChange Bool
     | PreviewChange Bool
     | FormatChange String
-    | ExamplesChange String
+    | ExamplesChange String String
     | RenderResult (Result Http.Error String)
     | ExamplesResult (Result Http.Error (List Example))
-    | ExampleResult (Result Http.Error String)
+    | ExampleResult String (Result Http.Error String)
     | ClickedLink Browser.UrlRequest
     | Ignore
 
@@ -156,6 +159,7 @@ init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url _ =
     ( { puzzle = ""
       , output = OutputPuzzle
+      , puzzleFormat = "pzl"
       , device = "auto"
       , scale = 1.0
       , code = False
@@ -171,36 +175,9 @@ init flags url _ =
 
 
 view : Model -> Browser.Document Msg
-view model =
-    { title = "puzzle-draw web"
-    , body =
-        [ Html.h3 [] [ Html.text "puzzle-draw web" ]
-        , Html.p []
-            [ Html.text "This is a web interface to "
-            , Html.a [ Attr.href "https://github.com/robx/puzzle-draw" ] [ Html.text "puzzle-draw" ]
-            , Html.text ", a tool for formatting puzzle graphics from text descriptions."
-            ]
-        , Html.div []
-            [ Html.label [] [ Html.text "Load an example: " ]
-            , Html.select [ Event.onInput ExamplesChange ] <|
-                Html.option [] []
-                    :: List.map
-                        (\e -> Html.option [ Attr.value e.path ] [ Html.text e.name ])
-                        model.examples
-            ]
-        , Html.div []
-            [ Html.textarea
-                [ Attr.cols 80
-                , Attr.rows 20
-                , Attr.id "puzzle"
-                , Attr.value model.puzzle
-                , Event.onInput PuzzleChange
-                ]
-                []
-            ]
-        , Html.div [] <|
-            let
-                radio name msg mod val vals =
+view model = 
+  let
+                radiog name msg mod val vals lbl =
                     [ Html.input
                         [ Attr.id <| "o" ++ vals
                         , Attr.type_ "radio"
@@ -214,10 +191,51 @@ view model =
                     , Html.label
                         [ Attr.for <| "o" ++ vals
                         ]
-                        [ Html.text vals ]
+                        [ Html.text lbl ]
                     ]
-                radioout = radio "output" OutputChange model.output
-                radiodev = radio "device" DeviceChange model.device
+                radio name msg mod val vals = radiog name msg mod val vals vals
+  in
+    { title = "puzzle-draw web"
+    , body =
+        [ Html.h3 [] [ Html.text "puzzle-draw web" ]
+        , Html.p []
+            [ Html.text "This is a web interface to "
+            , Html.a [ Attr.href "https://github.com/robx/puzzle-draw" ] [ Html.text "puzzle-draw" ]
+            , Html.text ", a tool for formatting puzzle graphics from text descriptions."
+            ]
+        , Html.div [] <|
+           let radiofmt fmt lbl = radiog "pformat" PuzzleFormatChange model.puzzleFormat fmt fmt lbl
+           in
+            [ Html.label [] [ Html.text "Load an example (pzl): " ]
+            , Html.select [ Event.onInput (ExamplesChange "pzl") ] <|
+                Html.option [] []
+                    :: List.map
+                        (\e -> Html.option [ Attr.value e.path ] [ Html.text e.name ])
+                        (List.filter (\e -> e.puzzleFormat == "pzl") model.examples)
+            , Html.label [] [ Html.text " (pzg): " ]
+            , Html.select [ Event.onInput (ExamplesChange "pzg") ] <|
+                Html.option [] []
+                    :: List.map
+                        (\e -> Html.option [ Attr.value e.path ] [ Html.text e.name ])
+                        (List.filter (\e -> e.puzzleFormat == "pzg") model.examples)
+            , Html.br [] []
+            , Html.label [] [ Html.text " Input format: " ]
+            ] ++ radiofmt "pzl" "specific puzzle types (pzl)"
+              ++ radiofmt "pzg" "generic puzzle graphic (pzg)"
+        , Html.div []
+            [ Html.textarea
+                [ Attr.cols 80
+                , Attr.rows 20
+                , Attr.id "puzzle"
+                , Attr.value model.puzzle
+                , Event.onInput PuzzleChange
+                ]
+                []
+            ]
+        , Html.div [] <|
+            let
+               radioout = radio "output" OutputChange model.output
+               radiodev = radio "device" DeviceChange model.device
             in
             List.concat
                 [ [ Html.label [] [ Html.text "Output choice: " ] ]
@@ -290,6 +308,7 @@ view model =
                     [ [ Html.input [ Attr.type_ "hidden", Attr.name "pzl", Attr.value model.puzzle ] []
                       , Html.input [ Attr.type_ "hidden", Attr.name "output", Attr.value out ] []
                       , Html.input [ Attr.type_ "hidden", Attr.name "device", Attr.value model.device ] []
+                      , Html.input [ Attr.type_ "hidden", Attr.name "pformat", Attr.value model.puzzleFormat ] []
                       , Html.input
                             [ Attr.type_ "hidden"
                             , Attr.name "code"
@@ -407,6 +426,9 @@ update msg model =
             in
             rerender { model | output = output }
 
+        PuzzleFormatChange fmt ->
+            rerender { model | puzzleFormat = fmt }
+
         DeviceChange device ->
             rerender { model | device = device }
 
@@ -422,8 +444,8 @@ update msg model =
         PreviewChange preview ->
             rerender { model | preview = preview }
 
-        ExamplesChange path ->
-            ( model, Http.send ExampleResult (loadExample path) )
+        ExamplesChange fmt path ->
+            ( model, Http.send (ExampleResult fmt) (loadExample path) )
 
         RenderResult res ->
             let
@@ -470,13 +492,13 @@ update msg model =
                 Ok examples ->
                     ( { model | examples = examples }, Cmd.none )
 
-        ExampleResult res ->
+        ExampleResult fmt res ->
             case res of
                 Err error ->
                     ( model, Cmd.none )
 
                 Ok example ->
-                    rerender { model | puzzle = example }
+                    rerender { model | puzzle = example, puzzleFormat = fmt }
 
 
 subscriptions : Model -> Sub Msg
