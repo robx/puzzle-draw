@@ -29,6 +29,9 @@ import           Draw.Code                      ( drawCode )
 import           Draw.CmdLine
 import           Draw.Draw
 import           Data.Compose
+import           Data.Component
+import           Parse.Component
+import           Draw.Component
 import           Parse.Puzzle
 import           Data.PuzzleTypes
 import           Draw.Font                      ( fontAnelizaRegular
@@ -91,17 +94,23 @@ serveDiagram format name bs = do
 config :: Device -> Config
 config device = Config device fontAnelizaRegular fontBit
 
+newtype ParseComponent = PC { unPC :: TaggedComponent }
+
+instance FromJSON ParseComponent where
+  parseJSON v = PC <$> parseComponent v
+
 decodeAndDrawPuzzle
   :: Format
   -> OutputChoice
   -> Device
   -> Double
   -> Bool
+  -> PuzzleFormat
   -> B.ByteString
   -> Either String BL.ByteString
-decodeAndDrawPuzzle fmt oc device s code b = case backend fmt of
-  BackendSVG        -> withSize (renderBytesSVG fmt) (dec b >>= drawP)
-  BackendRasterific -> withSize (renderBytesRasterific fmt) (dec b >>= drawP)
+decodeAndDrawPuzzle fmt oc device s code pfmt b = case backend fmt of
+  BackendSVG        -> withSize (renderBytesSVG fmt) doit
+  BackendRasterific -> withSize (renderBytesRasterific fmt) doit
  where
   u = case fmt of
     PDF -> Points
@@ -117,13 +126,35 @@ decodeAndDrawPuzzle fmt oc device s code b = case backend fmt of
         sz     = mkSizeSpec2D (Just $ toOutputWidth u (s * w))
                               (Just $ toOutputWidth u (s * h))
     return $ f sz d
+
+  doit :: Backend' b => Either String (Diagram b)
+  doit = case pfmt of
+    PZL -> dec b >>= drawP
+    PZG -> runPzg b
+
+  runPzg :: Backend' b => B.ByteString -> Either String (Diagram b)
+  runPzg bytes = do
+    components <-
+      fmap (map unPC) . fmapL (\e -> "parse failure: " ++ show e) $ decodeThrow
+        bytes
+    let
+      pzl     = map untag . filter (not . tagged Solution) $ components
+      sol     = map untag . filter (not . tagged Puzzle) $ components
+      haveSol = not . null . filter (tagged Solution) $ components
+      dpzl    = mconcat $ reverse $ map drawComponent pzl
+      dsol    = if haveSol
+        then Just $ mconcat $ reverse $ map drawComponent sol
+        else Nothing
+    maybe (fail "no solution provided")
+          return
+          (render (config device) Nothing (dpzl, dsol) oc)
+  tagged t (TaggedComponent t' _) = Just t == t'
+  untag (TaggedComponent _ c) = c
+
   dec :: B.ByteString -> Either String TypedPuzzle
   dec x = case decodeEither' x of
     Left  e -> Left $ show e
     Right y -> Right y
-  fmapL f e = case e of
-    Left  l -> Left (f l)
-    Right r -> Right r
   drawP :: Backend' b => TypedPuzzle -> Either String (Diagram b)
   drawP (TP mt mrt p ms mc) = do
     mcode <- case (code, mc) of
@@ -143,6 +174,9 @@ decodeAndDrawPuzzle fmt oc device s code b = case backend fmt of
   goP (mt, mrt, x, mcode) = do
     t' <- either fail pure (checkType (mrt `mplus` mt))
     handle (handler mcode) t' x
+  fmapL f e = case e of
+    Left  l -> Left (f l)
+    Right r -> Right r
 
   handler
     :: Backend' b
@@ -199,6 +233,15 @@ getFormat = do
       Nothing     -> fail400 "invalid parameter value: format"
       Just format -> return format
 
+getPuzzleFormat :: Snap PuzzleFormat
+getPuzzleFormat = do
+  fmt <- getParam "pformat"
+  case fmt of
+    Nothing    -> return PZL
+    Just "pzl" -> return PZL
+    Just "pzg" -> return PZG
+    _          -> fail400 "invalid parameter value: pformat"
+
 getDouble :: B.ByteString -> Double -> Snap Double
 getDouble key defaultValue = do
   param <- getParam key
@@ -215,10 +258,19 @@ previewPostHandler = do
   code         <- getBoolParam "code"
   s            <- getDouble "scale" 1.0
   device       <- getDevice SVG
+  pzlFormat    <- getPuzzleFormat
   body         <- readRequestBody 4096
-  case decodeAndDrawPuzzle SVG outputChoice device s code (BL.toStrict body) of
-    Left  err   -> fail400 err
-    Right bytes -> serveDiagram SVG Nothing bytes
+  case
+      decodeAndDrawPuzzle SVG
+                          outputChoice
+                          device
+                          s
+                          code
+                          pzlFormat
+                          (BL.toStrict body)
+    of
+      Left  err   -> fail400 err
+      Right bytes -> serveDiagram SVG Nothing bytes
 
 downloadPostHandler :: Snap ()
 downloadPostHandler = do
@@ -227,26 +279,46 @@ downloadPostHandler = do
   code         <- getBoolParam "code"
   s            <- getDouble "scale" 1.0
   format       <- getFormat
+  pzlFormat    <- getPuzzleFormat
   device       <- getDevice format
   fname        <- maybe "" id <$> getParam "filename"
   let filename = if fname == "" then "puzzle" else fname
-  case decodeAndDrawPuzzle format outputChoice device s code body of
+  case decodeAndDrawPuzzle format outputChoice device s code pzlFormat body of
     Left  e     -> fail400 e
     Right bytes -> serveDiagram format (Just filename) bytes
 
-data Example = Example { _name :: String, _path :: FilePath }
+data PuzzleFormat = PZL | PZG
+    deriving (Show, Ord, Eq)
+
+lookupPuzzleFormat :: FilePath -> Maybe PuzzleFormat
+lookupPuzzleFormat fp = case takeExtension fp of
+  ".pzl" -> Just PZL
+  ".pzg" -> Just PZG
+  _      -> Nothing
+
+data Example = Example
+    { _name :: String
+    , _path :: FilePath
+    , _puzzleFormat :: PuzzleFormat }
     deriving (Show, Ord, Eq)
 
 instance ToJSON Example where
-    toJSON (Example n p) = object [ "name" .= n, "path" .= p ]
+    toJSON (Example n p f) =
+       object
+          [ "name" .= n
+          , "path" .= p
+          , "pformat" .= case f of
+                          PZL -> "pzl" :: String
+                          PZG -> "pzg" ]
 
 exampleFromPath :: FilePath -> Maybe Example
-exampleFromPath fp = do
-  guard $ takeExtension fp == ".pzl"
-  let n = stripSuffixMaybe "-example" $ takeBaseName fp
-  guard $ length n > 0
-  return . Example n $ "./examples" </> fp
+exampleFromPath fp = case lookupPuzzleFormat fp of
+  Nothing  -> Nothing
+  Just fmt -> do
+    guard $ length n > 0
+    return $ Example n ("./examples" </> fp) fmt
  where
+  n = stripSuffixMaybe "-example" $ takeBaseName fp
   stripSuffix suffix = fmap reverse . stripPrefix (reverse suffix) . reverse
   stripSuffixMaybe suffix str = case stripSuffix suffix str of
     Just s  -> s
