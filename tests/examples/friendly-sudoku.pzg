@@ -1,0 +1,40 @@
+- type: grid
+  style: default
+  grid: |
+    ......
+    ......
+    ......
+    ......
+    ......
+    ......
+- type: regions
+  grid: |
+    aaabbb
+    aaabbb
+    cccddd
+    cccddd
+    eeefff
+    eeefff
+- type: edges
+  grid: |
+    . . . . . . .
+      o o   o o
+    .o.o.o. . . .
+      o o   o
+    . . . . . . .
+        o   o o
+    . . . .o.o.o.
+      o o     o
+    .o.o.o. . .o.
+        o   o o
+    . . . . . . .
+      o     o
+    . . . . . . .
+- type: cells
+  grid: |
+    1.....
+    .2....
+    ..3...
+    ...4..
+    ....5.
+    .....6

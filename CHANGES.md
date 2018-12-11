@@ -1,5 +1,11 @@
 * Allow choosing device in the web interface.
 * Fix link back to github.
+* Implement new generic graphic mode.
+* Remove some one-off puzzle types in favour of generics:
+  - afternoonskyscrapers
+  - wormhole
+  - lits-symmetry
+  - primeplace
 
 0.3.3.0: 20181204
 -----------------

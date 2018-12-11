@@ -18,10 +18,13 @@ import           Data.Compose
 import           Data.PuzzleTypes               ( checkType
                                                 , typeOptions
                                                 )
+import           Data.Component
 import           Draw.Draw
 import           Draw.Code
 import           Draw.Font
 import           Draw.Lib
+import           Draw.Component
+import           Parse.Component
 
 import           Options.Applicative
 import           Control.Monad
@@ -98,8 +101,9 @@ puzzleOpts =
             "Scale the size by this factor"
           )
     <*> some
-          (argument str
-                    (metavar "INPUT..." <> help "Puzzle files in .pzl format")
+          (argument
+            str
+            (metavar "INPUT..." <> help "Puzzle files in .pzl or .pzg format")
           )
  where
   parseFormat = eitherReader
@@ -180,7 +184,53 @@ renderPuzzle opts input drw (oc, required) = case (drw oc, required) of
   (Just x, _) -> Right $ Just (toRenderOpts input oc (diagramSize x) opts, x)
 
 handleOne :: PuzzleOpts -> OutputChoices -> FilePath -> IO ()
-handleOne opts ocs input = do
+handleOne opts ocs fp = case takeExtension fp of
+  ".pzl" -> handlePzl opts ocs fp
+  ".pzg" -> handlePzg opts ocs fp
+  ext    -> putStrLn $ "unknown format: " ++ ext
+
+newtype ParseComponent = PC { unPC :: TaggedComponent }
+
+instance Y.FromJSON ParseComponent where
+  parseJSON v = PC <$> parseComponent v
+
+handlePzg :: PuzzleOpts -> OutputChoices -> FilePath -> IO ()
+handlePzg opts ocs fp = do
+  bytes <- ByteString.readFile fp
+  let cfg = config opts
+  case backend (_format opts) of
+    BackendRasterific -> do
+      ds <- parseAndDraw bytes cfg
+      mapM_ (\(ropts, d) -> renderFileRasterific ropts d) ds
+    BackendSVG -> do
+      ds <- parseAndDraw bytes cfg
+      mapM_ (\(ropts, d) -> renderFileSVG ropts d) ds
+ where
+  parseAndDraw
+    :: Backend' b
+    => ByteString.ByteString
+    -> Config
+    -> IO [(RenderOpts, Diagram b)]
+  parseAndDraw bytes cfg = orExit $ do
+    components <-
+      fmap (map unPC)
+      . fmapL (\e -> "parse failure: " ++ show e)
+      $ Y.decodeThrow bytes
+    let
+      pzl     = map untag . filter (not . tagged Solution) $ components
+      sol     = map untag . filter (not . tagged Puzzle) $ components
+      haveSol = not . null . filter (tagged Solution) $ components
+      dpzl    = mconcat $ reverse $ map drawComponent pzl
+      dsol =
+        if haveSol then Just $ mconcat $ reverse $ map drawComponent sol else Nothing
+      rend = render cfg Nothing (dpzl, dsol)
+    catMaybes <$> mapM (renderPuzzle opts fp rend) ocs
+  tagged t (TaggedComponent t' _) = Just t == t'
+  untag (TaggedComponent _ c) = c
+
+
+handlePzl :: PuzzleOpts -> OutputChoices -> FilePath -> IO ()
+handlePzl opts ocs input = do
   bytes <- ByteString.readFile input
   let cfg = config opts
   case backend (_format opts) of
@@ -191,9 +241,6 @@ handleOne opts ocs input = do
       ds <- parseAndDraw bytes cfg
       mapM_ (\(ropts, d) -> renderFileSVG ropts d) ds
  where
-  fmapL f e = case e of
-    Left  l -> Left (f l)
-    Right r -> Right r
   parseAndDraw
     :: Backend' b
     => ByteString.ByteString
@@ -211,6 +258,11 @@ handleOne opts ocs input = do
         parsedCode <- Y.parseEither parseCode c
         return . Just $ drawCode parsedCode
     catMaybes <$> mapM (renderPuzzle opts input (render cfg mcode ps)) ocs
+
+fmapL :: (a -> b) -> Either a c -> Either b c
+fmapL f e = case e of
+  Left  l -> Left (f l)
+  Right r -> Right r
 
 main :: IO ()
 main = do

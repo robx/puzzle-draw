@@ -56,11 +56,6 @@ type Thermometer = [C]
 data SlalomDiag = SlalomForward | SlalomBackward
     deriving Show
 
--- | Shadow along from the western and southern side, as used for
---   afternoon skyscrapers.
-data Shade = Shade Bool Bool
-    deriving Show
-
 data KropkiDot = KNone | KBlack | KWhite
     deriving (Show, Eq, Ord)
 

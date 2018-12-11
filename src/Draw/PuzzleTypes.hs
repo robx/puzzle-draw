@@ -25,13 +25,11 @@ module Draw.PuzzleTypes
   , slalom
   , compass
   , boxof2or3
-  , afternoonskyscrapers
   , meanderingnumbers
   , tapa
   , japanesesums
   , coral
   , maximallengths
-  , primeplace
   , labyrinth
   , bahnhof
   , cave
@@ -54,12 +52,10 @@ module Draw.PuzzleTypes
   , dominoPills
   , fillominoLoop
   , loopki
-  , litssym
   , scrabble
   , neighbors
   , starwars
   , heyawake
-  , wormhole
   , pentominous
   , starbattle
   , colorakari
@@ -84,7 +80,6 @@ module Draw.PuzzleTypes
   , snake
   , countryRoad
   , killersudoku
-  , friendlysudoku
   , japsummasyu
   )
 where
@@ -122,16 +117,6 @@ unimplemented _ _ = mempty
 lits :: Backend' b => Drawers b AreaGrid ShadedGrid
 lits = Drawers (grid gDefault <> drawAreasGray)
                ((drawAreas <> grid gDefault) . fst <> drawShade . snd)
-
-litssym :: Backend' b => Drawers b AreaGrid ShadedGrid
-litssym = Drawers p (p . fst <> drawShade . snd)
- where
-  p g = drawAreas g <> grid gDefault g <> translate
-    (c g)
-    (scale 0.5 $ smallPearl MBlack)
-  c g =
-    let (rs, cs) = size . Map.mapKeys toCoord $ g
-    in  r2 ((fromIntegral rs) / 2, (fromIntegral cs) / 2)
 
 solstyle :: (HasStyle a, InSpace V2 Double a) => a -> a
 solstyle = lc (blend 0.8 black white) . lwG (3 * onepix)
@@ -354,12 +339,6 @@ boxof2or3 = Drawers
   (placeGrid . fmap smallPearl . fst <> drawThinEdges . snd)
   (unimplemented "boxof2or3 solution")
 
-afternoonskyscrapers
-  :: Backend' b => Drawers b (Grid C Shade) (Grid C (Maybe Int))
-afternoonskyscrapers = Drawers
-  (grid gDefault <> placeGrid . fmap drawShadow)
-  (drawIntGrid . snd <> placeGrid . fmap drawShadow . fst)
-
 meanderingnumbers :: Backend' b => Drawers b AreaGrid (Grid C (Maybe Int))
 meanderingnumbers =
   Drawers (grid gDefault <> drawAreas) (drawIntGrid . snd <> drawAreas . fst)
@@ -387,12 +366,6 @@ coral =
 maximallengths :: Backend' b => Drawers b (OutsideClues C (Maybe Int)) (Loop C)
 maximallengths = Drawers g (solstyle . drawEdges . snd <> g . fst)
   where g = placeOutside . fmap (fmap drawInt) <> grid gDefault . outsideGrid
-
-primeplace :: Backend' b => Drawers b (Grid C PrimeDiag) (Grid C Int)
-primeplace = Drawers g (placeGrid . fmap drawInt . snd <> g . fst)
- where
-  g      = grid gStyle <> placeGrid . fmap drawPrimeDiag
-  gStyle = GridStyle LineThin LineThick Nothing VertexNone
 
 labyrinth
   :: Backend' b
@@ -707,11 +680,6 @@ heyawake = Drawers (as <> cs) (as . fst <> drawShade . snd <> cs . fst)
  where
   as = (drawAreas <> grid gDefault) . fst
   cs = placeGrid . fmap drawInt . clues . snd
-
-wormhole :: Backend' b => Drawers b (Grid C (Maybe (Either Int Char))) ()
-wormhole = Drawers
-  (placeGrid . fmap (either drawInt drawChar) . clues <> grid gDashed)
-  (unimplemented "wormhole solution")
 
 pentominous :: Backend' b => Drawers b (Grid C (Maybe Char)) (Grid C Char)
 pentominous = Drawers
@@ -1044,23 +1012,6 @@ snake = Drawers p s
 countryRoad :: Backend' b => Drawers b (AreaGrid, Grid C (Maybe Int)) (Loop C)
 countryRoad =
   Drawers smallHintRooms (solstyle . drawEdges . snd <> smallHintRooms . fst)
-
-friendlysudoku
-  :: Backend' b
-  => Drawers b (Map.Map (Edge N) KropkiDot, Grid C (Maybe Int)) (Grid C Int)
-friendlysudoku = Drawers p (placeGrid . fmap drawInt . snd <> p . fst)
- where
-  p =
-    placeGrid'
-      .  Map.mapKeys midPoint
-      .  fmap kropkiDot
-      .  fst
-      <> placeGrid
-      .  fmap drawInt
-      .  clues
-      .  snd
-      <> sudokugrid
-      .  snd
 
 japsummasyu :: Backend' b => Drawers b (OutsideClues C [String]) ()
 japsummasyu = Drawers
