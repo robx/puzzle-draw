@@ -4,7 +4,9 @@ module Draw.Component where
 
 import qualified Data.Map.Strict               as Map
 
-import Diagrams.Prelude (scale, gray)
+import           Diagrams.Prelude               ( scale
+                                                , gray
+                                                )
 
 import           Data.Component
 import           Data.Elements

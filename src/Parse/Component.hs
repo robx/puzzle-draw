@@ -16,12 +16,12 @@ parseComponent = withObject "Component" $ \o -> do
   t   <- o .: "type" :: Parser String
   tag <- parseTag o
   c   <- case t of
-    "grid"     -> parseGrid o
-    "regions"  -> Regions <$> parseRegions o
-    "nodes" -> NodeGrid <$> parseNodeGrid o
-    "cells" -> CellGrid <$> parseCellGrid o
-    "edges" -> EdgeGrid <$> parseEdgeGrid o
-    _          -> fail $ "unknown component type: " ++ t
+    "grid"    -> parseGrid o
+    "regions" -> Regions <$> parseRegions o
+    "nodes"   -> NodeGrid <$> parseNodeGrid o
+    "cells"   -> CellGrid <$> parseCellGrid o
+    "edges"   -> EdgeGrid <$> parseEdgeGrid o
+    _         -> fail $ "unknown component type: " ++ t
   pure $ TaggedComponent tag c
 
 parseTag :: Object -> Parser (Maybe Tag)

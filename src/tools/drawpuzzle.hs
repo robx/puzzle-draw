@@ -221,8 +221,9 @@ handlePzg opts ocs fp = do
       sol     = map untag . filter (not . tagged Puzzle) $ components
       haveSol = not . null . filter (tagged Solution) $ components
       dpzl    = mconcat $ reverse $ map drawComponent pzl
-      dsol =
-        if haveSol then Just $ mconcat $ reverse $ map drawComponent sol else Nothing
+      dsol    = if haveSol
+        then Just $ mconcat $ reverse $ map drawComponent sol
+        else Nothing
       rend = render cfg Nothing (dpzl, dsol)
     catMaybes <$> mapM (renderPuzzle opts fp rend) ocs
   tagged t (TaggedComponent t' _) = Just t == t'
