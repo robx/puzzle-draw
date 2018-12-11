@@ -101,11 +101,11 @@ loadExample path =
     Http.getString path
 
 
-render : Output -> String -> Float -> Bool -> String -> Http.Request String
-render output device scale code body =
+render : Model -> Http.Request String
+render model =
     let
         out =
-            case output of
+            case model.output of
                 OutputPuzzle ->
                     "puzzle"
 
@@ -121,17 +121,18 @@ render output device scale code body =
         , url =
             "./api/preview?output="
                 ++ out
-                ++ "&device=" ++ device
+                ++ "&device=" ++ model.device
                 ++ "&code="
-                ++ (if code then
+                ++ (if model.code then
                         "yes"
 
                     else
                         "no"
                    )
                 ++ "&scale="
-                ++ String.fromFloat scale
-        , body = Http.stringBody "application/x-yaml" body
+                ++ String.fromFloat model.scale
+                ++ "&pformat=" ++ model.puzzleFormat
+        , body = Http.stringBody "application/x-yaml" model.puzzle
         , expect = Http.expectString
         , timeout = Nothing
         , withCredentials = False
@@ -387,7 +388,7 @@ update msg model =
             if m.preview then
               case m.renderState of
                 Ready ->
-                    ( { m | renderState = Rendering }, Http.send RenderResult (render m.output m.device m.scale m.code m.puzzle) )
+                    ( { m | renderState = Rendering }, Http.send RenderResult (render m) )
 
                 Rendering ->
                     ( { m | renderState = Queued }, Cmd.none )
