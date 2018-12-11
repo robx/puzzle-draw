@@ -1,0 +1,30 @@
+- type: cells
+  grid: |
+    ABCDEFGHIJKL
+    MNOPQRSTUVWX
+    YZ0123456789
+    .-*o#/\.....
+- type: cells
+  grid: |
+    abcdefghijkl
+    mnopqrstuvwx
+    yzABCDEFGHIJ
+    KLMNOPQRSTUV
+    WXYZ........
+    .
+    .
+    .
+    .
+    .
+  substitute:
+    a: 123
+    b: kropki-white
+    c: kropki-black
+    d: afternoon-west
+    e: afternoon-south
+    f: diagonal-forward
+    g: diagonal-back
+    h: diagonal-both
+    i: dot
+    j: shade
+
