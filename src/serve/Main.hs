@@ -138,18 +138,11 @@ decodeAndDrawPuzzle fmt oc device s code pfmt b = case backend fmt of
       fmap (map unPC) . fmapL (\e -> "parse failure: " ++ show e) $ decodeThrow
         bytes
     let
-      pzl     = map untag . filter (not . tagged Solution) $ components
-      sol     = map untag . filter (not . tagged Puzzle) $ components
-      haveSol = not . null . filter (tagged Solution) $ components
-      dpzl    = mconcat $ reverse $ map drawComponent pzl
-      dsol    = if haveSol
-        then Just $ mconcat $ reverse $ map drawComponent sol
-        else Nothing
+      pzl = drawComponents . extractPuzzle $ components
+      sol = fmap drawComponents . extractSolution $ components
     maybe (fail "no solution provided")
           return
-          (render (config device) Nothing (dpzl, dsol) oc)
-  tagged t (TaggedComponent t' _) = Just t == t'
-  untag (TaggedComponent _ c) = c
+          (render (config device) Nothing (pzl, sol) oc)
 
   dec :: B.ByteString -> Either String TypedPuzzle
   dec x = case decodeEither' x of

@@ -217,17 +217,10 @@ handlePzg opts ocs fp = do
       . fmapL (\e -> "parse failure: " ++ show e)
       $ Y.decodeThrow bytes
     let
-      pzl     = map untag . filter (not . tagged Solution) $ components
-      sol     = map untag . filter (not . tagged Puzzle) $ components
-      haveSol = not . null . filter (tagged Solution) $ components
-      dpzl    = mconcat $ reverse $ map drawComponent pzl
-      dsol    = if haveSol
-        then Just $ mconcat $ reverse $ map drawComponent sol
-        else Nothing
-      rend = render cfg Nothing (dpzl, dsol)
+      pzl = drawComponents . extractPuzzle $ components
+      sol = fmap drawComponents . extractSolution $ components
+      rend = render cfg Nothing (pzl, sol)
     catMaybes <$> mapM (renderPuzzle opts fp rend) ocs
-  tagged t (TaggedComponent t' _) = Just t == t'
-  untag (TaggedComponent _ c) = c
 
 
 handlePzl :: PuzzleOpts -> OutputChoices -> FilePath -> IO ()

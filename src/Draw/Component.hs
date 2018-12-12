@@ -16,6 +16,9 @@ import           Draw.Grid
 import           Draw.Style
 import           Draw.Elements
 
+drawComponents :: Backend' b => [Component] -> Drawing b
+drawComponents cs = mconcat $ reverse $ map drawComponent $ cs
+
 drawComponent :: Backend' b => Component -> Drawing b
 drawComponent c = case c of
   Grid s g ->
