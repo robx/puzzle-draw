@@ -169,7 +169,7 @@ decodeAndDrawPuzzle params b = case backend fmt of
     -> Parser (Diagram b)
   goP (mt, mrt, x, mcode) = do
     t' <- either fail pure (checkType (mrt `mplus` mt))
-    (pzl, sol) <- handle drawPuzzleMaybeSol t' x
+    (pzl, sol) <- compose t' x
     maybe (fail "no solution provided")
           return
           (render (config device) mcode (pzl, sol) oc)

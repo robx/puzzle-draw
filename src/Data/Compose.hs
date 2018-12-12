@@ -6,12 +6,7 @@
 -- Helpers to string together parser and renderer by puzzle type.
 
 module Data.Compose
-  ( PuzzleHandler
-  , handle
-  ,
-    -- * Handlers
-    drawPuzzleMaybeSol
-  )
+  ( compose )
 where
 
 import           Data.Yaml                      ( Parser
@@ -25,6 +20,9 @@ import           Data.PuzzleTypes
 
 import qualified Parse.PuzzleTypes             as R
 import qualified Draw.PuzzleTypes              as D
+
+compose :: Backend' b => PuzzleType -> ((Value, Maybe Value) -> Parser (Drawing b, Maybe (Drawing b)))
+compose = handle drawPuzzleMaybeSol
 
 -- | A function to compose an arbitrary matching pair of parser and renderer.
 --   In @PuzzleHandler b a@, @b@ is the rendering backend type, while @a@ is

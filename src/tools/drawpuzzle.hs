@@ -245,7 +245,7 @@ handlePzl opts ocs input = do
                                  (Y.decodeThrow bytes)
     let msv' = maybeSkipSolution ocs msv
     t     <- checkType $ _type opts `mplus` mrt `mplus` mt
-    ps    <- Y.parseEither (handle drawPuzzleMaybeSol t) (pv, msv')
+    ps    <- Y.parseEither (compose t) (pv, msv')
     mcode <- case maybeSkipCode opts mc of
       Nothing -> return Nothing
       Just c  -> fmapL ("solution code parse failure: " ++) $ do
