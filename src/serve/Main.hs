@@ -133,24 +133,24 @@ decodeAndDrawPuzzle params b = case backend fmt of
 
   doit :: Backend' b => Either String (Diagram b)
   doit = case pfmt of
-    PZL -> dec b >>= drawP
+    PZL -> runPzl b
     PZG -> runPzg b
 
   runPzg :: Backend' b => B.ByteString -> Either String (Diagram b)
   runPzg bytes = do
     components <-
-      fmap (map unPC) . fmapL (\e -> "parse failure: " ++ show e) $ decodeThrow
-        bytes
+      fmap (map unPC) . fmapL (\e -> "parse failure: " ++ show e) $ decodeThrow bytes
     let pzl = drawComponents . extractPuzzle $ components
         sol = fmap drawComponents . extractSolution $ components
     maybe (fail "no solution provided")
           return
           (render (config device) Nothing (pzl, sol) oc)
 
-  dec :: B.ByteString -> Either String TypedPuzzle
-  dec x = case decodeEither' x of
-    Left  e -> Left $ show e
-    Right y -> Right y
+  runPzl :: Backend' b => B.ByteString -> Either String (Diagram b)
+  runPzl bytes = do
+    typedPuzzle <- fmapL (\e -> "parse failure: " ++ show e) $ decodeThrow bytes
+    drawP typedPuzzle
+
   drawP :: Backend' b => TypedPuzzle -> Either String (Diagram b)
   drawP (TP mt mrt p ms mc) = do
     mcode <- case (code, mc) of
@@ -169,25 +169,14 @@ decodeAndDrawPuzzle params b = case backend fmt of
     -> Parser (Diagram b)
   goP (mt, mrt, x, mcode) = do
     t' <- either fail pure (checkType (mrt `mplus` mt))
-    handle (handler mcode) t' x
-  fmapL f e = case e of
-    Left  l -> Left (f l)
-    Right r -> Right r
-
-  handler
-    :: Backend' b
-    => Maybe (CodeDiagrams (Drawing b))
-    -> PuzzleHandler b ((Value, Maybe Value) -> Parser (Diagram b))
-  handler mcode (pp, ps) (Drawers dp ds) (p, ms) = do
-    p'  <- pp p
-    ms' <- maybe (pure Nothing) (fmap Just . ps) ms
-    let pzl = dp p'
-        sol = do
-          s' <- ms'
-          return (ds (p', s'))
+    (pzl, sol) <- handle drawPuzzleMaybeSol t' x
     maybe (fail "no solution provided")
           return
           (render (config device) mcode (pzl, sol) oc)
+
+  fmapL f e = case e of
+    Left  l -> Left (f l)
+    Right r -> Right r
 
 getOutputChoice :: Snap OutputChoice
 getOutputChoice = do
