@@ -1,11 +1,15 @@
-* Allow choosing device in the web interface.
-* Fix link back to github.
-* Implement new generic graphic mode.
-* Remove some one-off puzzle types in favour of generics:
-  - afternoonskyscrapers
-  - wormhole
-  - lits-symmetry
-  - primeplace
+0.3.4.0: 20181212
+-----------------
+
+* drawpuzzle now never writes more than one output file per
+  input file. Solution rendering has to be explicitly requested
+  by passing `-s`.
+* Introduced a new experimental lower level graphic format PZG.
+  A few of the one-off types have been removed in favour of this
+  format: afternoonskyscrapers, wormhole, lits-symmetry, primeplace
+* Web interface changes:
+  - Allow choosing device in the web interface.
+  - Fix link back to github.
 
 0.3.3.0: 20181204
 -----------------
