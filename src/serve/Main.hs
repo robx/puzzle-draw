@@ -12,7 +12,9 @@ import           Control.Monad.IO.Class
 import           Data.List                      ( sort )
 import           Safe                           ( readMay )
 
-import           Snap.Core
+import           Snap.Core               hiding ( getParams
+                                                , Params
+                                                )
 import           Snap.Util.FileServe
 import           Snap.Http.Server        hiding ( Config )
 
@@ -94,24 +96,26 @@ serveDiagram format name bs = do
 config :: Device -> Config
 config device = Config device fontAnelizaRegular fontBit
 
+data Params = Params
+  { paramFormat :: Format
+  , paramOutputChoice :: OutputChoice
+  , paramDevice :: Device
+  , paramScale :: Double
+  , paramCode :: Bool
+  , paramPuzzleFormat :: PuzzleFormat
+  }
+
 newtype ParseComponent = PC { unPC :: TaggedComponent }
 
 instance FromJSON ParseComponent where
   parseJSON v = PC <$> parseComponent v
 
-decodeAndDrawPuzzle
-  :: Format
-  -> OutputChoice
-  -> Device
-  -> Double
-  -> Bool
-  -> PuzzleFormat
-  -> B.ByteString
-  -> Either String BL.ByteString
-decodeAndDrawPuzzle fmt oc device s code pfmt b = case backend fmt of
+decodeAndDrawPuzzle :: Params -> B.ByteString -> Either String BL.ByteString
+decodeAndDrawPuzzle params b = case backend fmt of
   BackendSVG        -> withSize (renderBytesSVG fmt) doit
   BackendRasterific -> withSize (renderBytesRasterific fmt) doit
  where
+  Params fmt oc device s code pfmt = params
   u = case fmt of
     PDF -> Points
     _   -> Pixels
@@ -137,9 +141,8 @@ decodeAndDrawPuzzle fmt oc device s code pfmt b = case backend fmt of
     components <-
       fmap (map unPC) . fmapL (\e -> "parse failure: " ++ show e) $ decodeThrow
         bytes
-    let
-      pzl = drawComponents . extractPuzzle $ components
-      sol = fmap drawComponents . extractSolution $ components
+    let pzl = drawComponents . extractPuzzle $ components
+        sol = fmap drawComponents . extractSolution $ components
     maybe (fail "no solution provided")
           return
           (render (config device) Nothing (pzl, sol) oc)
@@ -245,38 +248,31 @@ getDouble key defaultValue = do
       Nothing -> fail400 "invalid number parameter"
       Just dd -> return dd
 
+getParams :: Format -> Snap Params
+getParams fmt =
+  Params fmt
+    <$> getOutputChoice
+    <*> getDevice fmt
+    <*> getDouble "scale" 1.0
+    <*> getBoolParam "code"
+    <*> getPuzzleFormat
+
 previewPostHandler :: Snap ()
 previewPostHandler = do
-  outputChoice <- getOutputChoice
-  code         <- getBoolParam "code"
-  s            <- getDouble "scale" 1.0
-  device       <- getDevice SVG
-  pzlFormat    <- getPuzzleFormat
-  body         <- readRequestBody 4096
-  case
-      decodeAndDrawPuzzle SVG
-                          outputChoice
-                          device
-                          s
-                          code
-                          pzlFormat
-                          (BL.toStrict body)
-    of
-      Left  err   -> fail400 err
-      Right bytes -> serveDiagram SVG Nothing bytes
+  params <- getParams SVG
+  body   <- readRequestBody 4096
+  case decodeAndDrawPuzzle params (BL.toStrict body) of
+    Left  err   -> fail400 err
+    Right bytes -> serveDiagram SVG Nothing bytes
 
 downloadPostHandler :: Snap ()
 downloadPostHandler = do
-  body         <- maybe "" id <$> getParam "pzl"
-  outputChoice <- getOutputChoice
-  code         <- getBoolParam "code"
-  s            <- getDouble "scale" 1.0
-  format       <- getFormat
-  pzlFormat    <- getPuzzleFormat
-  device       <- getDevice format
-  fname        <- maybe "" id <$> getParam "filename"
+  body   <- maybe "" id <$> getParam "pzl"
+  format <- getFormat
+  params <- getParams format
+  fname  <- maybe "" id <$> getParam "filename"
   let filename = if fname == "" then "puzzle" else fname
-  case decodeAndDrawPuzzle format outputChoice device s code pzlFormat body of
+  case decodeAndDrawPuzzle params body of
     Left  e     -> fail400 e
     Right bytes -> serveDiagram format (Just filename) bytes
 
