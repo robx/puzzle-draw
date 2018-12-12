@@ -1,13 +1,10 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 module Draw.CmdLine
-  ( renderFileRasterific
-  , renderFileSVG
-  , renderBytesRasterific
+  ( renderBytesRasterific
   , renderBytesSVG
   , backend
   , BackendType(..)
-  , RenderOpts(..)
   , Format(..)
   , lookupFormat
   , extension
@@ -33,18 +30,6 @@ import           Codec.Picture.Jpg              ( encodeJpeg )
 
 import qualified Diagrams.Backend.Rasterific   as Rasterific
 import qualified Diagrams.Backend.SVG          as SVG
-
-data RenderOpts = RenderOpts
-  { _file :: FilePath
-  , _size :: SizeSpec V2 Double
-  }
-
-renderFileRasterific :: RenderOpts -> Diagram Rasterific.B -> IO ()
-renderFileRasterific ropts =
-  Rasterific.renderRasterific (_file ropts) (_size ropts)
-
-renderFileSVG :: RenderOpts -> Diagram SVG.B -> IO ()
-renderFileSVG ropts = SVG.renderSVG (_file ropts) (_size ropts)
 
 renderBytesRasterific
   :: Format -> SizeSpec V2 Double -> Diagram Rasterific.B -> ByteString

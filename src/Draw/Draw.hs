@@ -7,9 +7,9 @@
 module Draw.Draw
   ( Device(..)
   , Config(..)
-  , PuzzleSol
   , Drawers(..)
   , QDrawing(..)
+  , Parts(..)
   , Drawing
   , draw
   , diagram
@@ -41,7 +41,9 @@ module Draw.Draw
   )
 where
 
-import           Diagrams.Prelude        hiding ( render )
+import           Diagrams.Prelude        hiding ( parts
+                                                , render
+                                                )
 
 import           Draw.Font
 import           Draw.Lib
@@ -81,7 +83,11 @@ data Drawers b p s =
         , solution :: (p, s) -> Drawing b
         }
 
-type PuzzleSol b = (Drawing b, Maybe (Drawing b))
+data Parts b = Parts
+    { _partPuzzle :: Drawing b
+    , _partSolution :: Maybe (Drawing b)
+    , _partCode :: Maybe (CodeDiagrams (Drawing b))
+    }
 
 data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
     deriving Show
@@ -91,14 +97,14 @@ data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
 render
   :: Backend' b
   => Config
-  -> Maybe (CodeDiagrams (Drawing b))
-  -> PuzzleSol b
+  -> Parts b
   -> OutputChoice
-  -> Maybe (Diagram b)
-render config mc (p, ms) = fmap (bg white) . d
+  -> Either String (Diagram b)
+render config parts = fmap (bg white) . d
  where
-  fixup = alignPixel . border borderwidth
-  addCode x = case mc of
+  Parts pzl msol mcode = parts
+  fixup                = alignPixel . border borderwidth
+  addCode x = case mcode of
     Nothing -> x
     Just (CodeDiagrams cleft ctop cover) ->
       ((diagram config cover <> x) =!= top (diagram config ctop))
@@ -108,9 +114,11 @@ render config mc (p, ms) = fmap (bg white) . d
   top c = if isEmpty c then mempty else strutY 0.5 =!= c
   lft c = if isEmpty c then mempty else strutX 0.5 |!| c
   isEmpty c = diameter unitX c == 0
-  d DrawPuzzle   = fixup . addCode <$> Just (diagram config p)
-  d DrawSolution = fixup . addCode <$> fmap (diagram config) ms
-  d DrawExample  = sideBySide <$> d DrawPuzzle <*> d DrawSolution
+  d DrawPuzzle   = Right . fixup . addCode $ diagram config pzl
+  d DrawSolution = case msol of
+    Just sol -> Right . fixup . addCode $ diagram config sol
+    Nothing  -> Left "missing solution"
+  d DrawExample = sideBySide <$> d DrawPuzzle <*> d DrawSolution
   sideBySide x y = x ||| strutX 2.0 ||| y
 
 data Unit = Pixels | Points

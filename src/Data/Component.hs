@@ -21,10 +21,9 @@ data Tag =
 data TaggedComponent = TaggedComponent (Maybe Tag) Component
 
 tagged :: Tag -> TaggedComponent -> Bool
-tagged tag component =
-  case component of
-    TaggedComponent (Just t) _ -> tag == t
-    _                          -> False
+tagged tag component = case component of
+  TaggedComponent (Just t) _ -> tag == t
+  _                          -> False
 
 untag :: TaggedComponent -> Component
 untag (TaggedComponent _ c) = c
@@ -33,12 +32,10 @@ extractPuzzle :: [TaggedComponent] -> [Component]
 extractPuzzle tcs = map untag . filter (not . tagged Solution) $ tcs
 
 extractSolution :: [TaggedComponent] -> Maybe [Component]
-extractSolution tcs = if haveSol then
-                   Just . map untag . filter (not . tagged Puzzle) $ tcs
-               else
-                   Nothing
- where
-   haveSol = not . null . filter (tagged Solution) $ tcs
+extractSolution tcs = if haveSol
+  then Just . map untag . filter (not . tagged Puzzle) $ tcs
+  else Nothing
+  where haveSol = not . null . filter (tagged Solution) $ tcs
 
 data GridStyle =
     GridDefault

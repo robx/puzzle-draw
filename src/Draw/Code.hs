@@ -3,8 +3,7 @@
 {-# LANGUAGE TypeFamilies #-}
 
 module Draw.Code
-  ( CodeDiagrams(..)
-  , drawCode
+  ( drawCode
   )
 where
 

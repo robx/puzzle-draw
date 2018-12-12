@@ -3,39 +3,21 @@
 
 module Main where
 
-import           Diagrams.Prelude        hiding ( value
-                                                , option
-                                                , (<>)
-                                                , Result
-                                                , render
-                                                )
-
+import           Data.PuzzleTypes
 import           Draw.CmdLine
-
-import           Parse.Puzzle
-import           Parse.Code
-import           Data.Compose
-import           Data.PuzzleTypes               ( checkType
-                                                , typeOptions
-                                                )
-import           Data.Component
 import           Draw.Draw
-import           Draw.Code
 import           Draw.Font
-import           Draw.Lib
-import           Draw.Component
-import           Parse.Component
+import           Draw.Render
 
 import           Options.Applicative
-import           Control.Monad
-import           Data.Maybe
 import           Data.List                      ( intercalate )
 
 import           System.FilePath
 import           System.Environment             ( getProgName )
 import           System.Exit                    ( exitFailure )
 
-import qualified Data.ByteString               as ByteString
+import qualified Data.ByteString               as B
+import qualified Data.ByteString.Lazy          as BL
 import qualified Data.Yaml                     as Y
 
 optListTypes :: Parser (a -> a)
@@ -118,17 +100,9 @@ outputSuffix DrawPuzzle   = ""
 outputSuffix DrawSolution = "-sol"
 outputSuffix DrawExample  = ""
 
-toRenderOpts
-  :: FilePath -> OutputChoice -> DiagramSize -> PuzzleOpts -> RenderOpts
-toRenderOpts input oc (w, h) opts = RenderOpts out sz
+outputPath :: PuzzleOpts -> FilePath -> Format -> OutputChoice -> FilePath
+outputPath opts input fmt oc = out
  where
-  fmt = _format opts
-  u   = case fmt of
-    PDF -> Points
-    _   -> Pixels
-  w'   = toOutputWidth u w * (_scale opts)
-  h'   = toOutputWidth u h * (_scale opts)
-  sz   = mkSizeSpec2D (Just w') (Just h')
   base = takeBaseName input
   out  = _dir opts </> (base ++ outputSuffix oc) <.> extension fmt
 
@@ -141,128 +115,48 @@ defaultOpts optsParser = do
       (fullDesc <> progDesc "Command-line diagram generation." <> header prog)
   execParser p
 
-type OutputChoices = [(OutputChoice, Bool)]
-
-checkOutput :: PuzzleOpts -> Either String OutputChoices
-checkOutput opts
-  | (p || s) && e = Left "example output conflicts with puzzle/solution"
-  | e             = Right . map req $ [DrawExample]
-  | p && s        = Right . map req $ [DrawPuzzle, DrawSolution]
-  | p             = Right . map req $ [DrawPuzzle]
-  | s             = Right . map req $ [DrawSolution]
-  | otherwise     = Right [req DrawPuzzle, opt DrawSolution]
+checkOutput :: PuzzleOpts -> Either String OutputChoice
+checkOutput opts = case choices of
+  [oc] -> Right oc
+  []   -> Right DrawPuzzle
+  _    -> Left "more than one output flag given"
  where
   p = _puzzle opts
   s = _solution opts
   e = _example opts
-  req x = (x, True)
-  opt x = (x, False)
+  choices =
+    map snd
+      . filter fst
+      $ [(p, DrawPuzzle), (s, DrawSolution), (e, DrawExample)]
 
-maybeSkipSolution :: OutputChoices -> Maybe Y.Value -> Maybe Y.Value
-maybeSkipSolution _   Nothing  = Nothing
-maybeSkipSolution ocs (Just v) = if any hasSol . map fst $ ocs
-  then Just v
-  else Nothing
- where
-  hasSol DrawSolution = True
-  hasSol DrawExample  = True
-  hasSol DrawPuzzle   = False
+checkPuzzleFormat :: FilePath -> Either String PuzzleFormat
+checkPuzzleFormat fp = case takeExtension fp of
+  ".pzl" -> Right PZL
+  ".pzg" -> Right PZG
+  ext    -> Left $ "unknown format: " ++ ext
 
 maybeSkipCode :: PuzzleOpts -> Maybe Y.Value -> Maybe Y.Value
 maybeSkipCode opts = if _code opts then id else const Nothing
 
-renderPuzzle
-  :: Backend' b
-  => PuzzleOpts
-  -> FilePath
-  -> (OutputChoice -> Maybe (Diagram b))
-  -> (OutputChoice, Bool)
-  -> Either String (Maybe (RenderOpts, Diagram b))
-renderPuzzle opts input drw (oc, required) = case (drw oc, required) of
-  (Nothing, True) -> Left $ "failed to render " ++ show oc
-  (Nothing, _) -> Right Nothing
-  (Just x, _) -> Right $ Just (toRenderOpts input oc (diagramSize x) opts, x)
-
-handleOne :: PuzzleOpts -> OutputChoices -> FilePath -> IO ()
-handleOne opts ocs fp = case takeExtension fp of
-  ".pzl" -> handlePzl opts ocs fp
-  ".pzg" -> handlePzg opts ocs fp
-  ext    -> putStrLn $ "unknown format: " ++ ext
-
-newtype ParseComponent = PC { unPC :: TaggedComponent }
-
-instance Y.FromJSON ParseComponent where
-  parseJSON v = PC <$> parseComponent v
-
-handlePzg :: PuzzleOpts -> OutputChoices -> FilePath -> IO ()
-handlePzg opts ocs fp = do
-  bytes <- ByteString.readFile fp
-  let cfg = config opts
-  case backend (_format opts) of
-    BackendRasterific -> do
-      ds <- parseAndDraw bytes cfg
-      mapM_ (\(ropts, d) -> renderFileRasterific ropts d) ds
-    BackendSVG -> do
-      ds <- parseAndDraw bytes cfg
-      mapM_ (\(ropts, d) -> renderFileSVG ropts d) ds
- where
-  parseAndDraw
-    :: Backend' b
-    => ByteString.ByteString
-    -> Config
-    -> IO [(RenderOpts, Diagram b)]
-  parseAndDraw bytes cfg = orExit $ do
-    components <-
-      fmap (map unPC)
-      . fmapL (\e -> "parse failure: " ++ show e)
-      $ Y.decodeThrow bytes
-    let
-      pzl = drawComponents . extractPuzzle $ components
-      sol = fmap drawComponents . extractSolution $ components
-      rend = render cfg Nothing (pzl, sol)
-    catMaybes <$> mapM (renderPuzzle opts fp rend) ocs
-
-
-handlePzl :: PuzzleOpts -> OutputChoices -> FilePath -> IO ()
-handlePzl opts ocs input = do
-  bytes <- ByteString.readFile input
-  let cfg = config opts
-  case backend (_format opts) of
-    BackendRasterific -> do
-      ds <- parseAndDraw bytes cfg
-      mapM_ (\(ropts, d) -> renderFileRasterific ropts d) ds
-    BackendSVG -> do
-      ds <- parseAndDraw bytes cfg
-      mapM_ (\(ropts, d) -> renderFileSVG ropts d) ds
- where
-  parseAndDraw
-    :: Backend' b
-    => ByteString.ByteString
-    -> Config
-    -> IO [(RenderOpts, Diagram b)]
-  parseAndDraw bytes cfg = orExit $ do
-    TP mt mrt pv msv mc <- fmapL (\e -> "parse failure: " ++ show e)
-                                 (Y.decodeThrow bytes)
-    let msv' = maybeSkipSolution ocs msv
-    t     <- checkType $ _type opts `mplus` mrt `mplus` mt
-    ps    <- Y.parseEither (compose t) (pv, msv')
-    mcode <- case maybeSkipCode opts mc of
-      Nothing -> return Nothing
-      Just c  -> fmapL ("solution code parse failure: " ++) $ do
-        parsedCode <- Y.parseEither parseCode c
-        return . Just $ drawCode parsedCode
-    catMaybes <$> mapM (renderPuzzle opts input (render cfg mcode ps)) ocs
-
-fmapL :: (a -> b) -> Either a c -> Either b c
-fmapL f e = case e of
-  Left  l -> Left (f l)
-  Right r -> Right r
+handleOne :: PuzzleOpts -> OutputChoice -> FilePath -> IO ()
+handleOne opts oc fpin = do
+  puzzleFormat <- orExit $ checkPuzzleFormat fpin
+  let params = Params (_format opts)
+                      (config opts)
+                      oc
+                      (_scale opts)
+                      (_code opts)
+                      puzzleFormat
+      fpout = outputPath opts fpin (_format opts) oc
+  input  <- B.readFile fpin
+  output <- orExit $ decodeAndDraw params input
+  BL.writeFile fpout output
 
 main :: IO ()
 main = do
   opts <- defaultOpts puzzleOpts
-  ocs  <- orExit $ checkOutput opts
-  mapM_ (handleOne opts ocs) (_input opts)
+  oc   <- orExit $ checkOutput opts
+  mapM_ (handleOne opts oc) (_input opts)
 
 orExit :: Either String a -> IO a
 orExit (Left  err) = putStrLn err >> exitFailure

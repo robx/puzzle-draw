@@ -44,6 +44,7 @@ library
         Parse.Code
         Parse.Component
         Draw.Style
+        Draw.Render
         Draw.Grid
         Draw.Font
         Draw.Lib

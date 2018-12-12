@@ -1,7 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE RankNTypes #-}
 
 module Main where
 
@@ -18,28 +17,15 @@ import           Snap.Core               hiding ( getParams
 import           Snap.Util.FileServe
 import           Snap.Http.Server        hiding ( Config )
 
-import           Diagrams.Prelude        hiding ( Result
-                                                , (.=)
-                                                , render
-                                                )
-
 import qualified Data.Aeson                    as J
 import           Data.Yaml
 
-import           Parse.Code                     ( parseCode )
-import           Draw.Code                      ( drawCode )
 import           Draw.CmdLine
 import           Draw.Draw
-import           Data.Compose
-import           Data.Component
-import           Parse.Component
-import           Draw.Component
-import           Parse.Puzzle
-import           Data.PuzzleTypes
+import           Draw.Render
 import           Draw.Font                      ( fontAnelizaRegular
                                                 , fontBit
                                                 )
-import           Draw.Lib                       ( Backend' )
 
 import qualified Data.ByteString.Char8         as C
 import qualified Data.ByteString               as B
@@ -95,88 +81,6 @@ serveDiagram format name bs = do
 
 config :: Device -> Config
 config device = Config device fontAnelizaRegular fontBit
-
-data Params = Params
-  { paramFormat :: Format
-  , paramOutputChoice :: OutputChoice
-  , paramDevice :: Device
-  , paramScale :: Double
-  , paramCode :: Bool
-  , paramPuzzleFormat :: PuzzleFormat
-  }
-
-newtype ParseComponent = PC { unPC :: TaggedComponent }
-
-instance FromJSON ParseComponent where
-  parseJSON v = PC <$> parseComponent v
-
-decodeAndDrawPuzzle :: Params -> B.ByteString -> Either String BL.ByteString
-decodeAndDrawPuzzle params b = case backend fmt of
-  BackendSVG        -> withSize (renderBytesSVG fmt) doit
-  BackendRasterific -> withSize (renderBytesRasterific fmt) doit
- where
-  Params fmt oc device s code pfmt = params
-  u = case fmt of
-    PDF -> Points
-    _   -> Pixels
-  withSize
-    :: (Monad m, Backend' b)
-    => (SizeSpec V2 Double -> Diagram b -> BL.ByteString)
-    -> m (Diagram b)
-    -> m BL.ByteString
-  withSize f x = do
-    d <- x
-    let (w, h) = diagramSize d
-        sz     = mkSizeSpec2D (Just $ toOutputWidth u (s * w))
-                              (Just $ toOutputWidth u (s * h))
-    return $ f sz d
-
-  doit :: Backend' b => Either String (Diagram b)
-  doit = case pfmt of
-    PZL -> runPzl b
-    PZG -> runPzg b
-
-  runPzg :: Backend' b => B.ByteString -> Either String (Diagram b)
-  runPzg bytes = do
-    components <-
-      fmap (map unPC) . fmapL (\e -> "parse failure: " ++ show e) $ decodeThrow bytes
-    let pzl = drawComponents . extractPuzzle $ components
-        sol = fmap drawComponents . extractSolution $ components
-    maybe (fail "no solution provided")
-          return
-          (render (config device) Nothing (pzl, sol) oc)
-
-  runPzl :: Backend' b => B.ByteString -> Either String (Diagram b)
-  runPzl bytes = do
-    typedPuzzle <- fmapL (\e -> "parse failure: " ++ show e) $ decodeThrow bytes
-    drawP typedPuzzle
-
-  drawP :: Backend' b => TypedPuzzle -> Either String (Diagram b)
-  drawP (TP mt mrt p ms mc) = do
-    mcode <- case (code, mc) of
-      (True, Just c) -> fmapL ("solution code parse failure: " ++) $ do
-        parsedCode <- parseEither parseCode c
-        return . Just $ drawCode parsedCode
-      _ -> return Nothing
-    parseEither goP (mt, mrt, (p, ms), mcode)
-  goP
-    :: Backend' b
-    => ( Maybe String
-       , Maybe String
-       , (Value, Maybe Value)
-       , (Maybe (CodeDiagrams (Drawing b)))
-       )
-    -> Parser (Diagram b)
-  goP (mt, mrt, x, mcode) = do
-    t' <- either fail pure (checkType (mrt `mplus` mt))
-    (pzl, sol) <- compose t' x
-    maybe (fail "no solution provided")
-          return
-          (render (config device) mcode (pzl, sol) oc)
-
-  fmapL f e = case e of
-    Left  l -> Left (f l)
-    Right r -> Right r
 
 getOutputChoice :: Snap OutputChoice
 getOutputChoice = do
@@ -238,10 +142,10 @@ getDouble key defaultValue = do
       Just dd -> return dd
 
 getParams :: Format -> Snap Params
-getParams fmt =
-  Params fmt
+getParams fmt = do
+  device <- getDevice fmt
+  Params fmt (config device)
     <$> getOutputChoice
-    <*> getDevice fmt
     <*> getDouble "scale" 1.0
     <*> getBoolParam "code"
     <*> getPuzzleFormat
@@ -250,7 +154,7 @@ previewPostHandler :: Snap ()
 previewPostHandler = do
   params <- getParams SVG
   body   <- readRequestBody 4096
-  case decodeAndDrawPuzzle params (BL.toStrict body) of
+  case decodeAndDraw params (BL.toStrict body) of
     Left  err   -> fail400 err
     Right bytes -> serveDiagram SVG Nothing bytes
 
@@ -261,18 +165,9 @@ downloadPostHandler = do
   params <- getParams format
   fname  <- maybe "" id <$> getParam "filename"
   let filename = if fname == "" then "puzzle" else fname
-  case decodeAndDrawPuzzle params body of
+  case decodeAndDraw params body of
     Left  e     -> fail400 e
     Right bytes -> serveDiagram format (Just filename) bytes
-
-data PuzzleFormat = PZL | PZG
-    deriving (Show, Ord, Eq)
-
-lookupPuzzleFormat :: FilePath -> Maybe PuzzleFormat
-lookupPuzzleFormat fp = case takeExtension fp of
-  ".pzl" -> Just PZL
-  ".pzg" -> Just PZG
-  _      -> Nothing
 
 data Example = Example
     { _name :: String
