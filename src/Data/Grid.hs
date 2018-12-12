@@ -9,6 +9,9 @@ module Data.Grid
   , ShadedGrid
   , nodes
   , size
+  , cellSize
+  , nodeSize
+  , edgeSize
   , sizeGrid
   , clues
   , nodeGrid
@@ -242,9 +245,22 @@ dominoGrid (DigitRange x y) =
     $ [ ((a, s - b), (b + x, a + x)) | a <- [0 .. s], b <- [0 .. s], b <= a ]
   where s = y - x
 
-size :: Grid Coord a -> Size
-size m = foldr (both max) (0, 0) (Map.keys m) ^+^ (1, 1)
+listSize :: [Coord] -> Size
+listSize cs = foldr (both max) (0, 0) cs
   where both f (x, y) (x', y') = (f x x', f y y')
+
+size :: Grid Coord a -> Size
+size = (^+^) (1, 1) . listSize . Map.keys
+
+cellSize :: Grid C a -> Size
+cellSize = size . Map.mapKeys toCoord
+
+nodeSize :: Grid N a -> Size
+nodeSize = (^+^) (-1, -1) . size . Map.mapKeys toCoord
+
+edgeSize :: Map.Map (Edge N) a -> Size
+edgeSize =
+  listSize . map toCoord . concatMap ((\(x, y) -> [x, y]) . ends) . Map.keys
 
 polyominoGrid :: [((Int, Int), Char)] -> [(Int, Int)] -> Grid C (Maybe Char)
 polyominoGrid ls ps =

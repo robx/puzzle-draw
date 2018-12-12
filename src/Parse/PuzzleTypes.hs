@@ -43,7 +43,6 @@ module Parse.PuzzleTypes
   , dominos
   , skyscrapersStars
   , numberlink
-  , slithermulti
   , dominoPills
   , fillominoLoop
   , loopki
@@ -148,14 +147,6 @@ kpyramid = (parseJSON, parseJSON)
 
 slither :: ParsePuzzle (Grid C (Clue Int)) (Loop N)
 slither = (parseClueGrid, parseEdges)
-
-slithermulti :: ParsePuzzle (Grid C (Clue Int), Int) [Edge N]
-slithermulti = (p, parseEdges)
- where
-  p v =
-    (,)
-      <$> parseFrom ["grid"]  parseClueGrid v
-      <*> parseFrom ["loops"] parseJSON     v
 
 newtype LSol = LSol { unLSol :: (Loop N, Grid C Bool) }
 instance FromJSON LSol where

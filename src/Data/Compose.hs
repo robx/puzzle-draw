@@ -66,7 +66,6 @@ handle f BlackoutDominos     = f R.blackoutDominos D.blackoutDominos
 handle f TwilightTapa        = f R.tapa D.tapa
 handle f TapaCave            = f R.tapa D.tapa
 handle f DominoPillen        = f R.dominoPills D.dominoPills
-handle f SlitherLinkMulti    = f R.slithermulti D.slithermulti
 handle f AngleLoop           = f R.angleLoop D.angleLoop
 handle f Shikaku             = f R.shikaku D.shikaku
 handle f SlovakSums          = f R.slovaksums D.slovaksums

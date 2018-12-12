@@ -26,15 +26,12 @@ vline n = strokeLine . fromVertices . map p2 $ [(0, 0), (0, n)]
 hline n = strokeLine . fromVertices . map p2 $ [(0, 0), (n, 0)]
 
 -- | Variant of 'hcat'' that spreads with distance @1@.
-hcatsep
-  :: (InSpace V2 Double a, Juxtaposable a, HasOrigin a, Monoid' a) => [a] -> a
-hcatsep = hcat' with { _sep = 1 }
-
--- | Variant of 'vcat'' that spreads with distance @1@,
--- and stacks towards the top.
-vcatsep
-  :: (InSpace V2 Double a, Juxtaposable a, HasOrigin a, Monoid' a) => [a] -> a
-vcatsep = cat' (r2 (0, 1)) with { _sep = 1 }
+hcatSep
+  :: (InSpace V2 Double a, Juxtaposable a, HasOrigin a, Monoid' a)
+  => Double
+  -> [a]
+  -> a
+hcatSep s = hcat' with { _sep = s }
 
 -- | Collapse the envelope to a point.
 smash :: Backend' b => Diagram b -> Diagram b

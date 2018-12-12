@@ -89,15 +89,17 @@ decodeAndDraw params b = case backend fmt of
     t'          <- checkType (mrt `mplus` mt)
     (pzl, msol) <- parseEither (compose t') (p, ms)
     let
+      fakeSize = (0, 0)
       pc =
         [ TaggedComponent (Just Puzzle) $ PlacedComponent Atop $ RawComponent
+            fakeSize
             pzl
         ]
       sc = case msol of
         Just sol ->
           [ TaggedComponent (Just Solution)
               $ PlacedComponent Atop
-              $ RawComponent sol
+              $ RawComponent fakeSize sol
           ]
         Nothing -> []
     return $ concat [pc, sc, codeComponents]

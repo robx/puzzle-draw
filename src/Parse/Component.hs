@@ -23,6 +23,7 @@ parseComponent = withObject "Component" $ \o -> do
     "cells"   -> CellGrid <$> parseCellGrid o
     "edges"   -> EdgeGrid <$> parseEdgeGrid o
     "full"    -> parseFullGrid o
+    "note"    -> Note <$> parseNote o
     _         -> fail $ "unknown component type: " ++ t
   pure $ TaggedComponent tag (PlacedComponent place c)
 
@@ -40,10 +41,11 @@ parsePlacement :: Object -> Parser Placement
 parsePlacement o = do
   p <- o .:? "place" :: Parser (Maybe String)
   case p of
-    Nothing      -> pure Atop
-    Just "north" -> pure North
-    Just "west"  -> pure West
-    Just x       -> fail $ "unknown placement: " ++ x
+    Nothing          -> pure Atop
+    Just "north"     -> pure North
+    Just "west"      -> pure West
+    Just "top-right" -> pure TopRight
+    Just x           -> fail $ "unknown placement: " ++ x
 
 parseGrid :: Object -> Parser (Component a)
 parseGrid o = do
@@ -88,6 +90,11 @@ parseFullGrid o = do
   (ns, cs, es) <- Util.parseEdgeGridWith pdec pdec pdec g
   return $ FullGrid ns cs es
 
+parseNote :: Object -> Parser [Decoration]
+parseNote o = do
+  ds <- o .: "contents"
+  sequence . map parseExtendedDecoration $ ds
+
 parseReplacements :: Object -> Parser (Map.Map Char Decoration)
 parseReplacements o = do
   ms <- o .:? "substitute"
@@ -111,6 +118,8 @@ parseDecoration c = return $ case c of
   '#'  -> Shade
   '-'  -> Edge Horiz
   '|'  -> Edge Vert
+  '>'  -> TriangleRight
+  'v'  -> TriangleDown
   _    -> Letter c
 
 parseExtendedDecoration :: Util.IntString -> Parser Decoration
@@ -142,6 +151,7 @@ parseExtendedDecoration (Util.IntString s) = case words s of
     "shade"                  -> pure $ Shade
     "triangle-right"         -> pure $ TriangleRight
     "triangle-down"          -> pure $ TriangleDown
+    "miniloop"               -> pure $ MiniLoop
     _                        -> pure $ Letters s
   [w1, w2] -> case w1 of
     "triangle-right" -> pure $ LabeledTriangleRight w2

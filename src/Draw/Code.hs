@@ -34,7 +34,9 @@ drawCode cs = concat [collect Atop, collect West, collect North]
   collect p =
     let matching = map snd . filter ((==) p . fst) $ parts
     in  if null matching then [] else [comp p $ mconcat matching]
-  comp p d = TaggedComponent (Just Code) $ PlacedComponent p $ RawComponent $ d
+  fakeSize = (0, 0) -- should be the dimensions of the code part
+  comp p d =
+    TaggedComponent (Just Code) $ PlacedComponent p $ RawComponent fakeSize $ d
 
 drawCodePart :: Backend' b => CodePart -> (Placement, Drawing b)
 drawCodePart cp = case cp of

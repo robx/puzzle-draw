@@ -13,7 +13,8 @@ data Component a =
   | CellGrid !(Grid C Decoration)
   | EdgeGrid !(Map.Map (Edge N) Decoration)
   | FullGrid !(Grid N Decoration) !(Grid C Decoration) !(Map.Map (Edge N) Decoration)
-  | RawComponent !a
+  | Note [Decoration]
+  | RawComponent !Size !a
 
 data Tag =
     Puzzle
@@ -27,6 +28,7 @@ data Placement =
     Atop
   | West
   | North
+  | TopRight
  deriving (Eq, Show)
 
 data PlacedComponent a = PlacedComponent Placement (Component a)
@@ -78,3 +80,5 @@ data Decoration =
   | TriangleDown
   | LabeledTriangleRight String
   | LabeledTriangleDown String
+  | MiniLoop
+

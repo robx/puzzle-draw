@@ -1,0 +1,52 @@
+- type: cells
+  grid: |
+    3.2.20
+    ..4...
+    2..1..
+    12....
+    ...3.1
+    11..1.
+- type: note
+  place: top-right
+  tag: puzzle
+  contents:
+  - 3
+  - miniloop
+- type: edges
+  tag: solution
+  grid: |
+    o-o-o-o-o o o
+    |. . . .|. . 
+    o-o o-o o-o o
+     .|.|.|. .|. 
+    o-o o-o o o-o
+    |. . . . . .|
+    o o o-o-o-o o
+    |. .|. . .|.|
+    o o-o o-o o-o
+    |.|. .|.|. . 
+    o-o o-o o o o
+     . .|. .|. . 
+    o o o-o-o o o
+  substitute:
+    '|': sol-edge-vert
+    '-': sol-edge-horiz
+- type: grid
+  style: dots
+  grid: |
+    ......
+    ......
+    ......
+    ......
+    ......
+    ......
+- type: cells
+  tag: code
+  place: west
+  grid: |
+    .
+    >
+    >
+    .
+    .
+    .

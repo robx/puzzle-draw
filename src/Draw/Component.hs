@@ -10,6 +10,8 @@ import           Diagrams.Prelude        hiding ( dot
 
 import           Data.Component
 import           Data.Elements
+import           Data.Grid
+import           Data.GridShape
 import           Draw.Lib
 import           Draw.Draw
 import           Draw.Grid
@@ -18,35 +20,49 @@ import           Draw.Elements
 import           Draw.Code
 
 drawComponents :: Backend' b => [PlacedComponent (Drawing b)] -> Drawing b
-drawComponents cs = go $ reverse cs
+drawComponents cs = snd $ go $ reverse cs
  where
-  go [] = mempty
-  go ((PlacedComponent p c) : pcs) =
-    let dc  = drawComponent c
-        dcs = go pcs
-    in  case p of
-          Atop  -> dc <> dcs
-          West  -> dcs |!| strutX' 0.5 |!| dc
-          North -> dcs =!= strutY' 0.5 =!= dc
+  go [] = ((0 :: Int, 0 :: Int), mempty)
+  go ((PlacedComponent p c) : pcs)
+    = let
+        (tl , dc ) = drawComponent c
+        (tls, dcs) = go pcs
+        ntl        = (max (fst tl) (fst tls), max (snd tl) (snd tls))
+      in
+        case p of
+          Atop  -> (ntl, dc <> dcs)
+          West  -> (ntl, dcs |!| strutX' 0.5 |!| dc)
+          North -> (ntl, dcs =!= strutY' 0.5 =!= dc)
+          TopRight ->
+            ( ntl
+            , (dc # alignBL' # translatep tls # translate (r2 (0.6, 0.6)))
+              <> dcs
+            )
   (=!=) = beside unitY
   (|!|) = beside (negated unitX)
 
-drawComponent :: Backend' b => Component (Drawing b) -> Drawing b
+drawComponent :: Backend' b => Component (Drawing b) -> (Size, Drawing b)
 drawComponent c = case c of
-  RawComponent x -> x
+  RawComponent sz x -> (sz, x)
   Grid s g ->
     let st = case s of
           GridDefault          -> gDefault
           GridDefaultIrregular -> gDefaultIrreg
           GridDashed           -> gDashed
           GridDots             -> gSlither
-    in  grid st g
-  Regions  g -> drawAreas g
-  CellGrid g -> placeGrid . fmap drawDecoration $ g
-  NodeGrid g -> placeGrid . fmap drawDecoration $ g
-  EdgeGrid g -> placeGrid' . Map.mapKeys midPoint . fmap drawDecoration $ g
+    in  (cellSize g, grid st g)
+  Regions  g -> (cellSize g, drawAreas g)
+  CellGrid g -> (cellSize g, placeGrid . fmap drawDecoration $ g)
+  NodeGrid g -> (nodeSize g, placeGrid . fmap drawDecoration $ g)
+  EdgeGrid g ->
+    (edgeSize g, placeGrid' . Map.mapKeys midPoint . fmap drawDecoration $ g)
   FullGrid ns cs es ->
-    mconcat . map drawComponent $ [NodeGrid ns, CellGrid cs, EdgeGrid es]
+    ( nodeSize ns
+    , mconcat
+      . map (snd . drawComponent)
+      $ [NodeGrid ns, CellGrid cs, EdgeGrid es]
+    )
+  Note ds -> ((0, 0), note $ hcatSep 0.2 $ map drawDecoration $ ds)
 
 drawDecoration :: Backend' b => Decoration -> Drawing b
 drawDecoration d = case d of
@@ -70,4 +86,5 @@ drawDecoration d = case d of
   TriangleDown           -> arrowDown
   LabeledTriangleRight w -> arrowRightL w
   LabeledTriangleDown  w -> arrowDownL w
+  MiniLoop               -> miniloop
 
