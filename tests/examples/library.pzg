@@ -35,4 +35,6 @@
     p: edge-vert
     q: thin-edge-horiz
     r: thin-edge-vert
+    s: sol-edge-horiz
+    t: sol-edge-vert
 

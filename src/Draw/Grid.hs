@@ -217,6 +217,12 @@ edgeStyle cfg = lineCap LineCapSquare . lwG ew
 thinEdgeStyle :: (HasStyle a, InSpace V2 Double a) => a -> a
 thinEdgeStyle = lineCap LineCapSquare . lwG onepix
 
+solEdgeStyle :: (HasStyle a, InSpace V2 Double a) => a -> a
+solEdgeStyle = lineCap LineCapSquare . lc (blend 0.8 black white) . lwG (3 * onepix)
+
+solstyle:: (HasStyle a, InSpace V2 Double a) => a -> a
+solstyle= lc (blend 0.8 black white) . lwG (3 * onepix)
+
 drawEdges :: (ToPoint k, Backend' b) => [Edge k] -> Drawing b
 drawEdges es =
   Drawing (\cfg -> edgeStyle cfg . stroke . mconcat . map edge $ es)
@@ -231,6 +237,9 @@ edgeDecoration dir = Drawing (\cfg -> edgeStyle cfg . stroke . dirPath $ dir)
 
 edgeDecorationThin :: Backend' b => Dir -> Drawing b
 edgeDecorationThin dir = Drawing (\_ -> thinEdgeStyle . stroke . dirPath $ dir)
+
+edgeDecorationSol :: Backend' b => Dir -> Drawing b
+edgeDecorationSol dir = Drawing (\_ -> solEdgeStyle . stroke . dirPath $ dir)
 
 drawThinEdges :: (ToPoint k, Backend' b) => [Edge k] -> Drawing b
 drawThinEdges = draw . thinEdgeStyle . stroke . mconcat . map edge

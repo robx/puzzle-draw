@@ -118,6 +118,8 @@ parseExtendedDecoration (Util.IntString s) = case s of
   "edge-vert"         -> pure $ Edge Vert
   "thin-edge-horiz"   -> pure $ ThinEdge Horiz
   "thin-edge-vert"    -> pure $ ThinEdge Vert
+  "sol-edge-horiz"    -> pure $ SolEdge Horiz
+  "sol-edge-vert"     -> pure $ SolEdge Vert
   "dot"               -> pure $ Dot
   "shade"             -> pure $ Shade
   _                   -> pure $ Letters s

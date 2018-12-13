@@ -57,4 +57,5 @@ data Decoration =
   | Shade
   | Edge Dir
   | ThinEdge Dir
+  | SolEdge Dir
 

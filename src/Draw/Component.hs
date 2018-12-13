@@ -49,3 +49,4 @@ drawDecoration d = case d of
   Pearl      p   -> pearl p
   Edge       dir -> edgeDecoration dir
   ThinEdge   dir -> edgeDecorationThin dir
+  SolEdge    dir -> edgeDecorationSol dir

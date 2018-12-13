@@ -79,7 +79,6 @@ data PuzzleType = LITS
                 | PentominousBorders
                 | NanroSignpost
                 | TomTom
-                | HorseSnake
                 | Illumination
                 | Pentopia
                 | PentominoPipes
@@ -172,7 +171,6 @@ obscureTypes =
   , (RowKropkiPyramid , "rowkropkipyramid")
   , (LatinTapa        , "latintapa")
   , (SkyscrapersStars , "skyscrapers-doppelstern")
-  , (HorseSnake       , "horsesnake")
   , (SudokuDoppelblock, "sudoku-doppelblock")
   , (Loopki           , "loopki")
   , (Starwars         , "starwars")

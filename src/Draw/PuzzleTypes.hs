@@ -117,9 +117,6 @@ lits :: Backend' b => Drawers b AreaGrid ShadedGrid
 lits = Drawers (grid gDefault <> drawAreasGray)
                ((drawAreas <> grid gDefault) . fst <> drawShade . snd)
 
-solstyle :: (HasStyle a, InSpace V2 Double a) => a -> a
-solstyle = lc (blend 0.8 black white) . lwG (3 * onepix)
-
 geradeweg :: Backend' b => Drawers b (Grid C (Maybe Int)) (Loop C)
 geradeweg = Drawers
   drawIntGrid
