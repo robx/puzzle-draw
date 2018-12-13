@@ -103,7 +103,6 @@ parseTests = testGroup
   , testParsePzl "thermosudoku" thermosudoku thermo_2
   , testNonparsePzl "thermosudoku" thermosudoku thermo_broken_1
   , testNonparsePzl "thermosudoku" thermosudoku thermo_broken_2
-  , testParsePzl "boxof2or3" boxof2or3 boxof2or3_1
   ]
 
 test_thermo_1 :: [Thermometer]

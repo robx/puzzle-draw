@@ -221,6 +221,17 @@ drawEdges :: (ToPoint k, Backend' b) => [Edge k] -> Drawing b
 drawEdges es =
   Drawing (\cfg -> edgeStyle cfg . stroke . mconcat . map edge $ es)
 
+dirPath :: Dir -> Path V2 Double
+dirPath dir = case dir of
+  Horiz -> hrule 1.0
+  Vert  -> vrule 1.0
+
+edgeDecoration :: Backend' b => Dir -> Drawing b
+edgeDecoration dir = Drawing (\cfg -> edgeStyle cfg . stroke . dirPath $ dir)
+
+edgeDecorationThin :: Backend' b => Dir -> Drawing b
+edgeDecorationThin dir = Drawing (\_ -> thinEdgeStyle . stroke . dirPath $ dir)
+
 drawThinEdges :: (ToPoint k, Backend' b) => [Edge k] -> Drawing b
 drawThinEdges = draw . thinEdgeStyle . stroke . mconcat . map edge
 

@@ -12,6 +12,7 @@ data Component =
   | NodeGrid !(Grid N Decoration)
   | CellGrid !(Grid C Decoration)
   | EdgeGrid !(Map.Map (Edge N) Decoration)
+  | FullGrid !(Grid N Decoration) !(Grid C Decoration) !(Map.Map (Edge N) Decoration)
 
 data Tag =
     Puzzle
@@ -47,9 +48,13 @@ data Decoration =
   | Letter !Char
   | Letters String
   | DecKropkiDot KropkiDot
+  | SmallPearl MasyuPearl
+  | Pearl MasyuPearl
   | AfternoonWest
   | AfternoonSouth
   | Diagonal PrimeDiag
   | Dot
   | Shade
+  | Edge Dir
+  | ThinEdge Dir
 

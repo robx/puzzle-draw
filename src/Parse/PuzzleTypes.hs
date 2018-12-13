@@ -21,7 +21,6 @@ module Parse.PuzzleTypes
   , doubleback
   , slalom
   , compass
-  , boxof2or3
   , meanderingnumbers
   , tapa
   , japanesesums
@@ -217,9 +216,6 @@ slalom = (parseClueGrid, parseGrid)
 
 compass :: ParsePuzzle (Grid C (Maybe CompassC)) AreaGrid
 compass = ((fmap (fmap unPCC) . unRG <$>) . parseJSON, parseGrid)
-
-boxof2or3 :: ParsePuzzle (Grid N MasyuPearl, [Edge N]) ()
-boxof2or3 = (parseNodeEdges, unimplemented "boxof2or3 solution")
 
 -- this should be changed to support clue numbers
 meanderingnumbers :: ParsePuzzle AreaGrid (Grid C (Maybe Int))

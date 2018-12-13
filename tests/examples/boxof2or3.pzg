@@ -1,0 +1,23 @@
+# box of 2 or 3
+- type: full
+  grid: |
+    *-*-*-*-*
+    | | | | |
+    *-*-*-*-*
+    | | |
+    *-o-o-o-*
+        | | |
+    *-*-*-*-*
+    | | | | |
+    o-*-*-*-*
+  substitute:
+    '|': thin-edge-vert
+    '-': thin-edge-horiz
+    '*': small-pearl-black
+    'o': small-pearl-white
+# solution:
+#  22332
+#  33232
+#  3-2-3
+#  22323
+#  -3323

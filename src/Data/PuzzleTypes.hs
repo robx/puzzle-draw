@@ -33,7 +33,6 @@ data PuzzleType = LITS
                 | DoubleBack
                 | Slalom
                 | Compass
-                | BoxOf2Or3
                 | MeanderingNumbers
                 | Tapa
                 | JapaneseSums
@@ -172,7 +171,6 @@ obscureTypes =
   , (WordLoop         , "wordloop")
   , (RowKropkiPyramid , "rowkropkipyramid")
   , (LatinTapa        , "latintapa")
-  , (BoxOf2Or3        , "boxof2or3")
   , (SkyscrapersStars , "skyscrapers-doppelstern")
   , (HorseSnake       , "horsesnake")
   , (SudokuDoppelblock, "sudoku-doppelblock")

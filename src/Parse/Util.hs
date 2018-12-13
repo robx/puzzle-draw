@@ -434,13 +434,22 @@ parseEdgeGrid
   :: (FromChar a, FromChar b, FromChar c)
   => Value
   -> Parser (Grid N a, Grid C b, Map.Map (Edge N) c)
-parseEdgeGrid v = uncurry (,,) <$> parseBoth <*> parseAnnotatedEdges v
+parseEdgeGrid = parseEdgeGridWith parseChar parseChar parseChar
+
+parseEdgeGridWith
+  :: (Char -> Parser a)
+  -> (Char -> Parser b)
+  -> (Char -> Parser c)
+  -> Value
+  -> Parser (Grid N a, Grid C b, Map.Map (Edge N) c)
+parseEdgeGridWith pn pc pe v =
+  uncurry (,,) <$> parseBoth <*> parseAnnotatedEdgesWith pe v
  where
   parseBoth = do
     g <- parseCoordGrid v
     let (gn, gc) = halveGrid g
-    gn' <- parseGridChars gn
-    gc' <- parseGridChars gc
+    gn' <- traverse pn gn
+    gc' <- traverse pc gc
     return (gn', gc')
   both f (x, y) = (f x, f y)
   halveGrid m =

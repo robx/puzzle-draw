@@ -24,7 +24,6 @@ module Draw.PuzzleTypes
   , doubleback
   , slalom
   , compass
-  , boxof2or3
   , meanderingnumbers
   , tapa
   , japanesesums
@@ -333,11 +332,6 @@ compass = Drawers
   <> (grid gDashed <> drawAreasGray)
   .  snd
   )
-
-boxof2or3 :: Backend' b => Drawers b (Grid N MasyuPearl, [Edge N]) ()
-boxof2or3 = Drawers
-  (placeGrid . fmap smallPearl . fst <> drawThinEdges . snd)
-  (unimplemented "boxof2or3 solution")
 
 meanderingnumbers :: Backend' b => Drawers b AreaGrid (Grid C (Maybe Int))
 meanderingnumbers =

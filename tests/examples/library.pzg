@@ -3,7 +3,7 @@
     ABCDEFGHIJKL
     MNOPQRSTUVWX
     YZ0123456789
-    .-*o#/\.....
+    .-|*o#/\....
 - type: cells
   grid: |
     abcdefghijkl
@@ -27,4 +27,12 @@
     h: diagonal-both
     i: dot
     j: shade
+    k: small-pearl-white
+    l: small-pearl-black
+    m: pearl-white
+    n: pearl-black
+    o: edge-horiz
+    p: edge-vert
+    q: thin-edge-horiz
+    r: thin-edge-vert
 

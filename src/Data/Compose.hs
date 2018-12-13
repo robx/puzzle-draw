@@ -55,7 +55,6 @@ handle f CurveData           = f R.curvedata D.curvedata
 handle f DoubleBack          = f R.doubleback D.doubleback
 handle f Slalom              = f R.slalom D.slalom
 handle f Compass             = f R.compass D.compass
-handle f BoxOf2Or3           = f R.boxof2or3 D.boxof2or3
 handle f MeanderingNumbers   = f R.meanderingnumbers D.meanderingnumbers
 handle f Tapa                = f R.tapa D.tapa
 handle f JapaneseSums        = f R.japanesesums D.japanesesums

@@ -130,19 +130,5 @@ multioutside =
       , "  - [-1, 1]"
       ]
 
-boxof2or3_1 :: Value
-boxof2or3_1 =
-  packLines
-    $ [ "*-*-*-*-*"
-      , "| | | | |"
-      , "*-*-*-*-*"
-      , "| | |"
-      , "*-o-o-o-*"
-      , "    | | |"
-      , "*-*-*-*-*"
-      , "| | | | |"
-      , "o-*-*-*-*"
-      ]
-
 edgeGrid_1 :: Value
 edgeGrid_1 = packLines $ ["o-*-*-o", "|1|2 3", "*-o"]

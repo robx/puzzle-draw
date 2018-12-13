@@ -1,3 +1,9 @@
+* Convert puzzle types to PZG:
+  - boxof2or3
+* PZG changes:
+  - Add `fullgrid` grid type.
+  - Add edge decorations
+
 0.3.4.0: 20181212
 -----------------
 

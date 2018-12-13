@@ -31,6 +31,8 @@ drawComponent c = case c of
   CellGrid g -> placeGrid . fmap drawDecoration $ g
   NodeGrid g -> placeGrid . fmap drawDecoration $ g
   EdgeGrid g -> placeGrid' . Map.mapKeys midPoint . fmap drawDecoration $ g
+  FullGrid ns cs es ->
+    mconcat . map drawComponent $ [NodeGrid ns, CellGrid cs, EdgeGrid es]
 
 drawDecoration :: Backend' b => Decoration -> Drawing b
 drawDecoration d = case d of
@@ -43,3 +45,7 @@ drawDecoration d = case d of
   Diagonal diag  -> drawPrimeDiag diag
   Dot            -> scale 0.5 $ smallPearl MBlack
   Shade          -> fillBG gray
+  SmallPearl p   -> smallPearl p
+  Pearl      p   -> pearl p
+  Edge       dir -> edgeDecoration dir
+  ThinEdge   dir -> edgeDecorationThin dir
