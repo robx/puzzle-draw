@@ -1,5 +1,6 @@
 * Convert puzzle types to PZG:
   - boxof2or3
+  - horsesnake
 * PZG changes:
   - Add `fullgrid` grid type.
   - Add edge decorations
