@@ -31,8 +31,6 @@ instance Show a => Show (Tightfit a) where
               show' (UR x y)   = show x ++ "/" ++ show y
               show' (DR x y)   = show x ++ "\\" ++ show y
 
--- | A marked line in a grid, given by start and end points.
-data MarkedLine a = MarkedLine a a
 
 -- | A marked word in a letter grid, by its start and end
 --   coordinates.

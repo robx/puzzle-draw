@@ -149,13 +149,6 @@ drawMarkedWord (MW s e) = draw $ lwG onepix . stroke $ expandTrail'
 drawMarkedWords :: Backend' b => [MarkedWord] -> Drawing b
 drawMarkedWords = mconcat . map drawMarkedWord
 
-drawMarkedLine :: (ToPoint a, Backend' b) => MarkedLine a -> Drawing b
-drawMarkedLine (MarkedLine s e) =
-  draw $ strokePath (toPoint s ~~ toPoint e) # lwG edgewidth # lc gray
-
-drawMarkedLines :: (ToPoint a, Backend' b) => [MarkedLine a] -> Drawing b
-drawMarkedLines = mconcat . map drawMarkedLine
-
 -- | Draw a slalom clue.
 drawSlalomClue :: (Show a, Backend' b) => a -> Drawing b
 drawSlalomClue x =
@@ -229,7 +222,7 @@ drawTapaClue (TapaClue xs) =
 
 drawPrimeDiag :: Backend' b => PrimeDiag -> Drawing b
 drawPrimeDiag (PrimeDiag d) =
-  stroke p # lwG (3 * onepix) # lc (blend 0.5 gray white) # draw
+  stroke p # lwG (3 * onepix) # draw
  where
   p = case d of
     (False, False) -> mempty

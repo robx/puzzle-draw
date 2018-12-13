@@ -49,7 +49,6 @@ module Parse.PuzzleTypes
   , loopki
   , scrabble
   , neighbors
-  , starwars
   , heyawake
   , pentominous
   , starbattle
@@ -411,14 +410,6 @@ neighbors = (p, parseGrid)
     (,)
       <$> parseFrom ["shading"] parseShadedGrid v
       <*> parseFrom ["clues"]   parseGrid       v
-
-starwars :: ParsePuzzle (AreaGrid, [MarkedLine C]) (Grid C (Maybe Star))
-starwars = (p, parseClueGrid)
- where
-  p v =
-    (,)
-      <$> parseFrom ["grid"] parseGrid v
-      <*> (map unPML <$> parseFrom ["lines"] parseJSON v)
 
 starbattle :: ParsePuzzle (AreaGrid, Int) (Grid C (Maybe Star))
 starbattle = (p, parseClueGrid)

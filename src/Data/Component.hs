@@ -52,7 +52,8 @@ data Decoration =
   | Pearl MasyuPearl
   | AfternoonWest
   | AfternoonSouth
-  | Diagonal PrimeDiag
+  | LightDiagonal PrimeDiag
+  | DarkDiagonal PrimeDiag
   | Dot
   | Shade
   | Edge Dir

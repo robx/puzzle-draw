@@ -89,7 +89,6 @@ handle f SudokuDoppelblock   = f R.sudokuDoppelblock D.sudokuDoppelblock
 handle f Loopki              = f R.loopki D.loopki
 handle f Scrabble            = f R.scrabble D.scrabble
 handle f Neighbors           = f R.neighbors D.neighbors
-handle f Starwars            = f R.starwars D.starwars
 handle f Starbattle          = f R.starbattle D.starbattle
 handle f Heyawake            = f R.heyawake D.heyawake
 handle f Pentominous         = f R.pentominous D.pentominous

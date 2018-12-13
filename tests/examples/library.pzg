@@ -22,9 +22,9 @@
     c: kropki-black
     d: afternoon-west
     e: afternoon-south
-    f: diagonal-forward
-    g: diagonal-back
-    h: diagonal-both
+    f: light-diagonal-forward
+    g: light-diagonal-back
+    h: light-diagonal-both
     i: dot
     j: shade
     k: small-pearl-white
@@ -37,4 +37,6 @@
     r: thin-edge-vert
     s: sol-edge-horiz
     t: sol-edge-vert
-
+    u: light-diagonal-forward
+    v: light-diagonal-back
+    w: light-diagonal-both

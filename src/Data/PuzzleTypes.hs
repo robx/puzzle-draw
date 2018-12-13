@@ -67,7 +67,6 @@ data PuzzleType = LITS
                 | Loopki
                 | Scrabble
                 | Neighbors
-                | Starwars
                 | Starbattle
                 | Heyawake
                 | Pentominous
@@ -173,7 +172,6 @@ obscureTypes =
   , (SkyscrapersStars , "skyscrapers-doppelstern")
   , (SudokuDoppelblock, "sudoku-doppelblock")
   , (Loopki           , "loopki")
-  , (Starwars         , "starwars")
   , (PentominoPipes   , "pentomino-pipes")
   , (PentominoSums    , "pentomino-sums")
   , (CoralLITS        , "coral+lits")

@@ -53,7 +53,6 @@ module Draw.PuzzleTypes
   , loopki
   , scrabble
   , neighbors
-  , starwars
   , heyawake
   , pentominous
   , starbattle
@@ -650,11 +649,6 @@ neighbors
 neighbors = Drawers
   (placeGrid . fmap drawInt . clues . snd <> (grid gDefault <> drawShade) . fst)
   (placeGrid . fmap drawInt . snd <> (grid gDefault <> drawShade) . fst . fst)
-
-starwars
-  :: Backend' b => Drawers b (AreaGrid, [MarkedLine C]) (Grid C (Maybe Star))
-starwars = Drawers p (p . fst <> placeGrid . fmap drawStar . clues . snd)
-  where p = ((drawAreas <> grid gDefault) . fst <> drawMarkedLines . snd)
 
 starbattle :: Backend' b => Drawers b (AreaGrid, Int) (Grid C (Maybe Star))
 starbattle = Drawers

@@ -6,6 +6,7 @@ import qualified Data.Map.Strict               as Map
 
 import           Diagrams.Prelude               ( scale
                                                 , gray
+                                                , lc, blend, white
                                                 )
 
 import           Data.Component
@@ -42,7 +43,8 @@ drawDecoration d = case d of
   DecKropkiDot k -> kropkiDot k
   AfternoonSouth -> afternoonSouth
   AfternoonWest  -> afternoonWest
-  Diagonal diag  -> drawPrimeDiag diag
+  LightDiagonal diag  -> lc (blend 0.5 gray white) $ drawPrimeDiag diag
+  DarkDiagonal diag  -> lc gray $ drawPrimeDiag diag
   Dot            -> scale 0.5 $ smallPearl MBlack
   Shade          -> fillBG gray
   SmallPearl p   -> smallPearl p

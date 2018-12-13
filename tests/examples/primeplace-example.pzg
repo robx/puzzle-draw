@@ -5,6 +5,9 @@
     /   /
     ./ /\
      ./.
+  substitute:
+    '/': light-diagonal-forward
+    '\': light-diagonal-back
 - type: grid
   style: default-irregular
   grid: |2

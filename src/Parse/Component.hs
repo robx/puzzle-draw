@@ -93,8 +93,8 @@ parseDecoration c = return $ case c of
   '.'  -> Blank
   'o'  -> DecKropkiDot KWhite
   '*'  -> DecKropkiDot KBlack
-  '/'  -> Diagonal $ PrimeDiag (True, False)
-  '\\' -> Diagonal $ PrimeDiag (False, True)
+  '/'  -> DarkDiagonal $ PrimeDiag (True, False)
+  '\\' -> DarkDiagonal $ PrimeDiag (False, True)
   '#'  -> Shade
   '-'  -> Edge Horiz
   '|'  -> Edge Vert
@@ -111,9 +111,12 @@ parseExtendedDecoration (Util.IntString s) = case s of
   "blank"             -> pure Blank
   "afternoon-west"    -> pure $ AfternoonWest
   "afternoon-south"   -> pure $ AfternoonSouth
-  "diagonal-forward"  -> pure $ Diagonal $ PrimeDiag (True, False)
-  "diagonal-back"     -> pure $ Diagonal $ PrimeDiag (False, True)
-  "diagonal-both"     -> pure $ Diagonal $ PrimeDiag (True, True)
+  "light-diagonal-forward"  -> pure $ LightDiagonal $ PrimeDiag (True, False)
+  "light-diagonal-back"     -> pure $ LightDiagonal $ PrimeDiag (False, True)
+  "light-diagonal-both"     -> pure $ LightDiagonal $ PrimeDiag (True, True)
+  "dark-diagonal-forward"  -> pure $ DarkDiagonal $ PrimeDiag (True, False)
+  "dark-diagonal-back"     -> pure $ DarkDiagonal $ PrimeDiag (False, True)
+  "dark-diagonal-both"     -> pure $ DarkDiagonal $ PrimeDiag (True, True)
   "edge-horiz"        -> pure $ Edge Horiz
   "edge-vert"         -> pure $ Edge Vert
   "thin-edge-horiz"   -> pure $ ThinEdge Horiz
