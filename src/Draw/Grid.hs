@@ -218,10 +218,11 @@ thinEdgeStyle :: (HasStyle a, InSpace V2 Double a) => a -> a
 thinEdgeStyle = lineCap LineCapSquare . lwG onepix
 
 solEdgeStyle :: (HasStyle a, InSpace V2 Double a) => a -> a
-solEdgeStyle = lineCap LineCapSquare . lc (blend 0.8 black white) . lwG (3 * onepix)
+solEdgeStyle =
+  lineCap LineCapSquare . lc (blend 0.8 black white) . lwG (3 * onepix)
 
-solstyle:: (HasStyle a, InSpace V2 Double a) => a -> a
-solstyle= lc (blend 0.8 black white) . lwG (3 * onepix)
+solstyle :: (HasStyle a, InSpace V2 Double a) => a -> a
+solstyle = lc (blend 0.8 black white) . lwG (3 * onepix)
 
 drawEdges :: (ToPoint k, Backend' b) => [Edge k] -> Drawing b
 drawEdges es =

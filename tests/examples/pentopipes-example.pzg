@@ -1,0 +1,26 @@
+# pentomino-pipes
+- type: nodes
+  tag: puzzle
+  grid: |
+    ..F..
+    .....
+    .Y.V.
+    .....
+    ..V..
+  substitute:
+    '.': small-dot
+- type: full
+  tag: solution
+  grid: |2
+    . . .-*-.
+        |   |
+    . *-. . .
+      | |   |
+    . .-* *-.
+      |   |  
+    . . . . .
+      |   |  
+    . *-.-. .
+  substitute:
+    '*': kropki-black
+    '.': small-dot

@@ -221,8 +221,7 @@ drawTapaClue (TapaClue xs) =
   p' _ = error "invalid tapa clue"
 
 drawPrimeDiag :: Backend' b => PrimeDiag -> Drawing b
-drawPrimeDiag (PrimeDiag d) =
-  stroke p # lwG (3 * onepix) # draw
+drawPrimeDiag (PrimeDiag d) = stroke p # lwG (3 * onepix) # draw
  where
   p = case d of
     (False, False) -> mempty

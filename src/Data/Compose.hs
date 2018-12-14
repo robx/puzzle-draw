@@ -102,7 +102,6 @@ handle f NanroSignpost       = f R.nanroSignpost D.nanroSignpost
 handle f TomTom              = f R.tomTom D.tomTom
 handle f Illumination        = f R.illumination D.illumination
 handle f Pentopia            = f R.pentopia D.pentopia
-handle f PentominoPipes      = f R.pentominoPipes D.pentominoPipes
 handle f GreaterWall         = f R.greaterWall D.greaterWall
 handle f Galaxies            = f R.galaxies D.galaxies
 handle f Mines               = f R.mines D.mines

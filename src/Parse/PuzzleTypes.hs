@@ -63,7 +63,6 @@ module Parse.PuzzleTypes
   , horseSnake
   , illumination
   , pentopia
-  , pentominoPipes
   , greaterWall
   , galaxies
   , mines
@@ -514,9 +513,6 @@ instance FromJSON Myo where
 pentopia :: ParsePuzzle (Grid C (Maybe Myopia)) (Grid C Bool)
 pentopia =
   (,) (fmap (fmap (fmap unMyo)) . fmap unRG . parseJSON) parseShadedGrid
-
-pentominoPipes :: ParsePuzzle (Grid N Char) (Grid N KropkiDot, [Edge N])
-pentominoPipes = (,) parseGrid parseNodeEdges
 
 greaterWall :: ParsePuzzle ([GreaterClue], [GreaterClue]) (Grid C Bool)
 greaterWall = (,)

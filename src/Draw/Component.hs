@@ -6,7 +6,9 @@ import qualified Data.Map.Strict               as Map
 
 import           Diagrams.Prelude               ( scale
                                                 , gray
-                                                , lc, blend, white
+                                                , lc
+                                                , blend
+                                                , white
                                                 )
 
 import           Data.Component
@@ -27,6 +29,7 @@ drawComponent c = case c of
           GridDefault          -> gDefault
           GridDefaultIrregular -> gDefaultIrreg
           GridDashed           -> gDashed
+          GridDots             -> gSlither
     in  grid st g
   Regions  g -> drawAreas g
   CellGrid g -> placeGrid . fmap drawDecoration $ g
@@ -37,18 +40,19 @@ drawComponent c = case c of
 
 drawDecoration :: Backend' b => Decoration -> Drawing b
 drawDecoration d = case d of
-  Blank          -> mempty
-  Letter       c -> drawChar c
-  Letters      s -> text' s
-  DecKropkiDot k -> kropkiDot k
-  AfternoonSouth -> afternoonSouth
-  AfternoonWest  -> afternoonWest
-  LightDiagonal diag  -> lc (blend 0.5 gray white) $ drawPrimeDiag diag
-  DarkDiagonal diag  -> lc gray $ drawPrimeDiag diag
-  Dot            -> scale 0.5 $ smallPearl MBlack
-  Shade          -> fillBG gray
-  SmallPearl p   -> smallPearl p
-  Pearl      p   -> pearl p
-  Edge       dir -> edgeDecoration dir
-  ThinEdge   dir -> edgeDecorationThin dir
-  SolEdge    dir -> edgeDecorationSol dir
+  Blank              -> mempty
+  Letter       c     -> drawChar c
+  Letters      s     -> text' s
+  DecKropkiDot k     -> kropkiDot k
+  AfternoonSouth     -> afternoonSouth
+  AfternoonWest      -> afternoonWest
+  LightDiagonal diag -> lc (blend 0.5 gray white) $ drawPrimeDiag diag
+  DarkDiagonal  diag -> lc gray $ drawPrimeDiag diag
+  SmallDot           -> dot
+  Dot                -> scale 0.5 $ smallPearl MBlack
+  Shade              -> fillBG gray
+  SmallPearl p       -> smallPearl p
+  Pearl      p       -> pearl p
+  Edge       dir     -> edgeDecoration dir
+  ThinEdge   dir     -> edgeDecorationThin dir
+  SolEdge    dir     -> edgeDecorationSol dir

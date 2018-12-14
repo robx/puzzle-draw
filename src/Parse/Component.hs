@@ -42,6 +42,7 @@ parseGrid o = do
     "default"           -> pure GridDefault
     "default-irregular" -> pure GridDefaultIrregular
     "dashed"            -> pure GridDashed
+    "dots"              -> pure GridDots
     _                   -> fail $ "unknown grid style: " ++ s
   return $ Grid gs g
 
@@ -53,7 +54,8 @@ parseRegions o = do
 parseNodeGrid :: Object -> Parser (Grid N Decoration)
 parseNodeGrid o = do
   g <- o .: "grid"
-  Util.parseGridWith parseDecoration g
+  r <- parseReplacements o
+  Util.parseGridWith (parseDecorationWithReplacements r) g
 
 parseCellGrid :: Object -> Parser (Grid C Decoration)
 parseCellGrid o = do
@@ -102,28 +104,29 @@ parseDecoration c = return $ case c of
 
 parseExtendedDecoration :: Util.IntString -> Parser Decoration
 parseExtendedDecoration (Util.IntString s) = case s of
-  "kropki-white"      -> pure $ DecKropkiDot KWhite
-  "kropki-black"      -> pure $ DecKropkiDot KBlack
-  "small-pearl-white" -> pure $ SmallPearl MWhite
-  "small-pearl-black" -> pure $ SmallPearl MBlack
-  "pearl-white"       -> pure $ Pearl MWhite
-  "pearl-black"       -> pure $ Pearl MBlack
-  "blank"             -> pure Blank
-  "afternoon-west"    -> pure $ AfternoonWest
-  "afternoon-south"   -> pure $ AfternoonSouth
-  "light-diagonal-forward"  -> pure $ LightDiagonal $ PrimeDiag (True, False)
-  "light-diagonal-back"     -> pure $ LightDiagonal $ PrimeDiag (False, True)
-  "light-diagonal-both"     -> pure $ LightDiagonal $ PrimeDiag (True, True)
+  "kropki-white"           -> pure $ DecKropkiDot KWhite
+  "kropki-black"           -> pure $ DecKropkiDot KBlack
+  "small-pearl-white"      -> pure $ SmallPearl MWhite
+  "small-pearl-black"      -> pure $ SmallPearl MBlack
+  "pearl-white"            -> pure $ Pearl MWhite
+  "pearl-black"            -> pure $ Pearl MBlack
+  "blank"                  -> pure Blank
+  "afternoon-west"         -> pure $ AfternoonWest
+  "afternoon-south"        -> pure $ AfternoonSouth
+  "light-diagonal-forward" -> pure $ LightDiagonal $ PrimeDiag (True, False)
+  "light-diagonal-back"    -> pure $ LightDiagonal $ PrimeDiag (False, True)
+  "light-diagonal-both"    -> pure $ LightDiagonal $ PrimeDiag (True, True)
   "dark-diagonal-forward"  -> pure $ DarkDiagonal $ PrimeDiag (True, False)
   "dark-diagonal-back"     -> pure $ DarkDiagonal $ PrimeDiag (False, True)
   "dark-diagonal-both"     -> pure $ DarkDiagonal $ PrimeDiag (True, True)
-  "edge-horiz"        -> pure $ Edge Horiz
-  "edge-vert"         -> pure $ Edge Vert
-  "thin-edge-horiz"   -> pure $ ThinEdge Horiz
-  "thin-edge-vert"    -> pure $ ThinEdge Vert
-  "sol-edge-horiz"    -> pure $ SolEdge Horiz
-  "sol-edge-vert"     -> pure $ SolEdge Vert
-  "dot"               -> pure $ Dot
-  "shade"             -> pure $ Shade
-  _                   -> pure $ Letters s
+  "edge-horiz"             -> pure $ Edge Horiz
+  "edge-vert"              -> pure $ Edge Vert
+  "thin-edge-horiz"        -> pure $ ThinEdge Horiz
+  "thin-edge-vert"         -> pure $ ThinEdge Vert
+  "sol-edge-horiz"         -> pure $ SolEdge Horiz
+  "sol-edge-vert"          -> pure $ SolEdge Vert
+  "dot"                    -> pure $ Dot
+  "small-dot"              -> pure $ SmallDot
+  "shade"                  -> pure $ Shade
+  _                        -> pure $ Letters s
 

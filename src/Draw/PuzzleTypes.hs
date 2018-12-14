@@ -67,7 +67,6 @@ module Draw.PuzzleTypes
   , horseSnake
   , illumination
   , pentopia
-  , pentominoPipes
   , greaterWall
   , galaxies
   , mines
@@ -824,17 +823,6 @@ illumination = Drawers
 pentopia :: Backend' b => Drawers b (Grid C (Maybe Myopia)) (Grid C Bool)
 pentopia = Drawers p (p . fst <> drawShade . snd)
   where p = placeGrid . fmap drawMyopia . clues <> grid gDefault
-
-pentominoPipes
-  :: Backend' b => Drawers b (Grid N Char) (Grid N KropkiDot, [Edge N])
-pentominoPipes = Drawers
-  (placeGrid . fmap drawCharOpaque <> grid gSlither . cellGrid)
-  (  (placeGrid . fmap kropkiDot . fst <> drawEdges . snd)
-  .  snd
-  <> grid gSlither
-  .  cellGrid
-  .  fst
-  )
 
 greaterWall
   :: Backend' b => Drawers b ([GreaterClue], [GreaterClue]) (Grid C Bool)

@@ -80,7 +80,6 @@ data PuzzleType = LITS
                 | TomTom
                 | Illumination
                 | Pentopia
-                | PentominoPipes
                 | GreaterWall
                 | Galaxies
                 | Mines
@@ -172,7 +171,6 @@ obscureTypes =
   , (SkyscrapersStars , "skyscrapers-doppelstern")
   , (SudokuDoppelblock, "sudoku-doppelblock")
   , (Loopki           , "loopki")
-  , (PentominoPipes   , "pentomino-pipes")
   , (PentominoSums    , "pentomino-sums")
   , (CoralLITS        , "coral+lits")
   , (CoralLITSO       , "coral+litso")

@@ -42,6 +42,7 @@ data GridStyle =
     GridDefault
   | GridDefaultIrregular
   | GridDashed
+  | GridDots
 
 data Decoration =
     Blank
@@ -55,6 +56,7 @@ data Decoration =
   | LightDiagonal PrimeDiag
   | DarkDiagonal PrimeDiag
   | Dot
+  | SmallDot
   | Shade
   | Edge Dir
   | ThinEdge Dir
