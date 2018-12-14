@@ -17,22 +17,30 @@ data Component =
 data Tag =
     Puzzle
   | Solution
+  | Code
  deriving (Eq, Show)
 
-data TaggedComponent = TaggedComponent (Maybe Tag) Component
+data TaggedComponent = TaggedComponent (Maybe Tag) PlacedComponent
+
+data Placement =
+    Atop
+  | West
+  | North
+
+data PlacedComponent = PlacedComponent Placement Component
 
 tagged :: Tag -> TaggedComponent -> Bool
 tagged tag component = case component of
   TaggedComponent (Just t) _ -> tag == t
   _                          -> False
 
-untag :: TaggedComponent -> Component
+untag :: TaggedComponent -> PlacedComponent
 untag (TaggedComponent _ c) = c
 
-extractPuzzle :: [TaggedComponent] -> [Component]
+extractPuzzle :: [TaggedComponent] -> [PlacedComponent]
 extractPuzzle tcs = map untag . filter (not . tagged Solution) $ tcs
 
-extractSolution :: [TaggedComponent] -> Maybe [Component]
+extractSolution :: [TaggedComponent] -> Maybe [PlacedComponent]
 extractSolution tcs = if haveSol
   then Just . map untag . filter (not . tagged Puzzle) $ tcs
   else Nothing

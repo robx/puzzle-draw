@@ -36,6 +36,7 @@ module Draw.Draw
   , aboveT'
   , besidesR'
   , strutX'
+  , strutY'
   , text'
   , textFixed
   )
@@ -216,6 +217,9 @@ besidesR' = lift2 besidesR
 
 strutX' :: Backend' b => Double -> Drawing b
 strutX' = draw . strutX
+
+strutY' :: Backend' b => Double -> Drawing b
+strutY' = draw . strutY
 
 lift :: (Diagram b -> Diagram b) -> Drawing b -> Drawing b
 lift f d = Drawing (\c -> f (fromDrawing d c))

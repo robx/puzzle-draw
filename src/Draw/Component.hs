@@ -4,11 +4,8 @@ module Draw.Component where
 
 import qualified Data.Map.Strict               as Map
 
-import           Diagrams.Prelude               ( scale
-                                                , gray
-                                                , lc
-                                                , blend
-                                                , white
+import           Diagrams.Prelude        hiding ( dot
+                                                , place
                                                 )
 
 import           Data.Component
@@ -19,8 +16,19 @@ import           Draw.Grid
 import           Draw.Style
 import           Draw.Elements
 
-drawComponents :: Backend' b => [Component] -> Drawing b
-drawComponents cs = mconcat $ reverse $ map drawComponent $ cs
+drawComponents :: Backend' b => [PlacedComponent] -> Drawing b
+drawComponents cs = go $ reverse cs
+ where
+  go [] = mempty
+  go ((PlacedComponent p c) : pcs) =
+    let dc  = drawComponent c
+        dcs = go pcs
+    in  case p of
+          Atop  -> dc <> dcs
+          West  -> dcs |!| strutX' 0.5 |!| dc
+          North -> dcs =!= strutY' 0.5 =!= dc
+  (=!=) = beside unitY
+  (|!|) = beside (negated unitX)
 
 drawComponent :: Backend' b => Component -> Drawing b
 drawComponent c = case c of

@@ -13,9 +13,10 @@ import qualified Parse.Util                    as Util
 
 parseComponent :: Value -> Parser TaggedComponent
 parseComponent = withObject "Component" $ \o -> do
-  t   <- o .: "type" :: Parser String
-  tag <- parseTag o
-  c   <- case t of
+  t     <- o .: "type" :: Parser String
+  tag   <- parseTag o
+  place <- parsePlacement o
+  c     <- case t of
     "grid"    -> parseGrid o
     "regions" -> Regions <$> parseRegions o
     "nodes"   -> NodeGrid <$> parseNodeGrid o
@@ -23,7 +24,7 @@ parseComponent = withObject "Component" $ \o -> do
     "edges"   -> EdgeGrid <$> parseEdgeGrid o
     "full"    -> parseFullGrid o
     _         -> fail $ "unknown component type: " ++ t
-  pure $ TaggedComponent tag c
+  pure $ TaggedComponent tag (PlacedComponent place c)
 
 parseTag :: Object -> Parser (Maybe Tag)
 parseTag o = do
@@ -33,6 +34,15 @@ parseTag o = do
     Just "puzzle"   -> pure (Just Puzzle)
     Just "solution" -> pure (Just Solution)
     Just x          -> fail $ "unknown tag: " ++ x
+
+parsePlacement :: Object -> Parser Placement
+parsePlacement o = do
+  p <- o .:? "place" :: Parser (Maybe String)
+  case p of
+    Nothing      -> pure Atop
+    Just "north" -> pure North
+    Just "west"  -> pure West
+    Just x       -> fail $ "unknown placement: " ++ x
 
 parseGrid :: Object -> Parser Component
 parseGrid o = do
