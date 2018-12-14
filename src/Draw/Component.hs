@@ -17,7 +17,7 @@ import           Draw.Style
 import           Draw.Elements
 import           Draw.Code
 
-drawComponents :: Backend' b => [PlacedComponent] -> Drawing b
+drawComponents :: Backend' b => [PlacedComponent (Drawing b)] -> Drawing b
 drawComponents cs = go $ reverse cs
  where
   go [] = mempty
@@ -31,8 +31,9 @@ drawComponents cs = go $ reverse cs
   (=!=) = beside unitY
   (|!|) = beside (negated unitX)
 
-drawComponent :: Backend' b => Component -> Drawing b
+drawComponent :: Backend' b => Component (Drawing b) -> Drawing b
 drawComponent c = case c of
+  RawComponent x -> x
   Grid s g ->
     let st = case s of
           GridDefault          -> gDefault

@@ -35,9 +35,9 @@ data Params = Params
   , paramPuzzleFormat :: PuzzleFormat
   }
 
-newtype ParseComponent = PC { unPC :: TaggedComponent }
+newtype ParseComponent a = PC { unPC :: TaggedComponent a }
 
-instance FromJSON ParseComponent where
+instance FromJSON (ParseComponent a) where
   parseJSON v = PC <$> parseComponent v
 
 decodeAndDraw :: Params -> B.ByteString -> Either String BL.ByteString

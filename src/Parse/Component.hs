@@ -11,7 +11,7 @@ import           Data.Grid
 import           Data.GridShape
 import qualified Parse.Util                    as Util
 
-parseComponent :: Value -> Parser TaggedComponent
+parseComponent :: Value -> Parser (TaggedComponent a)
 parseComponent = withObject "Component" $ \o -> do
   t     <- o .: "type" :: Parser String
   tag   <- parseTag o
@@ -44,7 +44,7 @@ parsePlacement o = do
     Just "west"  -> pure West
     Just x       -> fail $ "unknown placement: " ++ x
 
-parseGrid :: Object -> Parser Component
+parseGrid :: Object -> Parser (Component a)
 parseGrid o = do
   g  <- o .: "grid" >>= Util.parseIrregGrid
   s  <- o .: "style"
@@ -79,7 +79,7 @@ parseEdgeGrid o = do
   r <- parseReplacements o
   Util.parseAnnotatedEdgesWith (parseDecorationWithReplacements r) g
 
-parseFullGrid :: Object -> Parser Component
+parseFullGrid :: Object -> Parser (Component a)
 parseFullGrid o = do
   g <- o .: "grid"
   r <- parseReplacements o
