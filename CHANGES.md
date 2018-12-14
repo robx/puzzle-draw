@@ -2,6 +2,7 @@
   - boxof2or3
   - horsesnake
   - starwars
+  - pentopipes
 * PZG changes:
   - Add `fullgrid` grid type.
   - Add edge decorations
