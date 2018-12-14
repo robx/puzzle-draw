@@ -1,21 +1,4 @@
-module Main exposing
-    ( Example
-    , Flags
-    , ImageData
-    , Model
-    , Msg(..)
-    , Output(..)
-    , RenderState(..)
-    , decodeExample
-    , init
-    , listExamples
-    , loadExample
-    , main
-    , render
-    , subscriptions
-    , update
-    , view
-    )
+module Main exposing (main)
 
 import Browser
 import Browser.Navigation as Navigation
@@ -91,6 +74,7 @@ decodeExample =
         (Json.field "path" Json.string)
         (Json.field "pformat" Json.string)
 
+
 listExamples : Http.Request (List Example)
 listExamples =
     Http.get "./api/examples" (Json.list decodeExample)
@@ -121,7 +105,8 @@ render model =
         , url =
             "./api/preview?output="
                 ++ out
-                ++ "&device=" ++ model.device
+                ++ "&device="
+                ++ model.device
                 ++ "&code="
                 ++ (if model.code then
                         "yes"
@@ -131,7 +116,8 @@ render model =
                    )
                 ++ "&scale="
                 ++ String.fromFloat model.scale
-                ++ "&pformat=" ++ model.puzzleFormat
+                ++ "&pformat="
+                ++ model.puzzleFormat
         , body = Http.stringBody "application/x-yaml" model.puzzle
         , expect = Http.expectString
         , timeout = Nothing
@@ -176,26 +162,27 @@ init flags url _ =
 
 
 view : Model -> Browser.Document Msg
-view model = 
-  let
-                radiog name msg mod val vals lbl =
-                    [ Html.input
-                        [ Attr.id <| "o" ++ vals
-                        , Attr.type_ "radio"
-                        , Attr.name name
-                        , Attr.value vals
-                        , Attr.checked (mod == val)
+view model =
+    let
+        radiog name msg mod val vals lbl =
+            [ Html.input
+                [ Attr.id <| "o" ++ vals
+                , Attr.type_ "radio"
+                , Attr.name name
+                , Attr.value vals
+                , Attr.checked (mod == val)
+                , Event.on "change" (Json.map msg <| Json.at [ "target", "value" ] Json.string)
+                ]
+                []
+            , Html.label
+                [ Attr.for <| "o" ++ vals
+                ]
+                [ Html.text lbl ]
+            ]
 
-                        , Event.on "change" (Json.map msg <| Json.at [ "target", "value" ] Json.string)
-                        ]
-                        []
-                    , Html.label
-                        [ Attr.for <| "o" ++ vals
-                        ]
-                        [ Html.text lbl ]
-                    ]
-                radio name msg mod val vals = radiog name msg mod val vals vals
-  in
+        radio name msg mod val vals =
+            radiog name msg mod val vals vals
+    in
     { title = "puzzle-draw web"
     , body =
         [ Html.h3 [] [ Html.text "puzzle-draw web" ]
@@ -205,8 +192,10 @@ view model =
             , Html.text ", a tool for formatting puzzle graphics from text descriptions."
             ]
         , Html.div [] <|
-           let radiofmt fmt lbl = radiog "pformat" PuzzleFormatChange model.puzzleFormat fmt fmt lbl
-           in
+            let
+                radiofmt fmt lbl =
+                    radiog "pformat" PuzzleFormatChange model.puzzleFormat fmt fmt lbl
+            in
             [ Html.label [] [ Html.text "Load an example (pzl): " ]
             , Html.select [ Event.onInput (ExamplesChange "pzl") ] <|
                 Html.option [] []
@@ -221,8 +210,9 @@ view model =
                         (List.filter (\e -> e.puzzleFormat == "pzg") model.examples)
             , Html.br [] []
             , Html.label [] [ Html.text " Input format: " ]
-            ] ++ radiofmt "pzl" "specific puzzle types (pzl)"
-              ++ radiofmt "pzg" "generic puzzle graphic (pzg)"
+            ]
+                ++ radiofmt "pzl" "specific puzzle types (pzl)"
+                ++ radiofmt "pzg" "generic puzzle graphic (pzg)"
         , Html.div []
             [ Html.textarea
                 [ Attr.cols 80
@@ -235,8 +225,11 @@ view model =
             ]
         , Html.div [] <|
             let
-               radioout = radio "output" OutputChange model.output
-               radiodev = radio "device" DeviceChange model.device
+                radioout =
+                    radio "output" OutputChange model.output
+
+                radiodev =
+                    radio "device" DeviceChange model.device
             in
             List.concat
                 [ [ Html.label [] [ Html.text "Output choice: " ] ]
@@ -340,21 +333,34 @@ view model =
             let
                 updating =
                     model.renderState == Rendering || model.renderState == Queued
-                errored = model.image.error /= Nothing
-                classes = List.map Attr.class <| List.concat
-                    [ if updating then ["updating"] else []
-                    , if errored then ["errored"] else []
-                    ]
+
+                errored =
+                    model.image.error /= Nothing
+
+                classes =
+                    List.map Attr.class <|
+                        List.concat
+                            [ if updating then
+                                [ "updating" ]
+
+                              else
+                                []
+                            , if errored then
+                                [ "errored" ]
+
+                              else
+                                []
+                            ]
             in
             List.concat
                 [ [ Html.div []
-                    [ Html.input
-                        [ Attr.type_ "checkbox"
-                        , Attr.checked model.preview
-                        , Event.onCheck PreviewChange
-                        ]
-                        []
-                    , Html.text <|
+                        [ Html.input
+                            [ Attr.type_ "checkbox"
+                            , Attr.checked model.preview
+                            , Event.onCheck PreviewChange
+                            ]
+                            []
+                        , Html.text <|
                             "Live preview"
                                 ++ (if updating then
                                         " (updating...)"
@@ -386,17 +392,18 @@ update msg model =
     let
         rerender m =
             if m.preview then
-              case m.renderState of
-                Ready ->
-                    ( { m | renderState = Rendering }, Http.send RenderResult (render m) )
+                case m.renderState of
+                    Ready ->
+                        ( { m | renderState = Rendering }, Http.send RenderResult (render m) )
 
-                Rendering ->
-                    ( { m | renderState = Queued }, Cmd.none )
+                    Rendering ->
+                        ( { m | renderState = Queued }, Cmd.none )
 
-                Queued ->
-                    ( m, Cmd.none )
-           else
-              ( m, Cmd.none )
+                    Queued ->
+                        ( m, Cmd.none )
+
+            else
+                ( m, Cmd.none )
     in
     case msg of
         Ignore ->
@@ -406,6 +413,7 @@ update msg model =
             case urlRequest of
                 Browser.Internal url ->
                     ( model, Cmd.none )
+
                 Browser.External url ->
                     ( model, Navigation.load url )
 
@@ -467,8 +475,12 @@ update msg model =
 
                                         _ ->
                                             Debug.toString error
-                                oldImage = model.image
-                                newImage = { oldImage | error = Just err }
+
+                                oldImage =
+                                    model.image
+
+                                newImage =
+                                    { oldImage | error = Just err }
                             in
                             { model | image = newImage }
 
