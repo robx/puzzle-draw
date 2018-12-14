@@ -15,6 +15,7 @@ import           Draw.Draw
 import           Draw.Grid
 import           Draw.Style
 import           Draw.Elements
+import           Draw.Code
 
 drawComponents :: Backend' b => [PlacedComponent] -> Drawing b
 drawComponents cs = go $ reverse cs
@@ -48,19 +49,24 @@ drawComponent c = case c of
 
 drawDecoration :: Backend' b => Decoration -> Drawing b
 drawDecoration d = case d of
-  Blank              -> mempty
-  Letter       c     -> drawChar c
-  Letters      s     -> text' s
-  DecKropkiDot k     -> kropkiDot k
-  AfternoonSouth     -> afternoonSouth
-  AfternoonWest      -> afternoonWest
-  LightDiagonal diag -> lc (blend 0.5 gray white) $ drawPrimeDiag diag
-  DarkDiagonal  diag -> lc gray $ drawPrimeDiag diag
-  SmallDot           -> dot
-  Dot                -> scale 0.5 $ smallPearl MBlack
-  Shade              -> fillBG gray
-  SmallPearl p       -> smallPearl p
-  Pearl      p       -> pearl p
-  Edge       dir     -> edgeDecoration dir
-  ThinEdge   dir     -> edgeDecorationThin dir
-  SolEdge    dir     -> edgeDecorationSol dir
+  Blank                  -> mempty
+  Letter       c         -> drawChar c
+  Letters      s         -> text' s
+  DecKropkiDot k         -> kropkiDot k
+  AfternoonSouth         -> afternoonSouth
+  AfternoonWest          -> afternoonWest
+  LightDiagonal diag     -> lc (blend 0.5 gray white) $ drawPrimeDiag diag
+  DarkDiagonal  diag     -> lc gray $ drawPrimeDiag diag
+  SmallDot               -> dot
+  Dot                    -> scale 0.5 $ smallPearl MBlack
+  Shade                  -> fillBG gray
+  SmallPearl p           -> smallPearl p
+  Pearl      p           -> pearl p
+  Edge       dir         -> edgeDecoration dir
+  ThinEdge   dir         -> edgeDecorationThin dir
+  SolEdge    dir         -> edgeDecorationSol dir
+  TriangleRight          -> arrowRight
+  TriangleDown           -> arrowDown
+  LabeledTriangleRight w -> arrowRightL w
+  LabeledTriangleDown  w -> arrowDownL w
+

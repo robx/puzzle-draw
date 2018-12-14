@@ -113,30 +113,37 @@ parseDecoration c = return $ case c of
   _    -> Letter c
 
 parseExtendedDecoration :: Util.IntString -> Parser Decoration
-parseExtendedDecoration (Util.IntString s) = case s of
-  "kropki-white"           -> pure $ DecKropkiDot KWhite
-  "kropki-black"           -> pure $ DecKropkiDot KBlack
-  "small-pearl-white"      -> pure $ SmallPearl MWhite
-  "small-pearl-black"      -> pure $ SmallPearl MBlack
-  "pearl-white"            -> pure $ Pearl MWhite
-  "pearl-black"            -> pure $ Pearl MBlack
-  "blank"                  -> pure Blank
-  "afternoon-west"         -> pure $ AfternoonWest
-  "afternoon-south"        -> pure $ AfternoonSouth
-  "light-diagonal-forward" -> pure $ LightDiagonal $ PrimeDiag (True, False)
-  "light-diagonal-back"    -> pure $ LightDiagonal $ PrimeDiag (False, True)
-  "light-diagonal-both"    -> pure $ LightDiagonal $ PrimeDiag (True, True)
-  "dark-diagonal-forward"  -> pure $ DarkDiagonal $ PrimeDiag (True, False)
-  "dark-diagonal-back"     -> pure $ DarkDiagonal $ PrimeDiag (False, True)
-  "dark-diagonal-both"     -> pure $ DarkDiagonal $ PrimeDiag (True, True)
-  "edge-horiz"             -> pure $ Edge Horiz
-  "edge-vert"              -> pure $ Edge Vert
-  "thin-edge-horiz"        -> pure $ ThinEdge Horiz
-  "thin-edge-vert"         -> pure $ ThinEdge Vert
-  "sol-edge-horiz"         -> pure $ SolEdge Horiz
-  "sol-edge-vert"          -> pure $ SolEdge Vert
-  "dot"                    -> pure $ Dot
-  "small-dot"              -> pure $ SmallDot
-  "shade"                  -> pure $ Shade
-  _                        -> pure $ Letters s
-
+parseExtendedDecoration (Util.IntString s) = case words s of
+  [w1] -> case w1 of
+    "kropki-white"           -> pure $ DecKropkiDot KWhite
+    "kropki-black"           -> pure $ DecKropkiDot KBlack
+    "small-pearl-white"      -> pure $ SmallPearl MWhite
+    "small-pearl-black"      -> pure $ SmallPearl MBlack
+    "pearl-white"            -> pure $ Pearl MWhite
+    "pearl-black"            -> pure $ Pearl MBlack
+    "blank"                  -> pure Blank
+    "afternoon-west"         -> pure $ AfternoonWest
+    "afternoon-south"        -> pure $ AfternoonSouth
+    "light-diagonal-forward" -> pure $ LightDiagonal $ PrimeDiag (True, False)
+    "light-diagonal-back"    -> pure $ LightDiagonal $ PrimeDiag (False, True)
+    "light-diagonal-both"    -> pure $ LightDiagonal $ PrimeDiag (True, True)
+    "dark-diagonal-forward"  -> pure $ DarkDiagonal $ PrimeDiag (True, False)
+    "dark-diagonal-back"     -> pure $ DarkDiagonal $ PrimeDiag (False, True)
+    "dark-diagonal-both"     -> pure $ DarkDiagonal $ PrimeDiag (True, True)
+    "edge-horiz"             -> pure $ Edge Horiz
+    "edge-vert"              -> pure $ Edge Vert
+    "thin-edge-horiz"        -> pure $ ThinEdge Horiz
+    "thin-edge-vert"         -> pure $ ThinEdge Vert
+    "sol-edge-horiz"         -> pure $ SolEdge Horiz
+    "sol-edge-vert"          -> pure $ SolEdge Vert
+    "dot"                    -> pure $ Dot
+    "small-dot"              -> pure $ SmallDot
+    "shade"                  -> pure $ Shade
+    "triangle-right"         -> pure $ TriangleRight
+    "triangle-down"          -> pure $ TriangleDown
+    _                        -> pure $ Letters s
+  [w1, w2] -> case w1 of
+    "triangle-right" -> pure $ LabeledTriangleRight w2
+    "triangle-down"  -> pure $ LabeledTriangleDown w2
+    _                -> fail $ "unknown unary function: " ++ w1
+  _ -> fail $ "unknown decoration: " ++ show s

@@ -69,4 +69,7 @@ data Decoration =
   | Edge Dir
   | ThinEdge Dir
   | SolEdge Dir
-
+  | TriangleRight
+  | TriangleDown
+  | LabeledTriangleRight String
+  | LabeledTriangleDown String
