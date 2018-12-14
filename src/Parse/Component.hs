@@ -11,11 +11,12 @@ import           Data.Grid
 import           Data.GridShape
 import qualified Parse.Util                    as Util
 
-parseComponent :: Value -> Parser TaggedComponent
+parseComponent :: Value -> Parser (TaggedComponent a)
 parseComponent = withObject "Component" $ \o -> do
-  t   <- o .: "type" :: Parser String
-  tag <- parseTag o
-  c   <- case t of
+  t     <- o .: "type" :: Parser String
+  tag   <- parseTag o
+  place <- parsePlacement o
+  c     <- case t of
     "grid"    -> parseGrid o
     "regions" -> Regions <$> parseRegions o
     "nodes"   -> NodeGrid <$> parseNodeGrid o
@@ -23,7 +24,7 @@ parseComponent = withObject "Component" $ \o -> do
     "edges"   -> EdgeGrid <$> parseEdgeGrid o
     "full"    -> parseFullGrid o
     _         -> fail $ "unknown component type: " ++ t
-  pure $ TaggedComponent tag c
+  pure $ TaggedComponent tag (PlacedComponent place c)
 
 parseTag :: Object -> Parser (Maybe Tag)
 parseTag o = do
@@ -34,7 +35,16 @@ parseTag o = do
     Just "solution" -> pure (Just Solution)
     Just x          -> fail $ "unknown tag: " ++ x
 
-parseGrid :: Object -> Parser Component
+parsePlacement :: Object -> Parser Placement
+parsePlacement o = do
+  p <- o .:? "place" :: Parser (Maybe String)
+  case p of
+    Nothing      -> pure Atop
+    Just "north" -> pure North
+    Just "west"  -> pure West
+    Just x       -> fail $ "unknown placement: " ++ x
+
+parseGrid :: Object -> Parser (Component a)
 parseGrid o = do
   g  <- o .: "grid" >>= Util.parseIrregGrid
   s  <- o .: "style"
@@ -69,7 +79,7 @@ parseEdgeGrid o = do
   r <- parseReplacements o
   Util.parseAnnotatedEdgesWith (parseDecorationWithReplacements r) g
 
-parseFullGrid :: Object -> Parser Component
+parseFullGrid :: Object -> Parser (Component a)
 parseFullGrid o = do
   g <- o .: "grid"
   r <- parseReplacements o
@@ -103,30 +113,37 @@ parseDecoration c = return $ case c of
   _    -> Letter c
 
 parseExtendedDecoration :: Util.IntString -> Parser Decoration
-parseExtendedDecoration (Util.IntString s) = case s of
-  "kropki-white"           -> pure $ DecKropkiDot KWhite
-  "kropki-black"           -> pure $ DecKropkiDot KBlack
-  "small-pearl-white"      -> pure $ SmallPearl MWhite
-  "small-pearl-black"      -> pure $ SmallPearl MBlack
-  "pearl-white"            -> pure $ Pearl MWhite
-  "pearl-black"            -> pure $ Pearl MBlack
-  "blank"                  -> pure Blank
-  "afternoon-west"         -> pure $ AfternoonWest
-  "afternoon-south"        -> pure $ AfternoonSouth
-  "light-diagonal-forward" -> pure $ LightDiagonal $ PrimeDiag (True, False)
-  "light-diagonal-back"    -> pure $ LightDiagonal $ PrimeDiag (False, True)
-  "light-diagonal-both"    -> pure $ LightDiagonal $ PrimeDiag (True, True)
-  "dark-diagonal-forward"  -> pure $ DarkDiagonal $ PrimeDiag (True, False)
-  "dark-diagonal-back"     -> pure $ DarkDiagonal $ PrimeDiag (False, True)
-  "dark-diagonal-both"     -> pure $ DarkDiagonal $ PrimeDiag (True, True)
-  "edge-horiz"             -> pure $ Edge Horiz
-  "edge-vert"              -> pure $ Edge Vert
-  "thin-edge-horiz"        -> pure $ ThinEdge Horiz
-  "thin-edge-vert"         -> pure $ ThinEdge Vert
-  "sol-edge-horiz"         -> pure $ SolEdge Horiz
-  "sol-edge-vert"          -> pure $ SolEdge Vert
-  "dot"                    -> pure $ Dot
-  "small-dot"              -> pure $ SmallDot
-  "shade"                  -> pure $ Shade
-  _                        -> pure $ Letters s
-
+parseExtendedDecoration (Util.IntString s) = case words s of
+  [w1] -> case w1 of
+    "kropki-white"           -> pure $ DecKropkiDot KWhite
+    "kropki-black"           -> pure $ DecKropkiDot KBlack
+    "small-pearl-white"      -> pure $ SmallPearl MWhite
+    "small-pearl-black"      -> pure $ SmallPearl MBlack
+    "pearl-white"            -> pure $ Pearl MWhite
+    "pearl-black"            -> pure $ Pearl MBlack
+    "blank"                  -> pure Blank
+    "afternoon-west"         -> pure $ AfternoonWest
+    "afternoon-south"        -> pure $ AfternoonSouth
+    "light-diagonal-forward" -> pure $ LightDiagonal $ PrimeDiag (True, False)
+    "light-diagonal-back"    -> pure $ LightDiagonal $ PrimeDiag (False, True)
+    "light-diagonal-both"    -> pure $ LightDiagonal $ PrimeDiag (True, True)
+    "dark-diagonal-forward"  -> pure $ DarkDiagonal $ PrimeDiag (True, False)
+    "dark-diagonal-back"     -> pure $ DarkDiagonal $ PrimeDiag (False, True)
+    "dark-diagonal-both"     -> pure $ DarkDiagonal $ PrimeDiag (True, True)
+    "edge-horiz"             -> pure $ Edge Horiz
+    "edge-vert"              -> pure $ Edge Vert
+    "thin-edge-horiz"        -> pure $ ThinEdge Horiz
+    "thin-edge-vert"         -> pure $ ThinEdge Vert
+    "sol-edge-horiz"         -> pure $ SolEdge Horiz
+    "sol-edge-vert"          -> pure $ SolEdge Vert
+    "dot"                    -> pure $ Dot
+    "small-dot"              -> pure $ SmallDot
+    "shade"                  -> pure $ Shade
+    "triangle-right"         -> pure $ TriangleRight
+    "triangle-down"          -> pure $ TriangleDown
+    _                        -> pure $ Letters s
+  [w1, w2] -> case w1 of
+    "triangle-right" -> pure $ LabeledTriangleRight w2
+    "triangle-down"  -> pure $ LabeledTriangleDown w2
+    _                -> fail $ "unknown unary function: " ++ w1
+  _ -> fail $ "unknown decoration: " ++ show s

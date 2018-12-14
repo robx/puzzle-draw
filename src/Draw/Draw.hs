@@ -9,17 +9,13 @@ module Draw.Draw
   , Config(..)
   , Drawers(..)
   , QDrawing(..)
-  , Parts(..)
   , Drawing
   , draw
   , diagram
-  , OutputChoice(..)
-  , render
   , Unit(..)
   , DiagramSize
   , diagramSize
   , toOutputWidth
-  , CodeDiagrams(..)
   , centerX'
   , centerY'
   , centerXY'
@@ -36,8 +32,11 @@ module Draw.Draw
   , aboveT'
   , besidesR'
   , strutX'
+  , strutY'
   , text'
   , textFixed
+  , alignPixel
+  , border
   )
 where
 
@@ -83,44 +82,6 @@ data Drawers b p s =
         , solution :: (p, s) -> Drawing b
         }
 
-data Parts b = Parts
-    { _partPuzzle :: Drawing b
-    , _partSolution :: Maybe (Drawing b)
-    , _partCode :: Maybe (CodeDiagrams (Drawing b))
-    }
-
-data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
-    deriving Show
-
--- | Optionally render the puzzle, its solution, or a side-by-side
---   example with puzzle and solution.
-render
-  :: Backend' b
-  => Config
-  -> Parts b
-  -> OutputChoice
-  -> Either String (Diagram b)
-render config parts = fmap (bg white) . d
- where
-  Parts pzl msol mcode = parts
-  fixup                = alignPixel . border borderwidth
-  addCode x = case mcode of
-    Nothing -> x
-    Just (CodeDiagrams cleft ctop cover) ->
-      ((diagram config cover <> x) =!= top (diagram config ctop))
-        |!| lft (diagram config cleft)
-  (=!=) = beside unitY
-  (|!|) = beside (negated unitX)
-  top c = if isEmpty c then mempty else strutY 0.5 =!= c
-  lft c = if isEmpty c then mempty else strutX 0.5 |!| c
-  isEmpty c = diameter unitX c == 0
-  d DrawPuzzle   = Right . fixup . addCode $ diagram config pzl
-  d DrawSolution = case msol of
-    Just sol -> Right . fixup . addCode $ diagram config sol
-    Nothing  -> Left "missing solution"
-  d DrawExample = sideBySide <$> d DrawPuzzle <*> d DrawSolution
-  sideBySide x y = x ||| strutX 2.0 ||| y
-
 data Unit = Pixels | Points
 
 cmtopoint :: Double -> Double
@@ -156,18 +117,6 @@ border w =
     . extrudeEnvelope (-w *^ unitX)
     . extrudeEnvelope (w *^ unitY)
     . extrudeEnvelope (-w *^ unitY)
-
-data CodeDiagrams a = CodeDiagrams { _cdLeft :: a, _cdTop :: a, _cdOver :: a }
-
-instance Semigroup a => Semigroup (CodeDiagrams a) where
-    (CodeDiagrams x y z) <> (CodeDiagrams x' y' z') =
-        CodeDiagrams (x <> x') (y <> y') (z <> z')
-
-instance Monoid a => Monoid (CodeDiagrams a) where
-    mempty = CodeDiagrams mempty mempty mempty
-    (CodeDiagrams x y z) `mappend` (CodeDiagrams x' y' z') =
-        CodeDiagrams (x `mappend` x') (y `mappend` y') (z `mappend` z')
-
 
 centerX' :: Backend' b => Drawing b -> Drawing b
 centerX' = lift centerX
@@ -216,6 +165,9 @@ besidesR' = lift2 besidesR
 
 strutX' :: Backend' b => Double -> Drawing b
 strutX' = draw . strutX
+
+strutY' :: Backend' b => Double -> Drawing b
+strutY' = draw . strutY
 
 lift :: (Diagram b -> Diagram b) -> Drawing b -> Drawing b
 lift f d = Drawing (\c -> f (fromDrawing d c))
