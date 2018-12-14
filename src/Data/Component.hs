@@ -37,14 +37,17 @@ tagged tag component = case component of
 untag :: TaggedComponent -> PlacedComponent
 untag (TaggedComponent _ c) = c
 
-extractPuzzle :: [TaggedComponent] -> [PlacedComponent]
-extractPuzzle tcs = map untag . filter (not . tagged Solution) $ tcs
+extractPuzzle :: Bool -> [TaggedComponent] -> [PlacedComponent]
+extractPuzzle code tcs = map untag . filter want $ tcs
+  where want c = not (tagged Solution c) && (code || not (tagged Code c))
 
-extractSolution :: [TaggedComponent] -> Maybe [PlacedComponent]
-extractSolution tcs = if haveSol
-  then Just . map untag . filter (not . tagged Puzzle) $ tcs
+extractSolution :: Bool -> [TaggedComponent] -> Maybe [PlacedComponent]
+extractSolution code tcs = if haveSol
+  then Just . map untag . filter want $ tcs
   else Nothing
-  where haveSol = not . null . filter (tagged Solution) $ tcs
+ where
+  haveSol = not . null . filter (tagged Solution) $ tcs
+  want c = not (tagged Puzzle c) && (code || not (tagged Code c))
 
 data GridStyle =
     GridDefault

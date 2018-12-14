@@ -73,8 +73,8 @@ decodeAndDraw params b = case backend fmt of
     components <-
       fmap (map unPC) . fmapL (\e -> "parse failure: " ++ show e) $ decodeThrow
         bytes
-    let pzl = drawComponents . extractPuzzle $ components
-        sol = fmap drawComponents . extractSolution $ components
+    let pzl = drawComponents . extractPuzzle code $ components
+        sol = fmap drawComponents . extractSolution code $ components
     return $ Parts pzl sol Nothing
 
   toPartsPzl :: Backend' b => B.ByteString -> Either String (Parts b)
