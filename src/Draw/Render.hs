@@ -12,9 +12,11 @@ import qualified Data.ByteString.Lazy          as BL
 
 import           Diagrams.Prelude        hiding ( parts
                                                 , render
+                                                , sc
                                                 )
 
 import           Data.Component
+import           Draw.Widths
 import           Data.Compose
 import           Parse.Code
 import           Parse.Component
@@ -63,32 +65,43 @@ decodeAndDraw params b = case backend fmt of
 
   toDiagram :: Backend' b => Either String (Diagram b)
   toDiagram = do
-    parts <- case pfmt of
-      PZL -> toPartsPzl b
-      PZG -> toPartsPzg b
-    render cfg parts oc
+    components <- case pfmt of
+      PZL -> toComponentsPzl b
+      PZG -> toComponentsPzg b
+    render cfg components code oc
 
-  toPartsPzg :: Backend' b => B.ByteString -> Either String (Parts b)
-  toPartsPzg bytes = do
-    components <-
-      fmap (map unPC) . fmapL (\e -> "parse failure: " ++ show e) $ decodeThrow
-        bytes
-    let pzl = drawComponents . extractPuzzle code $ components
-        sol = fmap drawComponents . extractSolution code $ components
-    return $ Parts pzl sol Nothing
+  toComponentsPzg
+    :: Backend' b => B.ByteString -> Either String [TaggedComponent (Drawing b)]
+  toComponentsPzg bytes = do
+    fmap (map unPC) . fmapL (\e -> "parse failure: " ++ show e) $ decodeThrow
+      bytes
 
-  toPartsPzl :: Backend' b => B.ByteString -> Either String (Parts b)
-  toPartsPzl bytes = do
+  toComponentsPzl
+    :: Backend' b => B.ByteString -> Either String [TaggedComponent (Drawing b)]
+  toComponentsPzl bytes = do
     TP mt mrt p ms mc <- fmapL (\e -> "parse failure: " ++ show e)
       $ decodeThrow bytes
-    mcode <- case (code, mc) of
+    codeComponents <- case (code, mc) of
       (True, Just c) -> fmapL ("solution code parse failure: " ++) $ do
         parsedCode <- parseEither parseCode c
-        return . Just $ drawCode parsedCode
-      _ -> return Nothing
-    t'         <- checkType (mrt `mplus` mt)
-    (pzl, sol) <- parseEither (compose t') (p, ms)
-    return $ Parts pzl sol mcode
+        return $ drawCode parsedCode
+      _ -> pure []
+    t'          <- checkType (mrt `mplus` mt)
+    (pzl, msol) <- parseEither (compose t') (p, ms)
+    let
+      pc =
+        [ TaggedComponent (Just Puzzle) $ PlacedComponent Atop $ RawComponent
+            pzl
+        ]
+      sc = case msol of
+        Just sol ->
+          [ TaggedComponent (Just Solution)
+              $ PlacedComponent Atop
+              $ RawComponent sol
+          ]
+        Nothing -> []
+    return $ concat [pc, sc, codeComponents]
+
   fmapL f e = case e of
     Left  l -> Left (f l)
     Right r -> Right r
@@ -101,4 +114,29 @@ lookupPuzzleFormat fp = case takeExtension fp of
   ".pzl" -> Just PZL
   ".pzg" -> Just PZG
   _      -> Nothing
+
+data OutputChoice = DrawPuzzle | DrawSolution | DrawExample
+    deriving Show
+
+-- | Optionally render the puzzle, its solution, or a side-by-side
+--   example with puzzle and solution.
+render
+  :: Backend' b
+  => Config
+  -> [TaggedComponent (Drawing b)]
+  -> Bool
+  -> OutputChoice
+  -> Either String (Diagram b)
+render config components code oc = fmap (bg white) $ d oc
+ where
+  d choice = case choice of
+    DrawPuzzle   -> Right . fixup $ diagram config pzl
+    DrawSolution -> case msol of
+      Just sol -> Right . fixup $ diagram config sol
+      Nothing  -> Left "missing solution"
+    DrawExample -> sideBySide <$> d DrawPuzzle <*> d DrawSolution
+  fixup = alignPixel . border borderwidth
+  sideBySide x y = x ||| strutX 2.0 ||| y
+  pzl  = drawComponents $ extractPuzzle code components
+  msol = fmap drawComponents $ extractSolution code components
 

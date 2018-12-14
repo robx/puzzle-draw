@@ -12,6 +12,7 @@ module Draw.Code
 where
 
 import           Data.Code
+import           Data.Component
 import           Data.GridShape
 import           Data.Grid
 import           Draw.Draw
@@ -19,35 +20,47 @@ import           Draw.Lib
 import           Draw.Grid
 import           Draw.Elements
 
-import           Diagrams.Prelude
+import           Diagrams.Prelude        hiding ( place
+                                                , parts
+                                                , matching
+                                                )
 
 import qualified Data.Map.Strict               as Map
 
-drawCode :: Backend' b => Code -> CodeDiagrams (Drawing b)
-drawCode cs = mconcat (map drawCodePart cs)
-
-drawCodePart :: Backend' b => CodePart -> CodeDiagrams (Drawing b)
-drawCodePart (Rows' rs) = CodeDiagrams (placeGrid g # centerX') mempty mempty
-  where g = Map.fromList [ (C 0 r, arrowRight) | r <- rs ]
-drawCodePart (Cols cs) = CodeDiagrams mempty (placeGrid g # centerY') mempty
-  where g = Map.fromList [ (C c 0, arrowDown) | c <- cs ]
-drawCodePart (RowsN' rs) = CodeDiagrams (placeGrid g # centerX') mempty mempty
-  where g = Map.fromList [ (N 0 r, arrowRight) | r <- rs ]
-drawCodePart (ColsN cs) = CodeDiagrams mempty (placeGrid g # centerY') mempty
-  where g = Map.fromList [ (N c 0, arrowDown) | c <- cs ]
-drawCodePart (LabelsN g) = CodeDiagrams mempty
-                                        mempty
-                                        (placeGrid . fmap label . clues $ g)
+drawCode :: Backend' b => Code -> [TaggedComponent (Drawing b)]
+drawCode cs = concat [collect Atop, collect West, collect North]
  where
-  label c = drawChar c # scale 0.5 # fc gray # translate (r2 (1 / 3, -1 / 3))
-drawCodePart (LRows' rs) = CodeDiagrams (placeGrid g # centerX') mempty mempty
-  where g = Map.fromList [ (C 0 r, arrowRightL [l]) | (l, r) <- Map.toList rs ]
-drawCodePart (LCols cs) = CodeDiagrams mempty (placeGrid g # centerY') mempty
-  where g = Map.fromList [ (C c 0, arrowDownL [l]) | (l, c) <- Map.toList cs ]
-drawCodePart (LRowsN' rs) = CodeDiagrams (placeGrid g # centerX') mempty mempty
-  where g = Map.fromList [ (N 0 r, arrowRightL [l]) | (l, r) <- Map.toList rs ]
-drawCodePart (LColsN cs) = CodeDiagrams mempty (placeGrid g # centerY') mempty
-  where g = Map.fromList [ (N c 0, arrowDownL [l]) | (l, c) <- Map.toList cs ]
+  parts = map drawCodePart cs
+  collect p =
+    let matching = map snd . filter ((==) p . fst) $ parts
+    in  if null matching then [] else [comp p $ mconcat matching]
+  comp p d = TaggedComponent (Just Code) $ PlacedComponent p $ RawComponent $ d
+
+drawCodePart :: Backend' b => CodePart -> (Placement, Drawing b)
+drawCodePart cp = case cp of
+  Rows' rs -> (West, placeGrid g # centerX')
+    where g = Map.fromList [ (C 1 r, arrowRight) | r <- rs ]
+  Cols cs -> (North, placeGrid g # centerY')
+    where g = Map.fromList [ (C c 0, arrowDown) | c <- cs ]
+  RowsN' rs -> (West, placeGrid g # centerX')
+    where g = Map.fromList [ (N 0 r, arrowRight) | r <- rs ]
+  ColsN cs -> (North, placeGrid g # centerY')
+    where g = Map.fromList [ (N c 0, arrowDown) | c <- cs ]
+  LabelsN g -> (Atop, placeGrid . fmap label . clues $ g)
+   where
+    label c = drawChar c # scale 0.5 # fc gray # translate (r2 (1 / 3, -1 / 3))
+  LRows' rs -> (West, placeGrid g # centerX')
+   where
+    g = Map.fromList [ (C 0 r, arrowRightL [l]) | (l, r) <- Map.toList rs ]
+  LCols cs -> (North, placeGrid g # centerY')
+   where
+    g = Map.fromList [ (C c 0, arrowDownL [l]) | (l, c) <- Map.toList cs ]
+  LRowsN' rs -> (West, placeGrid g # centerX')
+   where
+    g = Map.fromList [ (N 0 r, arrowRightL [l]) | (l, r) <- Map.toList rs ]
+  LColsN cs -> (North, placeGrid g # centerY')
+   where
+    g = Map.fromList [ (N c 0, arrowDownL [l]) | (l, c) <- Map.toList cs ]
 
 arrowDown :: Backend' b => Drawing b
 arrowDown = draw $ triangle 0.5 # lwG 0 # fc black # rotateBy (1 / 2)

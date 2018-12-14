@@ -27,6 +27,7 @@ data Placement =
     Atop
   | West
   | North
+ deriving (Eq, Show)
 
 data PlacedComponent a = PlacedComponent Placement (Component a)
 

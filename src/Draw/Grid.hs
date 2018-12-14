@@ -25,7 +25,7 @@ import           Data.Util
 import           Data.Grid
 import           Data.GridShape          hiding ( edge )
 
-import           Draw.Draw
+import           Draw.Draw               hiding ( border )
 import           Draw.Style
 import           Draw.Lib
 import           Draw.Widths
