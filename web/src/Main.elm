@@ -474,7 +474,7 @@ update msg model =
                                             "network error"
 
                                         _ ->
-                                            Debug.toString error
+                                            "other error"
 
                                 oldImage =
                                     model.image
