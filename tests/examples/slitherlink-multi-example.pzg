@@ -8,7 +8,6 @@
     11..1.
 - type: note
   place: top-right
-  tag: puzzle
   contents:
   - 3
   - miniloop
