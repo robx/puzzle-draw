@@ -47,7 +47,6 @@ module Draw.PuzzleTypes
   , skyscrapersStars
   , fillominoCheckered
   , numberlink
-  , slithermulti
   , dominoPills
   , fillominoLoop
   , loopki
@@ -250,14 +249,6 @@ liarslither = Drawers
   .  fst
   .  snd
   )
-
-slithermulti :: Backend' b => Drawers b (Grid C (Maybe Int), Int) [Edge N]
-slithermulti = Drawers
-  (drawSlitherGrid . fst <> n)
-  (drawSlitherGrid . fst . fst <> solstyle . drawEdges . snd)
- where
-  n (g, l) = placeNoteTR (size' g) (drawInt l ||| strutX' 0.2 ||| miniloop)
-  size' = size . Map.mapKeys toCoord
 
 tightfitskyscrapers
   :: Backend' b
@@ -758,7 +749,7 @@ kropki = Drawers (p <> n) (placeGrid . fmap drawInt . snd <> p . fst)
    where
     (w, h) = sz g
     ds     = "1-" ++ show h
-  sz m = edgeSize (Map.keys m)
+  sz m = edgeSize m
 
 statuepark :: Backend' b => Drawers b (Grid C (Maybe MasyuPearl)) (Grid C Bool)
 statuepark = Drawers p (p . fst <> drawShade . snd)

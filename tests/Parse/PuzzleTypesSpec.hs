@@ -1,7 +1,6 @@
 module Parse.PuzzleTypesSpec where
 
 import           Data.Maybe                     ( isJust )
-import qualified Data.Map.Strict               as Map
 import           Data.Yaml
 import           Data.Text.Encoding             ( encodeUtf8 )
 import qualified Data.ByteString               as B
@@ -14,7 +13,7 @@ import           Test.Hspec                     ( Spec
                                                 , shouldSatisfy
                                                 )
 
-import           Data.GridShape                 ( edgeSize )
+import           Data.Grid                      ( edgeSize )
 import           Data.Elements                  ( DigitRange(..) )
 import           Parse.PuzzleTypes
 
@@ -60,4 +59,4 @@ spec = do
           res = parse p y
       res `shouldSatisfy` isJust
       let Just m = res
-      edgeSize (Map.keys m) `shouldBe` (3, 2)
+      edgeSize m `shouldBe` (3, 2)

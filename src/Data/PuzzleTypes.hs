@@ -44,7 +44,6 @@ data PuzzleType = LITS
                 | TwilightTapa
                 | TapaCave
                 | DominoPillen
-                | SlitherLinkMulti
                 | AngleLoop
                 | Shikaku
                 | SlovakSums
@@ -163,7 +162,6 @@ obscureTypes =
   [ (ColorAkari       , "color-akari")
   , (FillominoLoop    , "fillomino-loop")
   , (DominoPillen     , "domino-pillen")
-  , (SlitherLinkMulti , "slitherlink-multi")
   , (TapaCave         , "tapa-cave")
   , (WordLoop         , "wordloop")
   , (RowKropkiPyramid , "rowkropkipyramid")

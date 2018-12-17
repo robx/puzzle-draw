@@ -3,6 +3,7 @@
   - horsesnake
   - starwars
   - pentopipes
+  - slithermulti
 * PZG changes:
   - Add `fullgrid` grid type.
   - Add edge decorations
