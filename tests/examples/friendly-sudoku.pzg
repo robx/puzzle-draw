@@ -38,3 +38,16 @@
     ...4..
     ....5.
     .....6
+- type: cells
+  tag: code
+  place: west
+  grid: |
+    .
+    >
+    .
+    .
+    >
+    .
+  substitute:
+    '>': triangle-right
+

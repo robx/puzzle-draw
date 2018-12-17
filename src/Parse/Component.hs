@@ -33,6 +33,7 @@ parseTag o = do
     Nothing         -> pure Nothing
     Just "puzzle"   -> pure (Just Puzzle)
     Just "solution" -> pure (Just Solution)
+    Just "code"     -> pure (Just Code)
     Just x          -> fail $ "unknown tag: " ++ x
 
 parsePlacement :: Object -> Parser Placement
