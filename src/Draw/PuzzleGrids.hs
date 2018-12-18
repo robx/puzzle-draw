@@ -23,6 +23,7 @@ where
 
 import           Diagrams.Prelude        hiding ( size
                                                 , N
+                                                , el
                                                 )
 
 import qualified Data.Map.Strict               as Map
@@ -65,35 +66,33 @@ drawTightGrid d g =
     (phantom' (strokePath $ p2i (-1, -1) ~~ p2i (sx + 1, sy + 1)))
   where (sx, sy) = size (Map.mapKeys toCoord g)
 
+placeSideGrid
+  :: (Backend' b, ToPoint k) => V2 Double -> Map.Map k [Drawing b] -> Drawing b
+placeSideGrid dir cs = Drawing place_
+ where
+  place_ cfg =
+    let
+      clueSets = fmap (map (diagram cfg)) $ cs
+      minDiam = diameter dir (diagram cfg (drawChar 'M') :: D V2 Double)
+      el = max minDiam . fromMaybe 0 . fmap getMax . foldMap maxSize $ clueSets
+      placeRow base ds = zipWith (\d i -> d # moveTo (pt el base i)) ds [0 ..]
+    in
+      fold $ Map.foldMapWithKey placeRow clueSets
+  pt :: (ToPoint k) => Double -> k -> Int -> P2 Double
+  pt elt base i =
+    toPoint base
+      .+^ (  (-(1 / 2) + mrg + (1 / 2) * elt + fromIntegral i * (elt + mrg))
+          *^ dir
+          )
+  mrg     = 1 / 3
+  maxSize = foldMap (Just . Max . diameter dir)
+
 placeMultiOutside
   :: (Backend' b, FromCoord k, ToCoord k, ToPoint k, Ord k)
   => OutsideClues k [Drawing b]
   -> Drawing b
-placeMultiOutside ocs = Drawing pmo
- where
-  pmo cfg = foldMap (place_ cfg) (multiOutsideClues ocs)
-  place_ cfg (clueSets, dir)
-    = let
-        clueSetsD = fmap (map (diagram cfg)) $ clueSets
-        minDiam =
-          diameter (r2i dir) (diagram cfg (drawChar 'M') :: D V2 Double)
-        elt =
-          max minDiam
-            . fromMaybe 0
-            . fmap getMax
-            . foldMap (maxSize dir)
-            $ clueSetsD
-        mrg = 1 / 3
-        pt :: (ToPoint k) => k -> Int -> P2 Double
-        pt base i =
-          toPoint base
-            .+^ ((-(1 / 2) + mrg + (1 / 2) * elt + fromIntegral i * (elt + mrg))
-                *^ r2i dir
-                )
-        placeRow base ds = zipWith (\d i -> d # moveTo (pt base i)) ds [0 ..]
-      in
-        fold $ Map.foldMapWithKey placeRow clueSetsD
-  maxSize dir = foldMap (Just . Max . diameter (r2i dir))
+placeMultiOutside ocs =
+  foldMap (\(cs, dir) -> placeSideGrid (r2i dir) cs) (multiOutsideClues ocs)
 
 placeMultiOutsideGW
   :: (Backend' b, FromCoord k, ToCoord k, ToPoint k, Ord k)
