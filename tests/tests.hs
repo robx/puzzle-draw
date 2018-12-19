@@ -205,22 +205,6 @@ parseDataTests = testGroup
 sorteq :: (Show a, Ord a) => [a] -> [a] -> Assertion
 sorteq xs ys = sort xs @?= sort ys
 
-testMultiOutsideClues :: Assertion
-testMultiOutsideClues = multiOutsideClues (OC l r b t) @=? res
- where
-  l = [[1, 2], [3]]
-  r = [[], [1, 0]]
-  b = [[0, 0, 1]]
-  t = [[1, -1]]
-  res :: Sides (Map.Map C [Int], (Int, Int))
-  res = Sides
-    ( Map.fromList [(fromCoord (-1, 0), [1, 2]), (fromCoord (-1, 1), [3])]
-    , (-1, 0)
-    )
-    (Map.fromList [(fromCoord (1, 0), []), (fromCoord (1, 1), [1, 0])], (1, 0))
-    (Map.fromList [(fromCoord (0, -1), [0, 0, 1])]                    , (0, -1))
-    (Map.fromList [(fromCoord (0, 2), [1, -1])]                       , (0, 1))
-
 testEdges :: Assertion
 testEdges = do
   inner `sorteq` expinner'
@@ -315,7 +299,4 @@ testLoops = loops es @=? Just loopsexp
 dataTests :: TestTree
 dataTests = testGroup
   "Generic tests for the Data modules"
-  [ testCase "multiOutsideClues" testMultiOutsideClues
-  , testCase "edges"             testEdges
-  , testCase "loops"             testLoops
-  ]
+  [testCase "edges" testEdges, testCase "loops" testLoops]

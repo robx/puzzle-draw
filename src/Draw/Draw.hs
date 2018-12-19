@@ -12,6 +12,7 @@ module Draw.Draw
   , Drawing
   , draw
   , diagram
+  , withConfig
   , Unit(..)
   , DiagramSize
   , diagramSize
@@ -73,6 +74,9 @@ draw = Drawing . const
 
 diagram :: Config -> QDrawing b v n m -> QDiagram b v n m
 diagram c d = fromDrawing d c
+
+withConfig :: (Config -> QDrawing b v n m) -> QDrawing b v n m
+withConfig f = Drawing $ \cfg -> diagram cfg (f cfg)
 
 type Drawing b = QDrawing b (V b) (N b) Any
 
