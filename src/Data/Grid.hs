@@ -26,11 +26,9 @@ module Data.Grid
   , colour
   , collectLines
   , rows
-  , Sides(..)
   , OutsideClues(..)
   , outsideSize
   , outsideClues
-  , multiOutsideClues
   , outsideGrid
   , outsideValues
   )
@@ -41,7 +39,6 @@ import qualified Data.Set                      as Set
 import           Data.AffineSpace
 import           Data.VectorSpace
 import           Control.Monad.State
-import           Data.Foldable                  ( fold )
 
 import           Data.Elements
 import           Data.GridShape
@@ -153,19 +150,6 @@ colour :: Eq a => Grid C a -> Grid C Int
 colour m = colourM edgeNeighbours' m
   where edgeNeighbours' p = [ q | q <- edgeNeighbours p, q `Map.member` m ]
 
-data Sides a = Sides
-  { _sideLeft :: a
-  , _sideRight :: a
-  , _sideBottom :: a
-  , _sideTop :: a
-  } deriving (Show, Eq)
-
-instance Functor Sides where
-    fmap f (Sides l r b t) = Sides (f l) (f r) (f b) (f t)
-
-instance Foldable Sides where
-    foldMap f (Sides l r b t) = f l <> f r <> f b <> f t
-
 -- | Clues along the outside of a square grid.
 -- Ordered such that coordinates increase.
 data OutsideClues k a = OC { left :: [a], right :: [a], bottom :: [a], top :: [a] }
@@ -194,30 +178,17 @@ sizeGrid (w, h) =
     . Map.fromList
     $ [ ((x, y), ()) | x <- [0 .. w - 1], y <- [0 .. h - 1] ]
 
-data OClue = OClue
-    { ocBase :: (Int, Int)
-    , _ocDir :: (Int, Int)
-    }
-  deriving (Show, Eq, Ord)
-
-oClues :: OutsideClues k a -> Sides (Map.Map Coord a)
-oClues ocs@(OC l r b t) = fmap Map.fromList $ Sides
-  (zipWith (\y c -> ((-1, y), c)) [0 .. h - 1] l)
-  (zipWith (\y c -> ((w, y), c)) [0 .. h - 1] r)
-  (zipWith (\x c -> ((x, -1), c)) [0 .. w - 1] b)
-  (zipWith (\x c -> ((x, h), c)) [0 .. w - 1] t)
+outsideClues
+  :: (Ord k, FromCoord k)
+  => OutsideClues k a
+  -> [([a], (Int, Int), k, (Int, Int))]
+outsideClues ocs@(OC l r b t) =
+  [ (l, (-1, 0), fromCoord (-1, 0), (0, 1))
+  , (r, (1, 0) , fromCoord (w, 0) , (0, 1))
+  , (b, (0, -1), fromCoord (0, -1), (1, 0))
+  , (t, (0, 1) , fromCoord (0, h) , (1, 0))
+  ]
   where (w, h) = outsideSize ocs
-
-outsideClues :: (Ord k, FromCoord k) => OutsideClues k a -> Map.Map k a
-outsideClues = fold . fmap (Map.mapKeys fromCoord) . oClues
-
-multiOutsideClues
-  :: (Ord k, FromCoord k) => OutsideClues k a -> Sides (Map.Map k a, (Int, Int))
-multiOutsideClues ocs = Sides (Map.mapKeys fromCoord l, (-1, 0))
-                              (Map.mapKeys fromCoord r, (1, 0))
-                              (Map.mapKeys fromCoord b, (0, -1))
-                              (Map.mapKeys fromCoord t, (0, 1))
-  where Sides l r b t = oClues ocs
 
 dualEdgesP :: Key k => (a -> a -> Bool) -> Grid k a -> [Edge k]
 dualEdgesP p m = concatMap f (Map.keys m)
