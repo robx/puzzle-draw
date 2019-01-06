@@ -29,22 +29,14 @@ import           Draw.Draw               hiding ( border )
 import           Draw.Style
 import           Draw.Lib
 import           Draw.Widths
-
-(.--.) :: AS.AffineSpace p => p -> p -> AS.Diff p
-(.--.) = (AS..-.)
-
-class ToPoint a where
-    toPoint :: a -> P2 Double
-
-instance ToPoint C where
-    toPoint c = p2 (1/2, 1/2) .+^ r2i (c .--. C 0 0)
-
-instance ToPoint N where
-    toPoint c = origin .+^ r2i (c .--. N 0 0)
+import           Draw.GridShape
 
 -- | Draw a small black dot with no envelope.
 dot :: Backend' b => Drawing b
 dot = draw $ circle 0.05 # fc black # smash
+
+gridCell :: Backend' b => Drawing b
+gridCell = draw $ square 1 # lwG onepix
 
 grid :: Backend' b => GridStyle -> Grid C a -> Drawing b
 grid s g =
@@ -79,6 +71,9 @@ grid s g =
     e    = w / 2
     w    = edgeWidth cfg
   (outer, inner) = irregularGridPaths g
+
+shiftGrid :: Backend' b => Grid ShiftC a -> Drawing b
+shiftGrid = placeGrid . fmap (const gridCell)
 
 bgdashingG
   :: (Semigroup a, HasStyle a, InSpace V2 Double a)

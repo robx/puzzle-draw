@@ -12,6 +12,7 @@ module Data.Grid
   , cellSize
   , nodeSize
   , edgeSize
+  , shiftSize
   , sizeGrid
   , clues
   , nodeGrid
@@ -225,6 +226,9 @@ size = (^+^) (1, 1) . listSize . Map.keys
 
 cellSize :: Grid C a -> Size
 cellSize = size . Map.mapKeys toCoord
+
+shiftSize :: Grid ShiftC a -> Size
+shiftSize = size . Map.mapKeys toCoord
 
 nodeSize :: Grid N a -> Size
 nodeSize = (^+^) (-1, -1) . size . Map.mapKeys toCoord

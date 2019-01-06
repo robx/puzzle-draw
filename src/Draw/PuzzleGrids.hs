@@ -45,6 +45,7 @@ import           Draw.Lib
 import           Draw.Widths
 import           Draw.Style
 import           Draw.Grid
+import           Draw.GridShape
 import           Draw.Elements
 
 drawCharGrid :: Backend' b => Grid C (Maybe Char) -> Drawing b

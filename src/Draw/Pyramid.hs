@@ -11,20 +11,17 @@ import           Data.Pyramid
 import           Draw.Draw
 import           Draw.Elements
 import           Draw.Lib
-import           Draw.Widths
+import           Draw.Grid
 
 pgray :: Colour Double
 pgray = blend 0.6 white black
-
-cell :: Backend' b => Bool -> Drawing b
-cell s = draw $ square 1 # lwG onepix # if s then fc pgray else id
 
 clue :: Backend' b => Maybe Int -> Drawing b
 clue Nothing  = mempty
 clue (Just c) = text' (show c)
 
 cellc :: Backend' b => Bool -> Maybe Int -> Drawing b
-cellc s c = clue c <> cell s
+cellc s c = clue c <> (gridCell # if s then fc pgray else id)
 
 row :: Backend' b => Row -> Drawing b
 row (R cs s) = centerX' . hcat . map (cellc s) $ cs

@@ -13,6 +13,8 @@ data Component a =
   | CellGrid !(Grid C Decoration)
   | EdgeGrid !(Map.Map (Edge N) Decoration)
   | FullGrid !(Grid N Decoration) !(Grid C Decoration) !(Map.Map (Edge N) Decoration)
+  | Pyramid !(Grid ShiftC ())
+  | CellPyramid !(Grid ShiftC Decoration)
   | Note [Decoration]
   | RawComponent !Size !a
 
@@ -58,6 +60,7 @@ data GridStyle =
   | GridDefaultIrregular
   | GridDashed
   | GridDots
+  | GridPlain
 
 data Decoration =
     Blank

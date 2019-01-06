@@ -1,0 +1,17 @@
+- type: grid
+  style: plain
+  shape: shifted
+  grid: |
+    .
+    ..
+    ...
+    ....
+    .....
+- type: cells
+  shape: shifted
+  grid: |
+    5
+    43
+    210
+    9ABC
+    666.6

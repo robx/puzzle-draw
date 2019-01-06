@@ -20,7 +20,7 @@ parseComponent = withObject "Component" $ \o -> do
     "grid"    -> parseGrid o
     "regions" -> Regions <$> parseRegions o
     "nodes"   -> NodeGrid <$> parseNodeGrid o
-    "cells"   -> CellGrid <$> parseCellGrid o
+    "cells"   -> parseCellGrid o
     "edges"   -> EdgeGrid <$> parseEdgeGrid o
     "full"    -> parseFullGrid o
     "note"    -> Note <$> parseNote o
@@ -47,6 +47,17 @@ parsePlacement o = do
     Just "top-right" -> pure TopRight
     Just x           -> fail $ "unknown placement: " ++ x
 
+data Shape = ShapeSquare | ShapeShifted
+
+parseShape :: Object -> Parser Shape
+parseShape o = do
+  s <- o .:? "shape"
+  case s of
+    Nothing        -> pure ShapeSquare
+    Just "square"  -> pure ShapeSquare
+    Just "shifted" -> pure ShapeShifted
+    Just x         -> fail $ "unknown shape: " ++ x
+
 parseGrid :: Object -> Parser (Component a)
 parseGrid o = do
   g  <- o .: "grid" >>= Util.parseIrregGrid
@@ -56,8 +67,14 @@ parseGrid o = do
     "default-irregular" -> pure GridDefaultIrregular
     "dashed"            -> pure GridDashed
     "dots"              -> pure GridDots
+    "plain"             -> pure GridPlain
     _                   -> fail $ "unknown grid style: " ++ s
-  return $ Grid gs g
+  sh <- parseShape o
+  case sh of
+    ShapeSquare  -> pure $ Grid gs g
+    ShapeShifted -> case gs of
+      GridPlain -> pure $ Pyramid (Map.mapKeys ShiftC g)
+      _         -> fail $ "unsupported shifted grid style: " ++ s
 
 parseRegions :: Object -> Parser (Grid C Char)
 parseRegions o = do
@@ -70,11 +87,15 @@ parseNodeGrid o = do
   r <- parseReplacements o
   Util.parseGridWith (parseDecorationWithReplacements r) g
 
-parseCellGrid :: Object -> Parser (Grid C Decoration)
+parseCellGrid :: Object -> Parser (Component a)
 parseCellGrid o = do
-  g <- o .: "grid"
-  r <- parseReplacements o
-  Util.parseGridWith (parseDecorationWithReplacements r) g
+  sh <- parseShape o
+  g  <- o .: "grid"
+  r  <- parseReplacements o
+  gg <- Util.parseGridWith (parseDecorationWithReplacements r) g
+  pure $ case sh of
+    ShapeSquare  -> CellGrid gg
+    ShapeShifted -> CellPyramid $ Map.mapKeys ShiftC $ gg
 
 parseEdgeGrid :: Object -> Parser (Map.Map (Edge N) Decoration)
 parseEdgeGrid o = do
