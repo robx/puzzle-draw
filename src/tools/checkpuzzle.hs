@@ -8,6 +8,7 @@ import           Data.PuzzleTypes               ( typeOptions
                                                 , checkType
                                                 )
 
+import           Data.Lib
 import           Data.Elements                  ( KropkiDot(..)
                                                 , digitList
                                                 )
@@ -72,7 +73,7 @@ main = do
   opts  <- defaultOpts puzzleOpts
   bytes <- ByteString.readFile (_input opts)
   es    <- orExit $ do
-    TP mt _ pv msv _ <- fmapL (\e -> "parse failure: " ++ show e)
+    TP mt _ pv msv _ <- mapLeft (\e -> "parse failure: " ++ show e)
       $ Y.decodeThrow bytes
     t  <- checkType $ _type opts `mplus` mt
     sv <- note "need solution" msv
@@ -84,10 +85,6 @@ main = do
 orExit :: Either String a -> IO a
 orExit (Left  err) = putStrLn err >> exitFailure
 orExit (Right r  ) = return r
-
-fmapL :: (e -> f) -> Either e a -> Either f a
-fmapL m (Left  e) = Left (m e)
-fmapL _ (Right x) = Right x
 
 note :: String -> Maybe a -> Either String a
 note err Nothing  = Left err

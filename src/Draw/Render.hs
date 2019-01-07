@@ -15,6 +15,7 @@ import           Diagrams.Prelude        hiding ( parts
                                                 , sc
                                                 )
 
+import           Data.Lib
 import           Data.Component
 import           Draw.Widths
 import           Data.Compose
@@ -73,16 +74,16 @@ decodeAndDraw params b = case backend fmt of
   toComponentsPzg
     :: Backend' b => B.ByteString -> Either String [TaggedComponent (Drawing b)]
   toComponentsPzg bytes = do
-    fmap (map unPC) . fmapL (\e -> "parse failure: " ++ show e) $ decodeThrow
+    fmap (map unPC) . mapLeft (\e -> "parse failure: " ++ show e) $ decodeThrow
       bytes
 
   toComponentsPzl
     :: Backend' b => B.ByteString -> Either String [TaggedComponent (Drawing b)]
   toComponentsPzl bytes = do
-    TP mt mrt p ms mc <- fmapL (\e -> "parse failure: " ++ show e)
+    TP mt mrt p ms mc <- mapLeft (\e -> "parse failure: " ++ show e)
       $ decodeThrow bytes
     codeComponents <- case (code, mc) of
-      (True, Just c) -> fmapL ("solution code parse failure: " ++) $ do
+      (True, Just c) -> mapLeft ("solution code parse failure: " ++) $ do
         parsedCode <- parseEither parseCode c
         return $ drawCode parsedCode
       _ -> pure []
@@ -103,10 +104,6 @@ decodeAndDraw params b = case backend fmt of
           ]
         Nothing -> []
     return $ concat [pc, sc, codeComponents]
-
-  fmapL f e = case e of
-    Left  l -> Left (f l)
-    Right r -> Right r
 
 data PuzzleFormat = PZL | PZG
     deriving (Show, Ord, Eq)

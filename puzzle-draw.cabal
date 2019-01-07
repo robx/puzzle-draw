@@ -27,6 +27,7 @@ source-repository head
 
 library
     exposed-modules:
+        Data.Lib
         Data.Grid
         Data.GridShape
         Data.Util
