@@ -3,6 +3,7 @@
 
 module Main where
 
+import           Data.Lib
 import           Data.PuzzleTypes
 import           Draw.CmdLine
 import           Draw.Draw
@@ -140,7 +141,7 @@ maybeSkipCode opts = if _code opts then id else const Nothing
 
 handleOne :: PuzzleOpts -> OutputChoice -> FilePath -> IO ()
 handleOne opts oc fpin = do
-  puzzleFormat <- orExit $ checkPuzzleFormat fpin
+  puzzleFormat <- orExitFile $ checkPuzzleFormat fpin
   let params = Params (_format opts)
                       (config opts)
                       oc
@@ -149,8 +150,11 @@ handleOne opts oc fpin = do
                       puzzleFormat
       fpout = outputPath opts fpin (_format opts) oc
   input  <- B.readFile fpin
-  output <- orExit $ decodeAndDraw params input
+  output <- orExitFile $ decodeAndDraw params input
   BL.writeFile fpout output
+ where
+  orExitFile :: Either String a -> IO a
+  orExitFile = orExit . mapLeft ((fpin <> ": ") <>)
 
 main :: IO ()
 main = do
