@@ -16,6 +16,7 @@ module Data.GridShape
   , Dual'
   , C(..)
   , N(..)
+  , ShiftC(..)
   , FromCoord(..)
   , ToCoord(..)
   , edge
@@ -67,6 +68,15 @@ instance AffineSpace C where
 
     (C x y) .-. (C x' y') = (x - x', y - y')
     (C x y) .+^ (x',y') = C (x + x') (y + y')
+
+newtype ShiftC = ShiftC C
+  deriving (Show, Eq, Ord)
+
+instance ToCoord ShiftC where
+  toCoord (ShiftC c) = toCoord c
+
+instance FromCoord ShiftC where
+  fromCoord = ShiftC . fromCoord
 
 data N = N !Int !Int
     deriving (Show, Eq, Ord)

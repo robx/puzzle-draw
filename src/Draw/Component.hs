@@ -44,16 +44,10 @@ drawComponents cs = snd $ go $ reverse cs
 drawComponent :: Backend' b => Component (Drawing b) -> (Size, Drawing b)
 drawComponent c = case c of
   RawComponent sz x -> (sz, x)
-  Grid s g ->
-    let st = case s of
-          GridDefault          -> gDefault
-          GridDefaultIrregular -> gDefaultIrreg
-          GridDashed           -> gDashed
-          GridDots             -> gSlither
-    in  (cellSize g, grid st g)
-  Regions  g -> (cellSize g, drawAreas g)
-  CellGrid g -> (cellSize g, placeGrid . fmap drawDecoration $ g)
-  NodeGrid g -> (nodeSize g, placeGrid . fmap drawDecoration $ g)
+  Grid         s  g -> (cellSize g, grid (gridStyle s) g)
+  Regions  g        -> (cellSize g, drawAreas g)
+  CellGrid g        -> (cellSize g, placeGrid . fmap drawDecoration $ g)
+  NodeGrid g        -> (nodeSize g, placeGrid . fmap drawDecoration $ g)
   EdgeGrid g ->
     (edgeSize g, placeGrid' . Map.mapKeys midPoint . fmap drawDecoration $ g)
   FullGrid ns cs es ->
@@ -62,7 +56,16 @@ drawComponent c = case c of
       . map (snd . drawComponent)
       $ [NodeGrid ns, CellGrid cs, EdgeGrid es]
     )
-  Note ds -> ((0, 0), note $ hcatSep 0.2 $ map drawDecoration $ ds)
+  Note        ds -> ((0, 0), note $ hcatSep 0.2 $ map drawDecoration $ ds)
+  Pyramid     g  -> (shiftSize g, shiftGrid g)
+  CellPyramid g  -> (shiftSize g, placeGrid . fmap drawDecoration $ g)
+ where
+  gridStyle s = case s of
+    GridDefault          -> gDefault
+    GridDefaultIrregular -> gDefaultIrreg
+    GridDashed           -> gDashed
+    GridDots             -> gSlither
+    GridPlain            -> gPlain
 
 drawDecoration :: Backend' b => Decoration -> Drawing b
 drawDecoration d = case d of

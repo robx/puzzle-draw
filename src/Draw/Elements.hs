@@ -26,6 +26,7 @@ import           Draw.Lib
 import           Draw.Draw
 import           Draw.Style
 import           Draw.Widths
+import           Draw.GridShape
 import           Draw.Grid
 
 pearl :: Backend' b => MasyuPearl -> Drawing b
