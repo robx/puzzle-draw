@@ -168,7 +168,7 @@ newtype GridWords = GW { unGW :: (Grid C (Maybe Char), [String]) }
 
 instance FromJSON GridWords where
     parseJSON (Object v) = GW <$> ((,) <$>
-                                   (parseClueGrid =<< v .: "grid") <*>
+                                   (fmap blankToMaybe <$> (parseIrregGrid =<< v .: "grid")) <*>
                                    v .: "words")
     parseJSON _ = empty
 
@@ -179,7 +179,7 @@ newtype GridMarked = GM { unGM :: (Grid C (Maybe Char), [MarkedWord]) }
 
 instance FromJSON GridMarked where
     parseJSON (Object v) = GM <$> ((,) <$>
-                                   (parseClueGrid =<< v .: "grid") <*>
+                                   (fmap blankToMaybe <$> (parseIrregGrid =<< v .: "grid")) <*>
                                    (map unPMW <$> v .: "words"))
     parseJSON _          = mzero
 
