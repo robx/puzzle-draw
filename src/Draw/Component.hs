@@ -90,4 +90,6 @@ drawDecoration d = case d of
   LabeledTriangleRight w -> arrowRightL w
   LabeledTriangleDown  w -> arrowDownL w
   MiniLoop               -> miniloop
+  ShipSquare             -> shipSquare
+  Ship dir               -> shipEnd dir
 

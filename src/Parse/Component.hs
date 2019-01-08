@@ -173,6 +173,11 @@ parseExtendedDecoration (Util.IntString s) = case words s of
     "triangle-right"         -> pure $ TriangleRight
     "triangle-down"          -> pure $ TriangleDown
     "miniloop"               -> pure $ MiniLoop
+    "ship-square"            -> pure $ ShipSquare
+    "ship-end-left"          -> pure $ Ship R
+    "ship-end-right"         -> pure $ Ship L
+    "ship-end-top"           -> pure $ Ship D
+    "ship-end-bottom"        -> pure $ Ship U
     _                        -> pure $ Letters s
   [w1, w2] -> case w1 of
     "triangle-right" -> pure $ LabeledTriangleRight w2

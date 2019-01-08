@@ -84,4 +84,6 @@ data Decoration =
   | LabeledTriangleRight String
   | LabeledTriangleDown String
   | MiniLoop
+  | Ship Dir'
+  | ShipSquare
 

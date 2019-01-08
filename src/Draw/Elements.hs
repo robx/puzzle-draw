@@ -44,6 +44,19 @@ drawEnd MEnd = smallPearl MBlack
 drawBigEnd :: Backend' b => MEnd -> Drawing b
 drawBigEnd MEnd = pearl MBlack
 
+shipSquare :: Backend' b => Drawing b
+shipSquare = draw $ square 0.7 # lwG 0.05 # fc black
+
+shipEnd :: Backend' b => Dir' -> Drawing b
+shipEnd dir = e # rotateTo d
+ where
+  e = pearl MBlack <> (shipSquare # scaleX 0.5 # alignL')
+  d = direction $ case dir of
+    R -> unitX
+    L -> -unitX
+    U -> unitY
+    D -> -unitY
+
 -- | The up-right diagonal of a centered unit square.
 ur :: Path V2 Double
 ur = fromVertices [p2 (-1 / 2, -1 / 2), p2 (1 / 2, 1 / 2)]
