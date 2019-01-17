@@ -86,4 +86,6 @@ data Decoration =
   | MiniLoop
   | Ship Dir'
   | ShipSquare
+  | LabeledArrow Dir' String
+
 

@@ -40,3 +40,8 @@
     u: light-diagonal-forward
     v: light-diagonal-back
     w: light-diagonal-both
+    x: arrow-right R
+    y: arrow-left L
+    z: arrow-up U
+    A: arrow-down D
+

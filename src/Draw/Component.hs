@@ -92,4 +92,5 @@ drawDecoration d = case d of
   MiniLoop               -> miniloop
   ShipSquare             -> shipSquare
   Ship dir               -> shipEnd dir
+  LabeledArrow dir w     -> labeledArrow dir $ text' w
 
