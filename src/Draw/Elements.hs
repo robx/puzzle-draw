@@ -10,7 +10,9 @@
 
 module Draw.Elements where
 
-import           Diagrams.Prelude        hiding ( N, arrow )
+import           Diagrams.Prelude        hiding ( N
+                                                , arrow
+                                                )
 import           Diagrams.TwoD.Offset
 
 import qualified Data.Map.Strict               as Map
@@ -107,19 +109,19 @@ drawThermos :: Backend' b => [Thermometer] -> Drawing b
 drawThermos = mconcat . map (thermo . map toPoint)
 
 arrowTip :: Path V2 Double
-arrowTip =  p2 (0, 0) ~~ p2 (1, 0)
-         <> p2 (-1/2, 1) ~~ p2 (1, 0)
-         <> p2 (-1/2, -1) ~~ p2 (1, 0)
+arrowTip =
+  p2 (0, 0) ~~ p2 (1, 0) <> p2 (-1 / 2, 1) ~~ p2 (1, 0) <> p2 (-1 / 2, -1) ~~ p2
+    (1, 0)
 
 arrow :: Backend' b => [P2 Double] -> Drawing b
 arrow vs = if length vs < 2 then mempty else draw arr
  where
-  arr = c <> strokeLocLine (fromVertices vs) <> stroke tip
-  (s:_) = vs
-  (e:f:_) = reverse vs
-  c = circle 0.4 # fc white # moveTo s
-  dir = direction $ e .-. f
-  tip = rotateTo dir arrowTip # scale 0.2 # moveTo e
+  arr         = c <> strokeLocLine (fromVertices vs) <> stroke tip
+  (s     : _) = vs
+  (e : f : _) = reverse vs
+  c           = circle 0.4 # fc white # moveTo s
+  dir         = direction $ e .-. f
+  tip         = rotateTo dir arrowTip # scale 0.2 # moveTo e
 
 -- | Draw a list of arrows, given as lists of @(Int, Int)@ cell
 -- coordinates.

@@ -212,7 +212,9 @@ meanderingnumbers
   :: ParsePuzzle (AreaGrid, Grid C (Maybe Int)) (Grid C (Maybe Int))
 meanderingnumbers = (,)
   (\v ->
-    (,) <$> parseFrom ["regions"] parseGrid v <*> parseFrom ["clues"] parseGrid v
+    (,)
+      <$> parseFrom ["regions"] parseGrid v
+      <*> parseFrom ["clues"]   parseGrid v
   )
   parseGrid
 
@@ -589,13 +591,16 @@ japsummasyu :: ParsePuzzle (OutsideClues C [String]) ()
 japsummasyu = (,) (fmap (fmap (map unIntString)) . parseMultiOutsideClues)
                   (unimplemented "japsummasyu solution")
 
-arrowsudoku :: ParsePuzzle (AreaGrid, Grid C (Maybe Int), [Thermometer]) (Grid C Int)
+arrowsudoku
+  :: ParsePuzzle (AreaGrid, Grid C (Maybe Int), [Thermometer]) (Grid C Int)
 arrowsudoku = (,)
   (\v ->
     (,,)
-      <$> parseFrom ["regions"] parseGrid v
-      <*> parseFrom ["givens"] parseClueGrid v
+      <$> parseFrom ["regions"] parseGrid     v
+      <*> parseFrom ["givens"]  parseClueGrid v
       <*> (do
-             g <- parseFrom ["arrows"] parseJSON v
-             snd <$> parseThermoGrid g))
+            g <- parseFrom ["arrows"] parseJSON v
+            snd <$> parseThermoGrid g
+          )
+  )
   parseGrid
