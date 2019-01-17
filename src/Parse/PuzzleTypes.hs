@@ -74,6 +74,7 @@ module Parse.PuzzleTypes
   , killersudoku
   , japsummasyu
   , arrowsudoku
+  , dualloop
   )
 where
 
@@ -604,3 +605,14 @@ arrowsudoku = (,)
           )
   )
   parseGrid
+
+dualloop :: ParsePuzzle (Grid C (Clue Int), Grid N (Clue Int)) (Loop N, Loop C)
+dualloop = (,)
+  (\v ->
+    (,)
+      <$> parseFrom ["edges"] parseClueGrid v
+      <*> parseFrom ["dual"]  parseClueGrid v
+  )
+  (\v ->
+    (,) <$> parseFrom ["edges"] parseEdges v <*> parseFrom ["dual"] parseEdges v
+  )
