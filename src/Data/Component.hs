@@ -76,6 +76,7 @@ data Decoration =
   | Dot
   | SmallDot
   | Shade
+  | LightShade
   | Edge Dir
   | ThinEdge Dir
   | SolEdge Dir
@@ -87,5 +88,4 @@ data Decoration =
   | Ship Dir'
   | ShipSquare
   | LabeledArrow Dir' String
-
 

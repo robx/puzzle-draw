@@ -75,6 +75,7 @@ module Parse.PuzzleTypes
   , japsummasyu
   , arrowsudoku
   , dualloop
+  , yajilin
   )
 where
 
@@ -616,3 +617,35 @@ dualloop = (,)
   (\v ->
     (,) <$> parseFrom ["edges"] parseEdges v <*> parseFrom ["dual"] parseEdges v
   )
+
+yajilin
+  :: ParsePuzzle (Grid C (Maybe (Maybe (Int, Dir')))) (Grid C Bool, Loop C)
+yajilin = (,)
+  (\v -> do
+    replace <- parseFrom ["clues"]
+                         (parseCharMapWith (fmap Just . parseYajClue))
+                         v
+    parseFrom ["grid"]
+              (parseGridWith (parseYajOrBlank (`Map.lookup` replace)))
+              v
+  )
+  (\v -> unShade . toCells <$> parseNodeEdges v)
+ where
+  parseYajOrBlank repl c = case c of
+    '.' -> pure Nothing
+    _   -> pure $ repl c
+  parseYajClue s = case words s of
+    [a, b] -> (,) <$> parseString a <*> parseDir b
+    _      -> fail "expected <number><space><direction>"
+  parseDir s = case s of
+    "right" -> pure R
+    "left"  -> pure L
+    "up"    -> pure U
+    "down"  -> pure D
+    _       -> fail "expected right/left/up/down"
+  unShade (g, l) = (unShaded <$> g, l)
+  toCell :: N -> C
+  toCell = fromCoord . toCoord
+  toCells :: (Grid N a, [Edge N]) -> (Grid C a, [Edge C])
+  toCells (x, y) = (Map.mapKeys toCell x, map (mapEdge toCell) y)
+

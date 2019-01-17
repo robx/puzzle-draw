@@ -34,6 +34,7 @@ import qualified Data.Text                     as T
 
 import           Data.Yaml
 
+import           Data.Lib
 import           Data.Grid
 import           Data.GridShape
 import           Data.Elements
@@ -41,9 +42,6 @@ import           Data.Elements
 import           Parse.Parsec
 
 type Path = [String]
-
-impossible :: a
-impossible = error "impossible"
 
 field :: Path -> Value -> Parser Value
 field = field' . map T.pack

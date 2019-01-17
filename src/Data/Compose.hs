@@ -15,6 +15,7 @@ import           Data.Yaml                      ( Parser
                                                 )
 
 import           Parse.Puzzle
+import           Data.Lib
 import           Draw.Draw
 import           Draw.Lib
 import           Data.PuzzleTypes
@@ -114,6 +115,9 @@ handle f KillerSudoku        = f R.killersudoku D.killersudoku
 handle f JapaneseSumsMasyu   = f R.japsummasyu D.japsummasyu
 handle f ArrowSudoku         = f R.arrowsudoku D.arrowsudoku
 handle f DualLoop            = f R.dualloop D.dualloop
+handle _ t                   = if isGeneric t
+  then impossible
+  else error $ "puzzle type unhandled: " ++ show t
 
 -- | Handler that parses puzzle and an optional solution from a pair of
 --   corresponding YAML values, and renders both individually, optionally

@@ -21,6 +21,7 @@ import           Draw.Widths
 import           Data.Compose
 import           Parse.Code
 import           Parse.Component
+import           Draw.Generic
 import           Data.PuzzleTypes
 import           Draw.CmdLine
 import           Draw.Code
@@ -87,23 +88,26 @@ decodeAndDraw params b = case backend fmt of
         parsedCode <- parseEither parseCode c
         return $ drawCode parsedCode
       _ -> pure []
-    t'          <- checkType (mrt `mplus` mt)
-    (pzl, msol) <- parseEither (compose t') (p, ms)
-    let
-      fakeSize = (0, 0)
-      pc =
-        [ TaggedComponent (Just Puzzle) $ PlacedComponent Atop $ RawComponent
-            fakeSize
-            pzl
-        ]
-      sc = case msol of
-        Just sol ->
-          [ TaggedComponent (Just Solution)
-              $ PlacedComponent Atop
-              $ RawComponent fakeSize sol
-          ]
-        Nothing -> []
-    return $ concat [pc, sc, codeComponents]
+    t' <- checkType (mrt `mplus` mt)
+    if isGeneric t'
+      then parseEither (drawGeneric t') (p, ms)
+      else do
+        (pzl, msol) <- parseEither (compose t') (p, ms)
+        let
+          fakeSize = (0, 0)
+          pc =
+            [ TaggedComponent (Just Puzzle)
+                $ PlacedComponent Atop
+                $ RawComponent fakeSize pzl
+            ]
+          sc = case msol of
+            Just sol ->
+              [ TaggedComponent (Just Solution)
+                  $ PlacedComponent Atop
+                  $ RawComponent fakeSize sol
+              ]
+            Nothing -> []
+        return $ concat [pc, sc, codeComponents]
 
 data PuzzleFormat = PZL | PZG
     deriving (Show, Ord, Eq)

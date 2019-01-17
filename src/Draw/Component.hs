@@ -80,6 +80,7 @@ drawDecoration d = case d of
   SmallDot               -> dot
   Dot                    -> scale 0.5 $ smallPearl MBlack
   Shade                  -> fillBG gray
+  LightShade             -> fillBG (blend 0.5 gray white)
   SmallPearl p           -> smallPearl p
   Pearl      p           -> pearl p
   Edge       dir         -> edgeDecoration dir

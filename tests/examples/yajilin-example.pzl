@@ -1,0 +1,41 @@
+type: yajilin
+puzzle:
+  grid: |
+    .........
+    ....a.b..
+    ...c...d.
+    .........
+    .........
+    .........
+    .e...f...
+    ..g.h....
+    .........
+  clues:
+    a: 1 right
+    b: 1 down
+    c: 2 down
+    d: 2 down
+    e: 0 right
+    f: 2 up
+    g: 3 up
+    h: 2 left
+solution: |
+  o-o X o-o-o-o-o X
+  |.|. .|. . . .|
+  o o-o-o o X o o-o
+  |. . . . . . . .|
+  o-o X o o-o X o o
+   .|. . .|.|. . .|
+  X o-o-o o o-o X o
+   . . .|.|. .|. .|
+  o-o X o-o X o-o o
+  |.|. . . . . .|.|
+  o o-o X o-o-o o o
+  |. .|. .|. .|.|.|
+  o o o-o-o o o-o o
+  |. . . . . . . .|
+  o X o X o o-o X o
+  |. . . . .|.|. .|
+  o-o-o-o-o-o o-o-o
+  
+  

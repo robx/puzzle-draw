@@ -170,6 +170,7 @@ parseExtendedDecoration (Util.IntString s) = case words s of
     "dot"                    -> pure $ Dot
     "small-dot"              -> pure $ SmallDot
     "shade"                  -> pure $ Shade
+    "light-shade"            -> pure $ LightShade
     "triangle-right"         -> pure $ TriangleRight
     "triangle-down"          -> pure $ TriangleDown
     "miniloop"               -> pure $ MiniLoop

@@ -35,6 +35,7 @@ module Data.GridShape
   , edgeNeighbours
   , rows
   , shift
+  , mapEdge
   )
 where
 
@@ -118,6 +119,9 @@ data Dir = Vert | Horiz
 --   centre.
 data Edge a = E a Dir
     deriving (Show, Eq, Ord)
+
+mapEdge :: (a -> b) -> Edge a -> Edge b
+mapEdge f (E x d) = E (f x) d
 
 type Size = (Int, Int)
 

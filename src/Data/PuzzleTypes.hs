@@ -8,6 +8,7 @@ module Data.PuzzleTypes
   , lookupType
   , checkType
   , typeOptions
+  , isGeneric
   )
 where
 
@@ -92,6 +93,7 @@ data PuzzleType = LITS
                 | JapaneseSumsMasyu
                 | ArrowSudoku
                 | DualLoop
+                | Yajilin
     deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -158,6 +160,7 @@ typeNames =
   , (CountryRoad        , "country-road")
   , (KillerSudoku       , "killersudoku")
   , (ArrowSudoku        , "arrowsudoku")
+  , (Yajilin            , "yajilin")
   ]
 
 obscureTypes :: [(PuzzleType, String)]
@@ -178,6 +181,11 @@ obscureTypes =
   , (JapaneseSumsMasyu, "japanesesums-masyu")
   , (DualLoop         , "dualloop")
   ]
+
+isGeneric :: PuzzleType -> Bool
+isGeneric t = case t of
+  Yajilin -> True
+  _       -> False
 
 typeAliases :: [(PuzzleType, String)]
 typeAliases = [(LITS, "litsplus")]

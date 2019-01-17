@@ -14,7 +14,7 @@ import           Diagrams.Prelude        hiding ( N
                                                 , arrow
                                                 , gap
                                                 )
-import qualified Diagrams.Prelude as D
+import qualified Diagrams.Prelude              as D
 import           Diagrams.TwoD.Offset
 
 import qualified Data.Map.Strict               as Map
@@ -505,12 +505,18 @@ drawCages g m = hints <> (mconcat . map cage . Map.elems) byChar
         # moveTo (corner .+^ r2 (-onepix, onepix))
 
 labeledArrow :: Backend' b => Dir' -> Drawing b -> Drawing b
-labeledArrow dir x =
-  case dir of
-    U -> (x ||| strutX' gap ||| arr unitY) # centerX'
-    D -> (x ||| strutX' gap ||| arr (-unitY)) # centerX'
-    R -> (x === strutY' gap === arr unitX) # centerY'
-    L -> (x === strutY' gap === arr (-unitX)) # centerY'
+labeledArrow dir x = case dir of
+  U -> (x ||| strutX' gap ||| arr unitY) # centerX'
+  D -> (x ||| strutX' gap ||| arr (-unitY)) # centerX'
+  R -> (x === strutY' gap === arr unitX) # centerY'
+  L -> (x === strutY' gap === arr (-unitX)) # centerY'
  where
   gap = 0.2
-  arr v = D.arrowV' (with & arrowHead .~ tri & headLength .~ global 0.2) v # center # scale 0.5 # draw
+  arr v =
+    D.arrowV' (with & arrowHead .~ tri & headLength .~ global 0.2) v
+      # center
+      # scale 0.5
+      # draw
+
+scaledText :: Backend' b => String -> Drawing b
+scaledText s = text' s # fitDown' 0.5

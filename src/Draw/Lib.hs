@@ -94,6 +94,14 @@ aboveT a b = a === strutY 0.5 === b'
 fit :: (Transformable t, Enveloped t, InSpace V2 Double t) => Double -> t -> t
 fit f a = scale (f / m) a where m = max (diameter unitX a) (diameter unitY a)
 
+-- | @fitDown f a@ scales @a@ down to fit into a square of size $f$.
+fitDown
+  :: (Transformable t, Enveloped t, InSpace V2 Double t) => Double -> t -> t
+fitDown f a = scale f' a
+ where
+  m  = max (diameter unitX a) (diameter unitY a)
+  f' = if m > f then f / m else 1
+
 -- | Write text that is centered both vertically and horizontally and that
 -- has an envelope. Sized such that single capital characters fit nicely
 -- into a square of size @1@.

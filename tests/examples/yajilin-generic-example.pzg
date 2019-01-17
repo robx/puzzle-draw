@@ -1,0 +1,49 @@
+- type: cells
+  tag: solution
+  grid: |
+    ...X
+    ....
+    .X..
+    ....
+  substitute:
+    X: shade
+- type: cells
+  grid: |
+    X...
+    ....
+    ..X.
+    ....
+  substitute:
+    X: light-shade
+- type: cells
+  grid: |
+    a...
+    ....
+    ..b.
+    ....
+  substitute:
+    a: arrow-right 1
+    b: arrow-left 1
+- type: grid
+  style: default
+  grid: |
+    ....
+    ....
+    ....
+    ....
+- type: edges
+  tag: solution
+  grid: |
+    . . . . .
+     o o-o o
+    . .|.|. .
+     o-o o-o
+    .|. . .|.
+     o o o o
+    .|. . .|.
+     o-o-o-o
+    . . . . .
+  substitute:
+    '|': sol-edge-vert
+    '-': sol-edge-horiz
+

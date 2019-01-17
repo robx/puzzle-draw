@@ -1,5 +1,6 @@
 module Data.Lib
   ( mapLeft
+  , impossible
   , invertMap
   )
 where
@@ -23,3 +24,5 @@ invertMap =
     . map (\(x, y) -> (y, x))
     . Map.toList
 
+impossible :: a
+impossible = error "impossible"
