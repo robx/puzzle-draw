@@ -16,10 +16,9 @@ import           Diagrams.Prelude        hiding ( N
 import           Diagrams.TwoD.Offset
 
 import qualified Data.Map.Strict               as Map
-import           Data.List                      ( groupBy
-                                                , sortOn
-                                                )
+import           Data.List                      ( sortOn )
 
+import           Data.Lib                       ( invertMap )
 import           Data.Grid
 import           Data.Elements           hiding ( Loop )
 import           Data.GridShape          hiding ( edge )
@@ -503,11 +502,3 @@ drawCages g m = hints <> (mconcat . map cage . Map.elems) byChar
         # alignTL
         # moveTo (corner .+^ r2 (-onepix, onepix))
 
-invertMap :: (Eq a, Ord a) => Map.Map k a -> Map.Map a [k]
-invertMap =
-  Map.fromList
-    . map (\l -> (fst (head l), map snd l))
-    . groupBy (\x y -> fst x == fst y)
-    . sortOn fst
-    . map (\(x, y) -> (y, x))
-    . Map.toList
