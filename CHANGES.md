@@ -1,3 +1,9 @@
+0.3.4.1: 20190204
+-----------------
+
+* New types:
+  - dual-loop
+  - yajilin
 * Convert puzzle types to PZG:
   - boxof2or3
   - horsesnake
@@ -5,8 +11,10 @@
   - pentopipes
   - slithermulti
 * PZG changes:
-  - Add `fullgrid` grid type.
-  - Add edge decorations
+  - Add `fullgrid`, `pyramid` grid types and notes.
+  - Add edge decorations.
+  - Support for solution code markers.
+  - A bunch of new decorations.
 
 0.3.4.0: 20181212
 -----------------
