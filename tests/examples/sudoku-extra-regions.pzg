@@ -1,0 +1,36 @@
+- type: cells
+  grid: |
+    ......
+    ..XXX.
+    ..XXX.
+    ......
+    .XXX..
+    .XXX..
+  substitute:
+    X: light-shade
+- type: grid
+  style: default
+  grid: |
+    ......
+    ......
+    ......
+    ......
+    ......
+    ......
+- type: regions
+  grid: |
+    aaabbb
+    aaabbb
+    cccddd
+    cccddd
+    eeefff
+    eeefff
+- type: cells
+  grid: |
+    1.....
+    .2....
+    ..3...
+    ...4..
+    ....5.
+    .....6
+
