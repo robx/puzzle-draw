@@ -286,7 +286,7 @@ anglers =
   )
 
 cave :: ParsePuzzle (Grid C (Maybe Int)) (Grid C Bool)
-cave = (parseClueGrid, parseShadedGrid)
+cave = (parseExtClueGrid, parseShadedGrid)
 
 parseOut :: FromJSON a => Value -> Parser (OutsideClues k (Maybe a))
 parseOut v = fmap (blankToMaybe' . unEither') <$> parseOutside v

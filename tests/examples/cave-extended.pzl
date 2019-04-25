@@ -1,0 +1,17 @@
+type: cave
+puzzle:
+  grid: |
+    b....
+    ....2
+    ..5..
+    a....
+    ....5
+  replace:
+    a: 5
+    b: 9
+solution: |
+  -----
+  ---X-
+  ---XX
+  -XXXX
+  -----
