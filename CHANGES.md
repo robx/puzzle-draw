@@ -1,3 +1,11 @@
+0.3.4.2: 20190425
+-----------------
+
+* PZL changes:
+  - cave: Support clue replacement for multi-digit numbers.
+* PZG changes:
+  - Add `plain-dashed` grid type.
+
 0.3.4.1: 20190204
 -----------------
 
