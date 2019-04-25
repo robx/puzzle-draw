@@ -447,7 +447,7 @@ anglers = Drawers (p <> g) (p . fst <> solstyle . drawEdges . snd <> g . fst)
 
 cave :: Backend' b => Drawers b (Grid C (Maybe Int)) ShadedGrid
 cave = Drawers
-  (grid gDashDash <> placeGrid . fmap drawInt . clues)
+  (grid gPlainDashed <> placeGrid . fmap drawInt . clues)
   (  drawEdges
   .  edgesGen (/=) not
   .  snd
@@ -461,7 +461,6 @@ cave = Drawers
   .  fst
   )
  where
-  gDashDash = GridStyle LineDashed LineDashed Nothing VertexNone
   gStyle =
     GridStyle LineDashed LineNone (Just $ FrameStyle (8 / 3) gray) VertexNone
 
@@ -993,11 +992,10 @@ japsummasyu :: Backend' b => Drawers b (OutsideClues C [String]) ()
 japsummasyu = Drawers
   (  placeMultiOutside
   .  fmap (fmap (scale outsideScale . text'))
-  <> grid gDashDash
+  <> grid gPlainDashed
   .  outsideGrid
   )
   (unimplemented "japsummasyu solution")
-  where gDashDash = GridStyle LineDashed LineDashed Nothing VertexNone
 
 arrowsudoku
   :: Backend' b

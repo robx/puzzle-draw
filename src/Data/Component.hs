@@ -61,6 +61,7 @@ data GridStyle =
   | GridDashed
   | GridDots
   | GridPlain
+  | GridPlainDashed
 
 data Decoration =
     Blank

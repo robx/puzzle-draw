@@ -68,6 +68,7 @@ parseGrid o = do
     "dashed"            -> pure GridDashed
     "dots"              -> pure GridDots
     "plain"             -> pure GridPlain
+    "plain-dashed"      -> pure GridPlainDashed
     _                   -> fail $ "unknown grid style: " ++ s
   sh <- parseShape o
   case sh of

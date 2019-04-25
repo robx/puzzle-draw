@@ -66,6 +66,7 @@ drawComponent c = case c of
     GridDashed           -> gDashed
     GridDots             -> gSlither
     GridPlain            -> gPlain
+    GridPlainDashed      -> gPlainDashed
 
 drawDecoration :: Backend' b => Decoration -> Drawing b
 drawDecoration d = case d of
