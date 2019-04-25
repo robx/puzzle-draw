@@ -191,6 +191,8 @@ view model =
             , Html.a [ Attr.href "https://github.com/robx/puzzle-draw" ] [ Html.text "puzzle-draw" ]
             , Html.text ", a tool for formatting puzzle graphics from text descriptions."
             ]
+        , Html.p []
+            [ Html.text "Please raise issues on the github project page if you miss a feature or puzzle type or can't figure out how to do something." ]
         , Html.div [] <|
             let
                 radiofmt fmt lbl =
