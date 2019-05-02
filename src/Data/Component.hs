@@ -89,4 +89,5 @@ data Decoration =
   | Ship Dir'
   | ShipSquare
   | LabeledArrow Dir' String
-
+  | Tent
+  | Tree

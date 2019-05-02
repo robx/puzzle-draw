@@ -9,7 +9,10 @@ import           Diagrams.Prelude        hiding ( dot
                                                 )
 
 import           Data.Component
-import           Data.Elements
+import           Data.Elements           hiding ( Tent
+                                                , Tree
+                                                )
+import qualified Data.Elements
 import           Data.Grid
 import           Data.GridShape
 import           Draw.Lib
@@ -95,4 +98,5 @@ drawDecoration d = case d of
   ShipSquare             -> shipSquare
   Ship dir               -> shipEnd dir
   LabeledArrow dir w     -> labeledArrow dir $ text' w
-
+  Tent                   -> draw tent
+  Tree                   -> drawTree Data.Elements.Tree
