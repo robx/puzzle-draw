@@ -1,0 +1,37 @@
+
+- type: cells
+  grid: |
+    B...
+    O...
+  substitute:
+    O: pearl-black
+    B: tree
+- type: cells
+  tag: solution
+  grid: |
+    .Z.#
+    ####
+  substitute:
+    Z: tent
+- type: cells
+  tag: solution
+  grid: |
+    ...O
+    O...
+  substitute:
+    O: pearl-black
+- type: edges
+  tag: solution
+  grid: |
+    o o o o o
+      -
+    o o o o o
+
+    o o o o o
+  substitute:
+    o: .
+- type: grid
+  style: default
+  grid: |
+    ....
+    ....
