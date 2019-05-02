@@ -1,0 +1,19 @@
+- type: grid
+  style: dashed
+  grid: |2
+     ...
+     ...
+     ...
+- type: edges
+  grid: |
+    . . . . . .
+     o-o-o o-o
+         | |
+     o o-o o o
+       |   |
+     o o-o-o o
+    . . . . . .
+  substitute:
+    '-': sol-edge-horiz
+    '|': sol-edge-vert
+    'o': .
