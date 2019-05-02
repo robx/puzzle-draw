@@ -5,7 +5,7 @@ module Parse.Component where
 import           Data.Yaml
 import qualified Data.Map.Strict               as Map
 
-import           Data.Elements
+import qualified Data.Elements                 as E
 import           Data.Component
 import           Data.Grid
 import           Data.GridShape
@@ -133,10 +133,10 @@ parseDecorationWithReplacements repl c = case Map.lookup c repl of
 parseDecoration :: Char -> Parser Decoration
 parseDecoration c = return $ case c of
   '.'  -> Blank
-  'o'  -> DecKropkiDot KWhite
-  '*'  -> DecKropkiDot KBlack
-  '/'  -> DarkDiagonal $ PrimeDiag (True, False)
-  '\\' -> DarkDiagonal $ PrimeDiag (False, True)
+  'o'  -> DecKropkiDot E.KWhite
+  '*'  -> DecKropkiDot E.KBlack
+  '/'  -> DarkDiagonal $ E.PrimeDiag (True, False)
+  '\\' -> DarkDiagonal $ E.PrimeDiag (False, True)
   '#'  -> Shade
   '-'  -> Edge Horiz
   '|'  -> Edge Vert
@@ -147,40 +147,41 @@ parseDecoration c = return $ case c of
 parseExtendedDecoration :: Util.IntString -> Parser Decoration
 parseExtendedDecoration (Util.IntString s) = case words s of
   [w1] -> case w1 of
-    "kropki-white"           -> pure $ DecKropkiDot KWhite
-    "kropki-black"           -> pure $ DecKropkiDot KBlack
-    "small-pearl-white"      -> pure $ SmallPearl MWhite
-    "small-pearl-black"      -> pure $ SmallPearl MBlack
-    "pearl-white"            -> pure $ Pearl MWhite
-    "pearl-black"            -> pure $ Pearl MBlack
-    "blank"                  -> pure Blank
-    "afternoon-west"         -> pure $ AfternoonWest
-    "afternoon-south"        -> pure $ AfternoonSouth
-    "light-diagonal-forward" -> pure $ LightDiagonal $ PrimeDiag (True, False)
-    "light-diagonal-back"    -> pure $ LightDiagonal $ PrimeDiag (False, True)
-    "light-diagonal-both"    -> pure $ LightDiagonal $ PrimeDiag (True, True)
-    "dark-diagonal-forward"  -> pure $ DarkDiagonal $ PrimeDiag (True, False)
-    "dark-diagonal-back"     -> pure $ DarkDiagonal $ PrimeDiag (False, True)
-    "dark-diagonal-both"     -> pure $ DarkDiagonal $ PrimeDiag (True, True)
-    "edge-horiz"             -> pure $ Edge Horiz
-    "edge-vert"              -> pure $ Edge Vert
-    "thin-edge-horiz"        -> pure $ ThinEdge Horiz
-    "thin-edge-vert"         -> pure $ ThinEdge Vert
-    "sol-edge-horiz"         -> pure $ SolEdge Horiz
-    "sol-edge-vert"          -> pure $ SolEdge Vert
-    "dot"                    -> pure $ Dot
-    "small-dot"              -> pure $ SmallDot
-    "shade"                  -> pure $ Shade
-    "light-shade"            -> pure $ LightShade
-    "triangle-right"         -> pure $ TriangleRight
-    "triangle-down"          -> pure $ TriangleDown
-    "miniloop"               -> pure $ MiniLoop
-    "ship-square"            -> pure $ ShipSquare
-    "ship-end-left"          -> pure $ Ship R
-    "ship-end-right"         -> pure $ Ship L
-    "ship-end-top"           -> pure $ Ship D
-    "ship-end-bottom"        -> pure $ Ship U
-    _                        -> pure $ Letters s
+    "kropki-white"      -> pure $ DecKropkiDot E.KWhite
+    "kropki-black"      -> pure $ DecKropkiDot E.KBlack
+    "small-pearl-white" -> pure $ SmallPearl E.MWhite
+    "small-pearl-black" -> pure $ SmallPearl E.MBlack
+    "pearl-white"       -> pure $ Pearl E.MWhite
+    "pearl-black"       -> pure $ Pearl E.MBlack
+    "blank"             -> pure Blank
+    "afternoon-west"    -> pure $ AfternoonWest
+    "afternoon-south"   -> pure $ AfternoonSouth
+    "light-diagonal-forward" ->
+      pure $ LightDiagonal $ E.PrimeDiag (True, False)
+    "light-diagonal-back"   -> pure $ LightDiagonal $ E.PrimeDiag (False, True)
+    "light-diagonal-both"   -> pure $ LightDiagonal $ E.PrimeDiag (True, True)
+    "dark-diagonal-forward" -> pure $ DarkDiagonal $ E.PrimeDiag (True, False)
+    "dark-diagonal-back"    -> pure $ DarkDiagonal $ E.PrimeDiag (False, True)
+    "dark-diagonal-both"    -> pure $ DarkDiagonal $ E.PrimeDiag (True, True)
+    "edge-horiz"            -> pure $ Edge Horiz
+    "edge-vert"             -> pure $ Edge Vert
+    "thin-edge-horiz"       -> pure $ ThinEdge Horiz
+    "thin-edge-vert"        -> pure $ ThinEdge Vert
+    "sol-edge-horiz"        -> pure $ SolEdge Horiz
+    "sol-edge-vert"         -> pure $ SolEdge Vert
+    "dot"                   -> pure $ Dot
+    "small-dot"             -> pure $ SmallDot
+    "shade"                 -> pure $ Shade
+    "light-shade"           -> pure $ LightShade
+    "triangle-right"        -> pure $ TriangleRight
+    "triangle-down"         -> pure $ TriangleDown
+    "miniloop"              -> pure $ MiniLoop
+    "ship-square"           -> pure $ ShipSquare
+    "ship-end-left"         -> pure $ Ship R
+    "ship-end-right"        -> pure $ Ship L
+    "ship-end-top"          -> pure $ Ship D
+    "ship-end-bottom"       -> pure $ Ship U
+    _                       -> pure $ Letters s
   [w1, w2] -> case w1 of
     "triangle-right" -> pure $ LabeledTriangleRight w2
     "triangle-down"  -> pure $ LabeledTriangleDown w2
