@@ -1,3 +1,10 @@
+0.3.4.3: 20190502
+-----------------
+
+* PZG changes:
+  - Add `tent`, `tree` symbols.
+  - Add two examples: `snake-forest-example.pzg` and `cylinder.pzg`.
+
 0.3.4.2: 20190425
 -----------------
 
