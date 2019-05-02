@@ -308,28 +308,29 @@ drawTent (Tent d) = draw $ tent <> lwG linewidth (stroke conn)
       L -> (-1, 0)
     )
 
-  tent = fit 0.7 $ centerXY $ lwG 0 $ mconcat
-    [ rect 10 (1 / 4) # fc black
-    , shape [(-2, 0), (0, 4), (2, 0), (-2, 0)] # fc white
-    , shape [(-4, 0), (0, 8), (4, 0), (-4, 0)] # fc black
-    , shape
-        [ (0     , 8)
-        , (-1 / 2, 8 + 1)
-        , (-1    , 8 + 1 - 1 / 4)
-        , (0     , 8 + 1 - 1 / 4 - 2)
-        , (0     , 8)
-        ]
-      # fc black
-    , shape
-        [ (0    , 8)
-        , (1 / 2, 8 + 1)
-        , (1    , 8 + 1 - 1 / 4)
-        , (0    , 8 + 1 - 1 / 4 - 2)
-        , (0    , 8)
-        ]
-      # fc black
-    ]
-  shape = strokeLocLoop . fromVertices . map p2
+tent :: Backend' b => Diagram b
+tent = fit 0.7 $ centerXY $ lwG 0 $ mconcat
+  [ rect 10 (1 / 4) # fc black
+  , shape [(-2, 0), (0, 4), (2, 0), (-2, 0)] # fc white
+  , shape [(-4, 0), (0, 8), (4, 0), (-4, 0)] # fc black
+  , shape
+      [ (0     , 8)
+      , (-1 / 2, 8 + 1)
+      , (-1    , 8 + 1 - 1 / 4)
+      , (0     , 8 + 1 - 1 / 4 - 2)
+      , (0     , 8)
+      ]
+    # fc black
+  , shape
+      [ (0    , 8)
+      , (1 / 2, 8 + 1)
+      , (1    , 8 + 1 - 1 / 4)
+      , (0    , 8 + 1 - 1 / 4 - 2)
+      , (0    , 8)
+      ]
+    # fc black
+  ]
+  where shape = strokeLocLoop . fromVertices . map p2
 
 vertexLoop :: VertexLoop -> Located (Trail' Loop V2 Double)
 vertexLoop = mapLoc closeLine . fromVertices . map toPoint
