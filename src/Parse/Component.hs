@@ -172,6 +172,7 @@ parseExtendedDecoration (Util.IntString s) = case words s of
     "dot"                   -> pure $ Dot
     "small-dot"             -> pure $ SmallDot
     "shade"                 -> pure $ Shade
+    "black"                 -> pure $ Black
     "light-shade"           -> pure $ LightShade
     "triangle-right"        -> pure $ TriangleRight
     "triangle-down"         -> pure $ TriangleDown
@@ -191,5 +192,9 @@ parseExtendedDecoration (Util.IntString s) = case words s of
     "arrow-left"     -> pure $ LabeledArrow L w2
     "arrow-up"       -> pure $ LabeledArrow U w2
     "arrow-down"     -> pure $ LabeledArrow D w2
+    "inverted-arrow-down"     -> pure $ InvertedLabeledArrow D w2
+    "inverted-arrow-right"    -> pure $ InvertedLabeledArrow R w2
+    "inverted-arrow-left"     -> pure $ InvertedLabeledArrow L w2
+    "inverted-arrow-up"       -> pure $ InvertedLabeledArrow U w2
     _                -> fail $ "unknown unary function: " ++ w1
   _ -> fail $ "unknown decoration: " ++ show s

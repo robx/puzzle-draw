@@ -11,6 +11,7 @@ import           Diagrams.Prelude        hiding ( dot
 import           Data.Component
 import           Data.Elements           hiding ( Tent
                                                 , Tree
+                                                , Black
                                                 )
 import qualified Data.Elements
 import           Data.Grid
@@ -84,6 +85,7 @@ drawDecoration d = case d of
   SmallDot               -> dot
   Dot                    -> scale 0.5 $ smallPearl MBlack
   Shade                  -> fillBG gray
+  Black                  -> fillBG black
   LightShade             -> fillBG (blend 0.5 gray white)
   SmallPearl p           -> smallPearl p
   Pearl      p           -> pearl p
@@ -98,5 +100,6 @@ drawDecoration d = case d of
   ShipSquare             -> shipSquare
   Ship dir               -> shipEnd dir
   LabeledArrow dir w     -> labeledArrow dir $ text' w
+  InvertedLabeledArrow dir w -> invert $ labeledArrow dir $ text' w
   Tent                   -> draw tent
   Tree                   -> drawTree Data.Elements.Tree
