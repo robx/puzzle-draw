@@ -107,3 +107,4 @@ drawDecoration d = case d of
   InvertedLabeledArrow dir w -> invert $ labeledArrow dir $ text' w
   Tent                   -> draw tent
   Tree                   -> drawTree Data.Elements.Tree
+  Myopia dirs            -> drawMyopia dirs

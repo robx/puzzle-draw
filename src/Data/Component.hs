@@ -96,3 +96,4 @@ data Decoration =
   | InvertedLabeledArrow Dir' String
   | Tent
   | Tree
+  | Myopia [Dir']
