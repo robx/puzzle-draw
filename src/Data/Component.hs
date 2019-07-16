@@ -67,6 +67,7 @@ data Decoration =
     Blank
   | Letter !Char
   | Letters String
+  | InvertedLetters String
   | DecKropkiDot KropkiDot
   | SmallPearl MasyuPearl
   | Pearl MasyuPearl

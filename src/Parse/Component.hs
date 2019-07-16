@@ -196,5 +196,6 @@ parseExtendedDecoration (Util.IntString s) = case words s of
     "inverted-arrow-right"    -> pure $ InvertedLabeledArrow R w2
     "inverted-arrow-left"     -> pure $ InvertedLabeledArrow L w2
     "inverted-arrow-up"       -> pure $ InvertedLabeledArrow U w2
+    "inverted-letters" -> pure $ InvertedLetters w2
     _                -> fail $ "unknown unary function: " ++ w1
   _ -> fail $ "unknown decoration: " ++ show s

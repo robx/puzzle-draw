@@ -77,6 +77,7 @@ drawDecoration d = case d of
   Blank                  -> mempty
   Letter       c         -> drawChar c
   Letters      s         -> text' s
+  InvertedLetters s      -> invert $ text' s
   DecKropkiDot k         -> kropkiDot k
   AfternoonSouth         -> afternoonSouth
   AfternoonWest          -> afternoonWest
