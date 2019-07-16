@@ -88,6 +88,7 @@ drawDecoration d = case d of
   Dot                    -> scale 0.5 $ smallPearl MBlack
   Star                   -> drawStar Data.Elements.Star
   Shade                  -> fillBG gray
+  DarkShade              -> fillBG (blend 0.5 gray black)
   Black                  -> fillBG black
   LightShade             -> fillBG (blend 0.5 gray white)
   SmallPearl p           -> smallPearl p

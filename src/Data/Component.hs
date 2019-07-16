@@ -81,6 +81,7 @@ data Decoration =
   | Shade
   | Black
   | LightShade
+  | DarkShade
   | Edge Dir
   | ThinEdge Dir
   | SolEdge Dir
