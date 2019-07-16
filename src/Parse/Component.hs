@@ -171,6 +171,7 @@ parseExtendedDecoration (Util.IntString s) = case words s of
     "sol-edge-vert"         -> pure $ SolEdge Vert
     "dot"                   -> pure $ Dot
     "small-dot"             -> pure $ SmallDot
+    "star"                  -> pure $ Star
     "shade"                 -> pure $ Shade
     "black"                 -> pure $ Black
     "light-shade"           -> pure $ LightShade

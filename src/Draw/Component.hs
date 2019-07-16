@@ -12,6 +12,7 @@ import           Data.Component
 import           Data.Elements           hiding ( Tent
                                                 , Tree
                                                 , Black
+                                                , Star
                                                 )
 import qualified Data.Elements
 import           Data.Grid
@@ -85,6 +86,7 @@ drawDecoration d = case d of
   DarkDiagonal  diag     -> lc gray $ drawPrimeDiag diag
   SmallDot               -> dot
   Dot                    -> scale 0.5 $ smallPearl MBlack
+  Star                   -> drawStar Data.Elements.Star
   Shade                  -> fillBG gray
   Black                  -> fillBG black
   LightShade             -> fillBG (blend 0.5 gray white)

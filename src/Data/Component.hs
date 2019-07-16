@@ -77,6 +77,7 @@ data Decoration =
   | DarkDiagonal PrimeDiag
   | Dot
   | SmallDot
+  | Star
   | Shade
   | Black
   | LightShade
