@@ -33,10 +33,16 @@ import qualified Data.ByteString.Lazy          as BL
 
 import           System.Directory
 import           System.FilePath.Posix
+import           System.Environment
 import           Data.List                      ( stripPrefix )
 
 main :: IO ()
-main = quickHttpServe site
+main = do
+  root <- lookupEnv "PUZZLE_DRAW_ROOT"
+  case root of
+    Just dir -> setCurrentDirectory dir
+    Nothing  -> return ()
+  quickHttpServe site
 
 site :: Snap ()
 site =
