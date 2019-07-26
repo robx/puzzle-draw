@@ -457,7 +457,7 @@ drawMyopia = foldMap d'
   d D = a (0, 0) (0, -1)
   d L = a (0, 0) (-1, 0)
   a p q =
-    arrowBetween' (with & arrowHead .~ tri & lengths .~ verySmall) (p2 p) (p2 q)
+    arrowBetween' (with & arrowHead .~ tri & headLength .~ global 0.2) (p2 p) (p2 q)
 
 greaterClue :: Backend' b => GreaterClue -> [Drawing b]
 greaterClue []       = mempty
