@@ -13,6 +13,7 @@ import           Safe                           ( readMay )
 
 import           Snap.Core               hiding ( getParams
                                                 , Params
+                                                , dir
                                                 )
 import           Snap.Util.FileServe
 import           Snap.Http.Server        hiding ( Config )
