@@ -29,4 +29,7 @@
     f: 9
 # extra information: arrow up, 0
 #  (so start and end point have to be in the same row)
-
+- type: note
+  place: top-right
+  contents:
+    [arrow-up 0]
