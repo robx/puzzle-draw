@@ -4,8 +4,5 @@ packages:
 - '.'
 extra-deps:
   - github: diagrams/diagrams-rasterific
-    commit: 66da2e698ce92bab796a1d56185df07a25a7eeec
-  - github: Twinside/Rasterific
-    commit: 6178bfe6af1f8022a9928f80ea622c5923054485
-  - JuicyPixels-3.3.2@sha256:45e3ba1e67be87a2000e594f0b976f400e17ed644777e3286ee742d106926ce9
-resolver: lts-12.19
+    commit: 5823b3397fa44ca39dd8d196c1aefb8d2fe2d62a
+resolver: lts-14.16
