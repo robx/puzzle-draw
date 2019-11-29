@@ -52,10 +52,6 @@ matrix:
     compiler: ": #stack default"
     addons: {apt: {packages: [libgmp-dev, imagemagick]}}
 
-  - env: BUILD=stack ARGS="--resolver lts-12"
-    compiler: ": #stack 8.4.3"
-    addons: {apt: {packages: [libgmp-dev, imagemagick]}}
-
   # Nightly builds are allowed to fail
   - env: BUILD=stack ARGS="--resolver nightly"
     compiler: ": #stack nightly"
@@ -64,11 +60,6 @@ matrix:
   # Build on macOS in addition to Linux
   - env: BUILD=stack ARGS="" UPLOAD=yes
     compiler: ": #stack default osx"
-    os: osx
-
-  # Travis includes an macOS which is incompatible with GHC 7.8.4
-  - env: BUILD=stack ARGS="--resolver lts-12"
-    compiler: ": #stack 8.4.3 osx"
     os: osx
 
   - env: BUILD=stack ARGS="--resolver nightly"
