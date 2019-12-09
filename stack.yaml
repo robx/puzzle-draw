@@ -3,6 +3,5 @@ ghc-options:
 packages:
 - '.'
 extra-deps:
-  - github: diagrams/diagrams-rasterific
-    commit: 5823b3397fa44ca39dd8d196c1aefb8d2fe2d62a
+- diagrams-rasterific-1.4.2
 resolver: lts-14.16
