@@ -10,5 +10,5 @@ compare:
 	$(MAKE) -C tests/examples compare DRAW=$(DRAW)
 
 format:
-	find src -name '*.hs' | xargs brittany --write-mode=inplace
-	find tests -name '*.hs' | xargs brittany --write-mode=inplace
+	find src -name '*.hs' | xargs ormolu -m inplace
+	find tests -name '*.hs' | xargs ormolu -m inplace

@@ -1,10 +1,10 @@
 module Data where
 
-import qualified Data.Text                     as T
-import           Data.Maybe                     ( fromJust )
-import           Data.Yaml
-import qualified Data.ByteString               as B
-import           Data.Text.Encoding             ( encodeUtf8 )
+import qualified Data.ByteString as B
+import Data.Maybe (fromJust)
+import qualified Data.Text as T
+import Data.Text.Encoding (encodeUtf8)
+import Data.Yaml
 
 packStr :: String -> B.ByteString
 packStr = encodeUtf8 . T.pack
@@ -57,18 +57,18 @@ kpyramid_1_sol =
 
 kpyramid_broken_1 :: Value
 kpyramid_broken_1 =
-  packLines
-    $ [ "  G     3"
-      , "  G    . 22"
-      , "  H   . aa ."
-      , "  W  .o. .|. "
-      , "  G 1*.*.o.*6"
-      ]
+  packLines $
+    [ "  G     3",
+      "  G    . 22",
+      "  H   . aa .",
+      "  W  .o. .|. ",
+      "  G 1*.*.o.*6"
+    ]
 
 kpyramid_broken_2 :: Value
 kpyramid_broken_2 =
-  packLines
-    $ ["G     3", "G    . 22", "H   . aa .", "W  .o. .|. ", "G 1*.*.o.*6"]
+  packLines $
+    ["G     3", "G    . 22", "H   . aa .", "W  .o. .|. ", "G 1*.*.o.*6"]
 
 kpyramid_broken_3 :: Value
 kpyramid_broken_3 =
@@ -76,8 +76,8 @@ kpyramid_broken_3 =
 
 compass_1 :: Value
 compass_1 =
-  decodeLines
-    $ ["grid: |", "  ...", "  a.b", "clues:", "  a: 2 1 . 2", "  b: 21 . . 0"]
+  decodeLines $
+    ["grid: |", "  ...", "  a.b", "clues:", "  a: 2 1 . 2", "  b: 21 . . 0"]
 
 compass_broken_1 :: Value
 compass_broken_1 =
@@ -93,13 +93,13 @@ compass_broken_3 =
 
 compass_broken_4 :: Value
 compass_broken_4 =
-  decodeLines
-    $ ["grid: |", "  a.b", "clues:", "  a: 1 . . 2 3", "  b: 21 . . 0"]
+  decodeLines $
+    ["grid: |", "  a.b", "clues:", "  a: 1 . . 2 3", "  b: 21 . . 0"]
 
 compass_broken_5 :: Value
 compass_broken_5 =
-  decodeLines
-    $ ["grid: |", "  a3b", "clues:", "  a: 1 . . 2 3", "  b: 21 . . 0"]
+  decodeLines $
+    ["grid: |", "  a3b", "clues:", "  a: 1 . . 2 3", "  b: 21 . . 0"]
 
 thermo_1 :: Value
 thermo_1 =
@@ -117,18 +117,18 @@ thermo_broken_2 = packLines $ ["bb", "a."]
 
 multioutside :: Value
 multioutside =
-  decodeLines
-    $ [ "left:"
-      , "  - [2, 1]"
-      , "  - [3]"
-      , "right:"
-      , "  - []"
-      , "  - [1, 0]"
-      , "bottom:"
-      , "  - [0, 0, 1]"
-      , "top:"
-      , "  - [-1, 1]"
-      ]
+  decodeLines $
+    [ "left:",
+      "  - [2, 1]",
+      "  - [3]",
+      "right:",
+      "  - []",
+      "  - [1, 0]",
+      "bottom:",
+      "  - [0, 0, 1]",
+      "top:",
+      "  - [-1, 1]"
+    ]
 
 edgeGrid_1 :: Value
 edgeGrid_1 = packLines $ ["o-*-*-o", "|1|2 3", "*-o"]

@@ -4,45 +4,42 @@
 
 module Main where
 
-import           Control.Applicative
-import           Control.Monad
-import           Data.Maybe
-import           Control.Monad.IO.Class
-import           Data.List                      ( sort )
-import           Safe                           ( readMay )
-
-import           Snap.Core               hiding ( getParams
-                                                , Params
-                                                , dir
-                                                )
-import           Snap.Util.FileServe
-import           Snap.Http.Server        hiding ( Config )
-
-import qualified Data.Aeson                    as J
-import           Data.Yaml
-
-import           Draw.CmdLine
-import           Draw.Draw
-import           Draw.Render
-import           Draw.Font                      ( fontAnelizaRegular
-                                                , fontBit
-                                                )
-
-import qualified Data.ByteString.Char8         as C
-import qualified Data.ByteString               as B
-import qualified Data.ByteString.Lazy          as BL
-
-import           System.Directory
-import           System.FilePath.Posix
-import           System.Environment
-import           Data.List                      ( stripPrefix )
+import Control.Applicative
+import Control.Monad
+import Control.Monad.IO.Class
+import qualified Data.Aeson as J
+import qualified Data.ByteString as B
+import qualified Data.ByteString.Char8 as C
+import qualified Data.ByteString.Lazy as BL
+import Data.List (sort)
+import Data.List (stripPrefix)
+import Data.Maybe
+import Data.Yaml
+import Draw.CmdLine
+import Draw.Draw
+import Draw.Font
+  ( fontAnelizaRegular,
+    fontBit,
+  )
+import Draw.Render
+import Safe (readMay)
+import Snap.Core hiding
+  ( Params,
+    dir,
+    getParams,
+  )
+import Snap.Http.Server hiding (Config)
+import Snap.Util.FileServe
+import System.Directory
+import System.Environment
+import System.FilePath.Posix
 
 main :: IO ()
 main = do
   root <- lookupEnv "PUZZLE_DRAW_ROOT"
   case root of
     Just dir -> setCurrentDirectory dir
-    Nothing  -> return ()
+    Nothing -> return ()
   quickHttpServe site
 
 site :: Snap ()
@@ -50,10 +47,10 @@ site =
   ifTop (serveFile "static/index.html")
     <|> route [("/static/puzzle.html", redirect "/")] -- old demo redirect
     <|> route
-          [ ("/api/preview" , previewPostHandler)
-          , ("/api/download", downloadPostHandler)
-          , ("/api/examples", examplesGetHandler)
-          ]
+      [ ("/api/preview", previewPostHandler),
+        ("/api/download", downloadPostHandler),
+        ("/api/examples", examplesGetHandler)
+      ]
     <|> serveDirectory "static"
 
 fail400 :: String -> Snap a
@@ -65,11 +62,13 @@ fail400 e = do
 
 addContentDisposition :: Format -> B.ByteString -> Snap ()
 addContentDisposition fmt filename = do
-  modifyResponse $ addHeader "Content-Disposition"
-                             (B.concat ["attachment; filename=\"", n, "\""])
- where
-  n    = B.filter (flip B.elem safe) filename <> "." <> (C.pack $ extension fmt)
-  safe = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-."
+  modifyResponse $
+    addHeader
+      "Content-Disposition"
+      (B.concat ["attachment; filename=\"", n, "\""])
+  where
+    n = B.filter (flip B.elem safe) filename <> "." <> (C.pack $ extension fmt)
+    safe = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-."
 
 contentType :: Format -> B.ByteString
 contentType fmt = case fmt of
@@ -83,7 +82,7 @@ serveDiagram format name bs = do
   modifyResponse $ setContentType (contentType format)
   case name of
     Nothing -> return ()
-    Just n  -> addContentDisposition format n
+    Just n -> addContentDisposition format n
   writeLBS $ bs
 
 config :: Device -> Config
@@ -94,49 +93,49 @@ getOutputChoice = do
   ocs <- maybe "puzzle" id <$> getParam "output"
   case ocs of
     "solution" -> return DrawSolution
-    "both"     -> return DrawExample
-    "puzzle"   -> return DrawPuzzle
-    _          -> fail400 "invalid parameter value: output"
+    "both" -> return DrawExample
+    "puzzle" -> return DrawPuzzle
+    _ -> fail400 "invalid parameter value: output"
 
 getDevice :: Format -> Snap Device
 getDevice fmt = do
   devs <- maybe "auto" id <$> getParam "device"
   return $ case (devs, fmt) of
-    ("screen", _  ) -> Screen
-    ("print" , _  ) -> Print
-    (_       , PDF) -> Print
-    _               -> Screen
+    ("screen", _) -> Screen
+    ("print", _) -> Print
+    (_, PDF) -> Print
+    _ -> Screen
 
 getBoolParam :: B.ByteString -> Snap Bool
 getBoolParam key = do
   param <- getParam key
   case fromMaybe "" param of
-    "yes"   -> return True
-    "true"  -> return True
-    "1"     -> return True
-    "no"    -> return False
+    "yes" -> return True
+    "true" -> return True
+    "1" -> return True
+    "no" -> return False
     "false" -> return False
-    "0"     -> return False
-    ""      -> return False
-    _       -> fail400 "invalid boolean parameter value"
+    "0" -> return False
+    "" -> return False
+    _ -> fail400 "invalid boolean parameter value"
 
 getFormat :: Snap Format
 getFormat = do
   fmt <- getParam "format"
   case fmt of
     Nothing -> return SVG
-    Just f  -> case lookupFormat (C.unpack f) of
-      Nothing     -> fail400 "invalid parameter value: format"
+    Just f -> case lookupFormat (C.unpack f) of
+      Nothing -> fail400 "invalid parameter value: format"
       Just format -> return format
 
 getPuzzleFormat :: Snap PuzzleFormat
 getPuzzleFormat = do
   fmt <- getParam "pformat"
   case fmt of
-    Nothing    -> return PZL
+    Nothing -> return PZL
     Just "pzl" -> return PZL
     Just "pzg" -> return PZG
-    _          -> fail400 "invalid parameter value: pformat"
+    _ -> fail400 "invalid parameter value: pformat"
 
 getDouble :: B.ByteString -> Double -> Snap Double
 getDouble key defaultValue = do
@@ -144,7 +143,7 @@ getDouble key defaultValue = do
   case param of
     Nothing -> return defaultValue
     Just "" -> return defaultValue
-    Just d  -> case readMay (C.unpack d) of
+    Just d -> case readMay (C.unpack d) of
       Nothing -> fail400 "invalid number parameter"
       Just dd -> return dd
 
@@ -160,49 +159,52 @@ getParams fmt = do
 previewPostHandler :: Snap ()
 previewPostHandler = do
   params <- getParams SVG
-  body   <- readRequestBody 4096
+  body <- readRequestBody 4096
   case decodeAndDraw params (BL.toStrict body) of
-    Left  err   -> fail400 err
+    Left err -> fail400 err
     Right bytes -> serveDiagram SVG Nothing bytes
 
 downloadPostHandler :: Snap ()
 downloadPostHandler = do
-  body   <- maybe "" id <$> getParam "pzl"
+  body <- maybe "" id <$> getParam "pzl"
   format <- getFormat
   params <- getParams format
-  fname  <- maybe "" id <$> getParam "filename"
+  fname <- maybe "" id <$> getParam "filename"
   let filename = if fname == "" then "puzzle" else fname
   case decodeAndDraw params body of
-    Left  e     -> fail400 e
+    Left e -> fail400 e
     Right bytes -> serveDiagram format (Just filename) bytes
 
-data Example = Example
-    { _name :: String
-    , _path :: FilePath
-    , _puzzleFormat :: PuzzleFormat }
-    deriving (Show, Ord, Eq)
+data Example
+  = Example
+      { _name :: String,
+        _path :: FilePath,
+        _puzzleFormat :: PuzzleFormat
+      }
+  deriving (Show, Ord, Eq)
 
 instance ToJSON Example where
-    toJSON (Example n p f) =
-       object
-          [ "name" .= n
-          , "path" .= p
-          , "pformat" .= case f of
-                          PZL -> "pzl" :: String
-                          PZG -> "pzg" ]
+  toJSON (Example n p f) =
+    object
+      [ "name" .= n,
+        "path" .= p,
+        "pformat" .= case f of
+          PZL -> "pzl" :: String
+          PZG -> "pzg"
+      ]
 
 exampleFromPath :: FilePath -> Maybe Example
 exampleFromPath fp = case lookupPuzzleFormat fp of
-  Nothing  -> Nothing
+  Nothing -> Nothing
   Just fmt -> do
     guard $ length n > 0
     return $ Example n ("./examples" </> fp) fmt
- where
-  n = stripSuffixMaybe "-example" $ takeBaseName fp
-  stripSuffix suffix = fmap reverse . stripPrefix (reverse suffix) . reverse
-  stripSuffixMaybe suffix str = case stripSuffix suffix str of
-    Just s  -> s
-    Nothing -> str
+  where
+    n = stripSuffixMaybe "-example" $ takeBaseName fp
+    stripSuffix suffix = fmap reverse . stripPrefix (reverse suffix) . reverse
+    stripSuffixMaybe suffix str = case stripSuffix suffix str of
+      Just s -> s
+      Nothing -> str
 
 listExamples :: IO [Example]
 listExamples = do

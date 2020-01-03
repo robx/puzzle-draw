@@ -1,13 +1,12 @@
 module Data.Component where
 
-import qualified Data.Map.Strict               as Map
+import Data.Elements
+import Data.Grid
+import Data.GridShape
+import qualified Data.Map.Strict as Map
 
-import           Data.GridShape
-import           Data.Grid
-import           Data.Elements
-
-data Component a =
-    Grid !GridStyle !(Grid C ())
+data Component a
+  = Grid !GridStyle !(Grid C ())
   | Regions !(Grid C Char)
   | NodeGrid !(Grid N Decoration)
   | CellGrid !(Grid C Decoration)
@@ -18,53 +17,55 @@ data Component a =
   | Note [Decoration]
   | RawComponent !Size !a
 
-data Tag =
-    Puzzle
+data Tag
+  = Puzzle
   | Solution
   | Code
- deriving (Eq, Show)
+  deriving (Eq, Show)
 
 data TaggedComponent a = TaggedComponent (Maybe Tag) (PlacedComponent a)
 
-data Placement =
-    Atop
+data Placement
+  = Atop
   | West
   | North
   | TopRight
- deriving (Eq, Show)
+  deriving (Eq, Show)
 
 data PlacedComponent a = PlacedComponent Placement (Component a)
 
 tagged :: Tag -> TaggedComponent a -> Bool
 tagged tag component = case component of
   TaggedComponent (Just t) _ -> tag == t
-  _                          -> False
+  _ -> False
 
 untag :: TaggedComponent a -> PlacedComponent a
 untag (TaggedComponent _ c) = c
 
 extractPuzzle :: Bool -> [TaggedComponent a] -> [PlacedComponent a]
 extractPuzzle code tcs = map untag . filter want $ tcs
-  where want c = not (tagged Solution c) && (code || not (tagged Code c))
+  where
+    want c = not (tagged Solution c) && (code || not (tagged Code c))
 
 extractSolution :: Bool -> [TaggedComponent a] -> Maybe [PlacedComponent a]
-extractSolution code tcs = if haveSol
-  then Just . map untag . filter want $ tcs
-  else Nothing
- where
-  haveSol = not . null . filter (tagged Solution) $ tcs
-  want c = not (tagged Puzzle c) && (code || not (tagged Code c))
+extractSolution code tcs =
+  if haveSol
+    then Just . map untag . filter want $ tcs
+    else Nothing
+  where
+    haveSol = not . null . filter (tagged Solution) $ tcs
+    want c = not (tagged Puzzle c) && (code || not (tagged Code c))
 
-data GridStyle =
-    GridDefault
+data GridStyle
+  = GridDefault
   | GridDefaultIrregular
   | GridDashed
   | GridDots
   | GridPlain
   | GridPlainDashed
 
-data Decoration =
-    Blank
+data Decoration
+  = Blank
   | Letter !Char
   | Letters String
   | InvertedLetters String

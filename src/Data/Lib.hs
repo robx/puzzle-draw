@@ -1,18 +1,19 @@
 module Data.Lib
-  ( mapLeft
-  , impossible
-  , invertMap
+  ( mapLeft,
+    impossible,
+    invertMap,
   )
 where
 
-import qualified Data.Map.Strict               as Map
-import           Data.List                      ( groupBy
-                                                , sortOn
-                                                )
+import Data.List
+  ( groupBy,
+    sortOn,
+  )
+import qualified Data.Map.Strict as Map
 
 mapLeft :: (a -> b) -> Either a x -> Either b x
 mapLeft f e = case e of
-  Left  l -> Left $ f l
+  Left l -> Left $ f l
   Right r -> Right r
 
 invertMap :: (Eq a, Ord a) => Map.Map k a -> Map.Map a [k]

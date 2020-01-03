@@ -1,18 +1,19 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Draw.Font
-  ( fontAnelizaRegular
-  , fontBit
-  , Font
+  ( fontAnelizaRegular,
+    fontBit,
+    Font,
   )
 where
 
-import           Graphics.SVGFonts.ReadFont     ( PreparedFont
-                                                , loadFont'
-                                                )
-import           Data.FileEmbed
-import           Data.Text.Encoding             ( decodeUtf8 )
-import qualified Data.Text                     as Text
+import Data.FileEmbed
+import qualified Data.Text as Text
+import Data.Text.Encoding (decodeUtf8)
+import Graphics.SVGFonts.ReadFont
+  ( PreparedFont,
+    loadFont',
+  )
 
 type Font = PreparedFont Double
 

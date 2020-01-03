@@ -1,23 +1,22 @@
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module Draw.Pyramid where
 
-import           Diagrams.Prelude
-
-import           Data.Pyramid
-import           Draw.Draw
-import           Draw.Elements
-import           Draw.Lib
-import           Draw.Grid
+import Data.Pyramid
+import Diagrams.Prelude
+import Draw.Draw
+import Draw.Elements
+import Draw.Grid
+import Draw.Lib
 
 pgray :: Colour Double
 pgray = blend 0.6 white black
 
 clue :: Backend' b => Maybe Int -> Drawing b
-clue Nothing  = mempty
+clue Nothing = mempty
 clue (Just c) = text' (show c)
 
 cellc :: Backend' b => Bool -> Maybe Int -> Drawing b
@@ -31,10 +30,10 @@ pyramid = alignBL' . vcat . map row . unPyr
 
 krow :: Backend' b => KropkiRow -> Drawing b
 krow (KR cs s ks) = ccat dots <> ccat clues
- where
-  ccat  = centerX' . hcat
-  clues = map (cellc s) cs
-  dots  = interleave (map phantom'' clues) (map kropkiDot ks)
+  where
+    ccat = centerX' . hcat
+    clues = map (cellc s) cs
+    dots = interleave (map phantom'' clues) (map kropkiDot ks)
 
 kpyramid :: Backend' b => RowKropkiPyramid -> Drawing b
 kpyramid = alignBL' . vcat . map krow . unKP

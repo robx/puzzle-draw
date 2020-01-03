@@ -1,28 +1,28 @@
 -- | Parsec helper for puzzle file parsing.
 module Parse.Parsec
-  ( toParser
-  , toStringParser
-  , fraction
+  ( toParser,
+    toStringParser,
+    fraction,
   )
 where
 
-import           Text.ParserCombinators.Parsec
-                                         hiding ( (<|>) )
-import qualified Data.Text                     as T
-import qualified Data.Yaml                     as Yaml
-import           Control.Applicative
-
-import           Data.Elements
+import Control.Applicative
+import Data.Elements
+import qualified Data.Text as T
+import qualified Data.Yaml as Yaml
+import Text.ParserCombinators.Parsec hiding
+  ( (<|>),
+  )
 
 toParser :: GenParser a () b -> [a] -> Yaml.Parser b
 toParser p v = case parse p "(unknown)" v of
-  Left  e -> fail (show e)
+  Left e -> fail (show e)
   Right x -> pure x
 
 toStringParser :: GenParser Char () b -> Yaml.Value -> Yaml.Parser b
 toStringParser p v = case v of
   Yaml.String t -> toParser p (T.unpack t)
-  _             -> fail "expected string"
+  _ -> fail "expected string"
 
 -- | fraction is meant to parse things like "1 1/2", "3/10", "7".
 fraction :: GenParser Char st Fraction
