@@ -24,8 +24,8 @@ import           Parse.Component
 import           Draw.Generic
 import           Data.PuzzleTypes
 import           Draw.CmdLine
-import           Draw.Code
-import           Draw.Component
+import qualified Draw.Code                     as Draw
+import qualified Draw.Component                as Draw
 import           Draw.Draw
 import           Draw.Lib                       ( Backend' )
 import           Parse.Puzzle                   ( TypedPuzzle(..) )
@@ -86,11 +86,11 @@ decodeAndDraw params b = case backend fmt of
     codeComponents <- case (code, mc) of
       (True, Just c) -> mapLeft ("solution code parse failure: " ++) $ do
         parsedCode <- parseEither parseCode c
-        return $ drawCode parsedCode
+        return $ Draw.code parsedCode
       _ -> pure []
     t' <- checkType (mrt `mplus` mt)
     if isGeneric t'
-      then parseEither (drawGeneric t') (p, ms)
+      then parseEither (generic t') (p, ms)
       else do
         (pzl, msol) <- parseEither (compose t') (p, ms)
         let
@@ -140,6 +140,6 @@ render config components code oc = fmap (bg white) $ d oc
     DrawExample -> sideBySide <$> d DrawPuzzle <*> d DrawSolution
   fixup = alignPixel . border borderwidth
   sideBySide x y = x ||| strutX 2.0 ||| y
-  pzl  = drawComponents $ extractPuzzle code components
-  msol = fmap drawComponents $ extractSolution code components
+  pzl  = Draw.components $ extractPuzzle code components
+  msol = fmap Draw.components $ extractSolution code components
 

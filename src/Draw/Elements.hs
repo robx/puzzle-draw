@@ -13,6 +13,7 @@ module Draw.Elements where
 import           Diagrams.Prelude        hiding ( N
                                                 , arrow
                                                 , gap
+                                                , star
                                                 )
 import qualified Diagrams.Prelude              as D
 import           Diagrams.TwoD.Offset
@@ -41,11 +42,11 @@ pearl m = draw $ circle 0.35 # lwG 0.05 # fc (c m)
 smallPearl :: Backend' b => MasyuPearl -> Drawing b
 smallPearl = scale 0.4 . pearl
 
-drawEnd :: Backend' b => MEnd -> Drawing b
-drawEnd MEnd = smallPearl MBlack
+end :: Backend' b => MEnd -> Drawing b
+end MEnd = smallPearl MBlack
 
-drawBigEnd :: Backend' b => MEnd -> Drawing b
-drawBigEnd MEnd = pearl MBlack
+bigEnd :: Backend' b => MEnd -> Drawing b
+bigEnd MEnd = pearl MBlack
 
 shipSquare :: Backend' b => Drawing b
 shipSquare = draw $ square 0.7 # lwG 0.05 # fc black
@@ -69,17 +70,17 @@ dr :: Path V2 Double
 dr = fromVertices [p2 (1 / 2, -1 / 2), p2 (-1 / 2, 1 / 2)]
 
 -- | Both diagonals of a centered unit square.
-cross :: Path V2 Double
-cross = ur <> dr
+crossPath :: Path V2 Double
+crossPath = ur <> dr
 
 -- | Draw a cross.
-drawCross :: Backend' b => Bool -> Drawing b
-drawCross True  = draw $ stroke cross # scale 0.8 # lwG edgewidth
-drawCross False = mempty
+cross :: Backend' b => Bool -> Drawing b
+cross True  = draw $ stroke crossPath # scale 0.8 # lwG edgewidth
+cross False = mempty
 
 -- | Draw a Compass clue.
-drawCompassClue :: Backend' b => CompassC -> Drawing b
-drawCompassClue (CC n e s w) = texts <> (draw $ stroke cross # lwG onepix)
+compassClue :: Backend' b => CompassC -> Drawing b
+compassClue (CC n e s w) = texts <> (draw $ stroke crossPath # lwG onepix)
  where
   tx Nothing  _ = mempty
   tx (Just x) v = text' (show x) # scale 0.5 # translate (r2 v)
@@ -87,9 +88,9 @@ drawCompassClue (CC n e s w) = texts <> (draw $ stroke cross # lwG onepix)
     mconcat . zipWith tx [n, e, s, w] $ [(0, f), (f, 0), (0, -f), (-f, 0)]
   f = 3 / 10
 
-drawSlovakClue :: Backend' b => SlovakClue -> Drawing b
-drawSlovakClue (SlovakClue s c) =
-  centerY' (drawInt s === draw (strutY 0.1) === dots c) <> fillBG gray
+slovakClue :: Backend' b => SlovakClue -> Drawing b
+slovakClue (SlovakClue s c) =
+  centerY' (int s === draw (strutY 0.1) === dots c) <> fillBG gray
  where
   dots n = draw $ centerX $ hcat' with { _sep = 0.04 } (replicate n $ d)
   d = circle 0.1 # lwG 0.02 # fc white
@@ -106,8 +107,8 @@ thermo [] = error "invalid empty thermometer"
 
 -- | Draw a list of thermometers, given as lists of @(Int, Int)@ cell
 -- coordinates.
-drawThermos :: Backend' b => [Thermometer] -> Drawing b
-drawThermos = mconcat . map (thermo . map toPoint)
+thermos :: Backend' b => [Thermometer] -> Drawing b
+thermos = mconcat . map (thermo . map toPoint)
 
 arrowTip :: Path V2 Double
 arrowTip =
@@ -126,14 +127,14 @@ arrow vs = if length vs < 2 then mempty else draw arr
 
 -- | Draw a list of arrows, given as lists of @(Int, Int)@ cell
 -- coordinates.
-drawArrows :: Backend' b => [Thermometer] -> Drawing b
-drawArrows = mconcat . map (arrow . map toPoint)
+arrows :: Backend' b => [Thermometer] -> Drawing b
+arrows = mconcat . map (arrow . map toPoint)
 
 -- | @drawTight d t@ draws the tight-fit value @t@, using @d@ to
 -- draw the components.
-drawTight :: Backend' b => (a -> Drawing b) -> Tightfit a -> Drawing b
-drawTight d (Single x) = d x
-drawTight d (UR x y) =
+tight :: Backend' b => (a -> Drawing b) -> Tightfit a -> Drawing b
+tight d (Single x) = d x
+tight d (UR x y) =
   stroke ur
     #  lwG onepix
     #  draw
@@ -146,7 +147,7 @@ drawTight d (UR x y) =
  where
   t = 1 / 5
   s = 2 / 3
-drawTight d (DR x y) =
+tight d (DR x y) =
   stroke dr
     #  lwG onepix
     #  draw
@@ -175,41 +176,41 @@ stackWordsRight =
   vcat' (with & catMethod .~ Distrib & sep .~ 1) . map (alignR' . text')
 
 -- | Mark a word in a grid of letters.
-drawMarkedWord :: Backend' b => MarkedWord -> Drawing b
-drawMarkedWord (MW s e) = draw $ lwG onepix . stroke $ expandTrail'
+markedWord :: Backend' b => MarkedWord -> Drawing b
+markedWord (MW s e) = draw $ lwG onepix . stroke $ expandTrail'
   with { _expandCap = LineCapRound }
   0.4
   t
   where t = fromVertices [p2i s, p2i e] # translate (r2 (1 / 2, 1 / 2))
 
 -- | Apply 'drawMarkedWord' to a list of words.
-drawMarkedWords :: Backend' b => [MarkedWord] -> Drawing b
-drawMarkedWords = mconcat . map drawMarkedWord
+markedWords :: Backend' b => [MarkedWord] -> Drawing b
+markedWords = mconcat . map markedWord
 
 -- | Draw a slalom clue.
-drawSlalomClue :: (Show a, Backend' b) => a -> Drawing b
-drawSlalomClue x =
+slalomClue :: (Show a, Backend' b) => a -> Drawing b
+slalomClue x =
   text' (show x) # scale 0.75 <> (draw $ circle 0.4 # fc white # lwG onepix)
 
-drawSlalomDiag :: Backend' b => SlalomDiag -> Drawing b
-drawSlalomDiag d = draw $ stroke (v d) # lwG edgewidth
+slalomDiag :: Backend' b => SlalomDiag -> Drawing b
+slalomDiag d = draw $ stroke (v d) # lwG edgewidth
  where
   v SlalomForward  = ur
   v SlalomBackward = dr
 
 -- | Draw an @Int@.
-drawInt :: Backend' b => Int -> Drawing b
-drawInt s = text' (show s)
+int :: Backend' b => Int -> Drawing b
+int s = text' (show s)
 
 -- | Draw a character.
-drawChar :: Renderable (Path V2 Double) b => Char -> QDrawing b V2 Double Any
-drawChar c = text' [c]
+char :: Renderable (Path V2 Double) b => Char -> QDrawing b V2 Double Any
+char c = text' [c]
 
-drawCharFixed :: Backend' b => Char -> Drawing b
-drawCharFixed c = textFixed [c]
+charFixed :: Backend' b => Char -> Drawing b
+charFixed c = textFixed [c]
 
-drawCharOpaque :: Backend' b => Char -> Drawing b
-drawCharOpaque c = drawChar c <> circle 0.5 # lwG 0 # fc white # draw
+charOpaque :: Backend' b => Char -> Drawing b
+charOpaque c = char c <> circle 0.5 # lwG 0 # fc white # draw
 
 placeTL :: Backend' b => Drawing b -> Drawing b
 placeTL = moveTo (p2 (-0.4, 0.4)) . scale 0.5 . alignTL'
@@ -219,14 +220,14 @@ hintTL = placeTL . text'
 
 -- | Stack a list of words into a unit square. Scaled such that at least
 -- three words will fit.
-drawWords :: Backend' b => [String] -> Drawing b
-drawWords ws =
+words :: Backend' b => [String] -> Drawing b
+words ws =
   spread' (-1.0 *^ unitY) (map (centerXY' . scale 0.4 . text') ws) # centerY'
 
 -- | Fit a line drawing into a unit square.
 --   For example, a Curve Data clue.
-drawCurve :: Backend' b => [Edge N] -> Drawing b
-drawCurve =
+curve :: Backend' b => [Edge N] -> Drawing b
+curve =
   draw . lwG onepix . fit 0.6 . centerXY . mconcat . map (stroke . edge)
 
 -- | Draw a shadow in the style of Afternoon Skyscrapers.
@@ -245,10 +246,10 @@ afternoonWest = reflectAbout (p2 (0, 0)) (direction $ r2 (1, 1)) afternoonSouth
 
 -- | Draws the digits of a tapa clue, ordered
 --   left to right, top to bottom.
-drawTapaClue :: Backend' b => TapaClue -> Drawing b
-drawTapaClue (TapaClue [x]) = drawInt x
-drawTapaClue (TapaClue xs) =
-  fit' 0.8 . atPoints (p (length xs)) . map drawInt $ xs
+tapaClue :: Backend' b => TapaClue -> Drawing b
+tapaClue (TapaClue [x]) = int x
+tapaClue (TapaClue xs) =
+  fit' 0.8 . atPoints (p (length xs)) . map int $ xs
  where
   p n = mconcat . pathVertices $ centerXY (p' n)
   p' 2 = p2 (-1 / 4, 1 / 4) ~~ p2 (1 / 4, -1 / 4)
@@ -257,8 +258,8 @@ drawTapaClue (TapaClue xs) =
   p' 1 = error "singleton clues handled separately"
   p' _ = error "invalid tapa clue"
 
-drawPrimeDiag :: Backend' b => PrimeDiag -> Drawing b
-drawPrimeDiag (PrimeDiag d) = stroke p # lwG (3 * onepix) # draw
+primeDiag :: Backend' b => PrimeDiag -> Drawing b
+primeDiag (PrimeDiag d) = stroke p # lwG (3 * onepix) # draw
  where
   p = case d of
     (False, False) -> mempty
@@ -266,27 +267,27 @@ drawPrimeDiag (PrimeDiag d) = stroke p # lwG (3 * onepix) # draw
     (False, True ) -> dr
     (True , True ) -> ur <> dr
 
-drawAnglePoly :: Backend' b => Int -> Drawing b
-drawAnglePoly 3 = draw $ strokePath (triangle 0.3) # fc black
-drawAnglePoly 4 = draw $ strokePath (square 0.25) # fc gray
-drawAnglePoly 5 = draw $ strokePath (pentagon 0.2) # fc white
-drawAnglePoly _ = error "expected 3..5"
+anglePoly :: Backend' b => Int -> Drawing b
+anglePoly 3 = draw $ strokePath (triangle 0.3) # fc black
+anglePoly 4 = draw $ strokePath (square 0.25) # fc gray
+anglePoly 5 = draw $ strokePath (pentagon 0.2) # fc white
+anglePoly _ = error "expected 3..5"
 
-fish :: Double -> Angle Double -> Trail' Loop V2 Double
-fish off startAngle = closeLine $ half <> half # reverseLine # reflectY
+fishTrail :: Double -> Angle Double -> Trail' Loop V2 Double
+fishTrail off startAngle = closeLine $ half <> half # reverseLine # reflectY
  where
   half     = arc (angleDir startAngle) endAngle # translateY (-off)
   endAngle = ((180 @@ deg) ^-^ acosA off ^-^ startAngle)
 
-drawFish :: Backend' b => Fish -> Drawing b
-drawFish Fish =
-  draw $ fit 0.6 . centerXY . fc black . strokeLoop $ fish 0.7 (30 @@ deg)
+fish :: Backend' b => Fish -> Drawing b
+fish Fish =
+  draw $ fit 0.6 . centerXY . fc black . strokeLoop $ fishTrail 0.7 (30 @@ deg)
 
-drawStar :: Backend' b => Star -> Drawing b
-drawStar Star = draw $ fc black . stroke . star (StarSkip 2) $ pentagon 0.3
+star :: Backend' b => Star -> Drawing b
+star Star = draw $ fc black . stroke . D.star (StarSkip 2) $ pentagon 0.3
 
-drawTree :: Backend' b => Tree -> Drawing b
-drawTree Tree = draw $ fit 0.5 $ centerXY $ scaleY 0.5 $ fc black $ mconcat
+tree :: Backend' b => Tree -> Drawing b
+tree Tree = draw $ fit 0.5 $ centerXY $ scaleY 0.5 $ fc black $ mconcat
   [ rect 0.1 0.6 # moveTo (p2 (0.5, 0.7))
   , circle 0.1 # moveTo (p2 (0.4, 0.9))
   , circle 0.2 # moveTo (p2 (0.6, 1.0))
@@ -296,8 +297,8 @@ drawTree Tree = draw $ fit 0.5 $ centerXY $ scaleY 0.5 $ fc black $ mconcat
   , circle 0.1 # moveTo (p2 (0.7, 1.4))
   ]
 
-drawTent :: Backend' b => PlacedTent -> Drawing b
-drawTent (Tent d) = draw $ tent <> lwG linewidth (stroke conn)
+tent :: Backend' b => PlacedTent -> Drawing b
+tent (Tent d) = draw $ tentDia <> lwG linewidth (stroke conn)
  where
   conn :: Path V2 Double
   conn = p2 (0, 0) ~~ p2
@@ -308,8 +309,8 @@ drawTent (Tent d) = draw $ tent <> lwG linewidth (stroke conn)
       L -> (-1, 0)
     )
 
-tent :: Backend' b => Diagram b
-tent = fit 0.7 $ centerXY $ lwG 0 $ mconcat
+tentDia :: Backend' b => Diagram b
+tentDia = fit 0.7 $ centerXY $ lwG 0 $ mconcat
   [ rect 10 (1 / 4) # fc black
   , shape [(-2, 0), (0, 4), (2, 0), (-2, 0)] # fc white
   , shape [(-4, 0), (0, 8), (4, 0), (-4, 0)] # fc black
@@ -352,7 +353,7 @@ placeNoteBR (x, _) d =
 
 miniloop :: Backend' b => Drawing b
 miniloop =
-  (drawThinEdges (map unorient out) <> grid gSlither g) # centerXY' # scale 0.4
+  (thinEdges (map unorient out) <> grid gSlither g) # centerXY' # scale 0.4
  where
   g        = sizeGrid (1, 1)
   (out, _) = edgesM g
@@ -360,9 +361,9 @@ miniloop =
 dominoBG :: Colour Double
 dominoBG = blend 0.3 black white
 
-drawDomino :: Backend' b => (Int, Int) -> Drawing b
-drawDomino (x, y) =
-  (drawInt x # smash' ||| strutX 0.65 # draw ||| drawInt y # smash')
+domino :: Backend' b => (Int, Int) -> Drawing b
+domino (x, y) =
+  (int x # smash' ||| strutX 0.65 # draw ||| int y # smash')
     #  centerXY'
     #  scale 0.6
     <> strokePath (rect 0.8 0.5)
@@ -377,21 +378,21 @@ instance ToPoint DominoC where
     toPoint (DominoC (C x y)) = p2 ((1.0 * fromIntegral x),
                                     (0.7 * fromIntegral y))
 
-drawDominos :: Backend' b => DigitRange -> Drawing b
-drawDominos =
-  centerXY' . placeGrid . Map.mapKeys DominoC . fmap drawDomino . dominoGrid
+dominos :: Backend' b => DigitRange -> Drawing b
+dominos =
+  centerXY' . placeGrid . Map.mapKeys DominoC . fmap domino . dominoGrid
 
-drawPill :: Backend' b => Int -> Drawing b
-drawPill x =
-  drawInt x
+pill :: Backend' b => Int -> Drawing b
+pill x =
+  int x
     #  scale 0.6
     <> strokePath (roundedRect 0.8 0.5 0.2)
     #  lwG 0
     #  fc dominoBG
     #  draw
 
-drawPills :: Backend' b => DigitRange -> Drawing b
-drawPills (DigitRange a b) = centerXY' . onGrid 1.0 0.7 drawPill $ placed
+pills :: Backend' b => DigitRange -> Drawing b
+pills (DigitRange a b) = centerXY' . onGrid 1.0 0.7 pill $ placed
  where
   n    = b - a + 1
   root = head [ x | x <- [n, n - 1 ..], x * x <= n ]
@@ -405,20 +406,20 @@ polyominoGrid = placeGrid . fmap (scale 0.8) . fmap
     Just c  -> (text' [c] # fc white # lc white) <> fillBG black
   )
 
-drawPentominos :: Backend' b => Drawing b
-drawPentominos = centerXY' . scale 0.5 . polyominoGrid $ pentominoGrid
+pentominos :: Backend' b => Drawing b
+pentominos = centerXY' . scale 0.5 . polyominoGrid $ pentominoGrid
 
-drawLITS :: Backend' b => Drawing b
-drawLITS = centerXY' . scale 0.5 . polyominoGrid $ litsGrid
+lITS :: Backend' b => Drawing b
+lITS = centerXY' . scale 0.5 . polyominoGrid $ litsGrid
 
-drawLITSO :: Backend' b => Drawing b
-drawLITSO = centerXY' . scale 0.5 . polyominoGrid $ litsoGrid
+lITSO :: Backend' b => Drawing b
+lITSO = centerXY' . scale 0.5 . polyominoGrid $ litsoGrid
 
-drawCrossing :: Backend' b => Crossing -> Drawing b
-drawCrossing = const $ drawChar '+'
+crossing :: Backend' b => Crossing -> Drawing b
+crossing = const $ char '+'
 
-drawBahnhofClue :: Backend' b => BahnhofClue -> Drawing b
-drawBahnhofClue = either drawInt drawCrossing
+bahnhofClue :: Backend' b => BahnhofClue -> Drawing b
+bahnhofClue = either int crossing
 
 kropkiDot :: Backend' b => KropkiDot -> Drawing b
 kropkiDot KNone = mempty
@@ -428,8 +429,8 @@ kropkiDot c     = draw $ circle 0.1 # lwG 0.03 # fc (col c) # smash
   col KBlack = blend 0.98 black white
   col KNone  = error "can't reach"
 
-drawFraction :: Backend' b => Fraction -> Drawing b
-drawFraction f = centerX' $ case f of
+fraction :: Backend' b => Fraction -> Drawing b
+fraction f = centerX' $ case f of
   FInt a      -> text' a # scale 0.8
   FFrac a b   -> frac a b
   FComp a b c -> (text' a # scale 0.8) ||| draw (strutX (1 / 10)) ||| frac b c
@@ -448,8 +449,8 @@ drawFraction f = centerX' $ case f of
     slash :: Path V2 Double
     slash = fromVertices [p2 (-1 / 3, -1 / 2), p2 (1 / 3, 1 / 2)]
 
-drawMyopia :: Backend' b => Myopia -> Drawing b
-drawMyopia = foldMap d'
+myopia :: Backend' b => Myopia -> Drawing b
+myopia = foldMap d'
  where
   d' = draw . lwG onepix . scale (1 / 3) . d
   d U = a (0, 0) (0, 1)
@@ -471,9 +472,9 @@ greaterClue (_ : rs) = g rs
   drawRel REqual        = text' "="
   placeholder = draw $ circle 0.35 # lwG onepix # dashingG [0.05, 0.05] 0
 
-drawCages
+cages
   :: (Backend' b, Eq a, Ord a) => Grid C a -> Map.Map a (Drawing b) -> Drawing b
-drawCages g m = hints <> (mconcat . map cage . Map.elems) byChar
+cages g m = hints <> (mconcat . map cage . Map.elems) byChar
  where
   hints =
     placeGrid

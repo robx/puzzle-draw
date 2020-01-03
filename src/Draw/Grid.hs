@@ -23,7 +23,15 @@ import qualified Data.AffineSpace              as AS
 
 import           Data.Util
 import           Data.Grid
-import           Data.GridShape          hiding ( edge )
+import qualified Data.GridShape                as Data
+import           Data.GridShape                 ( C
+                                                , ShiftC
+                                                , N
+                                                , Edge'
+                                                , Coord
+                                                , Edge(..)
+                                                , Dir(..)
+                                                )
 
 import           Draw.Draw               hiding ( border )
 import           Draw.Style
@@ -132,11 +140,11 @@ cageDashing (CageParams on off w _) =
 --
 -- `inner` consists of the individual inner segments.
 irregularGridPaths :: Grid C a -> (Path V2 Double, Path V2 Double)
-irregularGridPaths m = (path' (map revEdge outer), path inner)
+irregularGridPaths m = (path' (map Data.revEdge outer), path inner)
  where
-  (outer, inner) = edges (Map.keysSet m) (`Map.member` m)
-  path es = mconcat . map (conn . ends) $ es
-  path' es = case loops (map ends' es) of
+  (outer, inner) = Data.edges (Map.keysSet m) (`Map.member` m)
+  path es = mconcat . map (conn . Data.ends) $ es
+  path' es = case loops (map Data.ends' es) of
     Just ls -> mconcat . map (pathFromLoopVertices . map toPoint) $ ls
     Nothing -> mempty
   pathFromLoopVertices =
@@ -150,9 +158,9 @@ offsetBorder off cs =
   pathFromLoopVertices =
     pathFromLocTrail . mapLoc (wrapLoop . closeLine) . fromVertices
   outer :: [Edge' N]
-  (outer, _) = edges cs (`elem` cs)
+  (outer, _) = Data.edges cs (`elem` cs)
   loop :: [N]
-  loop = case loops (map ends' outer) of
+  loop = case loops (map Data.ends' outer) of
     Just [l] -> tail l
     _        -> error "broken cage"
   corners :: [P2 Double] -> [(P2 Double, P2 Double, P2 Double)]
@@ -198,7 +206,7 @@ midPoint
   -> P2 Double
 midPoint e = c .+^ 0.5 *^ (d .-. c)
  where
-  (a, b) = ends e
+  (a, b) = Data.ends e
   c      = toPoint a
   d      = toPoint b
 
@@ -219,8 +227,8 @@ solEdgeStyle =
 solstyle :: (HasStyle a, InSpace V2 Double a) => a -> a
 solstyle = lc (blend 0.8 black white) . lwG (3 * onepix)
 
-drawEdges :: (ToPoint k, Backend' b) => [Edge k] -> Drawing b
-drawEdges es =
+edges :: (ToPoint k, Backend' b) => [Edge k] -> Drawing b
+edges es =
   Drawing (\cfg -> edgeStyle cfg . stroke . mconcat . map edge $ es)
 
 dirPath :: Dir -> Path V2 Double
@@ -237,11 +245,11 @@ edgeDecorationThin dir = Drawing (\_ -> thinEdgeStyle . stroke . dirPath $ dir)
 edgeDecorationSol :: Backend' b => Dir -> Drawing b
 edgeDecorationSol dir = Drawing (\_ -> solEdgeStyle . stroke . dirPath $ dir)
 
-drawThinEdges :: (ToPoint k, Backend' b) => [Edge k] -> Drawing b
-drawThinEdges = draw . thinEdgeStyle . stroke . mconcat . map edge
+thinEdges :: (ToPoint k, Backend' b) => [Edge k] -> Drawing b
+thinEdges = draw . thinEdgeStyle . stroke . mconcat . map edge
 
-drawAreas :: (Backend' b, Eq a) => Grid C a -> Drawing b
-drawAreas = drawEdges . borders
+areas :: (Backend' b, Eq a) => Grid C a -> Drawing b
+areas = edges . borders
 
 cage :: Backend' b => [C] -> Drawing b
 cage cs = Drawing dcage
@@ -257,14 +265,14 @@ fillBG c = draw $ square 1 # lwG onepix # fc c # lc c
 shadeGrid :: Backend' b => Grid C (Maybe (Colour Double)) -> Drawing b
 shadeGrid = placeGrid . fmap fillBG . clues
 
-drawShade :: Backend' b => Grid C Bool -> Drawing b
-drawShade = shadeGrid . fmap f
+shade :: Backend' b => Grid C Bool -> Drawing b
+shade = shadeGrid . fmap f
  where
   f True  = Just gray
   f False = Nothing
 
-drawAreasGray :: Backend' b => Grid C Char -> Drawing b
-drawAreasGray = drawAreas <> shadeGrid . fmap cols
+areasGray :: Backend' b => Grid C Char -> Drawing b
+areasGray = areas <> shadeGrid . fmap cols
  where
   cols c | isUpper c = Just (blend 0.1 black white)
          | otherwise = Nothing

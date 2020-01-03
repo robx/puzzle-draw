@@ -3,7 +3,7 @@
 {-# LANGUAGE TypeFamilies #-}
 
 module Draw.Code
-  ( drawCode
+  ( code
   , arrowRight
   , arrowRightL
   , arrowDown
@@ -27,10 +27,10 @@ import           Diagrams.Prelude        hiding ( place
 
 import qualified Data.Map.Strict               as Map
 
-drawCode :: Backend' b => Code -> [TaggedComponent (Drawing b)]
-drawCode cs = concat [collect Atop, collect West, collect North]
+code :: Backend' b => Code -> [TaggedComponent (Drawing b)]
+code cs = concat [collect Atop, collect West, collect North]
  where
-  parts = map drawCodePart cs
+  parts = map codePart cs
   collect p =
     let matching = map snd . filter ((==) p . fst) $ parts
     in  if null matching then [] else [comp p $ mconcat matching]
@@ -38,8 +38,8 @@ drawCode cs = concat [collect Atop, collect West, collect North]
   comp p d =
     TaggedComponent (Just Code) $ PlacedComponent p $ RawComponent fakeSize $ d
 
-drawCodePart :: Backend' b => CodePart -> (Placement, Drawing b)
-drawCodePart cp = case cp of
+codePart :: Backend' b => CodePart -> (Placement, Drawing b)
+codePart cp = case cp of
   Rows' rs -> (West, placeGrid g # centerX')
     where g = Map.fromList [ (C 1 r, arrowRight) | r <- rs ]
   Cols cs -> (North, placeGrid g # centerY')
@@ -50,7 +50,7 @@ drawCodePart cp = case cp of
     where g = Map.fromList [ (N c 0, arrowDown) | c <- cs ]
   LabelsN g -> (Atop, placeGrid . fmap label . clues $ g)
    where
-    label c = drawChar c # scale 0.5 # fc gray # translate (r2 (1 / 3, -1 / 3))
+    label c = char c # scale 0.5 # fc gray # translate (r2 (1 / 3, -1 / 3))
   LRows' rs -> (West, placeGrid g # centerX')
    where
     g = Map.fromList [ (C 0 r, arrowRightL [l]) | (l, r) <- Map.toList rs ]

@@ -1,5 +1,5 @@
 module Draw.Generic
-  ( drawGeneric
+  ( generic
   )
 where
 
@@ -13,8 +13,8 @@ import           Data.GridShape
 import           Data.PuzzleTypes
 import qualified Parse.PuzzleTypes             as Parse
 
-drawGeneric :: PuzzleType -> (Value, Maybe Value) -> Parser [TaggedComponent a]
-drawGeneric t (p, ms) = case t of
+generic :: PuzzleType -> (Value, Maybe Value) -> Parser [TaggedComponent a]
+generic t (p, ms) = case t of
   Yajilin -> do
     g    <- fst Parse.yajilin p
     msol <- traverse (snd Parse.yajilin) ms

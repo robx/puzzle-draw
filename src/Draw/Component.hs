@@ -6,6 +6,7 @@ import qualified Data.Map.Strict               as Map
 
 import           Diagrams.Prelude        hiding ( dot
                                                 , place
+                                                , star
                                                 )
 
 import           Data.Component
@@ -24,13 +25,13 @@ import           Draw.Style
 import           Draw.Elements
 import           Draw.Code
 
-drawComponents :: Backend' b => [PlacedComponent (Drawing b)] -> Drawing b
-drawComponents cs = snd $ go $ reverse cs
+components :: Backend' b => [PlacedComponent (Drawing b)] -> Drawing b
+components cs = snd $ go $ reverse cs
  where
   go [] = ((0 :: Int, 0 :: Int), mempty)
   go ((PlacedComponent p c) : pcs)
     = let
-        (tl , dc ) = drawComponent c
+        (tl , dc ) = component c
         (tls, dcs) = go pcs
         ntl        = (max (fst tl) (fst tls), max (snd tl) (snd tls))
       in
@@ -46,24 +47,24 @@ drawComponents cs = snd $ go $ reverse cs
   (=!=) = beside unitY
   (|!|) = beside (negated unitX)
 
-drawComponent :: Backend' b => Component (Drawing b) -> (Size, Drawing b)
-drawComponent c = case c of
+component :: Backend' b => Component (Drawing b) -> (Size, Drawing b)
+component c = case c of
   RawComponent sz x -> (sz, x)
   Grid         s  g -> (cellSize g, grid (gridStyle s) g)
-  Regions  g        -> (cellSize g, drawAreas g)
-  CellGrid g        -> (cellSize g, placeGrid . fmap drawDecoration $ g)
-  NodeGrid g        -> (nodeSize g, placeGrid . fmap drawDecoration $ g)
+  Regions  g        -> (cellSize g, areas g)
+  CellGrid g        -> (cellSize g, placeGrid . fmap decoration $ g)
+  NodeGrid g        -> (nodeSize g, placeGrid . fmap decoration $ g)
   EdgeGrid g ->
-    (edgeSize g, placeGrid' . Map.mapKeys midPoint . fmap drawDecoration $ g)
+    (edgeSize g, placeGrid' . Map.mapKeys midPoint . fmap decoration $ g)
   FullGrid ns cs es ->
     ( nodeSize ns
     , mconcat
-      . map (snd . drawComponent)
+      . map (snd . component)
       $ [NodeGrid ns, CellGrid cs, EdgeGrid es]
     )
-  Note        ds -> ((0, 0), note $ hcatSep 0.2 $ map drawDecoration $ ds)
+  Note        ds -> ((0, 0), note $ hcatSep 0.2 $ map decoration $ ds)
   Pyramid     g  -> (shiftSize g, shiftGrid g)
-  CellPyramid g  -> (shiftSize g, placeGrid . fmap drawDecoration $ g)
+  CellPyramid g  -> (shiftSize g, placeGrid . fmap decoration $ g)
  where
   gridStyle s = case s of
     GridDefault          -> gDefault
@@ -73,20 +74,20 @@ drawComponent c = case c of
     GridPlain            -> gPlain
     GridPlainDashed      -> gPlainDashed
 
-drawDecoration :: Backend' b => Decoration -> Drawing b
-drawDecoration d = case d of
+decoration :: Backend' b => Decoration -> Drawing b
+decoration d = case d of
   Blank                  -> mempty
-  Letter       c         -> drawChar c
+  Letter       c         -> char c
   Letters      s         -> text' s
   InvertedLetters s      -> invert $ text' s
   DecKropkiDot k         -> kropkiDot k
   AfternoonSouth         -> afternoonSouth
   AfternoonWest          -> afternoonWest
-  LightDiagonal diag     -> lc (blend 0.5 gray white) $ drawPrimeDiag diag
-  DarkDiagonal  diag     -> lc gray $ drawPrimeDiag diag
+  LightDiagonal diag     -> lc (blend 0.5 gray white) $ primeDiag diag
+  DarkDiagonal  diag     -> lc gray $ primeDiag diag
   SmallDot               -> dot
   Dot                    -> scale 0.5 $ smallPearl MBlack
-  Star                   -> drawStar Data.Elements.Star
+  Star                   -> star Data.Elements.Star
   Shade                  -> fillBG gray
   DarkShade              -> fillBG (blend 0.5 gray black)
   Black                  -> fillBG black
@@ -105,6 +106,6 @@ drawDecoration d = case d of
   Ship dir               -> shipEnd dir
   LabeledArrow dir w     -> labeledArrow dir $ text' w
   InvertedLabeledArrow dir w -> invert $ labeledArrow dir $ text' w
-  Tent                   -> draw tent
-  Tree                   -> drawTree Data.Elements.Tree
-  Myopia dirs            -> drawMyopia dirs
+  Tent                   -> draw tentDia
+  Tree                   -> tree Data.Elements.Tree
+  Myopia dirs            -> myopia dirs

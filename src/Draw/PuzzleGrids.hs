@@ -4,17 +4,17 @@
 {-# LANGUAGE ConstraintKinds           #-}
 
 module Draw.PuzzleGrids
-  ( drawIntGrid
-  , drawCharGrid
+  ( intGrid
+  , charGrid
   , outsideIntGrid
-  , drawSlitherGrid
-  , drawTightGrid
+  , slitherGrid
+  , tightGrid
   , sudokugrid
-  , drawWordsClues
-  , drawOutsideGrid
-  , drawMultiOutsideGrid
-  , drawOutsideGridN
-  , drawMultiOutsideGridN
+  , wordsClues
+  , outsideGrid
+  , multiOutsideGrid
+  , outsideGridN
+  , multiOutsideGridN
   , placeOutside
   , placeMultiOutside
   , placeMultiOutsideGW
@@ -35,8 +35,17 @@ import           Data.Maybe                     ( maybeToList
                                                 )
 import           Data.Foldable                  ( fold )
 
-import           Data.Grid
-import           Data.GridShape
+import qualified Data.Grid                     as Data
+import           Data.Grid                      ( Grid
+                                                , OutsideClues
+                                                , clues
+                                                , size
+                                                )
+import           Data.GridShape                 ( C
+                                                , N
+                                                , FromCoord(..)
+                                                , ToCoord(..)
+                                                )
 import           Data.Elements
 import           Data.Sudoku
 
@@ -48,25 +57,25 @@ import           Draw.Grid
 import           Draw.GridShape
 import           Draw.Elements
 
-drawCharGrid :: Backend' b => Grid C (Maybe Char) -> Drawing b
-drawCharGrid = placeGrid . fmap drawChar . clues <> grid gDefault
+charGrid :: Backend' b => Grid C (Maybe Char) -> Drawing b
+charGrid = placeGrid . fmap char . clues <> grid gDefault
 
-drawIntGrid :: Backend' b => Grid C (Maybe Int) -> Drawing b
-drawIntGrid = placeGrid . fmap drawInt . clues <> grid gDefault
+intGrid :: Backend' b => Grid C (Maybe Int) -> Drawing b
+intGrid = placeGrid . fmap int . clues <> grid gDefault
 
-drawSlitherGrid :: Backend' b => Grid C (Maybe Int) -> Drawing b
-drawSlitherGrid = placeGrid . fmap drawInt . clues <> grid gSlither
+slitherGrid :: Backend' b => Grid C (Maybe Int) -> Drawing b
+slitherGrid = placeGrid . fmap int . clues <> grid gSlither
 
 sudokugrid :: Backend' b => Grid C a -> Drawing b
-sudokugrid = drawEdges . sudokubordersg <> grid gDefault
+sudokugrid = edges . sudokubordersg <> grid gDefault
 
-drawWordsClues :: Backend' b => Grid C (Maybe [String]) -> Drawing b
-drawWordsClues = placeGrid . fmap drawWords . clues
+wordsClues :: Backend' b => Grid C (Maybe [String]) -> Drawing b
+wordsClues = placeGrid . fmap Draw.Elements.words . clues
 
-drawTightGrid
+tightGrid
   :: Backend' b => (t -> Drawing b) -> Grid C (Tightfit t) -> Drawing b
-drawTightGrid d g =
-  (placeGrid . fmap (drawTight d) $ g) <> grid gDefault g <> draw
+tightGrid d g =
+  (placeGrid . fmap (tight d) $ g) <> grid gDefault g <> draw
     (phantom' (strokePath $ p2i (-1, -1) ~~ p2i (sx + 1, sy + 1)))
   where (sx, sy) = size (Map.mapKeys toCoord g)
 
@@ -94,7 +103,7 @@ placeSideGrid
 placeSideGrid mrg off dir1 dir2 base cs = withConfig place_
  where
   place_ cfg =
-    let minDiam    = diameter dir1 (diagram cfg (drawChar 'M') :: D V2 Double)
+    let minDiam    = diameter dir1 (diagram cfg (char 'M') :: D V2 Double)
         elDiam     = max minDiam (maxDiam dir1 cfg (fold cs))
         step       = elDiam + mrg
         offset     = off elDiam
@@ -109,7 +118,7 @@ placeMultiOutside ocs = foldMap
   (\(cs, dir1, base, dir2) ->
     placeSideGrid mrg off (r2i dir1) (r2i dir2) (toPoint base) cs
   )
-  (outsideClues ocs)
+  (Data.outsideClues ocs)
  where
   mrg = 1 / 3
   off elDiam = 1 / 2 * elDiam - 1 / 2 * mrg
@@ -122,7 +131,7 @@ placeMultiOutsideGW ocs = foldMap
   (\(cs, dir1, base, dir2) ->
     placeSideGrid 0 (const (1 / 4)) (r2i dir1) (r2i dir2) (toPoint base) cs
   )
-  (outsideClues ocs)
+  (Data.outsideClues ocs)
 
 placeOutside
   :: (Backend' b, ToPoint k, FromCoord k, ToCoord k, Ord k)
@@ -130,35 +139,35 @@ placeOutside
   -> Drawing b
 placeOutside = placeMultiOutside . fmap maybeToList
 
-drawOutsideGrid :: Backend' b => OutsideClues C (Maybe String) -> Drawing b
-drawOutsideGrid =
+outsideGrid :: Backend' b => OutsideClues C (Maybe String) -> Drawing b
+outsideGrid =
   placeOutside
     .  fmap (fmap (scale outsideScale . text'))
     <> grid gDefault
-    .  outsideGrid
+    .  Data.outsideGrid
 
-drawOutsideGridN :: Backend' b => OutsideClues N (Maybe String) -> Drawing b
-drawOutsideGridN =
+outsideGridN :: Backend' b => OutsideClues N (Maybe String) -> Drawing b
+outsideGridN =
   placeOutside
     .  fmap (fmap (scale outsideScale . text'))
     <> grid gDefault
-    .  cellGrid
-    .  outsideGrid
+    .  Data.cellGrid
+    .  Data.outsideGrid
 
-drawMultiOutsideGrid :: Backend' b => OutsideClues C [String] -> Drawing b
-drawMultiOutsideGrid =
+multiOutsideGrid :: Backend' b => OutsideClues C [String] -> Drawing b
+multiOutsideGrid =
   placeMultiOutside
     .  fmap (fmap (scale outsideScale . text'))
     <> grid gDefault
-    .  outsideGrid
+    .  Data.outsideGrid
 
-drawMultiOutsideGridN :: Backend' b => OutsideClues N [String] -> Drawing b
-drawMultiOutsideGridN =
+multiOutsideGridN :: Backend' b => OutsideClues N [String] -> Drawing b
+multiOutsideGridN =
   placeMultiOutside
     .  fmap (fmap (scale outsideScale . text'))
     <> grid gDefault
-    .  cellGrid
-    .  outsideGrid
+    .  Data.cellGrid
+    .  Data.outsideGrid
 
 outsideIntGrid :: Backend' b => OutsideClues C [Int] -> Drawing b
-outsideIntGrid = drawMultiOutsideGrid . fmap (fmap show)
+outsideIntGrid = multiOutsideGrid . fmap (fmap show)
