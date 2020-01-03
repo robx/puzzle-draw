@@ -228,8 +228,7 @@ solstyle :: (HasStyle a, InSpace V2 Double a) => a -> a
 solstyle = lc (blend 0.8 black white) . lwG (3 * onepix)
 
 edges :: (ToPoint k, Backend' b) => [Edge k] -> Drawing b
-edges es =
-  Drawing (\cfg -> edgeStyle cfg . stroke . mconcat . map edge $ es)
+edges es = Drawing (\cfg -> edgeStyle cfg . stroke . mconcat . map edge $ es)
 
 dirPath :: Dir -> Path V2 Double
 dirPath dir = case dir of

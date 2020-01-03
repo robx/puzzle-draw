@@ -89,8 +89,8 @@ compassClue (CC n e s w) = texts <> (draw $ stroke crossPath # lwG onepix)
   f = 3 / 10
 
 slovakClue :: Backend' b => SlovakClue -> Drawing b
-slovakClue (SlovakClue s c) =
-  centerY' (int s === draw (strutY 0.1) === dots c) <> fillBG gray
+slovakClue (SlovakClue s c) = centerY' (int s === draw (strutY 0.1) === dots c)
+  <> fillBG gray
  where
   dots n = draw $ centerX $ hcat' with { _sep = 0.04 } (replicate n $ d)
   d = circle 0.1 # lwG 0.02 # fc white
@@ -227,8 +227,7 @@ words ws =
 -- | Fit a line drawing into a unit square.
 --   For example, a Curve Data clue.
 curve :: Backend' b => [Edge N] -> Drawing b
-curve =
-  draw . lwG onepix . fit 0.6 . centerXY . mconcat . map (stroke . edge)
+curve = draw . lwG onepix . fit 0.6 . centerXY . mconcat . map (stroke . edge)
 
 -- | Draw a shadow in the style of Afternoon Skyscrapers.
 afternoonSouth :: Backend' b => Drawing b
@@ -248,8 +247,7 @@ afternoonWest = reflectAbout (p2 (0, 0)) (direction $ r2 (1, 1)) afternoonSouth
 --   left to right, top to bottom.
 tapaClue :: Backend' b => TapaClue -> Drawing b
 tapaClue (TapaClue [x]) = int x
-tapaClue (TapaClue xs) =
-  fit' 0.8 . atPoints (p (length xs)) . map int $ xs
+tapaClue (TapaClue xs ) = fit' 0.8 . atPoints (p (length xs)) . map int $ xs
  where
   p n = mconcat . pathVertices $ centerXY (p' n)
   p' 2 = p2 (-1 / 4, 1 / 4) ~~ p2 (1 / 4, -1 / 4)
@@ -457,8 +455,9 @@ myopia = foldMap d'
   d R = a (0, 0) (1, 0)
   d D = a (0, 0) (0, -1)
   d L = a (0, 0) (-1, 0)
-  a p q =
-    arrowBetween' (with & arrowHead .~ tri & headLength .~ global 0.2) (p2 p) (p2 q)
+  a p q = arrowBetween' (with & arrowHead .~ tri & headLength .~ global 0.2)
+                        (p2 p)
+                        (p2 q)
 
 greaterClue :: Backend' b => GreaterClue -> [Drawing b]
 greaterClue []       = mempty

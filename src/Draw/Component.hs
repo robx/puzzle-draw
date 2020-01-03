@@ -58,9 +58,7 @@ component c = case c of
     (edgeSize g, placeGrid' . Map.mapKeys midPoint . fmap decoration $ g)
   FullGrid ns cs es ->
     ( nodeSize ns
-    , mconcat
-      . map (snd . component)
-      $ [NodeGrid ns, CellGrid cs, EdgeGrid es]
+    , mconcat . map (snd . component) $ [NodeGrid ns, CellGrid cs, EdgeGrid es]
     )
   Note        ds -> ((0, 0), note $ hcatSep 0.2 $ map decoration $ ds)
   Pyramid     g  -> (shiftSize g, shiftGrid g)
@@ -76,36 +74,36 @@ component c = case c of
 
 decoration :: Backend' b => Decoration -> Drawing b
 decoration d = case d of
-  Blank                  -> mempty
-  Letter       c         -> char c
-  Letters      s         -> text' s
-  InvertedLetters s      -> invert $ text' s
-  DecKropkiDot k         -> kropkiDot k
-  AfternoonSouth         -> afternoonSouth
-  AfternoonWest          -> afternoonWest
-  LightDiagonal diag     -> lc (blend 0.5 gray white) $ primeDiag diag
-  DarkDiagonal  diag     -> lc gray $ primeDiag diag
-  SmallDot               -> dot
-  Dot                    -> scale 0.5 $ smallPearl MBlack
-  Star                   -> star Data.Elements.Star
-  Shade                  -> fillBG gray
-  DarkShade              -> fillBG (blend 0.5 gray black)
-  Black                  -> fillBG black
-  LightShade             -> fillBG (blend 0.5 gray white)
-  SmallPearl p           -> smallPearl p
-  Pearl      p           -> pearl p
-  Edge       dir         -> edgeDecoration dir
-  ThinEdge   dir         -> edgeDecorationThin dir
-  SolEdge    dir         -> edgeDecorationSol dir
-  TriangleRight          -> arrowRight
-  TriangleDown           -> arrowDown
-  LabeledTriangleRight w -> arrowRightL w
-  LabeledTriangleDown  w -> arrowDownL w
-  MiniLoop               -> miniloop
-  ShipSquare             -> shipSquare
-  Ship dir               -> shipEnd dir
-  LabeledArrow dir w     -> labeledArrow dir $ text' w
+  Blank                      -> mempty
+  Letter          c          -> char c
+  Letters         s          -> text' s
+  InvertedLetters s          -> invert $ text' s
+  DecKropkiDot    k          -> kropkiDot k
+  AfternoonSouth             -> afternoonSouth
+  AfternoonWest              -> afternoonWest
+  LightDiagonal diag         -> lc (blend 0.5 gray white) $ primeDiag diag
+  DarkDiagonal  diag         -> lc gray $ primeDiag diag
+  SmallDot                   -> dot
+  Dot                        -> scale 0.5 $ smallPearl MBlack
+  Star                       -> star Data.Elements.Star
+  Shade                      -> fillBG gray
+  DarkShade                  -> fillBG (blend 0.5 gray black)
+  Black                      -> fillBG black
+  LightShade                 -> fillBG (blend 0.5 gray white)
+  SmallPearl p               -> smallPearl p
+  Pearl      p               -> pearl p
+  Edge       dir             -> edgeDecoration dir
+  ThinEdge   dir             -> edgeDecorationThin dir
+  SolEdge    dir             -> edgeDecorationSol dir
+  TriangleRight              -> arrowRight
+  TriangleDown               -> arrowDown
+  LabeledTriangleRight w     -> arrowRightL w
+  LabeledTriangleDown  w     -> arrowDownL w
+  MiniLoop                   -> miniloop
+  ShipSquare                 -> shipSquare
+  Ship dir                   -> shipEnd dir
+  LabeledArrow         dir w -> labeledArrow dir $ text' w
   InvertedLabeledArrow dir w -> invert $ labeledArrow dir $ text' w
-  Tent                   -> draw tentDia
-  Tree                   -> tree Data.Elements.Tree
-  Myopia dirs            -> myopia dirs
+  Tent                       -> draw tentDia
+  Tree                       -> tree Data.Elements.Tree
+  Myopia dirs                -> myopia dirs

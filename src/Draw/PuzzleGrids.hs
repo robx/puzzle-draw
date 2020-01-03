@@ -72,11 +72,9 @@ sudokugrid = edges . sudokubordersg <> grid gDefault
 wordsClues :: Backend' b => Grid C (Maybe [String]) -> Drawing b
 wordsClues = placeGrid . fmap Draw.Elements.words . clues
 
-tightGrid
-  :: Backend' b => (t -> Drawing b) -> Grid C (Tightfit t) -> Drawing b
-tightGrid d g =
-  (placeGrid . fmap (tight d) $ g) <> grid gDefault g <> draw
-    (phantom' (strokePath $ p2i (-1, -1) ~~ p2i (sx + 1, sy + 1)))
+tightGrid :: Backend' b => (t -> Drawing b) -> Grid C (Tightfit t) -> Drawing b
+tightGrid d g = (placeGrid . fmap (tight d) $ g) <> grid gDefault g <> draw
+  (phantom' (strokePath $ p2i (-1, -1) ~~ p2i (sx + 1, sy + 1)))
   where (sx, sy) = size (Map.mapKeys toCoord g)
 
 maxDiam :: Backend' b => V2 Double -> Config -> [Drawing b] -> Double

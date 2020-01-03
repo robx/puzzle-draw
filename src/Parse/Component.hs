@@ -188,17 +188,17 @@ parseExtendedDecoration (Util.IntString s) = case words s of
     "tree"                  -> pure $ Tree
     _                       -> pure $ Letters s
   [w1, w2] -> case w1 of
-    "triangle-right" -> pure $ LabeledTriangleRight w2
-    "triangle-down"  -> pure $ LabeledTriangleDown w2
-    "arrow-right"    -> pure $ LabeledArrow R w2
-    "arrow-left"     -> pure $ LabeledArrow L w2
-    "arrow-up"       -> pure $ LabeledArrow U w2
-    "arrow-down"     -> pure $ LabeledArrow D w2
-    "inverted-arrow-down"     -> pure $ InvertedLabeledArrow D w2
-    "inverted-arrow-right"    -> pure $ InvertedLabeledArrow R w2
-    "inverted-arrow-left"     -> pure $ InvertedLabeledArrow L w2
-    "inverted-arrow-up"       -> pure $ InvertedLabeledArrow U w2
-    "inverted-letters" -> pure $ InvertedLetters w2
-    "myopia"         -> Myopia <$> (sequence . map Util.parseChar $ w2)
-    _                -> fail $ "unknown unary function: " ++ w1
+    "triangle-right"       -> pure $ LabeledTriangleRight w2
+    "triangle-down"        -> pure $ LabeledTriangleDown w2
+    "arrow-right"          -> pure $ LabeledArrow R w2
+    "arrow-left"           -> pure $ LabeledArrow L w2
+    "arrow-up"             -> pure $ LabeledArrow U w2
+    "arrow-down"           -> pure $ LabeledArrow D w2
+    "inverted-arrow-down"  -> pure $ InvertedLabeledArrow D w2
+    "inverted-arrow-right" -> pure $ InvertedLabeledArrow R w2
+    "inverted-arrow-left"  -> pure $ InvertedLabeledArrow L w2
+    "inverted-arrow-up"    -> pure $ InvertedLabeledArrow U w2
+    "inverted-letters"     -> pure $ InvertedLetters w2
+    "myopia"               -> Myopia <$> (sequence . map Util.parseChar $ w2)
+    _                      -> fail $ "unknown unary function: " ++ w1
   _ -> fail $ "unknown decoration: " ++ show s

@@ -206,24 +206,8 @@ thermosudoku
   :: Backend' b
   => Drawers b (Grid C (Maybe Int), [Thermometer]) (Grid C (Maybe Int))
 thermosudoku = Drawers
-  (  placeGrid
-  .  fmap int
-  .  clues
-  .  fst
-  <> sudokugrid
-  .  fst
-  <> thermos
-  .  snd
-  )
-  (  placeGrid
-  .  fmap int
-  .  clues
-  .  snd
-  <> sudokugrid
-  .  snd
-  <> thermos
-  .  snd
-  .  fst
+  (placeGrid . fmap int . clues . fst <> sudokugrid . fst <> thermos . snd)
+  (placeGrid . fmap int . clues . snd <> sudokugrid . snd <> thermos . snd . fst
   )
 
 killersudoku
@@ -246,8 +230,7 @@ kpyramid = Drawers DPyr.kpyramid (DPyr.kpyramid . merge)
   where merge (p, q) = Pyr.mergekpyramidsol p q
 
 slither :: Backend' b => Drawers b (Grid C (Maybe Int)) (Loop N)
-slither =
-  Drawers slitherGrid (slitherGrid . fst <> solstyle . edges . snd)
+slither = Drawers slitherGrid (slitherGrid . fst <> solstyle . edges . snd)
 
 liarslither
   :: Backend' b => Drawers b (Grid C (Maybe Int)) (Loop N, Grid C Bool)
@@ -272,14 +255,8 @@ tightfitskyscrapers
        (OutsideClues C (Maybe Int), Grid C (Tightfit ()))
        (Grid C (Tightfit Int))
 tightfitskyscrapers = Drawers
-  (  placeOutside
-  .  fmap (fmap int)
-  .  fst
-  <> tightGrid (const mempty)
-  .  snd
-  )
-  (placeOutside . fmap (fmap int) . fst . fst <> tightGrid int . snd
-  )
+  (placeOutside . fmap (fmap int) . fst <> tightGrid (const mempty) . snd)
+  (placeOutside . fmap (fmap int) . fst . fst <> tightGrid int . snd)
 
 wordgrid :: Backend' b => Grid C (Maybe Char) -> [String] -> Drawing b
 wordgrid g ws = stackWords ws `besidesR'` charGrid g
@@ -318,10 +295,9 @@ doubleback = Drawers p (solstyle . edges . snd <> p . fst)
   where p = grid gDefault <> areasGray
 
 slalom :: Backend' b => Drawers b (Grid N (Maybe Int)) (Grid C SlalomDiag)
-slalom = Drawers
-  p
-  (p . fst <> placeGrid . fmap (solstyle . slalomDiag) . snd)
-  where p = placeGrid . fmap slalomClue . clues <> grid gDefault . Data.cellGrid
+slalom = Drawers p (p . fst <> placeGrid . fmap (solstyle . slalomDiag) . snd)
+ where
+  p = placeGrid . fmap slalomClue . clues <> grid gDefault . Data.cellGrid
 
 compass :: Backend' b => Drawers b (Grid C (Maybe CompassC)) AreaGrid
 compass = Drawers
@@ -337,15 +313,7 @@ compass = Drawers
 meanderingnumbers
   :: Backend' b => Drawers b (AreaGrid, Grid C (Maybe Int)) (Grid C (Maybe Int))
 meanderingnumbers = Drawers
-  (  grid gDefault
-  .  fst
-  <> areas
-  .  fst
-  <> placeGrid
-  .  fmap int
-  .  clues
-  .  snd
-  )
+  (grid gDefault . fst <> areas . fst <> placeGrid . fmap int . clues . snd)
   (intGrid . snd <> areas . fst . fst)
 
 tapa :: Backend' b => Drawers b (Grid C (Maybe TapaClue)) ShadedGrid
@@ -365,8 +333,7 @@ japanesesums = Drawers (outsideIntGrid . fst <> n)
   h = snd . Data.outsideSize
 
 coral :: Backend' b => Drawers b (OutsideClues C [String]) ShadedGrid
-coral =
-  Drawers multiOutsideGrid (multiOutsideGrid . fst <> shade . snd)
+coral = Drawers multiOutsideGrid (multiOutsideGrid . fst <> shade . snd)
 
 maximallengths :: Backend' b => Drawers b (OutsideClues C (Maybe Int)) (Loop C)
 maximallengths = Drawers g (solstyle . edges . snd <> g . fst)
@@ -480,9 +447,8 @@ cave = Drawers
 skyscrapers
   :: Backend' b
   => Drawers b (OutsideClues C (Maybe Int), String) (Grid C (Maybe Int))
-skyscrapers = Drawers
-  (g . fst <> n)
-  (g . fst . fst <> placeGrid . fmap int . clues . snd)
+skyscrapers = Drawers (g . fst <> n)
+                      (g . fst . fst <> placeGrid . fmap int . clues . snd)
  where
   g = placeOutside . fmap (fmap int) <> grid gDefault . Data.outsideGrid
   n (oc, s) = placeNoteTR (Data.outsideSize oc) (text' s)
@@ -494,9 +460,8 @@ shikaku = Drawers p (areas . snd <> p . fst)
 slovaksums
   :: Backend' b
   => Drawers b (Grid C (Maybe SlovakClue), String) (Grid C (Maybe Int))
-slovaksums = Drawers
-  (p . fst <> n)
-  (placeGrid . fmap int . clues . snd <> p . fst . fst)
+slovaksums = Drawers (p . fst <> n)
+                     (placeGrid . fmap int . clues . snd <> p . fst . fst)
  where
   n (g, ds) = placeNoteTR (size' g) (text' ds # scale noteScale)
   p     = grid gDefault <> placeGrid . fmap slovakClue . clues
@@ -509,7 +474,8 @@ skyscrapersStars = Drawers
   (g <> n)
   (g . fst <> placeGrid . fmap (either int star) . snd)
  where
-  g = (placeOutside . fmap (fmap int) <> grid gDefault . Data.outsideGrid) . fst
+  g =
+    (placeOutside . fmap (fmap int) <> grid gDefault . Data.outsideGrid) . fst
   n (oc, s) =
     placeNoteTR (Data.outsideSize oc) (int s ||| strutX' 0.2 ||| star Star)
 
@@ -558,9 +524,8 @@ baca = Drawers
 buchstabensalat
   :: Backend' b
   => Drawers b (OutsideClues C (Maybe Char), String) (Grid C (Maybe Char))
-buchstabensalat = Drawers
-  (p <> n)
-  (p . fst <> placeGrid . fmap char . clues . snd)
+buchstabensalat = Drawers (p <> n)
+                          (p . fst <> placeGrid . fmap char . clues . snd)
  where
   p =
     (placeOutside . fmap (fmap char) <> grid gDefault . Data.outsideGrid) . fst
@@ -599,13 +564,7 @@ sudokuDoppelblock = Drawers p (p . fst <> placeGrid . fmap drawVal . snd)
 dominos :: Backend' b => Drawers b (Grid C (Clue Int), DigitRange) AreaGrid
 dominos = Drawers
   p
-  (  placeGrid
-  .  fmap int
-  .  clues
-  .  fst
-  .  fst
-  <> (grid gDashed <> areasGray)
-  .  snd
+  (placeGrid . fmap int . clues . fst . fst <> (grid gDashed <> areasGray) . snd
   )
  where
   p (g, r) = ((placeGrid . fmap int . clues <> grid gDashed) $ g)
@@ -665,13 +624,11 @@ neighbors = Drawers
   (placeGrid . fmap int . snd <> (grid gDefault <> shade) . fst . fst)
 
 starbattle :: Backend' b => Drawers b (AreaGrid, Int) (Grid C (Maybe Star))
-starbattle = Drawers
-  (p <> n)
-  ((p <> n) . fst <> placeGrid . fmap star . clues . snd)
+starbattle = Drawers (p <> n)
+                     ((p <> n) . fst <> placeGrid . fmap star . clues . snd)
  where
   p = (areas <> grid gDefault) . fst
-  n (g, k) =
-    placeNoteTR (size' g) (int k ||| strutX' 0.2 ||| star Star)
+  n (g, k) = placeNoteTR (size' g) (int k ||| strutX' 0.2 ||| star Star)
   size' = Data.size . Map.mapKeys toCoord
 
 heyawake :: Backend' b => Drawers b (AreaGrid, Grid C (Maybe Int)) (Grid C Bool)
@@ -717,7 +674,7 @@ persistenceOfMemory = Drawers
   (ends_ <> areas')
   (ends_ . fst <> solstyle . edges . snd <> areas' . fst)
  where
-  ends_ = placeGrid . fmap end . clues . snd
+  ends_  = placeGrid . fmap end . clues . snd
   areas' = (areas <> grid gDashed <> shadeGrid . fmap cols) . fst
   cols c | isUpper c = Just (blend 0.25 black white)
          | otherwise = Nothing
@@ -781,8 +738,8 @@ statuepark = Drawers p (p . fst <> shade . snd)
 
 pentominousBorders
   :: Backend' b => Drawers b (Grid C (), [Edge N]) (Grid C Char)
-pentominousBorders = Drawers (edges . snd <> grid gDashed . fst)
-                             ((areas <> grid gDashed) . snd)
+pentominousBorders =
+  Drawers (edges . snd <> grid gDashed . fst) ((areas <> grid gDashed) . snd)
 
 smallHintRooms :: Backend' b => (AreaGrid, Grid C (Maybe Int)) -> Drawing b
 smallHintRooms =
@@ -797,21 +754,18 @@ smallHintRooms =
 
 nanroSignpost
   :: Backend' b => Drawers b (AreaGrid, Grid C (Maybe Int)) (Grid C Int)
-nanroSignpost = Drawers
-  smallHintRooms
-  (placeGrid . fmap int . snd <> smallHintRooms . fst)
+nanroSignpost =
+  Drawers smallHintRooms (placeGrid . fmap int . snd <> smallHintRooms . fst)
 
 tomTom :: Backend' b => Drawers b (AreaGrid, Grid C (Maybe String)) (Grid C Int)
 tomTom = Drawers p (placeGrid . fmap int . snd <> p . fst)
  where
-  p =
-    ((areas <> grid gDashed) . fst <> placeGrid . fmap hintTL . clues . snd)
+  p = ((areas <> grid gDashed) . fst <> placeGrid . fmap hintTL . clues . snd)
 
 horseSnake
   :: Backend' b => Drawers b (Grid C (Maybe (Either MEnd Int))) [Edge C]
 horseSnake = Drawers p (solstyle . edges . snd <> p . fst)
- where
-  p = (placeGrid . fmap (either bigEnd int) . clues <> grid gDashed)
+  where p = (placeGrid . fmap (either bigEnd int) . clues <> grid gDashed)
 
 illumination
   :: Backend' b
@@ -821,13 +775,7 @@ illumination
        (Grid N (Maybe PlainNode), [Edge N])
 illumination = Drawers
   p
-  (  (  placeGrid
-     .  fmap (const (smallPearl MWhite))
-     .  clues
-     .  fst
-     <> edges
-     .  snd
-     )
+  (  (placeGrid . fmap (const (smallPearl MWhite)) . clues . fst <> edges . snd)
   .  snd
   <> p
   .  fst
@@ -873,10 +821,7 @@ mines = Drawers
   (p . fst <> placeGrid . fmap (const (pearl MBlack)) . Map.filter id . snd)
  where
   p =
-    grid gDefault
-      <> placeGrid
-      .  fmap (\i -> int i <> fillBG lightgray)
-      .  clues
+    grid gDefault <> placeGrid . fmap (\i -> int i <> fillBG lightgray) . clues
 
 tents
   :: Backend' b
@@ -909,10 +854,7 @@ pentominoSums
 pentominoSums = Drawers p (solgrid ||| const (strutX' 1.0) ||| table)
  where
   p (ocs, ds) =
-    (         (   (multiOutsideGrid ocs <> n (ocs, ds))
-              ||| strutX' 1.0
-              ||| emptyTable ocs
-              )
+    (((multiOutsideGrid ocs <> n (ocs, ds)) ||| strutX' 1.0 ||| emptyTable ocs)
     `aboveT'` pentominos
     )
   n (ocs, ds) = placeNoteTL (0, h ocs) (text' ds # scale noteScale)
@@ -1059,7 +1001,6 @@ dualloop = Drawers p (s . snd <> p . fst)
       .  snd
       <> grid gDashDash
       .  fst
-  smallClue x =
-    scale (2 / 3) (int x <> circle 0.5 # fc white # lwG 0 # draw)
+  smallClue x = scale (2 / 3) (int x <> circle 0.5 # fc white # lwG 0 # draw)
   gDashDash = GridStyle LineDashed LineDashed Nothing VertexNone
   s         = solstyle . edges . fst <> solstyle . edges . snd
