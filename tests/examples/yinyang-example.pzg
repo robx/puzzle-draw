@@ -1,0 +1,37 @@
+- type: grid
+  style: dashed
+  grid: |
+    ...
+    ...
+    ...
+- type: cells
+  grid: |
+    o*o
+    ...
+    ...
+  substitute:
+    o: pearl-black
+    '*': pearl-white
+- type: cells
+  tag: solution
+  grid: |
+    o*o
+    o*o
+    ooo
+  substitute:
+    o: pearl-black
+    '*': pearl-white
+- type: edges
+  tag: solution
+  grid: |
+    o o o o
+      | | 
+    o o o o
+      | | 
+    o o-o o
+    
+    o o o o
+  substitute:
+    '|': edge-vert
+    '-': edge-horiz
+
