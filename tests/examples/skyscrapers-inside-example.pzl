@@ -1,0 +1,19 @@
+type: skyscrapers
+puzzle:
+  digits: 1-4
+  top:    [3,-,-,-]
+  left:   [-,-,2,-]
+  right:  [2,1,-,4]
+  bottom: [-,-,2,-]
+  grid: |
+    .4..
+    ...4
+    3...
+    ..2.
+solution: |
+  2413 
+  1234 
+  3142 
+  4321 
+code:
+  cell_rows_bottom: [1,2]

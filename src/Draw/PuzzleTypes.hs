@@ -480,14 +480,24 @@ cave =
 
 skyscrapers ::
   Backend' b =>
-  Drawers b (OutsideClues C (Maybe Int), String) (Grid C (Maybe Int))
+  Drawers b
+    ( OutsideClues C (Maybe Int),
+      Maybe String,
+      Maybe (Grid C (Maybe Int))
+    )
+    (Grid C (Maybe Int))
 skyscrapers =
   Drawers
-    (g . fst <> n)
-    (g . fst . fst <> placeGrid . fmap int . clues . snd)
+    (g <> h <> n)
+    (g . fst <> placeGrid . fmap int . clues . snd)
   where
-    g = placeOutside . fmap (fmap int) <> grid gDefault . Data.outsideGrid
-    n (oc, s) = placeNoteTR (Data.outsideSize oc) (text' s)
+    g (oc, _, _) = (placeOutside . fmap (fmap int) <> grid gDefault . Data.outsideGrid) $ oc
+    h (_, _, cs) = case cs of
+      Just cs' -> placeGrid . fmap int . clues $ cs'
+      Nothing -> mempty
+    n (oc, ms, _) = case ms of
+      Just s -> placeNoteTR (Data.outsideSize oc) (text' s)
+      Nothing -> mempty
 
 shikaku :: Backend' b => Drawers b (Grid C (Maybe Int)) AreaGrid
 shikaku = Drawers p (areas . snd <> p . fst)

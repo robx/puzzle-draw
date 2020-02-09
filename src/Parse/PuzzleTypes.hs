@@ -303,10 +303,19 @@ parseOut :: FromJSON a => Value -> Parser (OutsideClues k (Maybe a))
 parseOut v = fmap (blankToMaybe' . unEither') <$> parseOutside v
 
 skyscrapers ::
-  ParsePuzzle (OutsideClues C (Maybe Int), String) (Grid C (Maybe Int))
+  ParsePuzzle
+    ( OutsideClues C (Maybe Int),
+      Maybe String,
+      Maybe (Grid C (Maybe Int))
+    )
+    (Grid C (Maybe Int))
 skyscrapers =
   (,)
-    (\v -> (,) <$> parseOut v <*> parseFrom ["digits"] parseJSON v)
+    ( \v ->
+        (,,) <$> parseOut v
+          <*> parseFromOptional ["digits"] parseJSON v
+          <*> parseFromOptional ["grid"] parseClueGrid v
+    )
     parseClueGrid
 
 skyscrapersStars ::

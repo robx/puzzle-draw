@@ -48,7 +48,16 @@ field = field' . map T.pack
     field' (f : _) _ = fail $ "expected field '" ++ T.unpack f ++ "'"
 
 parseFrom :: Path -> (Value -> Parser b) -> Value -> Parser b
-parseFrom fs p v = field fs v >>= p
+parseFrom fs p v =
+  do
+    v' <- field fs v
+    p v'
+
+parseFromOptional :: Path -> (Value -> Parser b) -> Value -> Parser (Maybe b)
+parseFromOptional fs p v =
+  do
+    mv <- optional (field fs v)
+    sequence (p <$> mv)
 
 chars :: [Char] -> Char -> Parser Char
 chars cs c =
