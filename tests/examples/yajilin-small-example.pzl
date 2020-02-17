@@ -1,0 +1,18 @@
+type: yajilin
+puzzle:
+  grid: |
+    a...
+    ....
+    ..b.
+    ....
+  clues:
+    a: 1 right
+    b: 1 left
+solution: |
+  o o-o X
+    | |
+  o-o o-o
+  |     |
+  o X o o
+  |     |
+  o-o-o-o
