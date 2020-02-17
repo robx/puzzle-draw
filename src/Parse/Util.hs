@@ -29,7 +29,6 @@ import Data.Maybe
     fromMaybe,
     isJust,
   )
-import Data.Monoid ((<>))
 import Data.Ord (comparing)
 import qualified Data.Text as T
 import Data.Traversable (mapM)
