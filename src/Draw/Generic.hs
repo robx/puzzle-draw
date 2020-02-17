@@ -4,7 +4,6 @@ module Draw.Generic
 where
 
 import Data.Component
-import Data.Grid
 import Data.GridShape
 import qualified Data.Map.Strict as Map
 import Data.Maybe (catMaybes)
@@ -31,15 +30,13 @@ generic t (p, ms) = case t of
             $ TaggedComponent Nothing
             $ PlacedComponent Atop
             $ CellGrid
-            $ fmap (const LightShade)
-            $ clues
+            $ fmap lightShade
             $ g,
           Just
             $ TaggedComponent Nothing
             $ PlacedComponent Atop
             $ CellGrid
             $ fmap yajClue
-            $ clues
             $ g,
           Just
             $ TaggedComponent Nothing
@@ -55,7 +52,10 @@ generic t (p, ms) = case t of
             <$> msol
         ]
     where
-      yajClue x = maybe Blank arr x
+      yajClue = maybe Blank (maybe Blank arr)
+      lightShade x = case x of
+        Just _ -> LightShade
+        Nothing -> Blank
       shade x = if x then Shade else Blank
       arr (v, d) = LabeledArrow d (show v)
   ShakaShaka -> do
@@ -66,16 +66,17 @@ generic t (p, ms) = case t of
             $ TaggedComponent Nothing
             $ PlacedComponent Atop
             $ CellGrid
-            $ fmap (const Black)
-            $ clues
+            $ fmap (maybe Blank (const Black))
             $ g,
           Just
             $ TaggedComponent Nothing
             $ PlacedComponent Atop
             $ CellGrid
-            $ fmap (InvertedLetters . show)
-            $ rights
-            $ clues
+            $ fmap
+              ( \x -> case x of
+                  Just (Right v) -> InvertedLetters (show v)
+                  _ -> Blank
+              )
             $ g,
           Just
             $ TaggedComponent Nothing
@@ -93,8 +94,7 @@ generic t (p, ms) = case t of
             $ TaggedComponent Nothing
             $ PlacedComponent Atop
             $ CellGrid
-            $ fmap (const Black)
-            $ clues
+            $ fmap (maybe Blank (const Black))
             $ g,
           ( \es ->
               TaggedComponent (Just Solution)
