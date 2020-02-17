@@ -56,9 +56,10 @@ component c = case c of
   EdgeGrid g ->
     (edgeSize g, placeGrid' . Map.mapKeys midPoint . fmap decoration $ g)
   FullGrid ns cs es ->
-    ( nodeSize ns,
-      mconcat . map (snd . component) $ [NodeGrid ns, CellGrid cs, EdgeGrid es]
-    )
+    centerGrid
+      ( nodeSize ns,
+        components . map (PlacedComponent Atop) . reverse $ [NodeGrid ns, CellGrid cs, EdgeGrid es]
+      )
   Note ds -> ((0, 0), note $ hcatSep 0.2 $ map decoration $ ds)
   Pyramid g -> (shiftSize g, shiftGrid g)
   CellPyramid g -> (shiftSize g, placeGrid . fmap decoration $ g)
