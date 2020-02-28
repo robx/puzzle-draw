@@ -249,7 +249,7 @@ instance FromChar SlalomDiag where
   parseChar _ = empty
 
 instance FromChar Black where
-  parseChar = fmap (const Black) . chars "xX"
+  parseChar = fmap (const Black) . chars "xX#"
 
 instance FromChar Fish where
   parseChar = fmap (const Fish) . char '*'
