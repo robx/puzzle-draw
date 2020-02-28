@@ -1,0 +1,34 @@
+- type: cells
+  grid: |
+    X...X
+    ....X
+    ....X
+    .X...
+    .....
+  substitute:
+    X: black
+- type: edges
+  tag: solution
+  grid: |
+    o
+       .-.-.
+    o  |   |
+     .-.-. .
+    o| | | |
+     . .-.-.
+    o|   |
+     .   . .-.
+    o|   | | |
+     .-.-. .-.
+    o
+  substitute:
+    '-': sol-edge-horiz
+    '|': sol-edge-vert
+- type: grid
+  style: dashed
+  grid: |
+    .....
+    .....
+    .....
+    .....
+    .....

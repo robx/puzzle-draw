@@ -50,15 +50,11 @@ generic t (p, ms) = case t of
           ( \(_, l) ->
               TaggedComponent (Just Solution)
                 $ PlacedComponent Atop
-                $ EdgeGrid
-                $ es
-                $ l
+                $ cellEdges l
           )
             <$> msol
         ]
     where
-      es :: [Edge C] -> Map.Map (Edge N) Decoration
-      es l = Map.fromList . map (\e@(E _ dir) -> (dualE e, SolEdge dir)) $ l
       yajClue x = maybe Blank arr x
       shade x = if x then Shade else Blank
       arr (v, d) = LabeledArrow d (show v)
@@ -90,6 +86,7 @@ generic t (p, ms) = case t of
         ]
   RingRing -> do
     g <- fst Parse.ringring p
+    msol <- traverse (snd Parse.ringring) ms
     pure
       . catMaybes
       $ [ Just
@@ -99,6 +96,12 @@ generic t (p, ms) = case t of
             $ fmap (const Black)
             $ clues
             $ g,
+          ( \es ->
+              TaggedComponent (Just Solution)
+                $ PlacedComponent Atop
+                $ cellEdges es
+          )
+            <$> msol,
           Just
             $ TaggedComponent Nothing
             $ PlacedComponent Atop
@@ -107,3 +110,8 @@ generic t (p, ms) = case t of
             $ g
         ]
   _ -> fail $ "puzzle type not implemented as generic: " ++ show t
+  where
+    cellEdges es =
+        EdgeGrid $ solutionEdges $ es
+    solutionEdges :: [Edge C] -> Map.Map (Edge N) Decoration
+    solutionEdges es = Map.fromList . map (\e@(E _ dir) -> (dualE e, SolEdge dir)) $ es

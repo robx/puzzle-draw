@@ -695,8 +695,8 @@ shakashaka =
     (unimplemented "shakashaka solution")
 
 ringring ::
-  ParsePuzzle (Grid C (Maybe Black)) ()
+  ParsePuzzle (Grid C (Maybe Black)) [Edge C]
 ringring =
   (,)
     parseClueGrid
-    (unimplemented "ringring solution")
+    parseEdges
