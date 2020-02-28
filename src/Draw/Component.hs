@@ -106,3 +106,4 @@ decoration d = case d of
   Tent -> draw tentDia
   Tree -> tree Data.Elements.Tree
   Myopia dirs -> myopia dirs
+  Triangle dir -> cornerTriangle dir

@@ -44,4 +44,7 @@
     y: arrow-left L
     z: arrow-up U
     A: arrow-down D
-
+    B: triangle-topleft
+    C: triangle-topright
+    D: triangle-bottomleft
+    E: triangle-bottomright

@@ -600,9 +600,9 @@ parseOutsideGridMap mapIn mapOut v = do
 newtype Tight = Tight {unTight :: Tightfit ()}
 
 instance FromChar Tight where
-  parseChar '.' = pure . Tight $ Single ()
-  parseChar '/' = pure . Tight $ UR () ()
-  parseChar '\\' = pure . Tight $ DR () ()
+  parseChar '.' = pure . Tight $ TightSingle ()
+  parseChar '/' = pure . Tight $ TightUR () ()
+  parseChar '\\' = pure . Tight $ TightDR () ()
   parseChar _ = empty
 
 parseTightOutside ::
@@ -613,9 +613,9 @@ parseTightOutside = parseOutsideGridMap unTight unBlank'
     unBlank' = either (const Nothing) Just
 
 instance FromChar a => FromString (Tightfit a) where
-  parseString [c] = Single <$> parseChar c
-  parseString [c, '/', d] = UR <$> parseChar c <*> parseChar d
-  parseString [c, '\\', d] = DR <$> parseChar c <*> parseChar d
+  parseString [c] = TightSingle <$> parseChar c
+  parseString [c, '/', d] = TightUR <$> parseChar c <*> parseChar d
+  parseString [c, '\\', d] = TightDR <$> parseChar c <*> parseChar d
   parseString _ = empty
 
 newtype PMarkedWord = PMW {unPMW :: MarkedWord}

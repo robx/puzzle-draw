@@ -185,6 +185,10 @@ parseExtendedDecoration (Util.IntString s) = case words s of
     "ship-end-bottom" -> pure $ Ship U
     "tent" -> pure $ Tent
     "tree" -> pure $ Tree
+    "triangle-topleft" -> pure $ Triangle UL
+    "triangle-topright" -> pure $ Triangle UR
+    "triangle-bottomleft" -> pure $ Triangle DL
+    "triangle-bottomright" -> pure $ Triangle DR
     _ -> pure $ Letters s
   [w1, w2] -> case w1 of
     "triangle-right" -> pure $ LabeledTriangleRight w2

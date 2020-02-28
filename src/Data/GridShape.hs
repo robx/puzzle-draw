@@ -11,6 +11,7 @@ module Data.GridShape
     Edge (..),
     Dir' (..),
     Edge' (..),
+    CornerDir (..),
     Dual2D (..),
     Key,
     Dual',
@@ -130,6 +131,9 @@ mapEdge :: (a -> b) -> Edge a -> Edge b
 mapEdge f (E x d) = E (f x) d
 
 type Size = (Int, Int)
+
+data CornerDir = UL | UR | DL | DR
+  deriving (Eq, Ord, Show)
 
 -- | Oriented edge direction in a square grid.
 data Dir' = U | D | L | R

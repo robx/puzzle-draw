@@ -98,3 +98,4 @@ data Decoration
   | Tent
   | Tree
   | Myopia [Dir']
+  | Triangle CornerDir

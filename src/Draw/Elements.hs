@@ -132,8 +132,8 @@ arrows = mconcat . map (arrow . map toPoint)
 -- | @drawTight d t@ draws the tight-fit value @t@, using @d@ to
 -- draw the components.
 tight :: Backend' b => (a -> Drawing b) -> Tightfit a -> Drawing b
-tight d (Single x) = d x
-tight d (UR x y) =
+tight d (TightSingle x) = d x
+tight d (TightUR x y) =
   stroke ur
     # lwG onepix
     # draw
@@ -146,7 +146,7 @@ tight d (UR x y) =
   where
     t = 1 / 5
     s = 2 / 3
-tight d (DR x y) =
+tight d (TightDR x y) =
   stroke dr
     # lwG onepix
     # draw
@@ -540,3 +540,19 @@ invert d = d # lc white # fc white
 
 scaledText :: Backend' b => String -> Drawing b
 scaledText s = text' s # fitDown' 0.5
+
+cornerTriangle :: Backend' b => CornerDir -> Drawing b
+cornerTriangle dir = draw $ cornerDia dir
+
+cornerDia :: Backend' b => CornerDir -> Diagram b
+cornerDia dir =
+  rotateBy
+    ( case dir of
+        DL -> 0
+        DR -> 1 / 4
+        UR -> 1 / 2
+        UL -> 3 / 4
+    )
+    $ shape [(-1 / 2, -1 / 2), (-1 / 2, 1 / 2), (1 / 2, -1 / 2), (-1 / 2, -1 / 2)] # lwG 0 # fc black
+  where
+    shape = strokeLocLoop . fromVertices . map p2

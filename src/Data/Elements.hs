@@ -23,14 +23,14 @@ data SlovakClue = SlovakClue !Int !Int
 
 -- | A cell that is optionally bisected by a diagonal
 --   (up-right or down-right).
-data Tightfit a = Single a | UR a a | DR a a
+data Tightfit a = TightSingle a | TightUR a a | TightDR a a
 
 instance Show a => Show (Tightfit a) where
   show c = "(" ++ show' c ++ ")"
     where
-      show' (Single x) = show x
-      show' (UR x y) = show x ++ "/" ++ show y
-      show' (DR x y) = show x ++ "\\" ++ show y
+      show' (TightSingle x) = show x
+      show' (TightUR x y) = show x ++ "/" ++ show y
+      show' (TightDR x y) = show x ++ "\\" ++ show y
 
 -- | A marked word in a letter grid, by its start and end
 --   coordinates.
