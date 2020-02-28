@@ -88,4 +88,22 @@ generic t (p, ms) = case t of
             $ fmap (const ())
             $ g
         ]
+  RingRing -> do
+    g <- fst Parse.ringring p
+    pure
+      . catMaybes
+      $ [ Just
+            $ TaggedComponent Nothing
+            $ PlacedComponent Atop
+            $ CellGrid
+            $ fmap (const Black)
+            $ clues
+            $ g,
+          Just
+            $ TaggedComponent Nothing
+            $ PlacedComponent Atop
+            $ Grid GridDashed
+            $ fmap (const ())
+            $ g
+        ]
   _ -> fail $ "puzzle type not implemented as generic: " ++ show t

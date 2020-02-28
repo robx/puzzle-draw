@@ -96,6 +96,7 @@ data PuzzleType
   | DualLoop
   | Yajilin
   | ShakaShaka
+  | RingRing
   deriving (Show, Eq)
 
 typeNames :: [(PuzzleType, String)]
@@ -163,7 +164,8 @@ typeNames =
     (KillerSudoku, "killersudoku"),
     (ArrowSudoku, "arrowsudoku"),
     (Yajilin, "yajilin"),
-    (ShakaShaka, "shakashaka")
+    (ShakaShaka, "shakashaka"),
+    (RingRing, "ringring")
   ]
 
 obscureTypes :: [(PuzzleType, String)]
@@ -189,6 +191,7 @@ isGeneric :: PuzzleType -> Bool
 isGeneric t = case t of
   Yajilin -> True
   ShakaShaka -> True
+  RingRing -> True
   _ -> False
 
 typeAliases :: [(PuzzleType, String)]

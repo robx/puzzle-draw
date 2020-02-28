@@ -77,6 +77,7 @@ module Parse.PuzzleTypes
     dualloop,
     yajilin,
     shakashaka,
+    ringring,
   )
 where
 
@@ -692,3 +693,10 @@ shakashaka =
   (,)
     parseClueGrid
     (unimplemented "shakashaka solution")
+
+ringring ::
+  ParsePuzzle (Grid C (Maybe Black)) ()
+ringring =
+  (,)
+    parseClueGrid
+    (unimplemented "ringring solution")
