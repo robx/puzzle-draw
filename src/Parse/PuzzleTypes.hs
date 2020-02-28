@@ -226,7 +226,7 @@ meanderingnumbers =
     ( \v ->
         (,)
           <$> parseFrom ["regions"] parseGrid v
-          <*> parseFrom ["clues"] parseGrid v
+          <*> parseExtClueGridFrom ["clues"] ["replace"] v
     )
     parseGrid
 
