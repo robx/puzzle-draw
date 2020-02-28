@@ -15,6 +15,7 @@ module Data.Grid
     shiftSize,
     sizeGrid,
     clues,
+    rights,
     nodeGrid,
     cellGrid,
     dominoGrid,
@@ -53,6 +54,9 @@ type ShadedGrid = Grid C Bool
 --   list of cells and @Just@ values.
 clues :: Grid k (Maybe a) -> Grid k a
 clues = Map.mapMaybe id
+
+rights :: Grid k (Either a b) -> Grid k b
+rights = Map.mapMaybe (either (const Nothing) Just)
 
 edgesGen ::
   Dual' k =>

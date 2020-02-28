@@ -76,6 +76,7 @@ module Parse.PuzzleTypes
     arrowsudoku,
     dualloop,
     yajilin,
+    shakashaka,
   )
 where
 
@@ -684,3 +685,10 @@ yajilin =
     toCell = fromCoord . toCoord
     toCells :: (Grid N a, [Edge N]) -> (Grid C a, [Edge C])
     toCells (x, y) = (Map.mapKeys toCell x, map (mapEdge toCell) y)
+
+shakashaka ::
+  ParsePuzzle (Grid C (Maybe (Either Black Int))) ()
+shakashaka =
+  (,)
+    parseClueGrid
+    (unimplemented "shakashaka solution")

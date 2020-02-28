@@ -1,0 +1,40 @@
+- type: cells
+  grid: |
+    .....
+    X...X
+    .X...
+    .....
+    ....X
+  substitute:
+    X: black
+- type: cells
+  grid: |
+    .....
+    ....1
+    .3...
+    .....
+    .....
+  substitute:
+    1: inverted-letters 1
+    3: inverted-letters 3
+- type: cells
+  tag: solution
+  grid: |
+    .ab..
+    .d.b.
+    ..dc.
+    abab.
+    dcdc.
+  substitute:
+    a: triangle-topleft
+    b: triangle-topright
+    c: triangle-bottomright
+    d: triangle-bottomleft
+- type: grid
+  style: dashed
+  grid: |
+    .....
+    .....
+    .....
+    .....
+    .....

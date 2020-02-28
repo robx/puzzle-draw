@@ -553,6 +553,6 @@ cornerDia dir =
         UR -> 1 / 2
         UL -> 3 / 4
     )
-    $ shape [(-1 / 2, -1 / 2), (-1 / 2, 1 / 2), (1 / 2, -1 / 2), (-1 / 2, -1 / 2)] # lwG 0 # fc black
+    $ shape [(-1 / 2, -1 / 2), (-1 / 2, 1 / 2), (1 / 2, -1 / 2), (-1 / 2, -1 / 2)] # lwG onepix # fc black
   where
     shape = strokeLocLoop . fromVertices . map p2
