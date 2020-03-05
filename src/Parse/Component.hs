@@ -43,6 +43,8 @@ parsePlacement o = do
     Nothing -> pure Atop
     Just "north" -> pure North
     Just "west" -> pure West
+    Just "east" -> pure East
+    Just "south" -> pure South
     Just "top-right" -> pure TopRight
     Just x -> fail $ "unknown placement: " ++ x
 

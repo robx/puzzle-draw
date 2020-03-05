@@ -43,6 +43,8 @@ components cs = snd $ go $ reverse cs
             Atop -> (maxsz, dc <> dcs)
             West -> (szrest, dcs |<| strutX' 0.5 |<| dc)
             North -> (szrest, dcs =^= strutY' 0.5 =^= dc)
+            East -> (szrest, dcs |>| strutX' 0.5 |>| dc)
+            South -> (szrest, dcs =:= strutY' 0.5 =:= dc)
             TopRight ->
               ( szrest,
                 ( dc # alignBL' # translate (0.5 *^ r2i szrest)
@@ -53,6 +55,8 @@ components cs = snd $ go $ reverse cs
               )
     (=^=) = beside unitY
     (|<|) = beside (negated unitX)
+    (=:=) = beside (negated unitY)
+    (|>|) = beside unitX
 
 component :: Backend' b => Component (Drawing b) -> GridDrawing b
 component c = case c of

@@ -29,6 +29,8 @@ data Placement
   = Atop
   | West
   | North
+  | South
+  | East
   | TopRight
   deriving (Eq, Show)
 
