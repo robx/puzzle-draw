@@ -23,7 +23,7 @@ HERE
 
 echo "<body>"
 for file in "$@"; do
-    base=`basename "$file" .pzl`
+    base=$(basename $(basename "$file" .pzl) .pzg)
 
     echo "<pre>"
     cat "$file"
