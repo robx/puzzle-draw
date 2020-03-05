@@ -124,6 +124,11 @@ instance FromChar a => FromJSON (Rect a) where
       filled = mapM (mapM parseChar) filledc
   parseJSON _ = fail "expected string"
 
+parseRectWith :: FromChar a => (a -> Parser b) -> Value -> Parser [[b]]
+parseRectWith p v = do
+  Rect _ _ cs <- parseJSON v
+  traverse (traverse p) cs
+
 data Border a = Border [a] [a] [a] [a]
   deriving (Show)
 
