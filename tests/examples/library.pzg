@@ -5,17 +5,13 @@
     YZ0123456789
     .-|*o#/\....
 - type: cells
+  place: south
   grid: |
     abcdefghijkl
     mnopqrstuvwx
     yzABCDEFGHIJ
     KLMNOPQRSTUV
     WXYZ........
-    .
-    .
-    .
-    .
-    .
   substitute:
     a: 123
     b: kropki-white
