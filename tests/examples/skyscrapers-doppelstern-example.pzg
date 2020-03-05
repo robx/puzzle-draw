@@ -1,0 +1,62 @@
+# type: skyscrapers-doppelstern
+- type: grid
+  style: default
+  grid: |
+    .....
+    .....
+    .....
+    .....
+    .....
+- type: cells
+  place:
+    direction: north
+    margin: close
+  grid: 1....
+- type: cells
+  place:
+    direction: west
+    margin: close
+  grid: |
+    4
+    .
+    4
+    .
+    .
+- type: cells
+  place:
+    direction: east
+    margin: close
+  grid: |
+    .
+    3
+    .
+    .
+    .
+- type: cells
+  place:
+    direction: south
+    margin: close
+  grid: 3....
+- type: note
+  tag: puzzle
+  place: top-right
+  contents: [1, star]
+- type: cells
+  tag: solution
+  grid: |
+    *1234
+    43*12
+    1234*
+    3*421
+    241*3
+  substitute:
+    '*': star
+- type: cells
+  tag: code
+  place: west
+  grid: |
+    .
+    >
+    .
+    .
+    >
