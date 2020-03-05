@@ -112,6 +112,6 @@ generic t (p, ms) = case t of
   _ -> fail $ "puzzle type not implemented as generic: " ++ show t
   where
     cellEdges es =
-        EdgeGrid $ solutionEdges $ es
+      EdgeGrid $ solutionEdges $ es
     solutionEdges :: [Edge C] -> Map.Map (Edge N) Decoration
     solutionEdges es = Map.fromList . map (\e@(E _ dir) -> (dualE e, SolEdge dir)) $ es
