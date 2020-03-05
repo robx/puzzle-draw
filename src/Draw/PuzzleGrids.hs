@@ -20,6 +20,7 @@ module Draw.PuzzleGrids
     placeMultiOutsideGW,
     layoutRow,
     layoutGrid,
+    placeSideGrid,
   )
 where
 
@@ -96,23 +97,22 @@ layoutGrid :: Backend' b => V2 Double -> V2 Double -> [[Drawing b]] -> Drawing b
 layoutGrid dirA dirB = layoutRow dirA . map (layoutRow dirB)
 
 placeSideGrid ::
-  Backend' b =>
-  Double ->
-  (Double -> Double) ->
-  V2 Double ->
-  V2 Double ->
-  P2 Double ->
-  [[Drawing b]] ->
-  Drawing b
-placeSideGrid mrg off dir1 dir2 base cs = withConfig place_
+  Backend' b => V2 Double -> V2 Double -> [[Drawing b]] -> Drawing b
+placeSideGrid dir1 dir2 cs = withConfig place_
   where
     place_ cfg =
       let minDiam = diameter dir1 (diagram cfg (char 'M') :: D V2 Double)
           elDiam = max minDiam (maxDiam dir1 cfg (fold cs))
+          -- we want the distance of the first outside clue to not depend
+          -- on the maximal width of the outside clues, for consistency
+          -- across puzzles; thus, strut out the first element
+          cs' = map (mapHead (\d -> d <> strutR2' (0.5 * step *^ dir1) # align' dir1)) $ cs
+          mapHead f xs = case xs of
+            (y : ys) -> (f y) : ys
+            [] -> []
+          mrg = 1 / 3
           step = elDiam + mrg
-          offset = off elDiam
-          baseOffset = base .+^ offset *^ dir1
-       in layoutGrid dir2 (step *^ dir1) cs # moveTo baseOffset
+       in layoutGrid dir2 (step *^ dir1) cs' # align' (- dir1)
 
 placeMultiOutside ::
   (Backend' b, FromCoord k, ToCoord k, ToPoint k, Ord k) =>
@@ -121,12 +121,10 @@ placeMultiOutside ::
 placeMultiOutside ocs =
   foldMap
     ( \(cs, dir1, base, dir2) ->
-        placeSideGrid mrg off (r2i dir1) (r2i dir2) (toPoint base) cs
+        placeSideGrid (r2i dir1) (r2i dir2) cs
+          # moveTo (toPoint base .-^ 1 / 3 *^ r2i dir1)
     )
     (Data.outsideClues ocs)
-  where
-    mrg = 1 / 3
-    off elDiam = 1 / 2 * elDiam - 1 / 2 * mrg
 
 
 -- | clue placement for greater wall
