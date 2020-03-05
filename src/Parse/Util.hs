@@ -406,10 +406,6 @@ parseClueGrid v = fmap blankToMaybe <$> parseGrid v
 parseClueGrid' :: (FromChar a, Key k) => Value -> Parser (Grid k (Maybe a))
 parseClueGrid' v = fmap blankToMaybe' <$> parseGrid v
 
-parseSpacedClueGrid ::
-  (Key k, FromString a) => Value -> Parser (Grid k (Maybe a))
-parseSpacedClueGrid v = fmap blankToMaybe <$> parseSpacedGrid v
-
 parseIrregGrid :: (Key k, FromChar a) => Value -> Parser (Grid k a)
 parseIrregGrid v = fromCoordGrid . rectToIrregGrid <$> parseJSON v
 
