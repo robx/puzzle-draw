@@ -33,31 +33,6 @@ solution:
 </pre>
 <img src="abctje-example.png" title="abctje-example">
 <pre>
-type: afternoonskyscrapers
-puzzle: |
-  o o o o o o o
-   .|. . .|.|.
-  o o-o-o o-o-o
-   . . .|. .|.
-  o-o o o-o o-o
-   .|. . .|. .
-  o-o-o o o o o
-   .|.|. .|. .
-  o o-o-o o-o-o
-   . .|.|. . .
-  o-o o-o-o o o
-   .|. .|.|. .
-  o o o o o o o
-solution: |
-  423651
-  145362
-  214536
-  651423
-  362145
-  536214
-</pre>
-<img src="afternoonskyscrapers-example.png" title="afternoonskyscrapers-example">
-<pre>
 type: angleloop
 puzzle: |
   ..3..3
@@ -84,11 +59,18 @@ puzzle: |2
   -...*-
   -....-
    --3-
-solution: |
-  .┌──
-  ┐**.
-  │┌┘*
-  └┘┌┘
+solution: |2
+    . . . .
+
+  . . o-o-o-4
+      |
+  7-o * * . .
+    |   |
+  . o o-o * .
+    | |   |
+  . o-o o-o .
+        |
+    . . 3 .
 code:
   cell_rows_bottom: [1,2]
 </pre>
@@ -173,26 +155,6 @@ code:
 </pre>
 <img src="blackoutdomino-example.png" title="blackoutdomino-example">
 <pre>
-type: boxof2or3
-puzzle: |
-  *-*-*-*-*
-  | | | | |
-  *-*-*-*-*
-  | | |
-  *-o-o-o-*
-      | | |
-  *-*-*-*-*
-  | | | | |
-  o-*-*-*-*
-solution: |
-  22332
-  33232
-  3-2-3
-  22323
-  -3323
-</pre>
-<img src="boxof2or3.png" title="boxof2or3">
-<pre>
 type: buchstabensalat
 puzzle:
   letters: A-C
@@ -228,6 +190,26 @@ solution: |
 
 </pre>
 <img src="cave-example.png" title="cave-example">
+<pre>
+type: cave
+puzzle:
+  grid: |
+    b....
+    ....2
+    ..5..
+    a....
+    ....5
+  replace:
+    a: 5
+    b: 9
+solution: |
+  -----
+  ---X-
+  ---XX
+  -XXXX
+  -----
+</pre>
+<img src="cave-extended.png" title="cave-extended">
 <pre>
 type: fillomino-checkered
 puzzle: |
@@ -267,7 +249,7 @@ solution: |
   .R...G.G.
   ...B..B..
 </pre>
-<img src="color-akari.png" title="color-akari">
+<img src="color-akari-example.png" title="color-akari-example">
 <pre>
 type: compass
 puzzle:
@@ -562,19 +544,6 @@ solution: |
 </pre>
 <img src="heyawake-example.png" title="heyawake-example">
 <pre>
-type: horsesnake
-puzzle: |
-  ........
-  ........
-  ........
-  ...55...
-  ...76...
-  ........
-  ........
-  o......o
-</pre>
-<img src="horse-snake.png" title="horse-snake">
-<pre>
 type: illumination
 puzzle:
   left: ["1",-,-,"0"]
@@ -826,34 +795,6 @@ solution: |
 </pre>
 <img src="lits-example.png" title="lits-example">
 <pre>
-type: lits-symmetry
-puzzle: |
-  aabbbc
-  aacbbc
-  dacccc
-  dddddd
-  eddede
-  eeeeee
-  eeeeff
-  ggffff
-  ggggff
-  giighh
-  iiihhh
-solution: |
-  XXXXXX
-  -X-X-X
-  -X--XX
-  -XXXX-
-  ---X--
-  --XX--
-  --X---
-  -XXXX-
-  XX--X-
-  X-X-X-
-  XXXXXX
-</pre>
-<img src="lits-symmetry-example.png" title="lits-symmetry-example">
-<pre>
 type: litsplus
 puzzle: |
   aaabbb
@@ -955,13 +896,15 @@ solution: |
 <pre>
 type: meanderingnumbers
 source: http://maybepuzzles.wordpress.com/2014/03/26/puzzle-19-count-numbers/
-puzzle: |
-  aaabbb
-  aaacbb
-  addccc
-  ddeccf
-  ddeeff
-  ddeeff
+puzzle:
+  regions: |
+    aaabbb
+    aaacbb
+    addccc
+    ddeccf
+    ddeeff
+    ddeeff
+  clues: .
 solution: |
   347541
   256132
@@ -1189,26 +1132,6 @@ puzzle:
 </pre>
 <img src="pentopia.png" title="pentopia">
 <pre>
-type: pentomino-pipes
-puzzle: |
-  ..F..
-  .....
-  .Y.V.
-  .....
-  ..V..
-solution: |2
-  . . .-*-.
-      |   |
-  . *-. . .
-    | |   |
-  . .-* *-.
-    |   |  
-  . . . . .
-    |   |  
-  . *-.-. .
-</pre>
-<img src="pentopipes-example.png" title="pentopipes-example">
-<pre>
 type: pentomino-sums
 puzzle:
   digits:
@@ -1255,24 +1178,6 @@ code:
   cell_rows_bottom: [0,2]
 </pre>
 <img src="pentosums-example.png" title="pentosums-example">
-<pre>
-type: primeplace
-source: http://maybepuzzles.wordpress.com/2014/04/20/puzzle-24-prime-place/
-puzzle: |2
-   //.
-  // //
-  /   /
-  ./ /\
-   ./.
-solution: |2
-   124
-  11 32
-  2   3
-  43 12
-   434
-
-</pre>
-<img src="primeplace-example.png" title="primeplace-example">
 <pre>
 type: pyramid
 source:
@@ -1325,6 +1230,26 @@ puzzle: |
 </pre>
 <img src="render-as.png" title="render-as">
 <pre>
+type: ringring
+puzzle: |
+  X...X
+  ....X
+  ....X
+  .X...
+  .....
+solution: |2
+    .-.-.
+    |   |
+  .-.-. .
+  | | | |
+  . .-.-.
+  |   |
+  .   . .-.
+  |   | | |
+  .-.-. .-.
+</pre>
+<img src="ringring-example.png" title="ringring-example">
+<pre>
 type: scrabble
 puzzle:
   grid: |
@@ -1349,6 +1274,17 @@ solution: |
   ...T..
 </pre>
 <img src="scrabble-example.png" title="scrabble-example">
+<pre>
+type: shakashaka
+puzzle: |
+  .....
+  X...1
+  .3...
+  .....
+  ....X
+
+</pre>
+<img src="shakashaka.png" title="shakashaka">
 <pre>
 type: shikaku
 puzzle: |
@@ -1429,6 +1365,26 @@ code:
 </pre>
 <img src="skyscrapers-fraction-example.png" title="skyscrapers-fraction-example">
 <pre>
+type: skyscrapers
+puzzle:
+  digits: 1-4
+  top:    [3,-,-,-]
+  left:   [-,-,2,-]
+  right:  [2,1,-,4]
+  bottom: [-,-,2,-]
+  grid: |
+    .4..
+    ...4
+    3...
+    ..2.
+solution: |
+  2413 
+  1234 
+  3142 
+  4321 
+</pre>
+<img src="skyscrapers-inside-example.png" title="skyscrapers-inside-example">
+<pre>
 type: slalom
 puzzle: |
   01.2..
@@ -1504,35 +1460,6 @@ solution:
 </pre>
 <img src="slitherlink-liar-example.png" title="slitherlink-liar-example">
 <pre>
-type: slitherlink-multi
-puzzle:
-  loops: 3
-  grid: |
-    3.2.20
-    ..4...
-    2..1..
-    12....
-    ...3.1
-    11..1.
-solution: |
-  o-o-o-o-o o o
-  |. . . .|. . 
-  o-o o-o o-o o
-   .|.|.|. .|. 
-  o-o o-o o o-o
-  |. . . . . .|
-  o o o-o-o-o o
-  |. .|. . .|.|
-  o o-o o-o o-o
-  |.|. .|.|. . 
-  o-o o-o o o o
-   . .|. .|. . 
-  o o o-o-o o o
-code:
-  cell_rows_bottom: [3, 4]
-</pre>
-<img src="slitherlink-multi-example.png" title="slitherlink-multi-example">
-<pre>
 type: slovaksums
 puzzle:
   digits: 1-4
@@ -1602,10 +1529,22 @@ solution: |
    . . .|. .|. 
   o o o o-o-o o
 code:
-  cell_rows_bottom: [0,2]
+  cell_rows_bottom: [0]
+  cell_rows_bottom_labeled:
+    Z: 2
   node_rows_bottom: [4]
   cell_cols: [1]
-  node_cols: [4]
+  node_cols_labeled: 
+    X: 4
+  node_labels: |
+    .A.....
+    .....B.
+    .......
+    .C..D..
+    .......
+    .......
+    .......
+
 </pre>
 <img src="solution-code-example.png" title="solution-code-example">
 <pre>
@@ -1662,26 +1601,6 @@ solution: |
   
 </pre>
 <img src="starbattle-example.png" title="starbattle-example">
-<pre>
-type: starwars
-puzzle:
-  grid: |
-    aaabbbccc
-    aaabbbccc
-    aaabbbccc
-    bbbcccaaa
-    bbbcccaaa
-    bbbcccaaa
-    aaabbbccc
-    aaabbbccc
-    aaabbbccc
-  lines:
-    - 3 2 8 7
-    - 4 2 8 6
-    - 5 0 8 3
-
-</pre>
-<img src="starwars.png" title="starwars">
 <pre>
 type: statuepark
 puzzle:
@@ -1985,8 +1904,736 @@ solution:
 </pre>
 <img src="wordsearch-example.png" title="wordsearch-example">
 <pre>
-type: wormhole
+type: yajilin
 puzzle:
+  grid: |
+    .........
+    ....a.b..
+    ...c...d.
+    .........
+    .........
+    .........
+    .e...f...
+    ..g.h....
+    .........
+  clues:
+    a: 1 right
+    b: 1 down
+    c: 2 down
+    d: 2 down
+    e: 0 right
+    f: 2 up
+    g: 3 up
+    h: 2 left
+solution: |
+  o-o X o-o-o-o-o X
+  |.|. .|. . . .|
+  o o-o-o o X o o-o
+  |. . . . . . . .|
+  o-o X o o-o X o o
+   .|. . .|.|. . .|
+  X o-o-o o o-o X o
+   . . .|.|. .|. .|
+  o-o X o-o X o-o o
+  |.|. . . . . .|.|
+  o o-o X o-o-o o o
+  |. .|. .|. .|.|.|
+  o o o-o-o o o-o o
+  |. . . . . . . .|
+  o X o X o o-o X o
+  |. . . . .|.|. .|
+  o-o-o-o-o-o o-o-o
+  
+  
+</pre>
+<img src="yajilin-example.png" title="yajilin-example">
+<pre>
+type: yajilin
+puzzle:
+  grid: |
+    a...
+    ....
+    ..b.
+    ....
+  clues:
+    a: 1 right
+    b: 1 left
+solution: |
+  o o-o X
+    | |
+  o-o o-o
+  |     |
+  o X o o
+  |     |
+  o-o-o-o
+</pre>
+<img src="yajilin-small-example.png" title="yajilin-small-example">
+<pre>
+- type: edges
+  grid: |
+    o o o o o o o
+     .|. . .|.|.
+    o o-o-o o-o-o
+     . . .|. .|.
+    o-o o o-o o-o
+     .|. . .|. .
+    o-o-o o o o o
+     .|.|. .|. .
+    o o-o-o o-o-o
+     . .|.|. . .
+    o-o o-o-o o o
+     .|. .|.|. .
+    o o o o o o o
+  substitute:
+    "|": afternoon-west
+    "-": afternoon-south
+- type: grid
+  style: default
+  grid: |
+    ......
+    ......
+    ......
+    ......
+    ......
+    ......
+- type: cells
+  tag: solution
+  grid: |
+    423651
+    145362
+    214536
+    651423
+    362145
+    536214
+</pre>
+<img src="afternoonskyscrapers-example.png" title="afternoonskyscrapers-example">
+<pre>
+# box of 2 or 3
+- type: full
+  grid: |
+    *-*-*-*-*
+    | | | | |
+    *-*-*-*-*
+    | | |
+    *-o-o-o-*
+        | | |
+    *-*-*-*-*
+    | | | | |
+    o-*-*-*-*
+  substitute:
+    '|': thin-edge-vert
+    '-': thin-edge-horiz
+    '*': small-pearl-black
+    'o': small-pearl-white
+# solution:
+#  22332
+#  33232
+#  3-2-3
+#  22323
+#  -3323
+</pre>
+<img src="boxof2or3.png" title="boxof2or3">
+<pre>
+- type: grid
+  style: dashed
+  grid: |2
+     ...
+     ...
+     ...
+- type: edges
+  grid: |
+    . . . . . .
+     o-o-o o-o
+         | |
+     o o-o o o
+       |   |
+     o o-o-o o
+    . . . . . .
+  substitute:
+    '-': sol-edge-horiz
+    '|': sol-edge-vert
+    'o': .
+</pre>
+<img src="cylinder.png" title="cylinder">
+<pre>
+- type: grid
+  style: default
+  grid: |
+    ......
+    ......
+    ......
+    ......
+    ......
+    ......
+- type: regions
+  grid: |
+    aaabbb
+    aaabbb
+    cccddd
+    cccddd
+    eeefff
+    eeefff
+- type: edges
+  grid: |
+    . . . . . . .
+      o o   o o
+    .o.o.o. . . .
+      o o   o
+    . . . . . . .
+        o   o o
+    . . . .o.o.o.
+      o o     o
+    .o.o.o. . .o.
+        o   o o
+    . . . . . . .
+      o     o
+    . . . . . . .
+- type: cells
+  grid: |
+    1.....
+    .2....
+    ..3...
+    ...4..
+    ....5.
+    .....6
+- type: cells
+  tag: code
+  place: west
+  grid: |
+    .
+    >
+    .
+    .
+    >
+    .
+  substitute:
+    '>': triangle-right
+
+</pre>
+<img src="friendly-sudoku.png" title="friendly-sudoku">
+<pre>
+# horse snake
+- type: grid
+  style: dashed
+  grid: |
+    ........
+    ........
+    ........
+    ........
+    ........
+    ........
+    ........
+    ........
+- type: cells
+  grid: |
+    ........
+    ........
+    ........
+    ...55...
+    ...76...
+    ........
+    ........
+    o......o
+  substitute:
+    o: pearl-black
+- type: edges
+  tag: solution
+  grid: |
+    . . . . . . . . .
+     . . . o-o-o . .
+           |   |
+     . . o-o . o . .
+         |     |
+     . o-o . . o-o .
+       |         |
+     . o . . . . o .
+       |         |
+     . o-o . o-o-o .
+         |   |
+     . . o . o . . .
+         |   |
+     o-o-o . o-o-o-o
+    . . . . . . . . .
+  substitute:
+    o: .
+    '-': sol-edge-horiz
+    '|': sol-edge-vert
+</pre>
+<img src="horse-snake.png" title="horse-snake">
+<pre>
+- type: cells
+  grid: |
+    ABCDEFGHIJKL
+    MNOPQRSTUVWX
+    YZ0123456789
+    .-|*o#/\....
+- type: cells
+  grid: |
+    abcdefghijkl
+    mnopqrstuvwx
+    yzABCDEFGHIJ
+    KLMNOPQRSTUV
+    WXYZ........
+    .
+    .
+    .
+    .
+    .
+  substitute:
+    a: 123
+    b: kropki-white
+    c: kropki-black
+    d: afternoon-west
+    e: afternoon-south
+    f: light-diagonal-forward
+    g: light-diagonal-back
+    h: light-diagonal-both
+    i: dot
+    j: shade
+    k: small-pearl-white
+    l: small-pearl-black
+    m: pearl-white
+    n: pearl-black
+    o: edge-horiz
+    p: edge-vert
+    q: thin-edge-horiz
+    r: thin-edge-vert
+    s: sol-edge-horiz
+    t: sol-edge-vert
+    u: light-diagonal-forward
+    v: light-diagonal-back
+    w: light-diagonal-both
+    x: arrow-right R
+    y: arrow-left L
+    z: arrow-up U
+    A: arrow-down D
+    B: triangle-topleft
+    C: triangle-topright
+    D: triangle-bottomleft
+    E: triangle-bottomright
+</pre>
+<img src="library.png" title="library">
+<pre>
+- type: cells
+  tag: solution
+  grid: |
+    XXXXXX
+    -X-X-X
+    -X--XX
+    -XXXX-
+    ---X--
+    --XX--
+    --X---
+    -XXXX-
+    XX--X-
+    X-X-X-
+    XXXXXX
+  substitute:
+    "-": blank
+    "X": shade
+- type: grid
+  style: default
+  grid: |
+    ......
+    ......
+    ......
+    ......
+    ......
+    ......
+    ......
+    ......
+    ......
+    ......
+    ......
+- type: regions
+  grid: |
+    aabbbc
+    aacbbc
+    dacccc
+    dddddd
+    eddede
+    eeeeee
+    eeeeff
+    ggffff
+    ggggff
+    giighh
+    iiihhh
+- type: edges
+  grid: |
+    . . . . . . .
+    
+    . . . . . . .
+    
+    . . . . . . .
+    
+    . . . . . . .
+    
+    . . . . . . .
+          
+    . . . . . . .
+          O
+    . . . . . . .
+    
+    . . . . . . .
+    
+    . . . . . . .
+    
+    . . . . . . .
+    
+    . . . . . . .
+    
+    . . . . . . .
+  substitute:
+    O: dot
+</pre>
+<img src="lits-symmetry-example.png" title="lits-symmetry-example">
+<pre>
+# pentomino-pipes
+- type: nodes
+  tag: puzzle
+  grid: |
+    ..F..
+    .....
+    .Y.V.
+    .....
+    ..V..
+  substitute:
+    '.': small-dot
+- type: full
+  tag: solution
+  grid: |2
+    . . .-*-.
+        |   |
+    . *-. . .
+      | |   |
+    . .-* *-.
+      |   |  
+    . . . . .
+      |   |  
+    . *-.-. .
+  substitute:
+    '*': kropki-black
+    '.': small-dot
+</pre>
+<img src="pentopipes-example.png" title="pentopipes-example">
+<pre>
+- type: cells
+  grid: |2
+     //.
+    // //
+    /   /
+    ./ /\
+     ./.
+  substitute:
+    '/': light-diagonal-forward
+    '\': light-diagonal-back
+- type: grid
+  style: default-irregular
+  grid: |2
+     ... 
+    .. ..
+    .   .
+    .. ..
+     ...
+- type: cells
+  tag: solution
+  grid: |2
+     124
+    11 32
+    2   3
+    43 12
+     434
+
+</pre>
+<img src="primeplace-example.png" title="primeplace-example">
+<pre>
+- type: grid
+  style: plain
+  shape: shifted
+  grid: |
+    .
+    ..
+    ...
+    ....
+    .....
+- type: cells
+  shape: shifted
+  grid: |
+    5
+    43
+    210
+    9ABC
+    666.6
+</pre>
+<img src="pyramid.png" title="pyramid">
+<pre>
+- type: cells
+  grid: |
+    X...X
+    ....X
+    ....X
+    .X...
+    .....
+  substitute:
+    X: black
+- type: edges
+  tag: solution
+  grid: |
+    o
+       .-.-.
+    o  |   |
+     .-.-. .
+    o| | | |
+     . .-.-.
+    o|   |
+     .   . .-.
+    o|   | | |
+     .-.-. .-.
+    o
+  substitute:
+    '-': sol-edge-horiz
+    '|': sol-edge-vert
+- type: grid
+  style: dashed
+  grid: |
+    .....
+    .....
+    .....
+    .....
+    .....
+</pre>
+<img src="ringring-generic-example.png" title="ringring-generic-example">
+<pre>
+- type: cells
+  grid: |
+    .....
+    X...X
+    .X...
+    .....
+    ....X
+  substitute:
+    X: black
+- type: cells
+  grid: |
+    .....
+    ....1
+    .3...
+    .....
+    .....
+  substitute:
+    1: inverted-letters 1
+    3: inverted-letters 3
+- type: cells
+  tag: solution
+  grid: |
+    .ab..
+    .d.b.
+    ..dc.
+    abab.
+    dcdc.
+  substitute:
+    a: triangle-topleft
+    b: triangle-topright
+    c: triangle-bottomright
+    d: triangle-bottomleft
+- type: grid
+  style: dashed
+  grid: |
+    .....
+    .....
+    .....
+    .....
+    .....
+</pre>
+<img src="shakashaka-example.png" title="shakashaka-example">
+<pre>
+- type: cells
+  grid: |
+    3.2.20
+    ..4...
+    2..1..
+    12....
+    ...3.1
+    11..1.
+- type: note
+  place: top-right
+  contents:
+  - 3
+  - miniloop
+- type: edges
+  tag: solution
+  grid: |
+    o-o-o-o-o o o
+    |. . . .|. . 
+    o-o o-o o-o o
+     .|.|.|. .|. 
+    o-o o-o o o-o
+    |. . . . . .|
+    o o o-o-o-o o
+    |. .|. . .|.|
+    o o-o o-o o-o
+    |.|. .|.|. . 
+    o-o o-o o o o
+     . .|. .|. . 
+    o o o-o-o o o
+  substitute:
+    '|': sol-edge-vert
+    '-': sol-edge-horiz
+- type: grid
+  style: dots
+  grid: |
+    ......
+    ......
+    ......
+    ......
+    ......
+    ......
+- type: cells
+  tag: code
+  place: west
+  grid: |
+    .
+    >
+    >
+    .
+    .
+    .
+</pre>
+<img src="slitherlink-multi-example.png" title="slitherlink-multi-example">
+<pre>
+
+- type: cells
+  grid: |
+    B...
+    O...
+  substitute:
+    O: pearl-black
+    B: tree
+- type: cells
+  tag: solution
+  grid: |
+    .Z.#
+    ####
+  substitute:
+    Z: tent
+- type: cells
+  tag: solution
+  grid: |
+    ...O
+    O...
+  substitute:
+    O: pearl-black
+- type: edges
+  tag: solution
+  grid: |
+    o o o o o
+      -
+    o o o o o
+
+    o o o o o
+  substitute:
+    o: .
+- type: grid
+  style: default
+  grid: |
+    ....
+    ....
+</pre>
+<img src="snake-forest-example.png" title="snake-forest-example">
+<pre>
+# starwars
+# star battle with diagonals (also two stars each)
+- type: grid
+  style: default
+  grid: |
+    .........
+    .........
+    .........
+    .........
+    .........
+    .........
+    .........
+    .........
+    .........
+- type: nodes
+  grid: |
+    ..........
+    ..........
+    ......../.
+    .......//.
+    ......//..
+    .....//...
+    ....//../.
+    ......./..
+    ....../...
+    ..........
+- type: regions
+  grid: |
+    aaabbbccc
+    aaabbbccc
+    aaabbbccc
+    bbbcccaaa
+    bbbcccaaa
+    bbbcccaaa
+    aaabbbccc
+    aaabbbccc
+    aaabbbccc
+
+</pre>
+<img src="starwars.png" title="starwars">
+<pre>
+- type: cells
+  grid: |
+    ......
+    ..XXX.
+    ..XXX.
+    ......
+    .XXX..
+    .XXX..
+  substitute:
+    X: light-shade
+- type: grid
+  style: default
+  grid: |
+    ......
+    ......
+    ......
+    ......
+    ......
+    ......
+- type: regions
+  grid: |
+    aaabbb
+    aaabbb
+    cccddd
+    cccddd
+    eeefff
+    eeefff
+- type: cells
+  grid: |
+    1.....
+    .2....
+    ..3...
+    ...4..
+    ....5.
+    .....6
+
+</pre>
+<img src="sudoku-extra-regions.png" title="sudoku-extra-regions">
+<pre>
+# wormhole (Logic Masters 201?)
+- type: grid
+  style: dashed
+  grid: |
+    ........
+    ........
+    ........
+    ........
+    ........
+    ........
+    ........
+    ........
+- type: cells
   grid: |
     ........
     .a....B.
@@ -1996,13 +2643,110 @@ puzzle:
     .C......
     .e....f.
     ........
-  replace:
+  substitute:
     a: 18
     b: 52
     c: 37
     d: 25
     e: 31
     f: 9
-  relative: U0
+# extra information: arrow up, 0
+#  (so start and end point have to be in the same row)
+- type: note
+  place: top-right
+  contents:
+    [arrow-up 0]
 </pre>
 <img src="wormhole.png" title="wormhole">
+<pre>
+- type: cells
+  tag: solution
+  grid: |
+    ...X
+    ....
+    .X..
+    ....
+  substitute:
+    X: shade
+- type: cells
+  grid: |
+    X...
+    ....
+    ..X.
+    ....
+  substitute:
+    X: light-shade
+- type: cells
+  grid: |
+    a...
+    ....
+    ..b.
+    ....
+  substitute:
+    a: arrow-right 1
+    b: arrow-left 1
+- type: grid
+  style: default
+  grid: |
+    ....
+    ....
+    ....
+    ....
+- type: edges
+  tag: solution
+  grid: |
+    . . . . .
+     o o-o o
+    . .|.|. .
+     o-o o-o
+    .|. . .|.
+     o o o o
+    .|. . .|.
+     o-o-o-o
+    . . . . .
+  substitute:
+    '|': sol-edge-vert
+    '-': sol-edge-horiz
+
+</pre>
+<img src="yajilin-generic-example.png" title="yajilin-generic-example">
+<pre>
+- type: grid
+  style: dashed
+  grid: |
+    ...
+    ...
+    ...
+- type: cells
+  grid: |
+    o*o
+    ...
+    ...
+  substitute:
+    o: pearl-black
+    '*': pearl-white
+- type: cells
+  tag: solution
+  grid: |
+    o*o
+    o*o
+    ooo
+  substitute:
+    o: pearl-black
+    '*': pearl-white
+- type: edges
+  tag: solution
+  grid: |
+    o o o o
+      | | 
+    o o o o
+      | | 
+    o o-o o
+    
+    o o o o
+  substitute:
+    '|': edge-vert
+    '-': edge-horiz
+
+</pre>
+<img src="yinyang-example.png" title="yinyang-example">
