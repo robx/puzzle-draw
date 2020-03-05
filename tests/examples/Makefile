@@ -1,4 +1,4 @@
-.PHONY: all puzzles examples graphics clean compare example-gallery
+.PHONY: all puzzles examples graphics clean compare
 
 DRAW = drawpuzzle
 
@@ -33,6 +33,3 @@ compare:
 	done
 	./gallery.sh diff/*.png > gallery.html
 	! ls diff/*.png
-
-example-gallery:
-	sh ./docgallery.sh *.pzl *.pzg > examples.html

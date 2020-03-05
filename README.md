@@ -55,7 +55,6 @@ For more examples, see:
 * A [demo web application][demo] that provides some more
   examples and that can be used to generate SVG images from such
   puzzle descriptions.
-* The [gallery of examples][examples] used to test the program.
 * A [puzzle set][twentyfour] that covers the puzzle types
   that were supported as of 2014-05.
 * Most of the puzzle graphics on the puzzle blog [maybepuzzles][maybepuzzles]
