@@ -24,6 +24,7 @@ import Draw.Draw
 import Draw.Elements
 import Draw.Grid
 import Draw.Lib
+import Draw.PuzzleGrids
 import Draw.Style
 
 type GridDrawing b = (Size, Drawing b)
@@ -75,6 +76,16 @@ component c = case c of
   Note ds -> ((0, 0), note $ hcatSep 0.2 $ map decoration $ ds)
   Pyramid g -> (shiftSize g, shiftGrid g)
   CellPyramid g -> (shiftSize g, placeGrid . fmap decoration $ g)
+  Rows rs ->
+    centerGrid'
+      ( (0, length rs - 1),
+        placeSideGrid unitX (- unitY) $ map (map decoration) rs
+      )
+  Columns cs ->
+    centerGrid
+      ( (length cs - 1, 0),
+        placeSideGrid (- unitY) unitX $ map (map decoration) cs
+      )
   where
     gridStyle s = case s of
       GridDefault -> gDefault
@@ -84,6 +95,7 @@ component c = case c of
       GridPlain -> gPlain
       GridPlainDashed -> gPlainDashed
     centerGrid (sz, d) = (sz, d # translate (-0.5 *^ r2i sz))
+    centerGrid' (sz, d) = (sz, d # translate (0.5 *^ r2i sz))
 
 decoration :: Backend' b => Decoration -> Drawing b
 decoration d = case d of

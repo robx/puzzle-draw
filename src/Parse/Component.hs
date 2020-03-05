@@ -6,6 +6,7 @@ import Data.Component
 import qualified Data.Elements as E
 import Data.Grid
 import Data.GridShape
+import Data.List (transpose)
 import qualified Data.Map.Strict as Map
 import Data.Yaml
 import qualified Parse.Util as Util
@@ -23,6 +24,8 @@ parseComponent = withObject "Component" $ \o -> do
     "edges" -> EdgeGrid <$> parseEdgeGrid o
     "full" -> parseFullGrid o
     "note" -> Note <$> parseNote o
+    "rows" -> Rows <$> parseRows o
+    "columns" -> Columns <$> parseColumns o
     _ -> fail $ "unknown component type: " ++ t
   pure $ TaggedComponent tag (PlacedComponent place c)
 
@@ -117,6 +120,18 @@ parseNote :: Object -> Parser [Decoration]
 parseNote o = do
   ds <- o .: "contents"
   sequence . map parseExtendedDecoration $ ds
+
+parseColumns :: Object -> Parser [[Decoration]]
+parseColumns o = do
+  g <- o .: "grid"
+  r <- parseReplacements o
+  transpose <$> Util.parseRectWith (parseDecorationWithReplacements r) g
+
+parseRows :: Object -> Parser [[Decoration]]
+parseRows o = do
+  g <- o .: "grid"
+  r <- parseReplacements o
+  Util.parseRectWith (parseDecorationWithReplacements r) g
 
 parseReplacements :: Object -> Parser (Map.Map Char Decoration)
 parseReplacements o = do

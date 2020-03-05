@@ -15,6 +15,8 @@ data Component a
   | Pyramid !(Grid ShiftC ())
   | CellPyramid !(Grid ShiftC Decoration)
   | Note [Decoration]
+  | Rows [[Decoration]]
+  | Columns [[Decoration]]
   | RawComponent !Size !a
 
 data Tag
