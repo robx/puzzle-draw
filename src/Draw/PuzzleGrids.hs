@@ -122,6 +122,7 @@ placeMultiOutside ocs =
   foldMap
     ( \(cs, dir1, base, dir2) ->
         placeSideGrid (r2i dir1) (r2i dir2) cs
+          -- FIXME: I doubt this works for k ~ N
           # moveTo (toPoint base .-^ 1 / 3 *^ r2i dir1)
     )
     (Data.outsideClues ocs)
