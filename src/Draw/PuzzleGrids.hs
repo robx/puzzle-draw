@@ -128,6 +128,8 @@ placeMultiOutside ocs =
     mrg = 1 / 3
     off elDiam = 1 / 2 * elDiam - 1 / 2 * mrg
 
+
+-- | clue placement for greater wall
 placeMultiOutsideGW ::
   (Backend' b, FromCoord k, ToCoord k, ToPoint k, Ord k) =>
   OutsideClues k [Drawing b] ->
@@ -135,7 +137,7 @@ placeMultiOutsideGW ::
 placeMultiOutsideGW ocs =
   foldMap
     ( \(cs, dir1, base, dir2) ->
-        placeSideGrid 0 (const (1 / 4)) (r2i dir1) (r2i dir2) (toPoint base) cs
+        layoutGrid (r2i dir2) (2 / 3 *^ r2i dir1) cs # moveTo (toPoint base .+^ 1/4 *^ r2i dir1)
     )
     (Data.outsideClues ocs)
 
