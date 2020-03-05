@@ -21,6 +21,7 @@ module Draw.Draw
     centerY',
     centerXY',
     smash',
+    align',
     alignBL',
     alignBR',
     alignTL',
@@ -35,6 +36,7 @@ module Draw.Draw
     besidesR',
     strutX',
     strutY',
+    strutR2',
     text',
     textFixed,
     alignPixel,
@@ -46,6 +48,7 @@ import Diagrams.Prelude hiding
   ( parts,
     render,
   )
+import Diagrams.TwoD.Combinators (strutR2)
 import Draw.Font
 import Draw.Lib
 import Draw.Widths
@@ -108,9 +111,9 @@ toOutputWidth u w = case u of
     wpt = cmtopoint w -- grid square size 1.0cm
 
 alignPixel :: Backend' b => Diagram b -> Diagram b
-alignPixel = scale (1 / gridresd) . align' . scale gridresd
+alignPixel = scale (1 / gridresd) . algn . scale gridresd
   where
-    align' d = maybe id grow (getCorners $ boundingBox d) d
+    algn d = maybe id grow (getCorners $ boundingBox d) d
     grow (bl, tr) = mappend $ phantoml (nudge bl False) (nudge tr True)
     nudge p dir = let (px, py) = unp2 p in p2 (nudge' px dir, nudge' py dir)
     nudge' x True = fromIntegral (ceiling (x - 0.5) :: Int) + 0.5
@@ -136,6 +139,9 @@ centerXY' = lift centerXY
 
 smash' :: Backend' b => Drawing b -> Drawing b
 smash' = lift smash
+
+align' :: Backend' b => V2 Double -> Drawing b -> Drawing b
+align' = lift . align
 
 alignBL' :: Backend' b => Drawing b -> Drawing b
 alignBL' = lift alignBL
@@ -178,6 +184,9 @@ strutX' = draw . strutX
 
 strutY' :: Backend' b => Double -> Drawing b
 strutY' = draw . strutY
+
+strutR2' :: Backend' b => V2 Double -> Drawing b
+strutR2' = draw . strutR2
 
 lift :: (Diagram b -> Diagram b) -> Drawing b -> Drawing b
 lift f d = Drawing (\c -> f (fromDrawing d c))
