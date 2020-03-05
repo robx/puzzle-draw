@@ -26,35 +26,44 @@ import Draw.Grid
 import Draw.Lib
 import Draw.Style
 
+type GridDrawing b = (Size, Drawing b)
+
+pointWise :: (a -> a -> b) -> (a, a) -> (a, a) -> (b, b)
+pointWise f (a, b) (c, d) = (f a c, f b d)
+
 components :: Backend' b => [PlacedComponent (Drawing b)] -> Drawing b
 components cs = snd $ go $ reverse cs
   where
     go [] = ((0 :: Int, 0 :: Int), mempty)
     go ((PlacedComponent p c) : pcs) =
-      let (tl, dc) = component c
-          (tls, dcs) = go pcs
-          ntl = (max (fst tl) (fst tls), max (snd tl) (snd tls))
+      let (sz, dc) = component c
+          (szrest, dcs) = go pcs
+          maxsz = pointWise max sz szrest
        in case p of
-            Atop -> (ntl, dc <> dcs)
-            West -> (ntl, dcs |!| strutX' 0.5 |!| dc)
-            North -> (ntl, dcs =!= strutY' 0.5 =!= dc)
+            Atop -> (maxsz, dc <> dcs)
+            West -> (szrest, dcs |<| strutX' 0.5 |<| dc)
+            North -> (szrest, dcs =^= strutY' 0.5 =^= dc)
             TopRight ->
-              ( ntl,
-                (dc # alignBL' # translatep tls # translate (r2 (0.6, 0.6)))
+              ( szrest,
+                ( dc # alignBL' # translate (0.5 *^ r2i szrest)
+                    # translate
+                      (r2 (0.6, 0.6))
+                )
                   <> dcs
               )
-    (=!=) = beside unitY
-    (|!|) = beside (negated unitX)
+    (=^=) = beside unitY
+    (|<|) = beside (negated unitX)
 
-component :: Backend' b => Component (Drawing b) -> (Size, Drawing b)
+component :: Backend' b => Component (Drawing b) -> GridDrawing b
 component c = case c of
   RawComponent sz x -> (sz, x)
-  Grid s g -> (cellSize g, grid (gridStyle s) g)
-  Regions g -> (cellSize g, areas g)
-  CellGrid g -> (cellSize g, placeGrid . fmap decoration $ g)
-  NodeGrid g -> (nodeSize g, placeGrid . fmap decoration $ g)
+  Grid s g -> centerGrid (cellSize g, grid (gridStyle s) g)
+  Regions g -> centerGrid (cellSize g, areas g)
+  CellGrid g -> centerGrid (cellSize g, placeGrid . fmap decoration $ g)
+  NodeGrid g -> centerGrid (nodeSize g, placeGrid . fmap decoration $ g)
   EdgeGrid g ->
-    (edgeSize g, placeGrid' . Map.mapKeys midPoint . fmap decoration $ g)
+    centerGrid
+      (edgeSize g, placeGrid' . Map.mapKeys midPoint . fmap decoration $ g)
   FullGrid ns cs es ->
     ( nodeSize ns,
       mconcat . map (snd . component) $ [NodeGrid ns, CellGrid cs, EdgeGrid es]
@@ -70,6 +79,7 @@ component c = case c of
       GridDots -> gSlither
       GridPlain -> gPlain
       GridPlainDashed -> gPlainDashed
+    centerGrid (sz, d) = (sz, d # translate (-0.5 *^ r2i sz))
 
 decoration :: Backend' b => Decoration -> Drawing b
 decoration d = case d of
