@@ -35,7 +35,6 @@ module Draw.Draw
     aboveT',
     besidesR',
     showOriginD,
-    showEnvelopeD,
     showBoundingBoxD,
     strutX',
     strutY',
@@ -145,9 +144,6 @@ smash' = lift smash
 
 showOriginD :: Backend' b => Drawing b -> Drawing b
 showOriginD = lift showOrigin
-
-showEnvelopeD :: Backend' b => Drawing b -> Drawing b
-showEnvelopeD = lift showEnvelope
 
 showBoundingBoxD :: Backend' b => Drawing b -> Drawing b
 showBoundingBoxD = lift (\d -> box d <> d)
