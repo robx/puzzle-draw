@@ -2,7 +2,9 @@
 
 module Parse.Component where
 
+import Control.Applicative ((<|>))
 import Data.Component
+import Data.Default.Class
 import qualified Data.Elements as E
 import Data.Grid
 import Data.GridShape
@@ -40,16 +42,48 @@ parseTag o = do
     Just x -> fail $ "unknown tag: " ++ x
 
 parsePlacement :: Object -> Parser Placement
-parsePlacement o = do
-  p <- o .:? "place" :: Parser (Maybe String)
-  case p of
-    Nothing -> pure Atop
-    Just "north" -> pure North
-    Just "west" -> pure West
-    Just "east" -> pure East
-    Just "south" -> pure South
-    Just "top-right" -> pure TopRight
-    Just x -> fail $ "unknown placement: " ++ x
+parsePlacement o = compact <|> detailed
+  where
+    compact = do
+      p <- o .:? "place" :: Parser (Maybe String)
+      dir <- parseDir p
+      pure $ def {_direction = dir}
+    detailed = do
+      p <- o .: "place"
+      dir <- p .:? "direction" >>= traverse parseDir
+      margin <- p .:? "margin" >>= traverse parseMargin
+      alignment <- p .:? "align" >>= traverse parseAlignment
+      pure $ (maybe id setDir dir . maybe id setMargin margin . maybe id setAlignment alignment $ def)
+    setDir d x = x {_direction = d}
+    setMargin m x = x {_margin = m}
+    setAlignment a x = x {_alignment = a}
+    parseDir s =
+      case s of
+        Nothing -> pure Atop
+        Just "north" -> pure North
+        Just "west" -> pure West
+        Just "east" -> pure East
+        Just "south" -> pure South
+        Just "top-right" -> pure TopRight
+        Just x -> fail $ "unknown placement: " ++ x
+    parseMargin v = case v of
+      String _ -> do
+        s <- parseJSON v
+        case s of
+          "far" -> pure MarginFar
+          "close" -> pure MarginClose
+          _ -> fail $ "unknown margin: " ++ s
+      Number _ -> MarginCustom <$> parseJSON v
+      _ -> fail $ "unexpected type for margin: " ++ show v
+    parseAlignment v = do
+      s <- parseJSON v
+      case s of
+        "center" -> pure AlignCenter
+        "bottom" -> pure AlignBottom
+        "top" -> pure AlignTop
+        "left" -> pure AlignLeft
+        "right" -> pure AlignRight
+        _ -> fail $ "unknown alignment: " ++ s
 
 data Shape = ShapeSquare | ShapeShifted
 

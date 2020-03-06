@@ -12,7 +12,8 @@ import Data.Lib
 import Data.PuzzleTypes
 import Data.Yaml
 import Diagrams.Prelude hiding
-  ( parts,
+  ( atop,
+    parts,
     render,
     sc,
   )
@@ -96,13 +97,13 @@ decodeAndDraw params b = case backend fmt of
           let fakeSize = (0, 0)
               pc =
                 [ TaggedComponent (Just Puzzle)
-                    $ PlacedComponent Atop
+                    $ PlacedComponent atop
                     $ RawComponent fakeSize pzl
                 ]
               sc = case msol of
                 Just sol ->
                   [ TaggedComponent (Just Solution)
-                      $ PlacedComponent Atop
+                      $ PlacedComponent atop
                       $ RawComponent fakeSize sol
                   ]
                 Nothing -> []

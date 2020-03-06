@@ -40,7 +40,7 @@ components cs = snd $ go $ reverse cs
       let (sz, dc) = component c
           (szrest, dcs) = go pcs
           maxsz = pointWise max sz szrest
-       in case p of
+       in case _direction p of
             Atop -> (maxsz, dc <> dcs)
             West -> (szrest, dcs |<| strutX' 0.5 |<| dc)
             North -> (szrest, dcs =^= strutY' 0.5 =^= dc)

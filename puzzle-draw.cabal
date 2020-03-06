@@ -86,7 +86,8 @@ library
         Rasterific >=0.7.4.2,
         diagrams-rasterific >=1.4.2,
         diagrams-svg >=1.4.2,
-        file-embed >=0.0.10
+        file-embed >=0.0.10,
+        data-default-class >=0.1.2
 
 executable drawpuzzle
     main-is: drawpuzzle.hs

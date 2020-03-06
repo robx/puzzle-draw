@@ -13,6 +13,7 @@ where
 
 import Data.Code
 import Data.Component
+import Data.Default.Class
 import Data.Grid
 import Data.GridShape
 import qualified Data.Map.Strict as Map
@@ -34,10 +35,11 @@ code cs = concat [collect Atop, collect West, collect North]
       let matching = map snd . filter ((==) p . fst) $ parts
        in if null matching then [] else [comp p $ mconcat matching]
     fakeSize = (0, 0) -- should be the dimensions of the code part
+    placement p = def {_direction = p}
     comp p d =
-      TaggedComponent (Just Code) $ PlacedComponent p $ RawComponent fakeSize $ d
+      TaggedComponent (Just Code) $ PlacedComponent (placement p) $ RawComponent fakeSize $ d
 
-codePart :: Backend' b => CodePart -> (Placement, Drawing b)
+codePart :: Backend' b => CodePart -> (PlacementDir, Drawing b)
 codePart cp = case cp of
   Rows' rs -> (West, placeGrid g # centerX')
     where

@@ -1,5 +1,6 @@
 module Data.Component where
 
+import Data.Default.Class
 import Data.Elements
 import Data.Grid
 import Data.GridShape
@@ -27,7 +28,7 @@ data Tag
 
 data TaggedComponent a = TaggedComponent (Maybe Tag) (PlacedComponent a)
 
-data Placement
+data PlacementDir
   = Atop
   | West
   | North
@@ -35,6 +36,31 @@ data Placement
   | East
   | TopRight
   deriving (Eq, Show)
+
+data PlacementAlignment
+  = AlignCenter
+  | AlignBottom
+  | AlignTop
+  | AlignLeft
+  | AlignRight
+
+data PlacementMargin
+  = MarginFar
+  | MarginClose
+  | MarginCustom Double
+
+data Placement
+  = Placement
+      { _direction :: PlacementDir,
+        _margin :: PlacementMargin,
+        _alignment :: PlacementAlignment
+      }
+
+instance Default Placement where
+  def = Placement {_direction = Atop, _margin = MarginFar, _alignment = AlignCenter}
+
+atop :: Placement
+atop = def {_direction = Atop}
 
 data PlacedComponent a = PlacedComponent Placement (Component a)
 

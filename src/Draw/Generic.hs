@@ -20,7 +20,7 @@ generic t (p, ms) = case t of
       . catMaybes
       $ [ ( \(x, _) ->
               TaggedComponent (Just Solution)
-                $ PlacedComponent Atop
+                $ PlacedComponent atop
                 $ CellGrid
                 $ fmap shade
                 $ x
@@ -28,25 +28,25 @@ generic t (p, ms) = case t of
             <$> msol,
           Just
             $ TaggedComponent Nothing
-            $ PlacedComponent Atop
+            $ PlacedComponent atop
             $ CellGrid
             $ fmap lightShade
             $ g,
           Just
             $ TaggedComponent Nothing
-            $ PlacedComponent Atop
+            $ PlacedComponent atop
             $ CellGrid
             $ fmap yajClue
             $ g,
           Just
             $ TaggedComponent Nothing
-            $ PlacedComponent Atop
+            $ PlacedComponent atop
             $ Grid GridDefault
             $ fmap (const ())
             $ g,
           ( \(_, l) ->
               TaggedComponent (Just Solution)
-                $ PlacedComponent Atop
+                $ PlacedComponent atop
                 $ cellEdges l
           )
             <$> msol
@@ -64,13 +64,13 @@ generic t (p, ms) = case t of
       . catMaybes
       $ [ Just
             $ TaggedComponent Nothing
-            $ PlacedComponent Atop
+            $ PlacedComponent atop
             $ CellGrid
             $ fmap (maybe Blank (const Black))
             $ g,
           Just
             $ TaggedComponent Nothing
-            $ PlacedComponent Atop
+            $ PlacedComponent atop
             $ CellGrid
             $ fmap
               ( \x -> case x of
@@ -80,7 +80,7 @@ generic t (p, ms) = case t of
             $ g,
           Just
             $ TaggedComponent Nothing
-            $ PlacedComponent Atop
+            $ PlacedComponent atop
             $ Grid GridDashed
             $ fmap (const ())
             $ g
@@ -92,19 +92,19 @@ generic t (p, ms) = case t of
       . catMaybes
       $ [ Just
             $ TaggedComponent Nothing
-            $ PlacedComponent Atop
+            $ PlacedComponent atop
             $ CellGrid
             $ fmap (maybe Blank (const Black))
             $ g,
           ( \es ->
               TaggedComponent (Just Solution)
-                $ PlacedComponent Atop
+                $ PlacedComponent atop
                 $ cellEdges es
           )
             <$> msol,
           Just
             $ TaggedComponent Nothing
-            $ PlacedComponent Atop
+            $ PlacedComponent atop
             $ Grid GridDashed
             $ fmap (const ())
             $ g
