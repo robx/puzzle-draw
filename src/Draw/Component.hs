@@ -42,10 +42,10 @@ components cs = snd $ go $ reverse cs
           maxsz = pointWise max sz szrest
        in case _direction p of
             Atop -> (maxsz, dc <> dcs)
-            West -> (szrest, dcs |<| strutX' 0.5 |<| dc)
-            North -> (szrest, dcs =^= strutY' 0.5 =^= dc)
-            East -> (szrest, dcs |>| strutX' 0.5 |>| dc)
-            South -> (szrest, dcs =:= strutY' 0.5 =:= dc)
+            West -> (szrest, dcs |<| strutX' (margin p) |<| dc)
+            North -> (szrest, dcs =^= strutY' (margin p) =^= dc)
+            East -> (szrest, dcs |>| strutX' (margin p) |>| dc)
+            South -> (szrest, dcs =:= strutY' (margin p) =:= dc)
             TopRight ->
               ( szrest,
                 ( dc # alignBL' # translate (0.5 *^ r2i szrest)
@@ -58,6 +58,10 @@ components cs = snd $ go $ reverse cs
     (|<|) = beside (negated unitX)
     (=:=) = beside (negated unitY)
     (|>|) = beside unitX
+    margin placement = case _margin placement of
+      MarginClose -> 1 / 6
+      MarginFar -> 1 / 2
+      MarginCustom m -> m
 
 component :: Backend' b => Component (Drawing b) -> GridDrawing b
 component c = case c of
