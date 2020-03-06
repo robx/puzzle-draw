@@ -127,7 +127,6 @@ placeMultiOutside ocs =
     )
     (Data.outsideClues ocs)
 
-
 -- | clue placement for greater wall
 placeMultiOutsideGW ::
   (Backend' b, FromCoord k, ToCoord k, ToPoint k, Ord k) =>
@@ -136,7 +135,7 @@ placeMultiOutsideGW ::
 placeMultiOutsideGW ocs =
   foldMap
     ( \(cs, dir1, base, dir2) ->
-        layoutGrid (r2i dir2) (2 / 3 *^ r2i dir1) cs # moveTo (toPoint base .+^ 1/4 *^ r2i dir1)
+        layoutGrid (r2i dir2) (2 / 3 *^ r2i dir1) cs # moveTo (toPoint base .+^ 1 / 4 *^ r2i dir1)
     )
     (Data.outsideClues ocs)
 
