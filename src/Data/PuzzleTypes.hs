@@ -56,7 +56,6 @@ data PuzzleType
   | Cave
   | Numberlink
   | Skyscrapers
-  | SkyscrapersStars
   | SkyscrapersFrac
   | SkyscrapersTightfit
   | TurningFences
@@ -177,7 +176,6 @@ obscureTypes =
     (WordLoop, "wordloop"),
     (RowKropkiPyramid, "rowkropkipyramid"),
     (LatinTapa, "latintapa"),
-    (SkyscrapersStars, "skyscrapers-doppelstern"),
     (SudokuDoppelblock, "sudoku-doppelblock"),
     (Loopki, "loopki"),
     (PentominoSums, "pentomino-sums"),

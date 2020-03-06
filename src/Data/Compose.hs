@@ -80,7 +80,6 @@ handle f FillominoLoop = f R.fillominoLoop D.fillominoLoop
 handle f Cave = f R.cave D.cave
 handle f Numberlink = f R.numberlink D.numberlink
 handle f Skyscrapers = f R.skyscrapers D.skyscrapers
-handle f SkyscrapersStars = f R.skyscrapersStars D.skyscrapersStars
 handle f SkyscrapersFrac = f R.tightfitskyscrapers D.tightfitskyscrapers
 handle f SkyscrapersTightfit = f R.tightfitskyscrapers D.tightfitskyscrapers
 handle f TurningFences = f R.slither D.slither

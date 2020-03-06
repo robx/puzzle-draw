@@ -43,7 +43,6 @@ module Draw.PuzzleTypes
     doppelblock,
     sudokuDoppelblock,
     dominos,
-    skyscrapersStars,
     fillominoCheckered,
     numberlink,
     dominoPills,
@@ -515,19 +514,6 @@ slovaksums =
     n (g, ds) = placeNoteTR (size' g) (text' ds # scale noteScale)
     p = grid gDefault <> placeGrid . fmap slovakClue . clues
     size' = Data.size . Map.mapKeys toCoord
-
-skyscrapersStars ::
-  Backend' b =>
-  Drawers b (OutsideClues C (Maybe Int), Int) (Grid C (Either Int Star))
-skyscrapersStars =
-  Drawers
-    (g <> n)
-    (g . fst <> placeGrid . fmap (either int star) . snd)
-  where
-    g =
-      (placeOutside . fmap (fmap int) <> grid gDefault . Data.outsideGrid) . fst
-    n (oc, s) =
-      placeNoteTR (Data.outsideSize oc) (int s ||| strutX' 0.2 ||| star Star)
 
 summon ::
   Backend' b =>

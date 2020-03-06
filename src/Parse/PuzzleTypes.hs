@@ -41,7 +41,6 @@ module Parse.PuzzleTypes
     doppelblock,
     sudokuDoppelblock,
     dominos,
-    skyscrapersStars,
     numberlink,
     dominoPills,
     fillominoLoop,
@@ -319,13 +318,6 @@ skyscrapers =
           <*> parseFromOptional ["grid"] parseClueGrid v
     )
     parseClueGrid
-
-skyscrapersStars ::
-  ParsePuzzle (OutsideClues C (Maybe Int), Int) (Grid C (Either Int Star))
-skyscrapersStars = (p, parseGrid)
-  where
-    p v@(Object o) = (,) <$> parseOut v <*> o .: "stars"
-    p _ = empty
 
 summon ::
   ParsePuzzle
