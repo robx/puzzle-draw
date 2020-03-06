@@ -34,6 +34,9 @@ module Draw.Draw
     phantom'',
     aboveT',
     besidesR',
+    showOriginD,
+    showEnvelopeD,
+    showBoundingBoxD,
     strutX',
     strutY',
     strutR2',
@@ -139,6 +142,17 @@ centerXY' = lift centerXY
 
 smash' :: Backend' b => Drawing b -> Drawing b
 smash' = lift smash
+
+showOriginD :: Backend' b => Drawing b -> Drawing b
+showOriginD = lift showOrigin
+
+showEnvelopeD :: Backend' b => Drawing b -> Drawing b
+showEnvelopeD = lift showEnvelope
+
+showBoundingBoxD :: Backend' b => Drawing b -> Drawing b
+showBoundingBoxD = lift (\d -> box d <> d)
+  where
+    box d = (boundingRect d :: Path V2 Double) # stroke # lc red # lw medium
 
 align' :: Backend' b => V2 Double -> Drawing b -> Drawing b
 align' = lift . align
