@@ -59,7 +59,7 @@ components cs = snd $ go $ reverse cs
     (=:=) = beside (negated unitY)
     (|>|) = beside unitX
     margin placement = case _margin placement of
-      MarginClose -> 1 / 6
+      MarginClose -> 1 / 3
       MarginFar -> 1 / 2
       MarginCustom m -> m
 
