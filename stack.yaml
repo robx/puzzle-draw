@@ -1,4 +1,5 @@
 ghc-options:
+  "$locals": -fwrite-ide-info
   puzzle-draw: -Werror
 packages:
 - '.'
