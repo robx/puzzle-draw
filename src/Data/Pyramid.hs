@@ -7,8 +7,6 @@ module Data.Pyramid
     RowKropkiPyramid (..),
     mergepyramidsol,
     mergekpyramidsol,
-    plainpyramid,
-    psize,
   )
 where
 
@@ -37,10 +35,6 @@ newtype Pyramid = Pyr {unPyr :: [Row]}
 
 newtype PyramidSol = PyramidSol [[Int]]
   deriving (Show)
-
--- | The size (number of rows) of a pyramid.
-psize :: Pyramid -> Int
-psize (Pyr rows) = length rows
 
 -- | Merge a solution into a pyramid.
 mergepyramidsol :: Pyramid -> PyramidSol -> Pyramid
@@ -100,12 +94,6 @@ data KropkiRow
 
 newtype RowKropkiPyramid = KP {unKP :: [KropkiRow]}
   deriving (Show)
-
--- | Forget the kropki dots.
-plainpyramid :: RowKropkiPyramid -> Pyramid
-plainpyramid (KP rows) = Pyr (map r rows)
-  where
-    r x = R (entriesk x) (shadedk x)
 
 pkropkirow :: GenParser Char st KropkiRow
 pkropkirow = do
