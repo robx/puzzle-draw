@@ -538,9 +538,6 @@ labeledArrow dir x = case dir of
 invert :: Backend' b => Drawing b -> Drawing b
 invert d = d # lc white # fc white
 
-scaledText :: Backend' b => String -> Drawing b
-scaledText s = text' s # fitDown' 0.5
-
 cornerTriangle :: Backend' b => CornerDir -> Drawing b
 cornerTriangle dir = draw $ cornerDia dir
 
