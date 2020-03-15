@@ -25,11 +25,9 @@ module Draw.Draw
     alignBL',
     alignBR',
     alignTL',
-    alignTR',
     alignL',
     alignR',
     fit',
-    fitDown',
     spread',
     phantom'',
     aboveT',
@@ -162,9 +160,6 @@ alignBR' = lift alignBR
 alignTL' :: Backend' b => Drawing b -> Drawing b
 alignTL' = lift alignTL
 
-alignTR' :: Backend' b => Drawing b -> Drawing b
-alignTR' = lift alignTR
-
 alignL' :: Backend' b => Drawing b -> Drawing b
 alignL' = lift alignL
 
@@ -173,9 +168,6 @@ alignR' = lift alignR
 
 fit' :: Backend' b => Double -> Drawing b -> Drawing b
 fit' f = lift (fit f)
-
-fitDown' :: Backend' b => Double -> Drawing b -> Drawing b
-fitDown' f = lift (fitDown f)
 
 spread' :: Backend' b => V2 Double -> [Drawing b] -> Drawing b
 spread' v ds = Drawing (\c -> spread v $ map (\d -> fromDrawing d c) ds)

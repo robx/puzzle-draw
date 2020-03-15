@@ -5,7 +5,6 @@
 module Parse.Util where
 
 import Control.Applicative
-import Control.Arrow
 import Control.Monad hiding (mapM)
 import Data.Char
   ( digitToInt,
@@ -402,9 +401,6 @@ fromCoordGrid = Map.mapKeys fromCoord
 fromCoordEdge :: Key k => Edge Coord -> Edge k
 fromCoordEdge (E c d) = E (fromCoord c) d
 
-fromCoordEdges :: Key k => [Edge Coord] -> [Edge k]
-fromCoordEdges = map fromCoordEdge
-
 parseClueGrid :: (FromChar a, Key k) => Value -> Parser (Grid k (Maybe a))
 parseClueGrid v = fmap blankToMaybe <$> parseGrid v
 
@@ -451,9 +447,6 @@ readEdges =
       (0, 1) -> Just $ E (div2 c) Vert
       _ -> Nothing
     div2 (x', y') = (x' `div` 2, y' `div` 2)
-
-parseGridChars :: FromChar a => Grid k Char -> Parser (Grid k a)
-parseGridChars = traverse parseChar
 
 -- | Parse a grid with edges and values at nodes and in cells.
 --
@@ -525,12 +518,6 @@ instance FromChar Dir' where
   parseChar _ = fail "expected 'uUdDrRlL'"
 
 type ThermoRect = Rect (Either Blank (Either Int Alpha))
-
-partitionEithers ::
-  Ord k => Map.Map k (Either a b) -> (Map.Map k a, Map.Map k b)
-partitionEithers = Map.foldrWithKey insertEither (Map.empty, Map.empty)
-  where
-    insertEither k = either (first . Map.insert k) (second . Map.insert k)
 
 parseThermos :: Grid C Alpha -> Parser [Thermometer]
 parseThermos m = catMaybes <$> mapM parseThermo (Map.keys m')
@@ -666,9 +653,6 @@ newtype RefGrid k a = RefGrid {unRG :: Grid k (Maybe a)}
 
 hashmaptomap :: Ord a => HMap.HashMap a b -> Map.Map a b
 hashmaptomap = Map.fromList . HMap.toList
-
-compose :: Ord b => Map.Map a b -> Map.Map b c -> Maybe (Map.Map a c)
-compose m1 m2 = mapM (`Map.lookup` m2) m1
 
 newtype MaybeMap k a = MM {unMaybeMap :: Map.Map k (Maybe a)}
 

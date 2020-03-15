@@ -22,11 +22,6 @@ type Backend' b =
     Backend b V2 Double
   )
 
--- | Vertical/horizontal stroked line of given length.
-vline, hline :: Backend' b => Double -> Diagram b
-vline n = strokeLine . fromVertices . map p2 $ [(0, 0), (0, n)]
-hline n = strokeLine . fromVertices . map p2 $ [(0, 0), (n, 0)]
-
 -- | Variant of 'hcat'' that spreads with distance @1@.
 hcatSep ::
   (InSpace V2 Double a, Juxtaposable a, HasOrigin a, Monoid' a) =>
@@ -51,9 +46,6 @@ r2i = r2 . (fromIntegral *** fromIntegral)
 p2i :: (Int, Int) -> P2 Double
 p2i = p2 . (fromIntegral *** fromIntegral)
 
-mirror :: (InSpace V2 Double t, Transformable t) => t -> t
-mirror = reflectAbout (p2 (0, 0)) (direction $ r2 (1, -1))
-
 -- | Interleave two lists.
 interleave :: [a] -> [a] -> [a]
 interleave [] _ = []
@@ -77,13 +69,6 @@ dmid u a = (dtop + dbot) / 2 - dbot
     dtop = menv u a
     dbot = menv ((-1) *^ u) a
 
--- | Place the second diagram to the right of the first, aligning both
--- vertically. The origin is the origin of the left diagram.
-besidesL :: Backend' b => Diagram b -> Diagram b -> Diagram b
-besidesL a b = a ||| strutX 0.5 ||| b'
-  where
-    b' = b # centerY # translate (dmid unitY a *^ unitY)
-
 -- | Variant of 'besidesL' where the origin is that of the right diagram.
 besidesR :: Backend' b => Diagram b -> Diagram b -> Diagram b
 besidesR b a = b' ||| strutX 0.5 ||| a
@@ -98,14 +83,6 @@ aboveT a b = a === strutY 0.5 === b'
 -- | @fit f a@ scales @a@ to fit into a square of size @f@.
 fit :: (Transformable t, Enveloped t, InSpace V2 Double t) => Double -> t -> t
 fit f a = scale (f / m) a where m = max (diameter unitX a) (diameter unitY a)
-
--- | @fitDown f a@ scales @a@ down to fit into a square of size $f$.
-fitDown ::
-  (Transformable t, Enveloped t, InSpace V2 Double t) => Double -> t -> t
-fitDown f a = scale f' a
-  where
-    m = max (diameter unitX a) (diameter unitY a)
-    f' = if m > f then f / m else 1
 
 -- | Write text that is centered both vertically and horizontally and that
 -- has an envelope. Sized such that single capital characters fit nicely

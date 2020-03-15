@@ -7,7 +7,6 @@ module Data.Grid
   ( Grid,
     AreaGrid,
     ShadedGrid,
-    nodes,
     size,
     cellSize,
     nodeSize,
@@ -15,7 +14,6 @@ module Data.Grid
     shiftSize,
     sizeGrid,
     clues,
-    rights,
     nodeGrid,
     cellGrid,
     dominoGrid,
@@ -41,7 +39,6 @@ import Data.AffineSpace
 import Data.Elements
 import Data.GridShape
 import qualified Data.Map.Strict as Map
-import qualified Data.Set as Set
 import Data.VectorSpace
 
 type Grid k a = Map.Map k a
@@ -54,9 +51,6 @@ type ShadedGrid = Grid C Bool
 --   list of cells and @Just@ values.
 clues :: Grid k (Maybe a) -> Grid k a
 clues = Map.mapMaybe id
-
-rights :: Grid k (Either a b) -> Grid k b
-rights = Map.mapMaybe (either (const Nothing) Just)
 
 edgesGen ::
   Dual' k =>
@@ -73,9 +67,6 @@ edgesGen p n m = filter (uncurry p' . ends . dualE) es
     p'' (Just e) Nothing = n e
     p'' Nothing (Just e) = n e
     p'' _ _ = False
-
-nodes :: Grid N a -> Set.Set N
-nodes = Map.keysSet
 
 -- | The inner edges of a grid that separate unequal cells.
 borders :: Eq a => Grid C a -> [Edge N]

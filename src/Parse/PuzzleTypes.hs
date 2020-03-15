@@ -58,7 +58,6 @@ module Parse.PuzzleTypes
     pentominousBorders,
     nanroSignpost,
     tomTom,
-    horseSnake,
     illumination,
     pentopia,
     greaterWall,
@@ -515,9 +514,6 @@ tomTom =
           <*> parseFrom ["clues"] ((unRG <$>) . parseJSON) v
     )
     parseGrid
-
-horseSnake :: ParsePuzzle (Grid C (Maybe (Either MEnd Int))) [Edge C]
-horseSnake = (parseGrid, parseEdges)
 
 illumination ::
   ParsePuzzle

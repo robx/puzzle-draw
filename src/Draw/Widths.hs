@@ -9,10 +9,6 @@ gridresd = fromIntegral gridres
 onepix :: Double
 onepix = 1 / fromIntegral gridres
 
-twopix, fourpix :: Double
-twopix = 2 * onepix
-fourpix = 4 * onepix
-
 linewidth :: Double
 linewidth = onepix
 

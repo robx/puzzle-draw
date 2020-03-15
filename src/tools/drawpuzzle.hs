@@ -8,7 +8,6 @@ import qualified Data.ByteString.Lazy as BL
 import Data.Lib
 import Data.List (intercalate)
 import Data.PuzzleTypes
-import qualified Data.Yaml as Y
 import Draw.CmdLine
 import Draw.Draw
 import Draw.Font
@@ -140,9 +139,6 @@ checkPuzzleFormat fp = case takeExtension fp of
   ".pzl" -> Right PZL
   ".pzg" -> Right PZG
   ext -> Left $ "unknown format: " ++ ext
-
-maybeSkipCode :: PuzzleOpts -> Maybe Y.Value -> Maybe Y.Value
-maybeSkipCode opts = if _code opts then id else const Nothing
 
 handleOne :: PuzzleOpts -> OutputChoice -> FilePath -> IO ()
 handleOne opts oc fpin = do

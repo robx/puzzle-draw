@@ -13,8 +13,6 @@ module Draw.PuzzleGrids
     wordsClues,
     outsideGrid,
     multiOutsideGrid,
-    outsideGridN,
-    multiOutsideGridN,
     placeOutside,
     placeMultiOutside,
     placeMultiOutsideGW,
@@ -36,7 +34,6 @@ import Data.Grid
 import Data.GridShape
   ( C,
     FromCoord (..),
-    N,
     ToCoord (..),
   )
 import qualified Data.Map.Strict as Map
@@ -152,27 +149,11 @@ outsideGrid =
     <> grid gDefault
     . Data.outsideGrid
 
-outsideGridN :: Backend' b => OutsideClues N (Maybe String) -> Drawing b
-outsideGridN =
-  placeOutside
-    . fmap (fmap (scale outsideScale . text'))
-    <> grid gDefault
-    . Data.cellGrid
-    . Data.outsideGrid
-
 multiOutsideGrid :: Backend' b => OutsideClues C [String] -> Drawing b
 multiOutsideGrid =
   placeMultiOutside
     . fmap (fmap (scale outsideScale . text'))
     <> grid gDefault
-    . Data.outsideGrid
-
-multiOutsideGridN :: Backend' b => OutsideClues N [String] -> Drawing b
-multiOutsideGridN =
-  placeMultiOutside
-    . fmap (fmap (scale outsideScale . text'))
-    <> grid gDefault
-    . Data.cellGrid
     . Data.outsideGrid
 
 outsideIntGrid :: Backend' b => OutsideClues C [Int] -> Drawing b

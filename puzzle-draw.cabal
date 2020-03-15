@@ -61,8 +61,6 @@ library
         Draw.CmdLine
         Draw.Component
     hs-source-dirs: src
-    other-modules:
-        Paths_puzzle_draw
     ghc-options: -Wall
     build-depends:
         base >=4.8 && <5,

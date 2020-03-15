@@ -211,9 +211,6 @@ char c = text' [c]
 charFixed :: Backend' b => Char -> Drawing b
 charFixed c = textFixed [c]
 
-charOpaque :: Backend' b => Char -> Drawing b
-charOpaque c = char c <> circle 0.5 # lwG 0 # fc white # draw
-
 placeTL :: Backend' b => Drawing b -> Drawing b
 placeTL = moveTo (p2 (-0.4, 0.4)) . scale 0.5 . alignTL'
 
@@ -537,9 +534,6 @@ labeledArrow dir x = case dir of
 
 invert :: Backend' b => Drawing b -> Drawing b
 invert d = d # lc white # fc white
-
-scaledText :: Backend' b => String -> Drawing b
-scaledText s = text' s # fitDown' 0.5
 
 cornerTriangle :: Backend' b => CornerDir -> Drawing b
 cornerTriangle dir = draw $ cornerDia dir
