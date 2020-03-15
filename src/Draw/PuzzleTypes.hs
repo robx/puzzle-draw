@@ -61,7 +61,6 @@ module Draw.PuzzleTypes
     pentominousBorders,
     nanroSignpost,
     tomTom,
-    horseSnake,
     illumination,
     pentopia,
     greaterWall,
@@ -816,12 +815,6 @@ tomTom :: Backend' b => Drawers b (AreaGrid, Grid C (Maybe String)) (Grid C Int)
 tomTom = Drawers p (placeGrid . fmap int . snd <> p . fst)
   where
     p = ((areas <> grid gDashed) . fst <> placeGrid . fmap hintTL . clues . snd)
-
-horseSnake ::
-  Backend' b => Drawers b (Grid C (Maybe (Either MEnd Int))) [Edge C]
-horseSnake = Drawers p (solstyle . edges . snd <> p . fst)
-  where
-    p = (placeGrid . fmap (either bigEnd int) . clues <> grid gDashed)
 
 illumination ::
   Backend' b =>
