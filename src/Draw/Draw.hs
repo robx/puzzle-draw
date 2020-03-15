@@ -25,7 +25,6 @@ module Draw.Draw
     alignBL',
     alignBR',
     alignTL',
-    alignTR',
     alignL',
     alignR',
     fit',
@@ -160,9 +159,6 @@ alignBR' = lift alignBR
 
 alignTL' :: Backend' b => Drawing b -> Drawing b
 alignTL' = lift alignTL
-
-alignTR' :: Backend' b => Drawing b -> Drawing b
-alignTR' = lift alignTR
 
 alignL' :: Backend' b => Drawing b -> Drawing b
 alignL' = lift alignL

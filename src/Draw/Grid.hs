@@ -276,21 +276,3 @@ areasGray = areas <> shadeGrid . fmap cols
     cols c
       | isUpper c = Just (blend 0.1 black white)
       | otherwise = Nothing
-
--- Place a list of diagrams along a ray, with steps of size
--- @f@.
-distrib ::
-  (Transformable c, Monoid c, InSpace V2 Double c) =>
-  V2 Double ->
-  (Int, Int) ->
-  Double ->
-  [c] ->
-  c
-distrib base dir f xs =
-  translate (0.75 *^ dir' ^+^ base) . mconcat $
-    zipWith
-      (\i d -> translate (fromIntegral i *^ dir') d)
-      [(0 :: Int) ..]
-      xs
-  where
-    dir' = f *^ r2i dir

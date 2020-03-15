@@ -22,11 +22,6 @@ type Backend' b =
     Backend b V2 Double
   )
 
--- | Vertical/horizontal stroked line of given length.
-vline, hline :: Backend' b => Double -> Diagram b
-vline n = strokeLine . fromVertices . map p2 $ [(0, 0), (0, n)]
-hline n = strokeLine . fromVertices . map p2 $ [(0, 0), (n, 0)]
-
 -- | Variant of 'hcat'' that spreads with distance @1@.
 hcatSep ::
   (InSpace V2 Double a, Juxtaposable a, HasOrigin a, Monoid' a) =>
@@ -51,9 +46,6 @@ r2i = r2 . (fromIntegral *** fromIntegral)
 p2i :: (Int, Int) -> P2 Double
 p2i = p2 . (fromIntegral *** fromIntegral)
 
-mirror :: (InSpace V2 Double t, Transformable t) => t -> t
-mirror = reflectAbout (p2 (0, 0)) (direction $ r2 (1, -1))
-
 -- | Interleave two lists.
 interleave :: [a] -> [a] -> [a]
 interleave [] _ = []
@@ -76,13 +68,6 @@ dmid u a = (dtop + dbot) / 2 - dbot
     menv v = magnitude . envelopeV v
     dtop = menv u a
     dbot = menv ((-1) *^ u) a
-
--- | Place the second diagram to the right of the first, aligning both
--- vertically. The origin is the origin of the left diagram.
-besidesL :: Backend' b => Diagram b -> Diagram b -> Diagram b
-besidesL a b = a ||| strutX 0.5 ||| b'
-  where
-    b' = b # centerY # translate (dmid unitY a *^ unitY)
 
 -- | Variant of 'besidesL' where the origin is that of the right diagram.
 besidesR :: Backend' b => Diagram b -> Diagram b -> Diagram b
