@@ -3,4 +3,4 @@ ghc-options:
   puzzle-draw: -Werror
 packages:
 - '.'
-resolver: lts-15.0
+resolver: lts-15.8
