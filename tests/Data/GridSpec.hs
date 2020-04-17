@@ -61,3 +61,6 @@ spec = do
             [((C 1 1), 1 :: Int), ((C 1 2), 2), ((C 2 1), 1), ((C 2 2), 3)]
       let count = length . nub . sort . Map.elems
       count (colour (Map.fromList input)) `shouldBe` 3
+  where
+    nodes :: Grid N a -> Set.Set N
+    nodes = Map.keysSet
