@@ -42,6 +42,7 @@ where
 
 import Data.AffineSpace
 import qualified Data.Foldable as F
+import Data.Kind (Type)
 import Data.List
   ( groupBy,
     partition,
@@ -158,7 +159,7 @@ edge p q = unorient $ edge' p q
 
 class Dual2D a where
 
-  type Dual a :: *
+  type Dual a :: Type
 
   dualE' :: Edge' a -> Edge' (Dual a)
 
