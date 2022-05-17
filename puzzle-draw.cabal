@@ -74,7 +74,7 @@ library
         bytestring >=0.10,
         text >=1.1,
         svg-builder >=0.1,
-        SVGFonts >=1.7,
+        SVGFonts >=1.7 && <1.8,
         vector-space >=0.8,
         mtl >=2.1,
         optparse-applicative >=0.13,
