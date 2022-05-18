@@ -30,6 +30,7 @@
               hl.disableExecutableProfiling
               ((t.flip hl.overrideCabal) (drv: {
                 postCheck = ''
+                  patchShebangs tests/examples/gallery.sh
                   make compare DRAW=$(pwd)/dist/build/drawpuzzle/drawpuzzle
                 '';
               }))
