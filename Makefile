@@ -1,7 +1,6 @@
 .PHONY: format test compare ghcid
 
-LOCALINSTALL := $(shell stack $(STACKARGS) path | grep ^local-install-root: | awk '{print $$2}')/bin
-DRAW = $(LOCALINSTALL)/drawpuzzle
+DRAW ?= $(shell cabal list-bin drawpuzzle)
 
 ghcid:
 	ghcid

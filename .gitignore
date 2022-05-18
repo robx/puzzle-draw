@@ -10,4 +10,3 @@ tests/examples/cur
 tests/examples/diff
 web/elm-stuff
 static/web.js
-stack.yaml.lock

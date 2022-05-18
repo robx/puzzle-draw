@@ -32,6 +32,7 @@ import Data.Ord (comparing)
 import qualified Data.Text as T
 import Data.Traversable (mapM)
 import Data.Yaml
+import qualified Data.Aeson.Key
 import Parse.Parsec
 import Text.Read (readMaybe)
 import Prelude hiding (mapM)
@@ -39,11 +40,11 @@ import Prelude hiding (mapM)
 type Path = [String]
 
 field :: Path -> Value -> Parser Value
-field = field' . map T.pack
+field = field' . map (Data.Aeson.Key.fromText . T.pack)
   where
     field' [] v = pure v
     field' (f : fs) (Object v) = v .: f >>= field' fs
-    field' (f : _) _ = fail $ "expected field '" ++ T.unpack f ++ "'"
+    field' (f : _) _ = fail $ "expected field '" ++ (T.unpack . Data.Aeson.Key.toText $ f) ++ "'"
 
 parseFrom :: Path -> (Value -> Parser b) -> Value -> Parser b
 parseFrom fs p v =
