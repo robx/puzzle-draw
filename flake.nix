@@ -70,6 +70,7 @@
             ...
           }: {
             boot.isContainer = true;
+            services.puzzle-draw.enable = true;
           })
           nixosModule
         ];
