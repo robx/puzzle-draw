@@ -39,18 +39,20 @@ in {
         Restart = "always";
       };
     };
-    services.nginx = mkIf (cfg.hostName != null) {
+    services.nginx = {
       upstreams.puzzle-draw-backend.servers."localhost:8765" = {};
-      virtualHosts."${cfg.hostName}" = mkMerge [
-        cfg.nginx
-        {
-          locations = {
-            "/" = {
-              proxyPass = "http://puzzle-draw-backend/";
+      virtualHosts = mkIf (cfg.hostName != null) {
+        "${cfg.hostName}" = mkMerge [
+          cfg.nginx
+          {
+            locations = {
+              "/" = {
+                proxyPass = "http://puzzle-draw-backend/";
+              };
             };
-          };
-        }
-      ];
+          }
+        ];
+      };
     };
   };
 }
