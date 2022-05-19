@@ -1,8 +1,7 @@
 {
-  nixpkgs ? <nixpkgs>,
-  config ? {},
+  pkgs ? import <nixpkgs> {},
 }:
-with (import nixpkgs config); let
+let
   srcs = {
     "elm/browser" = {
       sha256 = "1apmvyax93nvmagwj00y16zx10kfv640cxpi64xgqbgy7d2wphy4";
@@ -45,8 +44,8 @@ with (import nixpkgs config); let
     };
   };
 in
-  stdenv.mkDerivation {
-    src = ./.;
+  with pkgs; stdenv.mkDerivation {
+    src = ../web;
     name = "puzzle-draw-web";
 
     buildInputs = [elmPackages.elm nodePackages.uglify-js];
@@ -54,7 +53,7 @@ in
     buildPhase = pkgs.elmPackages.fetchElmDeps {
       elmPackages = srcs;
       elmVersion = "0.19.1";
-      registryDat = "./registry.dat";
+      registryDat = ./web-registry.dat;
     };
 
     installPhase = ''

@@ -39,6 +39,7 @@
 
       in {
         packages.puzzle-draw = project [ ];
+        packages.puzzle-draw-web = pkgs.callPackage ./nix/web.nix {};
 
         defaultPackage = self.packages.${system}.puzzle-draw;
 
