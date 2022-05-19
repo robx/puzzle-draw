@@ -16,7 +16,8 @@
         project = devTools:
           let addBuildTools = (t.flip hl.addBuildTools) devTools;
           in pkgs.haskellPackages.developPackage {
-            root = ./.;
+            root = pkgs.lib.sourceFilesBySuffices ./.
+              [ ".cabal" ".hs" "LICENSE" ".svg" ".pzg" ".pzl" ".png" ".sh" "Makefile" ];
             name = name;
             returnShellEnv = !(devTools == [ ]);
             source-overrides = { "SVGFonts" = "1.7.0.1"; };
