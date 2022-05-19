@@ -38,9 +38,15 @@
           };
 
       in {
-        packages.puzzle-draw = project [ ];
-        packages.puzzle-draw-web = pkgs.callPackage ./nix/web.nix {};
-
+        packages = rec {
+          puzzle-draw = project [ ];
+          puzzle-draw-web = pkgs.callPackage ./nix/web.nix {};
+          puzzle-draw-serve = import ./nix/serve.nix {
+            inherit pkgs system;
+            inherit puzzle-draw puzzle-draw-web;
+            src = self;
+          };
+        };
         defaultPackage = self.packages.${system}.puzzle-draw;
 
         devShell = project ([
