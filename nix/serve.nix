@@ -1,4 +1,10 @@
-{ src, pkgs, system, puzzle-draw, puzzle-draw-web }:
+{
+  src,
+  pkgs,
+  system,
+  puzzle-draw,
+  puzzle-draw-web,
+}:
 derivation {
   inherit src system;
   name = "puzzle-draw-serve";

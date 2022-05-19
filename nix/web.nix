@@ -1,7 +1,4 @@
-{
-  pkgs ? import <nixpkgs> {},
-}:
-let
+{pkgs ? import <nixpkgs> {}}: let
   srcs = {
     "elm/browser" = {
       sha256 = "1apmvyax93nvmagwj00y16zx10kfv640cxpi64xgqbgy7d2wphy4";
@@ -44,21 +41,22 @@ let
     };
   };
 in
-  with pkgs; stdenv.mkDerivation {
-    src = ../web;
-    name = "puzzle-draw-web";
+  with pkgs;
+    stdenv.mkDerivation {
+      src = ../web;
+      name = "puzzle-draw-web";
 
-    buildInputs = [elmPackages.elm nodePackages.uglify-js];
+      buildInputs = [elmPackages.elm nodePackages.uglify-js];
 
-    buildPhase = pkgs.elmPackages.fetchElmDeps {
-      elmPackages = srcs;
-      elmVersion = "0.19.1";
-      registryDat = ./web-registry.dat;
-    };
+      buildPhase = pkgs.elmPackages.fetchElmDeps {
+        elmPackages = srcs;
+        elmVersion = "0.19.1";
+        registryDat = ./web-registry.dat;
+      };
 
-    installPhase = ''
-      elm make src/Main.elm --output $out/web.js
-      uglifyjs $out/web.js --compress 'pure_funcs="F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9",pure_getters,keep_fargs=false,unsafe_comps,unsafe' \
-                | uglifyjs --mangle --output $out/web.min.js
-    '';
-  }
+      installPhase = ''
+        elm make src/Main.elm --output $out/web.js
+        uglifyjs $out/web.js --compress 'pure_funcs="F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9",pure_getters,keep_fargs=false,unsafe_comps,unsafe' \
+                  | uglifyjs --mangle --output $out/web.min.js
+      '';
+    }
