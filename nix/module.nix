@@ -39,7 +39,7 @@ in {
         Restart = "always";
       };
     };
-    services.nginx = mkIf (cfg.hostname != null) {
+    services.nginx = mkIf (cfg.hostName != null) {
       upstreams.puzzle-draw-backend.servers."localhost:8765" = {};
       virtualHosts."${cfg.hostName}" = mkMerge [
         cfg.nginx
