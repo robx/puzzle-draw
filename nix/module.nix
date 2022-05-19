@@ -12,9 +12,9 @@ in {
     enable = mkEnableOption "puzzle-draw server";
 
     hostName = mkOption {
-      type = types.str;
-      default = "localhost";
-      description = "Hostname to serve puzzle-draw on";
+      type = types.nullOr types.str;
+      default = null;
+      description = "Hostname to serve puzzle-draw virtual host on (null to disable)";
     };
 
     nginx = mkOption {
@@ -39,7 +39,7 @@ in {
         Restart = "always";
       };
     };
-    services.nginx = {
+    services.nginx = mkIf (cfg.hostname != null) {
       upstreams.puzzle-draw-backend.servers."localhost:8765" = {};
       virtualHosts."${cfg.hostName}" = mkMerge [
         cfg.nginx
