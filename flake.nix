@@ -61,7 +61,7 @@
     })
     // rec {
       nixosModule = import ./nix/module.nix;
-      nixosConfigurations.test = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.test = nixpkgs.lib.nixosSystem rec {
         system = "x86_64-linux";
         modules = [
           ({
@@ -71,6 +71,7 @@
           }: {
             boot.isContainer = true;
             services.puzzle-draw.enable = true;
+            services.puzzle-draw.package = self.packages.${system}.puzzle-draw-serve;
           })
           nixosModule
         ];
