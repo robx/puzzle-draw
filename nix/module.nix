@@ -11,6 +11,15 @@ in {
   options.services.puzzle-draw = {
     enable = mkEnableOption "puzzle-draw server";
 
+    package = mkOption {
+      default = pkgs.puzzle-draw-serve;
+      defaultText = "pkgs.puzzle-draw-serve";
+      type = types.package;
+      description = ''
+        puzzle-draw-serve package to use.
+      '';
+    };
+
     hostName = mkOption {
       type = types.nullOr types.str;
       default = null;
@@ -34,8 +43,8 @@ in {
       wantedBy = ["multi-user.target"];
       after = ["networking.target"];
       serviceConfig = {
-        WorkingDirectory = "${pkgs.puzzle-draw-serve}";
-        ExecStart = "${pkgs.puzzle-draw-serve}/bin/servepuzzle -b 127.0.0.1 -p 8765";
+        WorkingDirectory = "${cfg.package}";
+        ExecStart = "${cfg.package}/bin/servepuzzle -b 127.0.0.1 -p 8765";
         Restart = "always";
       };
     };
